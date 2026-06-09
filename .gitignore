@@ -1,0 +1,25 @@
+# OS-мусор
+Thumbs.db
+.DS_Store
+
+# Локальные настройки Claude Code (для конкретной машины)
+.claude/settings.local.json
+
+# Архивы и документы-исходники (не нужны для страницы)
+presentation.zip
+*.docx
+
+# Черновые/исходные картинки и графика (не подключаются в index.html)
+ChatGPT Image*
+neon_skyline_*
+Group 1430.svg
+титул.svg
+Карта Москвы.png
+уровень 1 - Даниловский рынок.svg
+
+# Тяжёлое видео и черновики внутри img/ (оставляем только slide0.png)
+img/*.mp4
+img/slide0_template*
+
+# Папка-исходник карты (в рантайме не используется)
+map/
