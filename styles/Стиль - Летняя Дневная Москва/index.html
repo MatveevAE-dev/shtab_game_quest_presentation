@@ -1309,20 +1309,33 @@ document.querySelectorAll('.panel-toggle').forEach(b=>b.addEventListener('click'
   const p=b.closest('.panel'); if(p) p.classList.toggle('collapsed');
 }));
 
-// ---- заставка-загрузка ----
+// ---- заставка-загрузка: прогресс привязан к реальной загрузке фон-картинки ----
 (function(){
   const intro=document.getElementById('intro'); if(!intro) return;
   const fill=document.getElementById('introFill'), pct=document.getElementById('introPct');
-  let p=0;
+  // картинки, которые должны прогрузиться ДО показа титула (тот же URL, что у фона титула — греем кэш)
+  const SRCS=['img/slide0_day.png?v=5'];
+  let loaded=0; const total=SRCS.length;
+  SRCS.forEach(src=>{
+    const im=new Image();
+    const mark=()=>{ loaded++; };
+    im.onload=mark; im.onerror=mark;        // ошибку тоже считаем «готово», чтобы не висло
+    im.src=src;
+    if(im.complete) mark();                 // уже в кэше
+  });
+  const t0=Date.now(), MIN=1200, MAX=12000; // мин. показ заставки и предохранитель
+  let p=0, finished=false;
   const timer=setInterval(()=>{
-    p+=Math.random()*2.2+1.9;                  // загрузка ~2 секунды
-    if(p>=100){ p=100; clearInterval(timer); finish(); }
+    const elapsed=Date.now()-t0, ready=loaded>=total;
+    const cap=ready?100:90;                 // пока картинка не загрузилась — упираемся в 90%
+    p=Math.min(cap, p+Math.random()*2.2+1.9);
+    if((ready && elapsed>=MIN) || elapsed>=MAX) p=100;   // 100% когда картинка готова (или сработал предохранитель)
     fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+    if(p>=100 && !finished){ finished=true; clearInterval(timer); finish(); }
   },60);
   function finish(){
     setTimeout(()=>intro.classList.add('loaded'),300);  // прячем скайлайн/заголовок/бар
     setTimeout(()=>intro.classList.add('done'),1500);    // гасим тёмный фон — открывается титул, логотип остаётся
-    // ачивка титула теперь по ТРИГГЕРУ (навёл на «?» → допечатался текст), не по таймеру
   }
 })();
 

@@ -396,8 +396,18 @@ stage.classList.add('booting');
 (function(){
   const intro=document.getElementById('intro'), fill=document.getElementById('introFill'),
         pct=document.getElementById('introPct'), fx=document.getElementById('fx');
-  let p=0;
-  const t=setInterval(()=>{ p+=Math.random()*2.4+2; if(p>=100){p=100;clearInterval(t);finish();} fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%'; },55);
+  // прогресс привязан к реальной загрузке фона — заставка ждёт картинку
+  let imgReady=false;
+  (function(){ const im=new Image(); const m=()=>{imgReady=true;}; im.onload=m; im.onerror=m; im.src='bg.png'; if(im.complete) m(); })();
+  const t0=Date.now(), MIN=1200, MAX=12000;
+  let p=0, fin=false;
+  const t=setInterval(()=>{
+    const el=Date.now()-t0, cap=imgReady?100:90;
+    p=Math.min(cap, p+Math.random()*2.4+2);
+    if((imgReady && el>=MIN) || el>=MAX) p=100;
+    fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+    if(p>=100 && !fin){ fin=true; clearInterval(t); finish(); }
+  },55);
   function finish(){
     intro.classList.add('loaded');                       // прячем заголовок/бар, логотип остаётся
     setTimeout(()=>{ stage.classList.remove('booting'); fx.classList.add('run'); setTimeout(()=>fx.classList.remove('run'),500); },300);

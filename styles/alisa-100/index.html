@@ -482,11 +482,18 @@ stage.classList.add('booting');                       // сцена скрыта
   const intro=document.getElementById('intro'),
         fill=document.getElementById('introFill'),
         pct=document.getElementById('introPct'), fx=document.getElementById('fx');
-  let p=0;
+  // прогресс привязан к реальной загрузке фона (тяжёлый ~38MB) — заставка ждёт картинку
+  const SRC='ultra_detailed_wide_panoramic_sci_fi_futuristic_c_1_8k.png';
+  let imgReady=false;
+  (function(){ const im=new Image(); const m=()=>{imgReady=true;}; im.onload=m; im.onerror=m; im.src=SRC; if(im.complete) m(); })();
+  const t0=Date.now(), MIN=1200, MAX=25000;            // мин. показ и предохранитель
+  let p=0, fin=false;
   const t=setInterval(()=>{
-    p+=Math.random()*2.4+2;                            // ~2 секунды загрузки
-    if(p>=100){ p=100; clearInterval(t); finish(); }
+    const el=Date.now()-t0, cap=imgReady?100:90;       // пока фон не загрузился — упираемся в 90%
+    p=Math.min(cap, p+Math.random()*2.4+2);
+    if((imgReady && el>=MIN) || el>=MAX) p=100;
     fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+    if(p>=100 && !fin){ fin=true; clearInterval(t); finish(); }
   },55);
   function finish(){
     setTimeout(()=>intro.classList.add('loaded'),250);  // прячем скайлайн/заголовок/бар — логотип остаётся

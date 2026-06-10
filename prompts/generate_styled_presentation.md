@@ -206,6 +206,21 @@
   #intro.loaded .intro-bar,#intro.loaded .intro-pct{opacity:0;transition:opacity .5s ease}
   ```
 - В JS по достижении 100%: сначала `intro.classList.add('loaded')`, затем (позже) `add('done')`.
+- **Прогресс привязан к реальной загрузке фон-картинки, а не к фикс-таймеру.** Иначе на тяжёлом
+  фоне заставка гаснет раньше, чем картинка пришла → пустой/fallback титул. Схема: предзагрузи
+  фон через `new Image()` (тот же URL, что у `.intro-bg`/титула — греешь кэш), бар упирается в
+  90% пока `!imgReady`, до 100% доходит только когда `onload` (или `onerror`) + прошло мин. время
+  (~1.2с); предохранитель `MAX` (12с, для тяжёлых фонов больше) закрывает заставку, если картинка
+  так и не пришла:
+  ```js
+  let imgReady=false;
+  (function(){const im=new Image();const m=()=>{imgReady=true;};im.onload=m;im.onerror=m;im.src='bg.png';if(im.complete)m();})();
+  const t0=Date.now(),MIN=1200,MAX=12000; let p=0,fin=false;
+  const t=setInterval(()=>{const el=Date.now()-t0,cap=imgReady?100:90;
+    p=Math.min(cap,p+Math.random()*2.4+2); if((imgReady&&el>=MIN)||el>=MAX)p=100;
+    fill.style.width=p+'%';pct.textContent=Math.floor(p)+'%';
+    if(p>=100&&!fin){fin=true;clearInterval(t);finish();}},55);
+  ```
 - Логотип («Штаб») — общий файл (голубой неон). Если его цвет конфликтует с палитрой стиля,
   перекрась САМ логотип CSS-фильтром на `.intro-logo` (файл не меняем), напр. под золото:
   `filter:sepia(1) saturate(2.2) hue-rotate(2deg) brightness(1.05) drop-shadow(...)`. Иначе
