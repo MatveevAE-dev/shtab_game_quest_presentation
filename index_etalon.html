@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSCOW BUSINESS QUEST — Штаб по защите бизнеса</title>
+
+<!-- Игровые техно-шрифты (если нет интернета — подставится системный) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ====== Базовые переменные стиля (тактический командный центр) ====== */
+:root{
+  --bg:#070d1a;            /* глубокий тёмно-синий фон */
+  --panel:rgba(10,22,42,.62);
+  --cyan:#3fd0ff;          /* неоновый акцент */
+  --cyan-soft:rgba(63,208,255,.55);
+  --gold:#ffcd6b;          /* тёплый акцент */
+  --text:#dcebff;
+  --text-dim:#8fa6c4;
+  --green:#5dffa0;
+  --hud-font:'Rajdhani',sans-serif;
+  --title-font:'Orbitron',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:var(--hud-font);color:var(--text)}
+/* центрируем сцену в окне через flex (надёжно при любом масштабе Windows) */
+body{display:flex;align-items:center;justify-content:center}
+
+/* ====== Сцена 16:9 по центру (вписывается в окно, по краям чёрные поля) ====== */
+.stage{position:relative;flex:0 0 auto;
+  width:min(100vw, 177.7778vh);   /* 16/9 */
+  height:min(56.25vw, 100vh);     /* 9/16 */
+  overflow:hidden;background:var(--bg)}
+
+/* ====== Сцена слайда ====== */
+.deck{position:absolute;inset:0}
+.slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:flex-end;
+  opacity:0;visibility:hidden;
+  transition:opacity .6s ease, transform .6s ease;
+  transform:scale(1.04);
+  /* fallback-градиент под картинку: кинематографичный город ночью */
+  background:
+    radial-gradient(120% 80% at 30% 30%, rgba(63,208,255,.10), transparent 60%),
+    radial-gradient(140% 120% at 80% 90%, rgba(255,205,107,.08), transparent 55%),
+    linear-gradient(180deg,#0a1426 0%,#070d1a 55%,#04070f 100%);
+  background-size:cover;background-position:center;
+}
+.slide.active{opacity:1;visibility:visible;transform:scale(1)}
+/* затемнение картинки слева, чтобы HUD справа читался */
+.slide::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg, rgba(4,8,16,.30) 0%, rgba(4,8,16,0) 35%, rgba(4,8,16,.55) 78%, rgba(4,8,16,.78) 100%);
+  pointer-events:none;
+}
+/* лёгкие скан-линии для game-HUD атмосферы */
+.deck::before{
+  content:"";position:absolute;inset:0;z-index:50;pointer-events:none;opacity:.06;
+  background:repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+
+/* ====== HUD-панель справа ====== */
+.hud{
+  position:relative;z-index:10;
+  width:min(40%,560px);margin-right:5vw;
+  background:var(--panel);
+  border:1px solid var(--cyan-soft);
+  backdrop-filter:blur(6px);
+  padding:34px 34px 30px;
+  box-shadow:0 0 40px rgba(63,208,255,.15), inset 0 0 24px rgba(63,208,255,.05);
+  clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);
+}
+/* угловые скобки HUD */
+.hud::before,.hud::after{
+  content:"";position:absolute;width:22px;height:22px;border:2px solid var(--cyan);
+}
+.hud::before{top:8px;right:8px;border-left:0;border-bottom:0}
+.hud::after{bottom:8px;left:8px;border-right:0;border-top:0}
+
+.tag{font-family:var(--title-font);font-size:12px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.9}
+.hud h1{
+  font-family:var(--title-font);font-weight:900;font-size:30px;line-height:1.1;margin:10px 0 16px;
+  color:#fff;text-shadow:0 0 18px var(--cyan-soft);text-transform:uppercase;
+}
+/* титульная панель — компактно в правом верхнем углу (там нет объектов) */
+.hud--corner{position:absolute;top:60px;right:34px;margin:0;width:min(36%,400px);
+  padding:18px 20px;align-self:flex-start}
+.hud--corner h1{font-size:22px;margin:8px 0 12px}
+.hud--corner .screen-lines li{font-size:15px;padding:5px 0 5px 16px}
+.hud--corner .ach{font-size:13px}
+
+.screen-lines{list-style:none;margin:6px 0 18px}
+.screen-lines li{
+  font-size:19px;font-weight:500;padding:7px 0 7px 18px;position:relative;color:var(--text);
+  border-bottom:1px solid rgba(63,208,255,.10);
+}
+.screen-lines li::before{content:"▸";position:absolute;left:0;color:var(--cyan)}
+
+/* блок HUD-индикаторов */
+.indicators{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px}
+.chip{
+  font-size:13px;font-weight:600;letter-spacing:.5px;
+  padding:5px 11px;border:1px solid var(--cyan-soft);border-radius:2px;
+  color:var(--cyan);background:rgba(63,208,255,.06);text-transform:uppercase;
+}
+.chip.ok{color:var(--green);border-color:rgba(93,255,160,.5);background:rgba(93,255,160,.06)}
+.chip.gold{color:var(--gold);border-color:rgba(255,205,107,.5);background:rgba(255,205,107,.06)}
+
+/* ачивка */
+.ach{
+  display:flex;gap:10px;align-items:center;margin-top:8px;
+  font-size:15px;font-weight:600;color:var(--gold);
+  border-left:3px solid var(--gold);padding:8px 12px;background:rgba(255,205,107,.06);
+}
+.ach .ico{font-size:20px}
+
+/* ====== Верхний бар: прогресс уровней ====== */
+.topbar{
+  position:absolute;top:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;gap:20px;
+  padding:16px 34px;
+  background:linear-gradient(180deg,rgba(4,8,16,.7),transparent);
+}
+.brand{font-family:var(--title-font);font-weight:700;letter-spacing:2px;font-size:14px;color:var(--cyan)}
+.levels{display:flex;gap:8px;flex:1}
+.lvl{flex:1;height:5px;background:rgba(63,208,255,.15);position:relative;overflow:hidden}
+.lvl.done{background:var(--cyan);box-shadow:0 0 10px var(--cyan-soft)}
+.lvl-num{font-family:var(--title-font);font-size:13px;color:var(--text-dim)}
+/* кнопка фоновой музыки */
+.music-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;
+  background:rgba(63,208,255,.06);border:1px solid var(--cyan-soft);cursor:pointer;
+  pointer-events:auto;transition:.2s;flex:0 0 auto}
+.music-btn svg{width:18px;height:18px;fill:none;stroke:var(--text-dim);stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+.music-btn:hover{background:rgba(63,208,255,.14)}
+.music-btn:hover svg{stroke:var(--cyan)}
+/* активное состояние — играет */
+.music-btn.on{background:rgba(63,208,255,.16);border-color:var(--cyan);
+  box-shadow:0 0 12px rgba(63,208,255,.35)}
+.music-btn.on svg{stroke:var(--cyan);filter:drop-shadow(0 0 4px var(--cyan-soft));
+  animation:musicpulse 1.6s ease-in-out infinite}
+@keyframes musicpulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* ====== Нижний бар: спикерские заметки + навигация ====== */
+.notes{
+  position:absolute;left:34px;bottom:74px;z-index:40;max-width:46%;
+  font-size:15px;line-height:1.45;color:var(--text-dim);
+  background:rgba(4,8,16,.55);border-left:2px solid var(--cyan-soft);
+  padding:12px 16px;display:none;
+}
+.notes.show{display:block}
+.notes b{color:var(--cyan);font-family:var(--title-font);font-size:11px;letter-spacing:2px}
+
+.nav{
+  position:absolute;bottom:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 34px;background:linear-gradient(0deg,rgba(4,8,16,.7),transparent);
+}
+.nav .dots{display:flex;gap:9px}
+.dot{width:11px;height:11px;border:1px solid var(--cyan-soft);transform:rotate(45deg);cursor:pointer;transition:.2s}
+.dot.active{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.nav button{
+  font-family:var(--title-font);font-size:12px;letter-spacing:2px;
+  color:var(--cyan);background:transparent;border:1px solid var(--cyan-soft);
+  padding:9px 16px;cursor:pointer;text-transform:uppercase;transition:.2s;
+}
+.nav button:hover{background:rgba(63,208,255,.12)}
+.hint{font-size:12px;color:var(--text-dim);letter-spacing:1px}
+
+/* загрузочный прогресс на титуле */
+.loadbar{height:8px;background:rgba(63,208,255,.15);margin:14px 0 4px;position:relative;overflow:hidden}
+.loadbar>i{position:absolute;inset:0;width:90%;background:linear-gradient(90deg,var(--cyan),#8fe9ff);box-shadow:0 0 14px var(--cyan)}
+
+@media (max-width:820px){
+  .hud{width:86%;margin:0 auto}
+  .slide{justify-content:center}
+  .notes{max-width:86%}
+}
+
+/* ============ ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ============ */
+
+/* прогресс уровней теперь с анимированным заполнением */
+.lvl{overflow:hidden}
+.lvl .fill{display:block;width:0;height:100%;background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan-soft);transition:width 1.6s .25s cubic-bezier(.25,.9,.3,1)}
+
+/* ----- Дороги и контуры объектов: реальные пути из Figma (viewBox 1672x941) ----- */
+.map{position:absolute;inset:0;z-index:8;pointer-events:none}
+.route{position:absolute;inset:0;width:100%;height:100%}
+/* магистрали — мягко пульсируют */
+.routes-base path{fill:none;stroke:var(--cyan);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 3px var(--cyan));animation:pathpulse 2.8s ease-in-out infinite}
+/* главная дорога — толще остальных */
+.routes-base .trunk{stroke-width:4.5}
+/* бегущие точки-«огоньки» по главной дороге */
+.routes-flow path{fill:none;stroke:#eaffff;stroke-width:6;stroke-linecap:round;
+  filter:drop-shadow(0 0 5px var(--cyan));stroke-dasharray:2 70;animation:flowdots 2.6s linear infinite}
+/* контур выделенного объекта (как нарисовано в Figma) */
+.objline{fill:none;stroke:var(--cyan);stroke-width:2.6;stroke-linejoin:round;
+  filter:drop-shadow(0 0 6px var(--cyan));animation:pathpulse 3s ease-in-out infinite;
+  pointer-events:stroke;cursor:pointer;transition:stroke-width .2s,stroke .2s,filter .2s}
+/* контур при наведении — ярче и толще */
+.objline.hot{stroke:#eaffff;stroke-width:4.2;filter:drop-shadow(0 0 12px #fff);animation:none}
+/* вертикальное свечение контура (пульсирует) — прозрачность на каждом path,
+   чтобы активный объект мог светить на полную, не приглушаясь группой */
+.objglow{mix-blend-mode:screen}
+.objglow path{opacity:.5;animation:vglowpulse 3.4s ease-in-out infinite;
+  transition:stroke-width .2s,stroke .2s}
+/* усиленное свечение объекта при наведении: выше и ярче */
+.objglow path.gactive{opacity:1;stroke:#9fe9ff;stroke-width:10;
+  filter:url(#vglowStrong);animation:none}
+@keyframes vglowpulse{0%,100%{opacity:.35}50%{opacity:.7}}
+/* вспышка контура по клику */
+.objline.flash{animation:objflash .9s ease-out}
+@keyframes objflash{0%{stroke:#fff;stroke-width:6;filter:drop-shadow(0 0 16px #fff)}100%{stroke:var(--cyan);stroke-width:2.6}}
+/* комета-точка по клику */
+.route-pulse{fill:none;stroke:#eaffff;stroke-width:6;stroke-linecap:round;
+  filter:drop-shadow(0 0 8px var(--cyan));opacity:0;stroke-dasharray:0.1 100}
+.route-pulse.fire{animation:firedot 1.4s ease-out 1}
+@keyframes flowdots{from{stroke-dashoffset:66}to{stroke-dashoffset:0}}
+@keyframes pathpulse{0%,100%{opacity:.28}50%{opacity:.7}}
+@keyframes firedot{0%{opacity:1;stroke-dashoffset:100}90%{opacity:1}100%{opacity:0;stroke-dashoffset:0}}
+
+/* ----- Замочки (плавают над объектом) с тултипом ----- */
+.spot{position:absolute;pointer-events:auto;transform:translate(-50%,-100%);
+  width:44px;height:52px;cursor:pointer;border:none;background:none;padding:0}
+.spot svg{width:62px;height:74px;overflow:visible;animation:hexpulse 2.4s ease-in-out infinite}
+.spot .hx{fill:none;stroke:var(--cyan);stroke-width:1.3}
+.spot .lkbody{fill:rgba(63,208,255,.32);stroke:var(--cyan);stroke-width:1}
+.spot .lkbar{fill:none;stroke:var(--cyan);stroke-width:1.1}
+.spot .lkhole{fill:var(--cyan)}
+/* вращение шестигранника с замком вокруг вертикальной оси */
+.spot .hexlock{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
+@keyframes hexspin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+/* линия с точкой от замка вниз к объекту */
+.spot .conn{stroke:var(--cyan);stroke-width:.8;opacity:.75}
+.spot .cdot{fill:var(--cyan)}
+.spot:hover svg{animation:none;filter:drop-shadow(0 0 10px var(--cyan))}
+.spot:hover .hx{stroke:#fff}
+.spot:hover .lkbody{fill:rgba(63,208,255,.5)}
+@keyframes hexpulse{
+  0%,100%{filter:drop-shadow(0 0 3px var(--cyan))}
+  50%{filter:drop-shadow(0 0 9px var(--cyan))}}
+
+/* ===== Слайд 1: путь к Даниловскому, комета, старт, открытый маркер ===== */
+/* контур Даниловского подсвечен постоянно (без пульса-затухания) */
+.objline.lit{stroke:#eaffff;stroke-width:3.4;filter:drop-shadow(0 0 12px var(--cyan));animation:litpulse 2.4s ease-in-out infinite}
+@keyframes litpulse{0%,100%{filter:drop-shadow(0 0 8px var(--cyan))}50%{filter:drop-shadow(0 0 16px #bff6ff)}}
+.objglow path.gon{opacity:1;stroke:#9fe9ff;stroke-width:9;animation:none}
+/* видимый маршрут героя (route-main) — светящаяся линия с бегущим пунктиром */
+.route-main{fill:none;stroke:var(--cyan);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 7px var(--cyan));stroke-dasharray:14 12;animation:routeflow 1.1s linear infinite}
+@keyframes routeflow{to{stroke-dashoffset:-26}}
+/* комета (светящаяся точка) бежит по маршруту */
+.comet circle{mix-blend-mode:screen}
+.comet-head{fill:#eaffff;filter:drop-shadow(0 0 6px #bff6ff) drop-shadow(0 0 12px var(--cyan))}
+.comet-tail{fill:#bff6ff}
+.comet-tail.t1{opacity:.7;filter:drop-shadow(0 0 5px var(--cyan))}
+.comet-tail.t2{opacity:.45;filter:drop-shadow(0 0 4px var(--cyan))}
+.comet-tail.t3{opacity:.28}
+/* маркер старта героя */
+.startpt-core{fill:#eaffff;filter:drop-shadow(0 0 6px var(--cyan))}
+.startpt-ring{fill:none;stroke:var(--cyan);stroke-width:2;transform-box:fill-box;transform-origin:center;
+  animation:startring 2.2s ease-out infinite}
+@keyframes startring{0%{stroke-opacity:.9;transform:scale(.5)}100%{stroke-opacity:0;transform:scale(1.6)}}
+/* открытый маркер Даниловского (без замка) — внутри светящаяся лампочка */
+.spot-open .hx{fill:rgba(255,205,107,.12);stroke:#ffe6b0;stroke-width:1.6}
+.spot-open .bulbic{fill:none;stroke:var(--gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 4px var(--gold));animation:bulbglow 1.8s ease-in-out infinite}
+@keyframes bulbglow{0%,100%{filter:drop-shadow(0 0 3px var(--gold))}50%{filter:drop-shadow(0 0 9px #ffd98a)}}
+.spot-open:hover .hx{stroke:#fff;fill:rgba(255,205,107,.24)}
+
+/* ===== Игровые панели (игрок слева, локация справа) ===== */
+.panel{position:absolute;z-index:10;background:var(--panel);border:1px solid var(--cyan-soft);
+  backdrop-filter:blur(6px);overflow:hidden;transition:width .25s,height .25s;
+  box-shadow:0 0 40px rgba(63,208,255,.15), inset 0 0 24px rgba(63,208,255,.05);
+  clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%)}
+.panel::before,.panel::after{content:"";position:absolute;width:22px;height:22px;border:2px solid var(--cyan)}
+.panel::before{top:8px;right:8px;border-left:0;border-bottom:0}
+.panel::after{bottom:8px;left:8px;border-right:0;border-top:0}
+.panel .panel-body{padding:26px 20px 20px}
+.panel-name{font-family:var(--title-font);font-weight:900;font-size:20px;line-height:1.1;color:#fff;
+  text-transform:uppercase;margin:6px 0 10px;text-shadow:0 0 12px var(--cyan-soft)}
+/* бейдж уровня игрока */
+.lvl-badge{display:inline-block;font-family:var(--title-font);font-size:11px;letter-spacing:1.5px;
+  color:var(--cyan);border:1px solid var(--cyan-soft);padding:3px 11px;margin:0 0 14px;
+  background:rgba(63,208,255,.08);text-transform:uppercase}
+/* позиции */
+.panel-player{left:30px;top:60px;width:min(24%,270px)}
+.panel-loc{right:34px;top:96px;width:min(30%,330px)}
+/* сворачивание */
+.panel.collapsed{width:48px;height:48px}
+.panel.collapsed .panel-body{display:none}
+.panel.collapsed .panel-toggle{transform:rotate(180deg)}
+/* строки локации (уровень/объект/требование/награда) */
+.loc-row{margin:0 0 10px;font-size:13px;color:var(--text-dim)}
+.loc-row .k{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:2px}
+.loc-row .v{font-size:15px;color:var(--text)}
+.loc-row.rew .v{color:var(--gold)}
+
+/* значок «?» над головой героя (титул) */
+.hero-q{position:absolute;z-index:9;transform:translate(-50%,-100%);
+  width:30px;height:30px;border-radius:50%;cursor:help;padding:0;
+  border:1.6px solid var(--cyan);background:rgba(8,18,34,.7);
+  color:var(--cyan);font-family:var(--title-font);font-weight:700;font-size:17px;line-height:1;
+  display:flex;align-items:center;justify-content:center;pointer-events:auto;
+  box-shadow:0 0 10px var(--cyan-soft),inset 0 0 8px rgba(63,208,255,.2);
+  animation:heroqbob 2.6s ease-in-out infinite}
+.hero-q:hover{background:rgba(63,208,255,.18);box-shadow:0 0 16px var(--cyan)}
+@keyframes heroqbob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,calc(-100% - 6px))}}
+
+/* всплывающая подсказка объекта */
+.tip{position:fixed;z-index:60;max-width:300px;pointer-events:none;
+  background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);
+  box-shadow:0 0 24px rgba(63,208,255,.25);padding:12px 14px;
+  opacity:0;transform:translateY(6px);transition:opacity .15s, transform .15s}
+.tip.show{opacity:1;transform:none}
+.tip b{display:block;font-family:var(--title-font);font-size:14px;color:#fff;
+  letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.tip .row{font-size:14px;line-height:1.5;color:var(--text)}
+.tip .row.rew{color:var(--gold);margin-top:4px}
+/* иконка строки проявляется постепенно (в такт печати) */
+.tip .row .tipico{opacity:0;transform:translateY(3px);transition:opacity .3s,transform .3s}
+.tip .row.in .tipico{opacity:1;transform:none}
+/* сложность — звёздочки */
+.tip .row.diff{color:var(--text)}
+.tip .stars{letter-spacing:2px}
+.tip .star{display:inline-block;font-size:15px;line-height:1;animation:starpop .28s ease}
+.tip .star.on{color:var(--gold);text-shadow:0 0 6px rgba(255,205,107,.6)}
+.tip .star.off{color:rgba(255,255,255,.22)}
+@keyframes starpop{0%{opacity:0;transform:scale(.4)}60%{transform:scale(1.25)}100%{opacity:1;transform:none}}
+/* мигающий курсор печати в тултипе героя */
+.tip .row.qtype::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .8s step-end infinite}
+@keyframes qcaret{50%{opacity:0}}
+
+/* сканер-линия + глитч-вспышка при переходе */
+#fx{position:absolute;inset:0;z-index:35;pointer-events:none;opacity:0}
+#fx.run{animation:fxflick .5s ease}
+#fx::before{content:"";position:absolute;left:0;right:0;height:3px;top:-10%;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  box-shadow:0 0 18px var(--cyan);opacity:0}
+#fx.run::before{animation:scan .5s ease}
+@keyframes scan{0%{top:-5%;opacity:.9}100%{top:105%;opacity:0}}
+@keyframes fxflick{0%,100%{opacity:0}18%{opacity:.07;background:var(--cyan)}40%{opacity:0}}
+
+/* HUD-панель появляется и «дышит» свечением */
+.slide.active .hud{animation:hudIn .55s cubic-bezier(.2,.8,.2,1) both,
+  breathe 4.5s 1s ease-in-out infinite}
+@keyframes hudIn{from{opacity:0;transform:translateX(46px)}to{opacity:1;transform:none}}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 40px rgba(63,208,255,.15), inset 0 0 24px rgba(63,208,255,.05)}
+  50%{box-shadow:0 0 62px rgba(63,208,255,.30), inset 0 0 30px rgba(63,208,255,.10)}}
+.slide.active .hud::before{animation:bracket .4s .3s both}
+.slide.active .hud::after{animation:bracket .4s .42s both}
+@keyframes bracket{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+
+/* каскадное появление содержимого HUD */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes achIn{from{opacity:0;transform:translateX(52px)}60%{transform:translateX(-4px)}to{opacity:1;transform:none}}
+.slide.active .tag{animation:rise .45s .15s both}
+.slide.active .screen-lines li{animation:rise .45s both}
+.slide.active .screen-lines li:nth-child(1){animation-delay:.40s}
+.slide.active .screen-lines li:nth-child(2){animation-delay:.52s}
+.slide.active .screen-lines li:nth-child(3){animation-delay:.64s}
+.slide.active .loadbar{animation:rise .45s .55s both}
+.slide.active .indicators{animation:rise .4s .6s both}
+.slide.active .chip{animation:pop .4s both}
+.slide.active .indicators .chip:nth-child(1){animation-delay:.62s}
+.slide.active .indicators .chip:nth-child(2){animation-delay:.72s}
+.slide.active .indicators .chip:nth-child(3){animation-delay:.82s}
+.slide.active .indicators .chip:nth-child(4){animation-delay:.92s}
+.slide.active .indicators .chip:nth-child(5){animation-delay:1.02s}
+.slide.active .ach{animation:achIn .6s 1.1s both}
+
+/* ----- «Живая» картинка: облака, туман, мерцание, кино-наезд ----- */
+/* кино-наезд камеры (Ken Burns) — двигаем картинку И ВСЕ слои поверх вместе */
+.kbwrap{position:absolute;inset:0;overflow:hidden}
+.kbwrap.kb{animation:kenburns 35s ease-in-out infinite alternate;will-change:transform}
+@keyframes kenburns{
+  from{transform:scale(1.02)}
+  to{transform:scale(1.10)}}        /* мягкий кино-наезд, без сдвига */
+.bg0{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background-size:cover;background-position:center}
+/* плывущие облака поверх неба */
+.fx-clouds{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.9;mix-blend-mode:screen;
+  background:
+    radial-gradient(48% 34% at 18% 15%, rgba(180,210,245,.5), transparent 68%),
+    radial-gradient(40% 28% at 50% 9%, rgba(200,225,250,.42), transparent 68%),
+    radial-gradient(52% 34% at 84% 19%, rgba(170,205,240,.42), transparent 68%),
+    radial-gradient(38% 24% at 35% 24%, rgba(190,215,245,.32), transparent 70%);
+  background-size:200% 100%;background-repeat:repeat-x;animation:clouds 38s linear infinite}
+@keyframes clouds{from{background-position:0 0}to{background-position:200% 0}}
+/* туман стелется снизу */
+.fx-fog{position:absolute;left:-15%;right:-15%;bottom:-2%;height:46%;z-index:4;pointer-events:none;
+  opacity:.7;mix-blend-mode:screen;
+  background:
+    radial-gradient(62% 100% at 26% 100%, rgba(190,212,242,.5), transparent 70%),
+    radial-gradient(62% 100% at 70% 100%, rgba(165,195,232,.45), transparent 70%);
+  animation:fog 26s ease-in-out infinite alternate}
+@keyframes fog{from{transform:translateX(-5%)}to{transform:translateX(5%)}}
+/* холст для мерцания огней города */
+.fx-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+
+/* ===== Сворачиваемая панель игрока на титуле ===== */
+.hud--panel{position:absolute;top:96px;right:34px;margin:0;width:min(30%,330px);
+  padding:0;align-self:flex-start;overflow:hidden;transition:width .25s, height .25s}
+.panel-toggle{position:absolute;top:10px;right:10px;z-index:2;width:28px;height:28px;
+  border:1px solid var(--cyan-soft);background:rgba(8,18,34,.6);color:var(--cyan);
+  cursor:pointer;border-radius:3px;font-size:16px;line-height:1;font-family:var(--title-font)}
+.panel-toggle:hover{background:rgba(63,208,255,.15)}
+.panel-body{padding:30px 22px 22px}
+.hud--panel.collapsed{width:48px;height:48px}
+.hud--panel.collapsed .panel-body{display:none}
+.hud--panel.collapsed .panel-toggle{transform:rotate(180deg)}
+.lvl-line{margin:8px 0 14px}
+.lvl-lbl{letter-spacing:2px;text-transform:uppercase;font-size:11px;color:var(--cyan)}
+.lvl-line b{display:block;font-family:var(--title-font);font-size:19px;color:#fff;text-transform:uppercase;margin-top:4px}
+.minimap{position:relative;margin:6px auto 10px;width:min(100%,212px);aspect-ratio:4/3;overflow:hidden;
+  border:1px solid var(--cyan-soft);background:#06101e}
+.mm-img{display:block;width:100%;height:100%;object-fit:cover}
+/* развёртка-«фонарик» из центра карты: квадратный слой → ровный треугольник */
+.mm-sweep2{position:absolute;top:50%;left:50%;width:165%;aspect-ratio:1;pointer-events:none;
+  mix-blend-mode:screen;transform-origin:center;
+  background:conic-gradient(from 0deg, rgba(120,220,255,.5), rgba(120,220,255,0) 52deg);
+  animation:mmsweep 4.5s linear infinite}
+@keyframes mmsweep{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+/* 6 объектов-блипов на карте: тускнеют, вспыхивают когда луч локатора проходит мимо */
+.mm-dot{position:absolute;z-index:2;width:6px;height:6px;border-radius:50%;
+  background:#dff4ff;pointer-events:none;mix-blend-mode:screen;
+  transform:translate(-50%,-50%) scale(1);box-shadow:0 0 3px #3FD0FF;
+  animation:mmblip 4.5s linear infinite}
+@keyframes mmblip{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(1.9);box-shadow:0 0 10px 3px #bfeaff,0 0 16px #3FD0FF}
+  9%{opacity:.92}
+  24%,100%{opacity:.22;transform:translate(-50%,-50%) scale(1);box-shadow:0 0 3px #3FD0FF}
+}
+/* активная точка радара — всегда подсвечена (золото), без мигания */
+.mm-dot.lit-dot{z-index:3;width:8px;height:8px;background:#ffe6b0;animation:litdot 1.8s ease-in-out infinite;
+  box-shadow:0 0 8px 2px #ffd98a,0 0 14px var(--gold);opacity:1}
+@keyframes litdot{0%,100%{box-shadow:0 0 6px 1px #ffd98a,0 0 10px var(--gold)}50%{box-shadow:0 0 10px 3px #ffe6b0,0 0 18px var(--gold)}}
+/* условный маршрут на радаре от центра к активной точке */
+.mm-route{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.mm-route line,.mm-route path{stroke:var(--gold);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:4 3;filter:drop-shadow(0 0 3px var(--gold));opacity:.9;animation:mmrouteflow 1s linear infinite}
+@keyframes mmrouteflow{to{stroke-dashoffset:-7}}
+.mm-label2{font-size:11px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;text-align:center;margin:0 0 12px}
+/* строка статуса под названием локации */
+.loc-status{font-size:13px;color:var(--text);margin:8px 0 12px;letter-spacing:.3px}
+.loc-status span{color:var(--cyan);text-transform:uppercase;font-size:11px;letter-spacing:1.5px;font-family:var(--title-font)}
+
+/* достижения в панели игрока (золотой акцент) */
+.ach-head{margin-top:14px}
+.ach-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ach-badge{width:38px;height:38px;flex:0 0 auto;padding:0;cursor:help;
+  border:1px solid rgba(255,205,107,.5);background:rgba(255,205,107,.07);
+  display:flex;align-items:center;justify-content:center;transition:.18s}
+.ach-badge:hover{background:rgba(255,205,107,.16);box-shadow:0 0 12px rgba(255,205,107,.3)}
+/* бейдж скрыт, пока ачивка не прилетела из уведомления */
+.ach-badge.pending{opacity:0;transform:scale(.5);pointer-events:none}
+.ach-badge .ic{width:22px;height:22px;margin:0;stroke:var(--gold)}
+/* свежеполученная ачивка коротко вспыхивает */
+.ach-badge.justgot{animation:achpop .6s ease}
+@keyframes achpop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* HUD-строка сервера на титуле (верх по центру) */
+.srv-status{position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:11;
+  display:flex;align-items:center;gap:9px;white-space:nowrap;
+  font-family:var(--title-font);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);
+  background:rgba(8,18,34,.6);border:1px solid var(--cyan-soft);padding:7px 14px;
+  box-shadow:0 0 14px rgba(63,208,255,.15)}
+.srv-status .dotlive{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:livepulse 1.6s ease-in-out infinite}
+.srv-status .sep{color:var(--cyan-soft)}
+.srv-status .online{color:var(--green)}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ачивка на титуле (низ по центру) — всплывает, потом улетает в панель */
+.titul-ach{position:absolute;bottom:72px;left:50%;transform:translateX(-50%) translateY(12px);z-index:30;
+  display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;
+  font-size:14px;font-weight:600;color:var(--gold);
+  border:1px solid rgba(255,205,107,.5);border-left:3px solid var(--gold);
+  padding:9px 16px;background:rgba(24,18,6,.7);box-shadow:0 0 20px rgba(255,205,107,.18);
+  transition:opacity .45s ease, transform .75s cubic-bezier(.5,0,.2,1)}
+.titul-ach.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.titul-ach .ach-fly-ico .ic{display:block;width:22px;height:22px;margin:0;stroke:var(--gold)}
+.titul-ach .ach-text{transition:opacity .25s ease}
+/* фаза полёта: текст быстро гаснет (летит одна иконка), плашка видима почти весь путь,
+   гаснет только у самой панели */
+.titul-ach.fly{animation:achfly 1.1s cubic-bezier(.45,0,.25,1) forwards}
+.titul-ach.fly .ach-text{opacity:0}
+@keyframes achfly{
+  0%{opacity:1;transform:translateX(-50%) translate(0,0) scale(1)}
+  80%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) translate(var(--dx,0),var(--dy,0)) scale(.28)}
+}
+.skills-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.skills{display:flex;gap:8px}
+.skill{flex:1;min-width:0;text-align:center;border:1px solid var(--cyan-soft);padding:8px 2px;
+  background:rgba(63,208,255,.05);font-size:9px;color:var(--text-dim);text-transform:uppercase;
+  letter-spacing:.2px;line-height:1.2}
+/* неоновые иконки — единый стиль */
+.ic{fill:none;stroke:var(--cyan);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.skill .ic{display:block;width:24px;height:24px;margin:0 auto 5px}
+.tipico{width:15px;height:15px;vertical-align:-2px;margin-right:6px;
+  fill:none;stroke:var(--cyan);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tip .row.rew .tipico{stroke:var(--gold)}
+/* иконка достижения в заголовке тултипа (золото, как бейдж) */
+.tip-ach-ico{width:16px;height:16px;vertical-align:-3px;margin-right:7px;
+  fill:none;stroke:var(--gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.panel-body{padding:28px 18px 18px}
+
+/* ===== Заставка-загрузка (intro) ===== */
+#intro{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;pointer-events:none}
+/* тёмный фон заставки — отдельный слой, гаснет после загрузки */
+.intro-bg{position:absolute;inset:0;transition:opacity .9s ease;
+  background:linear-gradient(rgba(4,8,16,.86),rgba(4,8,16,.93)), url('img/slide0.png?v=2') center/cover}
+#intro.done .intro-bg{opacity:0}
+#intro.done .intro-inner{opacity:0;transition:opacity .6s ease}
+.intro-inner{position:relative;z-index:1;width:min(86%,740px);display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.skyline{width:min(72%,460px);height:auto;overflow:visible;
+  filter:drop-shadow(0 0 3px var(--cyan-soft)) drop-shadow(0 0 6px rgba(63,208,255,.35))}
+.skyline .sky{stroke:var(--cyan);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 4px var(--cyan-soft))}
+.skyline .star{fill:var(--cyan);stroke:none;filter:drop-shadow(0 0 5px var(--cyan))}
+.intro-title{font-family:var(--title-font);font-weight:900;color:#fff;letter-spacing:6px;
+  font-size:clamp(30px,5.5vw,60px);line-height:1;text-shadow:0 0 24px var(--cyan-soft);margin:0}
+.intro-title span{display:block;font-size:.46em;letter-spacing:9px;color:var(--cyan);margin-top:10px;font-weight:700}
+.intro-load{font-size:17px;color:var(--text-dim);letter-spacing:1px}
+.intro-bar{width:min(72%,470px);height:18px;border:1px solid var(--cyan-soft);border-radius:4px;
+  padding:3px;background:rgba(63,208,255,.06)}
+.intro-bar>i{display:block;height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--cyan),#bfeaff);box-shadow:0 0 14px var(--cyan);transition:width .1s linear}
+.intro-pct{font-family:var(--title-font);font-size:15px;color:var(--cyan);letter-spacing:1px}
+.intro-logo{position:absolute;left:50%;bottom:42px;transform:translateX(-50%);z-index:2;
+  width:min(52%,400px);height:auto;opacity:.95;filter:drop-shadow(0 0 7px var(--cyan-soft));
+  transition:left .8s ease, right .8s ease, top .8s ease, bottom .8s ease, width .8s ease}
+/* после загрузки логотип уезжает в правый верхний угол */
+#intro.done .intro-logo{left:auto;right:26px;bottom:auto;top:54px;transform:none;width:min(26%,240px)}
+/* при 100% прячем всё кроме логотипа Штаба */
+#intro.loaded .skyline,#intro.loaded .intro-title,#intro.loaded .intro-load,
+#intro.loaded .intro-bar,#intro.loaded .intro-pct{opacity:0;transition:opacity .5s ease;pointer-events:none}
+
+/* уважаем системную настройку «меньше движения» */
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.1s!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Набор неоновых линейных иконок (единый стиль) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-idea" viewBox="0 0 24 24"><path d="M9 18h6 M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.4c.7.7 1 1.3 1 2.6h6c0-1.3.3-1.9 1-2.6A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="ic-motiv" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="ic-plan" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v2H9z M8 11h8 M8 15h6"/></symbol>
+  <symbol id="ic-req" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z M14 3v4h4 M9 12h6 M9 16h6"/></symbol>
+  <symbol id="ic-reward" viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z M7 6H4v1a3 3 0 0 0 3 3 M17 6h3v1a3 3 0 0 1-3 3 M12 13v4 M9 21h6 M10 17h4l-.5 4h-3z"/></symbol>
+  <symbol id="ic-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></symbol>
+  <!-- открытая книга — достижение «Дочитал титул до конца» -->
+  <symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6C10.4 4.7 8.4 4.2 6.4 4.2 5.5 4.2 4.8 4.4 4 4.7v13c.8-.3 1.5-.5 2.4-.5 2 0 4 .5 5.6 1.8 1.6-1.3 3.6-1.8 5.6-1.8.9 0 1.6.2 2.4.5v-13c-.8-.3-1.5-.5-2.4-.5-2 0-4 .5-5.6 1.8Z"/><path d="M12 6v12.8"/></symbol>
+  <!-- звезда — сложность локации -->
+  <symbol id="ic-star" viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8 6.8 19.2l1-5.8L3.6 9.3l5.8-.8z"/></symbol>
+</svg>
+
+<!-- Сцена 16:9 по центру экрана (как слайд PowerPoint) -->
+<div class="stage">
+
+<!-- Верхний бар: бренд + прогресс уровней -->
+<div class="topbar">
+  <span class="brand">MOSCOW BUSINESS QUEST</span>
+  <div class="levels" id="levels"></div>
+  <span class="lvl-num" id="lvlNum">0 / 5</span>
+  <button class="music-btn" id="musicBtn" title="Фоновая музыка (клавиша B)">
+    <svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg>
+  </button>
+</div>
+
+<!-- Слой эффекта: сканер перехода -->
+<div id="fx"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ===== Слайд 0 — Титул / Loading ===== -->
+  <section class="slide" data-notes="Представьте, что открыть и вести бизнес в Москве — это игра с уровнями. Сегодня пройдём её за одного предпринимателя и покажем, где появляется наша команда — Штаб по защите бизнеса. Загружаемся.">
+    <!-- кино-наезд двигает картинку и все слои вместе -->
+    <div class="kbwrap">
+    <div class="bg0" style="background-image:url('img/slide0.png?v=2')"></div>
+    <!-- «Живые» эффекты картинки: мерцание огней -->
+    <canvas class="fx-canvas" id="fxCanvas"></canvas>
+    <!-- Карта: пульсирующий путь предпринимателя + объекты-замочки с тултипами -->
+    <div class="map">
+      <svg class="route" viewBox="0 0 1672 941" preserveAspectRatio="none">
+        <defs>
+          <!-- вертикальное размытие = вертикальное свечение контура -->
+          <filter id="vglow" x="-20%" y="-140%" width="140%" height="380%">
+            <feGaussianBlur stdDeviation="2.5 22"/>
+          </filter>
+          <!-- усиленное свечение при наведении: выше и ярче -->
+          <filter id="vglowStrong" x="-40%" y="-360%" width="180%" height="820%">
+            <feGaussianBlur stdDeviation="4 62"/>
+          </filter>
+        </defs>
+        <!-- вертикальное свечение контуров объектов (под чёткой линией) -->
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-danilovsky" filter="url(#vglow)" d="M498 650.5L452.615 664.811C448.583 666.082 447.85 671.472 451.396 673.773L656.867 807.115C658.207 807.985 659.681 808.24 661.173 807.668C688.773 797.096 970 689.255 970 684.5C970 679.5 903 650.5 903 650.5"/>
+          <path id="glow-cafe" filter="url(#vglow)" d="M851.5 531C849.143 531.337 817.793 542.33 795.11 550.372C790.879 551.873 790.627 557.754 794.711 559.619L1005.96 656.069C1007.26 656.661 1008.75 656.672 1010.05 656.097L1160.33 589.974C1164.28 588.238 1164.32 582.657 1160.41 580.855L1076 542"/>
+          <path id="glow-lomonosov" filter="url(#vglow)" d="M1118 482L1107.96 485.073C1103.36 486.483 1103.21 492.952 1107.75 494.565L1333.85 574.915C1334.92 575.294 1336.08 575.3 1337.15 574.934L1546.43 503.156C1550.91 501.619 1550.94 495.293 1546.47 493.713L1527.5 487"/>
+          <path id="glow-gum" filter="url(#vglow)" d="M1012.5 701C1009.3 701 951 727.062 944 731C937.271 734.785 1232.27 870.375 1255.1 880.859C1256.11 881.321 1256.9 881.422 1257.96 881.119C1298.43 869.6 1580.54 721.442 1583.5 717C1588.94 708.841 1483.17 676.167 1439 657"/>
+          <path id="glow-city" filter="url(#vglow)" d="M619.5 313.5L585.457 321.264C580.193 322.465 580.306 330.003 585.604 331.045L806.022 374.406C806.34 374.469 806.663 374.5 806.987 374.5H875.625C875.875 374.5 876.124 374.481 876.37 374.444L949 363.5L1014 356.5L1108.74 344.314C1114.2 343.611 1114.68 335.888 1109.35 334.513L1008.5 308.5"/>
+          <path id="glow-krasny" filter="url(#vglow)" d="M209.327 440L163.824 450.435C161.863 450.885 161.718 453.622 163.621 454.276L221 474 M270 480.5L313.96 493.919C316.063 494.561 317.5 496.502 317.5 498.701V499.077C317.5 501.38 319.073 503.385 321.311 503.933L340.688 508.679C341.547 508.889 342.447 508.868 343.295 508.617L377.5 498.5C386.333 496.167 404.6 491.3 407 490.5C410 489.5 451 479.5 455.5 477.5C460 475.5 521 453 524 452.5C526.128 452.145 590.274 433.154 632.899 420.49C637.577 419.1 637.675 412.524 633.05 410.967L597.5 399"/>
+        </g>
+        <!-- чёткие контуры объектов (Figma) -->
+        <path class="objline" id="obj-danilovsky" d="M498 650.5L452.615 664.811C448.583 666.082 447.85 671.472 451.396 673.773L656.867 807.115C658.207 807.985 659.681 808.24 661.173 807.668C688.773 797.096 970 689.255 970 684.5C970 679.5 903 650.5 903 650.5"/>
+        <path class="objline" id="obj-cafe" d="M851.5 531C849.143 531.337 817.793 542.33 795.11 550.372C790.879 551.873 790.627 557.754 794.711 559.619L1005.96 656.069C1007.26 656.661 1008.75 656.672 1010.05 656.097L1160.33 589.974C1164.28 588.238 1164.32 582.657 1160.41 580.855L1076 542"/>
+        <path class="objline" id="obj-lomonosov" d="M1118 482L1107.96 485.073C1103.36 486.483 1103.21 492.952 1107.75 494.565L1333.85 574.915C1334.92 575.294 1336.08 575.3 1337.15 574.934L1546.43 503.156C1550.91 501.619 1550.94 495.293 1546.47 493.713L1527.5 487"/>
+        <path class="objline" id="obj-gum" d="M1012.5 701C1009.3 701 951 727.062 944 731C937.271 734.785 1232.27 870.375 1255.1 880.859C1256.11 881.321 1256.9 881.422 1257.96 881.119C1298.43 869.6 1580.54 721.442 1583.5 717C1588.94 708.841 1483.17 676.167 1439 657"/>
+        <path class="objline" id="obj-city" d="M619.5 313.5L585.457 321.264C580.193 322.465 580.306 330.003 585.604 331.045L806.022 374.406C806.34 374.469 806.663 374.5 806.987 374.5H875.625C875.875 374.5 876.124 374.481 876.37 374.444L949 363.5L1014 356.5L1108.74 344.314C1114.2 343.611 1114.68 335.888 1109.35 334.513L1008.5 308.5"/>
+        <path class="objline" id="obj-krasny" d="M209.327 440L163.824 450.435C161.863 450.885 161.718 453.622 163.621 454.276L221 474 M270 480.5L313.96 493.919C316.063 494.561 317.5 496.502 317.5 498.701V499.077C317.5 501.38 319.073 503.385 321.311 503.933L340.688 508.679C341.547 508.889 342.447 508.868 343.295 508.617L377.5 498.5C386.333 496.167 404.6 491.3 407 490.5C410 489.5 451 479.5 455.5 477.5C460 475.5 521 453 524 452.5C526.128 452.145 590.274 433.154 632.899 420.49C637.577 419.1 637.675 412.524 633.05 410.967L597.5 399"/>
+      </svg>
+      <button class="spot" data-obj="obj-danilovsky"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-cafe"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-lomonosov"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-gum"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-city"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-krasny"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <!-- значок «?» над головой героя (титул) -->
+      <button class="hero-q" style="left:13.5%;top:48%"
+        data-q-title="Мечтатель"
+        data-q-text="Идея есть, мотивация есть… а как открыть бизнес в Москве — пока туман. С чего начать?">?</button>
+    </div>
+    </div><!-- /kbwrap -->
+    <!-- Панель игрока (над предпринимателем) — типовая, одинаковая на всех слайдах -->
+    <div class="panel panel-player" id="playerPanel">
+      <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+      <div class="panel-body">
+        <span class="tag">Игрок</span>
+        <h3 class="panel-name">Мечтатель</h3>
+        <div class="lvl-badge">Уровень 0 · Готов к старту</div>
+        <div class="skills-title">Навыки</div>
+        <div class="skills">
+          <div class="skill"><svg class="ic"><use href="#ic-idea"/></svg><span>Идея</span></div>
+          <div class="skill"><svg class="ic"><use href="#ic-motiv"/></svg><span>Мотивация</span></div>
+          <div class="skill"><svg class="ic"><use href="#ic-plan"/></svg><span>Бизнес-план</span></div>
+        </div>
+        <div class="skills-title ach-head">Достижения</div>
+        <div class="ach-list" id="achList">
+          <button class="ach-badge pending" data-title="Дочитал титул до конца"><svg class="ic"><use href="#ic-book"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <!-- Панель локации (правая) — на ТИТУЛЕ: Бизнес в Москве + карта Москвы -->
+    <div class="panel panel-loc" id="locPanel">
+      <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+      <div class="panel-body">
+        <h3 class="panel-name">Бизнес в Москве</h3>
+        <div class="loc-status"><span>Статус:</span> Открыть бизнес</div>
+        <div class="minimap">
+          <img class="mm-img" src="map_moscow.png" alt="Карта Москвы">
+          <span class="mm-sweep2"></span>
+          <!-- 6 наших объектов: вспыхивают под лучом локатора -->
+          <span class="mm-dot" title="Даниловский рынок" style="left:71.8%;top:18.9%;animation-delay:.12s"></span>
+          <span class="mm-dot" title="Кафе"             style="left:79.5%;top:44.8%;animation-delay:.68s"></span>
+          <span class="mm-dot" title="ТЦ ГУМ"           style="left:80.6%;top:75.7%;animation-delay:1.3s"></span>
+          <span class="mm-dot" title="Москва-Сити"      style="left:40.4%;top:76.3%;animation-delay:2.18s"></span>
+          <span class="mm-dot" title="Красный Октябрь"  style="left:9.4%;top:60.9%;animation-delay:2.87s"></span>
+          <span class="mm-dot" title="Кластер «Ломоносов»" style="left:24.7%;top:28.8%;animation-delay:3.56s"></span>
+        </div>
+      </div>
+    </div>
+    <!-- HUD-строка сервера (титул) -->
+    <div class="srv-status">
+      <span class="dotlive"></span>Подключение к серверу «Москва 2026»
+      <span class="sep">·</span>Игроков онлайн: <span class="online">весь департамент</span>
+    </div>
+    <!-- Ачивка титула — всплывает, потом улетает в панель -->
+    <div class="titul-ach" id="titulAch">
+      <span class="ach-fly-ico"><svg class="ic"><use href="#ic-book"/></svg></span>
+      <span class="ach-text">Достижение разблокировано: «Дочитал титул до конца»</span>
+    </div>
+  </section>
+
+  <!-- ===== Слайд 1 — Уровень 1. Старт бизнеса (клон титула + путь к Даниловскому) ===== -->
+  <section class="slide" data-notes="Всё начинается с идеи. Герой делает первый шаг со стартовой площадки — проложен путь к первой точке, Даниловскому рынку. Остальные уровни пока под замком. Большой путь только начинается.">
+    <div class="kbwrap">
+    <div class="bg0" style="background-image:url('img/slide0.png?v=2')"></div>
+    <div class="fx-clouds"></div>
+    <div class="fx-fog"></div>
+    <!-- Карта слайда 1: путь к Даниловскому подсвечен, комета бежит, замок снят -->
+    <div class="map">
+      <svg class="route" viewBox="0 0 1672 941" preserveAspectRatio="none">
+        <defs>
+          <filter id="vglow-s1" x="-20%" y="-140%" width="140%" height="380%"><feGaussianBlur stdDeviation="2.5 22"/></filter>
+        </defs>
+        <!-- вертикальное свечение контуров -->
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-danilovsky-s1" class="gon" filter="url(#vglow-s1)" d="M527 626.5L413.233 661.224C409.093 662.488 408.405 668.057 412.113 670.29L664.338 822.198C665.698 823.017 667.15 823.231 668.616 822.622C696.522 811.045 991 688.763 991 684C991 679 904 633 904 633"/>
+          <path id="glow-cafe-s1" filter="url(#vglow-s1)" d="M851.5 531C849.143 531.337 817.793 542.33 795.11 550.372C790.879 551.873 790.627 557.754 794.711 559.619L1005.96 656.069C1007.26 656.661 1008.75 656.672 1010.05 656.097L1160.33 589.974C1164.28 588.238 1164.32 582.657 1160.41 580.855L1076 542"/>
+          <path id="glow-lomonosov-s1" filter="url(#vglow-s1)" d="M1118 482L1107.96 485.073C1103.36 486.483 1103.21 492.952 1107.75 494.565L1333.85 574.915C1334.92 575.294 1336.08 575.3 1337.15 574.934L1546.43 503.156C1550.91 501.619 1550.94 495.293 1546.47 493.713L1527.5 487"/>
+          <path id="glow-gum-s1" filter="url(#vglow-s1)" d="M1012.5 701C1009.3 701 951 727.062 944 731C937.271 734.785 1232.27 870.375 1255.1 880.859C1256.11 881.321 1256.9 881.422 1257.96 881.119C1298.43 869.6 1580.54 721.442 1583.5 717C1588.94 708.841 1483.17 676.167 1439 657"/>
+          <path id="glow-city-s1" filter="url(#vglow-s1)" d="M619.5 313.5L585.457 321.264C580.193 322.465 580.306 330.003 585.604 331.045L806.022 374.406C806.34 374.469 806.663 374.5 806.987 374.5H875.625C875.875 374.5 876.124 374.481 876.37 374.444L949 363.5L1014 356.5L1108.74 344.314C1114.2 343.611 1114.68 335.888 1109.35 334.513L1008.5 308.5"/>
+          <path id="glow-krasny-s1" filter="url(#vglow-s1)" d="M209.327 440L163.824 450.435C161.863 450.885 161.718 453.622 163.621 454.276L221 474 M270 480.5L313.96 493.919C316.063 494.561 317.5 496.502 317.5 498.701V499.077C317.5 501.38 319.073 503.385 321.311 503.933L340.688 508.679C341.547 508.889 342.447 508.868 343.295 508.617L377.5 498.5C386.333 496.167 404.6 491.3 407 490.5C410 489.5 451 479.5 455.5 477.5C460 475.5 521 453 524 452.5C526.128 452.145 590.274 433.154 632.899 420.49C637.577 419.1 637.675 412.524 633.05 410.967L597.5 399"/>
+        </g>
+        <!-- контуры: Даниловский подсвечен постоянно (.lit), остальные обычные -->
+        <path class="objline lit" id="obj-danilovsky-s1" d="M527 626.5L413.233 661.224C409.093 662.488 408.405 668.057 412.113 670.29L664.338 822.198C665.698 823.017 667.15 823.231 668.616 822.622C696.522 811.045 991 688.763 991 684C991 679 904 633 904 633"/>
+        <path class="objline" id="obj-cafe-s1" d="M851.5 531C849.143 531.337 817.793 542.33 795.11 550.372C790.879 551.873 790.627 557.754 794.711 559.619L1005.96 656.069C1007.26 656.661 1008.75 656.672 1010.05 656.097L1160.33 589.974C1164.28 588.238 1164.32 582.657 1160.41 580.855L1076 542"/>
+        <path class="objline" id="obj-lomonosov-s1" d="M1118 482L1107.96 485.073C1103.36 486.483 1103.21 492.952 1107.75 494.565L1333.85 574.915C1334.92 575.294 1336.08 575.3 1337.15 574.934L1546.43 503.156C1550.91 501.619 1550.94 495.293 1546.47 493.713L1527.5 487"/>
+        <path class="objline" id="obj-gum-s1" d="M1012.5 701C1009.3 701 951 727.062 944 731C937.271 734.785 1232.27 870.375 1255.1 880.859C1256.11 881.321 1256.9 881.422 1257.96 881.119C1298.43 869.6 1580.54 721.442 1583.5 717C1588.94 708.841 1483.17 676.167 1439 657"/>
+        <path class="objline" id="obj-city-s1" d="M619.5 313.5L585.457 321.264C580.193 322.465 580.306 330.003 585.604 331.045L806.022 374.406C806.34 374.469 806.663 374.5 806.987 374.5H875.625C875.875 374.5 876.124 374.481 876.37 374.444L949 363.5L1014 356.5L1108.74 344.314C1114.2 343.611 1114.68 335.888 1109.35 334.513L1008.5 308.5"/>
+        <path class="objline" id="obj-krasny-s1" d="M209.327 440L163.824 450.435C161.863 450.885 161.718 453.622 163.621 454.276L221 474 M270 480.5L313.96 493.919C316.063 494.561 317.5 496.502 317.5 498.701V499.077C317.5 501.38 319.073 503.385 321.311 503.933L340.688 508.679C341.547 508.889 342.447 508.868 343.295 508.617L377.5 498.5C386.333 496.167 404.6 491.3 407 490.5C410 489.5 451 479.5 455.5 477.5C460 475.5 521 453 524 452.5C526.128 452.145 590.274 433.154 632.899 420.49C637.577 419.1 637.675 412.524 633.05 410.967L597.5 399"/>
+        <!-- маршрут героя от старта к Даниловскому (route-main из Figma) -->
+        <path class="route-main" id="route-main-s1" fill="none" d="M320 685.5L379.161 662.852C382.195 661.691 385.605 662.076 388.304 663.885L661.5 847L898.5 738.5L848 711.5"/>
+        <!-- маркер старта героя (откуда выходит маршрут) -->
+        <g class="startpt"><circle class="startpt-ring" cx="320" cy="685.5" r="12"/><circle class="startpt-core" cx="320" cy="685.5" r="5"/></g>
+        <!-- финишная точка (конец маршрута, у Даниловского) — стиль как у старта -->
+        <g class="startpt"><circle class="startpt-ring" cx="848" cy="711.5" r="12"/><circle class="startpt-core" cx="848" cy="711.5" r="5"/></g>
+        <!-- комета (светящаяся точка) бежит по маршруту route-main -->
+        <g class="comet">
+          <circle class="comet-head" r="4.6"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0s"><mpath href="#route-main-s1" xlink:href="#route-main-s1"/></animateMotion></circle>
+          <circle class="comet-tail t1" r="3.4"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.05s"><mpath href="#route-main-s1" xlink:href="#route-main-s1"/></animateMotion></circle>
+          <circle class="comet-tail t2" r="2.4"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.1s"><mpath href="#route-main-s1" xlink:href="#route-main-s1"/></animateMotion></circle>
+          <circle class="comet-tail t3" r="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.15s"><mpath href="#route-main-s1" xlink:href="#route-main-s1"/></animateMotion></circle>
+        </g>
+      </svg>
+      <!-- Даниловский: открытый маркер (без замка), клик = достижение -->
+      <button class="spot spot-open" data-obj="obj-danilovsky-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexopen"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><use class="bulbic" href="#ic-idea" x="11" y="4.5" width="22" height="22"/></g></svg></button>
+      <!-- остальные 5 объектов — под замками -->
+      <button class="spot" data-obj="obj-cafe-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-lomonosov-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-gum-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-city-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <button class="spot" data-obj="obj-krasny-s1"><svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/><g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/><rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/><path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/><circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg></button>
+      <!-- значок «?» над героем (на слайде 1 НЕ выдаёт достижение) -->
+      <button class="hero-q" data-noach="1" style="left:13.5%;top:48%"
+        data-q-title="Мечтатель"
+        data-q-text="Первый шаг сделан. Первая точка — Даниловский рынок. Дальше будет сложнее.">?</button>
+    </div>
+    </div><!-- /kbwrap -->
+    <!-- Панель игрока -->
+    <div class="panel panel-player" id="playerPanel1">
+      <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+      <div class="panel-body">
+        <span class="tag">Игрок</span>
+        <h3 class="panel-name">Мечтатель</h3>
+        <div class="lvl-badge">Уровень 1 · Старт бизнеса</div>
+        <div class="skills-title">Навыки</div>
+        <div class="skills">
+          <div class="skill"><svg class="ic"><use href="#ic-idea"/></svg><span>Идея</span></div>
+          <div class="skill"><svg class="ic"><use href="#ic-motiv"/></svg><span>Мотивация</span></div>
+          <div class="skill"><svg class="ic"><use href="#ic-plan"/></svg><span>Бизнес-план</span></div>
+        </div>
+        <div class="skills-title ach-head">Достижения</div>
+        <div class="ach-list" id="achList1">
+          <button class="ach-badge" data-title="Дочитал титул до конца"><svg class="ic"><use href="#ic-book"/></svg></button>
+          <button class="ach-badge pending" data-ach="idea-s1" data-title="Придумал бизнес в душе, не забыл к обеду"><svg class="ic"><use href="#ic-idea"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <!-- Панель локации -->
+    <div class="panel panel-loc" id="locPanel1">
+      <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+      <div class="panel-body">
+        <h3 class="panel-name">Даниловский рынок</h3>
+        <div class="loc-status"><span>Статус:</span> Первая точка маршрута</div>
+        <div class="minimap">
+          <img class="mm-img" src="map_moscow.png" alt="Карта Москвы">
+          <span class="mm-sweep2"></span>
+          <!-- условный маршрут от центра радара к активной точке (Даниловский) -->
+          <svg class="mm-route" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="none" d="M87 80 L83.5 67 L78 58 L80 46 L73.5 34 L71.8 18.9"/></svg>
+          <span class="mm-dot lit-dot" title="Даниловский рынок" style="left:71.8%;top:18.9%"></span>
+          <span class="mm-dot" title="Кафе"             style="left:79.5%;top:44.8%;animation-delay:.68s"></span>
+          <span class="mm-dot" title="ТЦ ГУМ"           style="left:80.6%;top:75.7%;animation-delay:1.3s"></span>
+          <span class="mm-dot" title="Москва-Сити"      style="left:40.4%;top:76.3%;animation-delay:2.18s"></span>
+          <span class="mm-dot" title="Красный Октябрь"  style="left:9.4%;top:60.9%;animation-delay:2.87s"></span>
+          <span class="mm-dot" title="Кластер «Ломоносов»" style="left:24.7%;top:28.8%;animation-delay:3.56s"></span>
+        </div>
+      </div>
+    </div>
+    <!-- HUD-строка сервера -->
+    <div class="srv-status">
+      <span class="dotlive"></span>Подключение к серверу «Москва 2026»
+      <span class="sep">·</span>Игроков онлайн: <span class="online">весь департамент</span>
+    </div>
+    <!-- Достижение слайда 1 — клик по Даниловскому → уведомление → полёт в панель -->
+    <div class="titul-ach" id="s1Ach">
+      <span class="ach-fly-ico"><svg class="ic"><use href="#ic-idea"/></svg></span>
+      <span class="ach-text">Достижение разблокировано: «Придумал бизнес в душе, не забыл к обеду»</span>
+    </div>
+  </section>
+
+  <!-- ===== Слайд 2 — Уровень 2. Первые шаги ===== -->
+  <section class="slide" data-img="img/slide2.png" data-notes="Герой прошёл старт — появился первый работающий бизнес: кафе или офис. В игру входит первый союзник — ГБУ «Малый бизнес Москвы»: консультации, обучение, поддержка запуска. Герой прокачивает навыки.">
+    <div class="hud">
+      <span class="tag">Уровень 2 / 5 · Первые шаги</span>
+      <h1>Первые шаги в бизнесе</h1>
+      <ul class="screen-lines">
+        <li>Союзник: ГБУ «Малый бизнес Москвы»</li>
+      </ul>
+      <div class="indicators">
+        <span class="chip ok">✓ ИП / ООО зарегистрировано</span>
+      </div>
+      <div class="indicators">
+        <span class="chip">Навык: Финансовая грамотность</span>
+        <span class="chip">Навык: Управление</span>
+        <span class="chip">Навык: Маркетинг</span>
+      </div>
+      <div class="ach"><span class="ico">🏆</span><span>Достижение: «Прошёл первую проверку и не поседел»</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Слайд 3 — Уровень 3. Новые вызовы ===== -->
+  <section class="slide" data-img="img/slide3.png" data-notes="Бизнес вырос: новый филиал, производство, сотрудники. Карта усложняется — развилки, инфраструктура, административные процедуры. Нужна навигация. Выходит Фонд содействия кредитованию, открывается фронт-офис сопровождения.">
+    <div class="hud">
+      <span class="tag">Уровень 3 / 5 · ★★★☆☆</span>
+      <h1>Новые вызовы</h1>
+      <ul class="screen-lines">
+        <li>Союзник: Фонд содействия кредитованию</li>
+        <li>Доступен ресурс: Фронт-офис сопровождения</li>
+      </ul>
+      <div class="indicators">
+        <span class="chip gold">⚠ Сложность повышена</span>
+      </div>
+      <div class="ach"><span class="ico">🏆</span><span>Достижение: «Побочный квест "Согласование" пройден без потери нервов»</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Слайд 4 — Уровень 4. Сложный кейс (ШТАБ) ===== -->
+  <section class="slide" data-img="img/slide4.png" data-notes="Самый сложный уровень. Крупный городской проект: предприниматель, органы власти, городские структуры, инвесторы — все связаны. В центре — Штаб. Не ручное управление, а профессиональная координация всех участников. Сложный участок загорается зелёным — решение найдено.">
+    <div class="hud">
+      <span class="tag">Уровень 4 / 5 · Сложный кейс</span>
+      <h1>Штаб по защите бизнеса</h1>
+      <ul class="screen-lines">
+        <li>В центре карты: командный центр</li>
+        <li>Статус: Решение найдено</li>
+      </ul>
+      <div class="indicators">
+        <span class="chip ok">✓ Межведомственное взаимодействие</span>
+        <span class="chip ok">✓ Экспертиза</span>
+        <span class="chip ok">✓ Переговорная площадка</span>
+        <span class="chip ok">✓ Поиск решений</span>
+        <span class="chip ok">✓ Системная работа</span>
+      </div>
+      <div class="ach"><span class="ico">🏆</span><span>Достижение: «Собрал за одним столом тех, кто обычно не созванивается»</span></div>
+    </div>
+  </section>
+
+  <!-- ===== Слайд 5 — Финал / CTA ===== -->
+  <section class="slide" data-img="img/slide5.png" data-notes="Вот и весь путь. На простых уровнях помогают коллеги по департаменту, а когда кейс по-настоящему сложный и многосторонний — подключается Штаб. Если у вас такой уровень сложности — вы знаете, где нас найти.">
+    <div class="hud">
+      <span class="tag">Уровень пройден</span>
+      <h1>Как открыть Штаб</h1>
+      <ul class="screen-lines">
+        <li>Когда звать: сложный кейс, нужна координация города и бизнеса</li>
+        <li>Контакт: [сайт / телефон / @канал — заполнить]</li>
+      </ul>
+      <div class="indicators">
+        <span class="chip gold">Открыть Штаб →</span>
+      </div>
+      <div class="ach"><span class="ico">🏆</span><span>Финальное достижение: «Дошёл до Штаба раньше, чем до выгорания»</span></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Спикерские заметки (тумблер клавишей N) -->
+<div class="notes" id="notes"><b>СПИКЕР</b><br><span id="notesText"></span></div>
+
+<!-- Нижняя навигация -->
+<div class="nav">
+  <button id="prev">‹ Назад</button>
+  <div class="dots" id="dots"></div>
+  <span class="hint">← → стрелки · клик · N — заметки · M — звук · B — музыка · F — на весь экран</span>
+  <button id="next">Дальше ›</button>
+</div>
+
+<!-- Заставка-загрузка -->
+<div id="intro">
+  <div class="intro-bg"></div>
+  <div class="intro-inner">
+    <img class="skyline" src="moscow_skyline_stroke_clean.svg" alt="Скайлайн Москвы">
+    <h1 class="intro-title">MOSCOW<span>BUSINESS QUEST</span></h1>
+    <div class="intro-load">Загрузка мира предпринимателя…</div>
+    <div class="intro-bar"><i id="introFill"></i></div>
+    <div class="intro-pct" id="introPct">0%</div>
+  </div>
+  <img class="intro-logo" src="Group 1430_neon.svg" alt="Штаб по защите бизнеса · ДПИиР">
+</div>
+
+</div><!-- /stage -->
+
+<script>
+// ====== Логика презентации ======
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0;
+
+// строим прогресс уровней и точки навигации
+const levelsEl = document.getElementById('levels');
+const dotsEl = document.getElementById('dots');
+slides.forEach((s,i)=>{
+  const l=document.createElement('div'); l.className='lvl';
+  const f=document.createElement('i'); f.className='fill'; l.appendChild(f);  // полоса заполнения
+  levelsEl.appendChild(l);
+  const d=document.createElement('div'); d.className='dot'; d.onclick=()=>go(i); dotsEl.appendChild(d);
+  // подставляем картинку слайда, если файл существует (иначе остаётся fallback-градиент)
+  const img=s.dataset.img;
+  if(img){
+    const probe=new Image();
+    probe.onload=()=>{ s.style.backgroundImage=`url('${img}')`; };
+    probe.src=img;
+  }
+});
+const lvls=Array.from(document.querySelectorAll('.lvl'));
+const dots=Array.from(document.querySelectorAll('.dot'));
+const lvlNum=document.getElementById('lvlNum');
+const notes=document.getElementById('notes');
+const notesText=document.getElementById('notesText');
+
+const fx=document.getElementById('fx');
+
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  // анимированное заполнение полос уровней
+  lvls.forEach((l,i)=>{ l.querySelector('.fill').style.width = (i<=cur ? '100%' : '0'); });
+  dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+  lvlNum.textContent = cur + ' / ' + (total-1);
+  notesText.textContent = slides[cur].dataset.notes || '';
+  runFx();                       // сканер + глитч + звук перехода
+  animateSlide(slides[cur]);     // typewriter заголовка + звяк ачивки
+}
+
+// ---- сканер/глитч перехода ----
+function runFx(){ fx.classList.remove('run'); void fx.offsetWidth; fx.classList.add('run'); blip(); }
+
+// ---- typewriter заголовка + звук ачивки ----
+let typeTimer=null, startTimer=null, achTimer=null;
+function animateSlide(slide){
+  const h1=slide.querySelector('h1');
+  if(h1){
+    const full = h1.dataset.full || (h1.dataset.full = h1.textContent);
+    if(typeTimer) clearInterval(typeTimer);
+    if(startTimer) clearTimeout(startTimer);
+    h1.textContent='';
+    startTimer=setTimeout(()=>{                 // печать стартует, когда панель уже выезжает
+      let i=0;
+      typeTimer=setInterval(()=>{
+        h1.textContent = full.slice(0,++i);
+        if(i>=full.length) clearInterval(typeTimer);
+      },32);
+    },230);
+  }
+  if(achTimer) clearTimeout(achTimer);
+  achTimer=setTimeout(ding, 1150);              // совпадает с задержкой появления ачивки
+}
+
+// ---- звук (WebAudio, без файлов) ----
+let actx=null, muted=false;
+function ac(){
+  if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(actx && actx.state==='suspended') actx.resume();
+  return actx;
+}
+function tone(freq,dur,type,vol){
+  if(muted) return; const c=ac(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(c.destination);
+  const t=c.currentTime;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol||.045,t+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.start(t); o.stop(t+dur);
+}
+function blip(){ tone(420,.12,'triangle',.035); }                       // переход
+function ding(){ tone(880,.12,'sine',.05); setTimeout(()=>tone(1320,.18,'sine',.045),90); } // ачивка
+
+// ---- фоновая музыка: спокойный вдохновляющий эмбиент (WebAudio, без файлов) ----
+let music=null;
+function startMusic(){
+  const c=ac(); if(!c||music) return;
+  // мастер + мягкий лоупас + лёгкое эхо для «воздуха»
+  const master=c.createGain(); master.gain.value=0; master.connect(c.destination);
+  const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3600; lp.Q.value=.2; lp.connect(master);
+  // эхо-задержка с обратной связью — мечтательность
+  const dly=c.createDelay(); dly.delayTime.value=.42;
+  const fb=c.createGain(); fb.gain.value=.32;
+  const wet=c.createGain(); wet.gain.value=.5;
+  dly.connect(fb); fb.connect(dly); dly.connect(wet); wet.connect(lp);
+  master.gain.setTargetAtTime(.6,c.currentTime,3);         // плавный общий fade-in
+
+  // колокольчик-нота: чистая синусоида, мягкая атака, долгий спад
+  function bell(freq,t,dur,vol){
+    const o=c.createOscillator(), o2=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    o2.type='sine'; o2.frequency.value=freq*2; o2.detune.value=3; // тихая октава сверху — блеск
+    const g2=c.createGain(); g2.gain.value=.18; o2.connect(g2); g2.connect(g);
+    o.connect(g); g.connect(lp); g.connect(dly);            // сухо + в эхо
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.04);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.start(t); o2.start(t); o.stop(t+dur+.05); o2.stop(t+dur+.05);
+  }
+  // тёплый пад-аккорд на такт: треугольники с медленной атакой/спадом
+  function pad(freqs,t,dur,vol){
+    freqs.forEach(fr=>{
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='triangle'; o.frequency.value=fr; o.connect(g); g.connect(lp);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+1.2);
+      g.gain.setTargetAtTime(0,t+dur*.6,dur*.4);
+      o.start(t); o.stop(t+dur+.2);
+    });
+  }
+
+  const BPM=66, spb=60/BPM, eighth=spb/2;                  // медленно и спокойно
+  // прогрессия C — G — Am — F (I–V–vi–IV, «вдохновляющий» ход в C-мажоре)
+  const bass=[130.81,98.00,110.00,87.31];                  // C3,G2,A2,F2
+  const pads=[[261.63,329.63,392.00],[196.00,246.94,293.66],
+              [220.00,261.63,329.63],[174.61,220.00,261.63]];
+  // мелодия-арп по 8 восьмушек (0 = пауза), мягкие колокольчики сверху, Гц
+  const O=0;
+  const mel=[
+    [523.25,659.25,783.99,O,659.25,O,O,O],   // C: C5 E5 G5
+    [587.33,783.99,987.77,O,783.99,O,O,O],   // G: D5 G5 B5
+    [523.25,659.25,880.00,O,659.25,O,O,O],   // Am: C5 E5 A5
+    [523.25,698.46,880.00,O,698.46,O,O,O]    // F: C5 F5 A5
+  ];
+
+  let nextT=c.currentTime+.2, idx=0;          // idx = глобальный номер восьмушки
+  function schedule(){
+    while(nextT < c.currentTime+.3){
+      const bar=Math.floor(idx/8)%4, s=idx%8;
+      if(s===0){                              // начало такта: мягкий бас + пад
+        pad(pads[bar],nextT,spb*4,.045);
+        bell(bass[bar],nextT,spb*2.4,.07);
+      }
+      const m=mel[bar][s];
+      if(m) bell(m,nextT,eighth*3.2,.06);     // парящая мелодия с долгим хвостом
+      nextT+=eighth; idx++;
+    }
+  }
+  schedule();
+  const sch=setInterval(schedule,50);         // планировщик с упреждением
+  music={master,sch};
+}
+function stopMusic(){
+  if(!music) return; const c=ac(); const m=music; music=null;
+  clearInterval(m.sch);
+  m.master.gain.setTargetAtTime(0,c.currentTime,.8);        // плавно гасим
+}
+let musicOn=false;
+function toggleMusic(){
+  musicOn=!musicOn;
+  if(musicOn) startMusic(); else stopMusic();
+  const b=document.getElementById('musicBtn'); if(b) b.classList.toggle('on',musicOn);
+}
+const _mb=document.getElementById('musicBtn'); if(_mb) _mb.onclick=toggleMusic;
+function go(i){ cur=Math.max(0,Math.min(total-1,i)); render(); }
+function next(){ go(cur+1); }
+function prev(){ go(cur-1); }
+
+document.getElementById('next').onclick=next;
+document.getElementById('prev').onclick=prev;
+
+// клик по слайду — вперёд (по правой части), назад (по левой четверти)
+document.getElementById('deck').onclick=e=>{
+  if(e.target.closest('.hud')||e.target.closest('.panel')||e.target.closest('.spot')) return; // клики по панелям и объектам не листают
+  if(e.clientX < window.innerWidth*0.25) prev(); else next();
+};
+
+// ---- тултипы объектов карты (требования + награда) ----
+const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+// ЕДИНЫЙ источник данных объектов — одинаков для всех слайдов (не дублировать в HTML).
+// Ключ = id объекта без префикса obj- и суффикса слайда -s1.  d = сложность 1..5
+const OBJECTS={
+  danilovsky:{t:'Даниловский рынок',     d:1, r:'Аренда места, патент',                w:'Первые продажи'},
+  cafe:      {t:'Кафе',                  d:1, r:'Помещение, оборудование, персонал',   w:'Постоянные клиенты'},
+  lomonosov: {t:'Кластер «Ломоносов»',   d:2, r:'Резидентство, R&D-команда',           w:'Гранты и партнёры'},
+  gum:       {t:'ТЦ ГУМ',                d:4, r:'Премиум-аренда, узнаваемый бренд',     w:'Поток покупателей'},
+  city:      {t:'Москва-Сити',           d:5, r:'Офис класса А, капитал',              w:'Статус и масштаб'},
+  krasny:    {t:'Красный Октябрь',       d:5, r:'Креативное пространство, аренда',     w:'Творческое комьюнити'}
+};
+// объект по data-obj спота (срезаем obj- и -s1)
+function objData(sp){ return OBJECTS[(sp.dataset.obj||'').replace(/^obj-/,'').replace(/-s1$/,'')]||{}; }
+// печать текста тултипа по буквам: заголовок → сложность → требования → награда
+let tipTyper=[];
+function typeTip(sp){
+  tipTyper.forEach(clearTimeout); tipTyper=[];
+  const o=objData(sp);
+  const title=o.t||'Объект', req=o.r||'—', rew=o.w||'—';
+  const diff=Math.max(0,Math.min(5,o.d||0));
+  tip.innerHTML =
+    '<b id="tipT"></b>'+
+    '<div class="row diff" id="rowD"><svg class="tipico"><use href="#ic-star"/></svg>Сложность: <span id="tipD" class="stars"></span></div>'+
+    '<div class="row" id="rowR"><svg class="tipico"><use href="#ic-req"/></svg><span id="tipR"></span></div>'+
+    '<div class="row rew" id="rowW"><svg class="tipico"><use href="#ic-reward"/></svg><span id="tipW"></span></div>';
+  const eT=tip.querySelector('#tipT'), eD=tip.querySelector('#tipD'),
+        eR=tip.querySelector('#tipR'), eW=tip.querySelector('#tipW');
+  const rowD=tip.querySelector('#rowD'), rowR=tip.querySelector('#rowR'), rowW=tip.querySelector('#rowW');
+  const sp1=22;                                   // скорость печати (мс/символ)
+  function typeInto(el,text,start){
+    for(let i=1;i<=text.length;i++){
+      tipTyper.push(setTimeout(()=>{ el.textContent=text.slice(0,i); }, start+i*sp1));
+    }
+    return start+text.length*sp1;                 // когда строка допечатана
+  }
+  let d=typeInto(eT,title,0)+160;                 // пауза между строками
+  // строка «Сложность»: иконка → звёзды появляются по одной
+  tipTyper.push(setTimeout(()=>rowD.classList.add('in'), Math.max(0,d-120)));
+  d+=120;
+  for(let s=0;s<5;s++){
+    const on=s<diff;
+    tipTyper.push(setTimeout(()=>{ eD.insertAdjacentHTML('beforeend','<span class="star '+(on?'on':'off')+'">★</span>'); }, d));
+    d+=110;
+  }
+  d+=160;
+  // строка «Требования»: сначала проявляем иконку, потом печатаем подпись целиком
+  tipTyper.push(setTimeout(()=>rowR.classList.add('in'), Math.max(0,d-120)));
+  d=typeInto(eR,'Требования: '+req,d)+160;
+  // строка «Награда»
+  tipTyper.push(setTimeout(()=>rowW.classList.add('in'), Math.max(0,d-120)));
+  typeInto(eW,'Награда: '+rew,d);
+}
+// замок плавает над своим объектом — позиция из bbox контура (data-obj)
+function positionSpots(){
+  document.querySelectorAll('.spot[data-obj]').forEach(sp=>{
+    const o=document.getElementById(sp.dataset.obj); if(!o) return;
+    const bb=o.getBBox();
+    sp.style.left=((bb.x+bb.width/2)/1672*100)+'%';
+    sp.style.top=(bb.y/941*100-4)+'%';  // -4% = выше кромки объекта
+  });
+}
+positionSpots();
+// усилить/снять подсветку объекта (контур + вертикальное свечение)
+function hl(objId,on){
+  const o=document.getElementById(objId);
+  const g=document.getElementById(objId.replace('obj-','glow-'));
+  if(o) o.classList.toggle('hot',on);
+  if(g) g.classList.toggle('gactive',on);
+}
+// наведение прямо на контур объекта — тоже подсвечивает
+document.querySelectorAll('.objline').forEach(o=>{
+  o.addEventListener('mouseenter',()=>hl(o.id,true));
+  o.addEventListener('mouseleave',()=>hl(o.id,false));
+});
+document.querySelectorAll('.spot').forEach(sp=>{
+  // клик по замочку — вспышка-подсветка контура объекта
+  sp.addEventListener('click',ev=>{
+    ev.stopPropagation();
+    const o=document.getElementById(sp.dataset.obj);
+    if(o){ o.classList.remove('flash'); void o.getBBox(); o.classList.add('flash'); }
+    blip();
+  });
+  sp.addEventListener('mouseenter',()=>{
+    hl(sp.dataset.obj,true);
+    typeTip(sp);                 // печать тултипа по буквам
+    tip.classList.add('show');
+  });
+  sp.addEventListener('mousemove',e=>{
+    let x=e.clientX+16, y=e.clientY+16;
+    if(x+310>window.innerWidth) x=e.clientX-310;     // не вылезать за правый край
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  });
+  sp.addEventListener('mouseleave',()=>{hl(sp.dataset.obj,false);tipTyper.forEach(clearTimeout);tip.classList.remove('show');});
+});
+// ===== Достижения: уведомление → полёт → бейдж (универсально для всех слайдов) =====
+// note — плашка уведомления, badge — целевой бейдж в панели игрока этого слайда
+function playAchievement(note,badge){
+  if(!note||!badge||note.dataset.fired) return;   // один раз на уведомление
+  note.dataset.fired='1';
+  note.classList.add('show');                     // появление снизу
+  setTimeout(()=>{                                // полёт к панели
+    const ni=note.querySelector('.ach-fly-ico').getBoundingClientRect();
+    const br=badge.getBoundingClientRect();
+    note.style.setProperty('--dx',((br.left+br.width/2)-(ni.left+ni.width/2))+'px');
+    note.style.setProperty('--dy',((br.top+br.height/2)-(ni.top+ni.height/2))+'px');
+    note.classList.add('fly');
+  },2000);                                        // удержание ~2с (прочитать)
+  setTimeout(()=>{                                // прилетело → бейдж
+    badge.classList.remove('pending');
+    badge.classList.add('justgot');
+    note.classList.remove('show','fly');
+  },3100);
+}
+// титул: триггер — допечатался текст в тултипе «?»
+function grantTitulAch(){
+  playAchievement(document.getElementById('titulAch'),
+                  document.querySelector('#achList .ach-badge'));
+}
+// слайд 1: триггер — клик по Даниловскому рынку
+document.querySelectorAll('.spot-open[data-obj]').forEach(sp=>{
+  sp.addEventListener('click',()=>{
+    playAchievement(document.getElementById('s1Ach'),
+                    document.querySelector('#achList1 .ach-badge[data-ach="idea-s1"]'));
+  });
+});
+
+// значок «?» над героем — тот же тултип, текст печатается по буквам
+let qTimer=null;
+document.querySelectorAll('.hero-q').forEach(q=>{
+  q.addEventListener('mouseenter',()=>{
+    const full=q.dataset.qText||'';
+    tip.innerHTML='<b>'+(q.dataset.qTitle||'Игрок')+'</b><div class="row qtype"></div>';
+    tip.classList.add('show');
+    const row=tip.querySelector('.qtype');
+    let i=0;
+    clearInterval(qTimer);
+    qTimer=setInterval(()=>{
+      row.textContent=full.slice(0,++i);
+      if(i>=full.length){ clearInterval(qTimer); if(!q.dataset.noach) grantTitulAch(); }  // ТРИГГЕР титула: текст допечатан → ачивка (на слайде 1 пропускаем)
+    },28);  // скорость печати ~28мс/символ
+  });
+  q.addEventListener('mousemove',e=>{
+    let x=e.clientX+16, y=e.clientY+16;
+    if(x+310>window.innerWidth) x=e.clientX-310;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  });
+  q.addEventListener('mouseleave',()=>{clearInterval(qTimer);tip.classList.remove('show');});
+});
+// бейджи достижений — тултип с названием
+document.querySelectorAll('.ach-badge').forEach(b=>{
+  b.addEventListener('mouseenter',()=>{
+    const icon=(b.querySelector('use')||{}).getAttribute?b.querySelector('use').getAttribute('href'):'#ic-reward';
+    tip.innerHTML='<b><svg class="tip-ach-ico"><use href="'+icon+'"/></svg>Достижение</b><div class="row qtype"></div>';
+    tip.classList.add('show');
+    const row=tip.querySelector('.qtype'), full=b.dataset.title||'';
+    let i=0; clearInterval(qTimer);
+    qTimer=setInterval(()=>{ row.textContent=full.slice(0,++i); if(i>=full.length) clearInterval(qTimer); },28);
+  });
+  b.addEventListener('mousemove',e=>{
+    let x=e.clientX+16, y=e.clientY+16;
+    if(x+310>window.innerWidth) x=e.clientX-310;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  });
+  b.addEventListener('mouseleave',()=>{clearInterval(qTimer);tip.classList.remove('show');});
+});
+
+// клавиатура
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') next();
+  else if(e.key==='ArrowLeft'||e.key==='PageUp') prev();
+  else if(e.key==='Home') go(0);
+  else if(e.key==='End') go(total-1);
+  else if(e.key.toLowerCase()==='n') notes.classList.toggle('show');
+  else if(e.key.toLowerCase()==='m') muted=!muted;
+  else if(e.key.toLowerCase()==='b') toggleMusic();
+  else if(e.key.toLowerCase()==='f'){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+});
+
+// ---- мерцание огней города (Canvas, только на титуле) ----
+(function(){
+  const c=document.getElementById('fxCanvas'); if(!c) return;
+  const slide=c.closest('.slide'); const ctx=c.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let pts=[],W=0,H=0,t=0;
+  function size(){ W=c.width=c.clientWidth; H=c.height=c.clientHeight; gen(); }
+  function gen(){
+    pts=[]; const n=Math.round(W*H/5000);            // плотность огоньков
+    for(let i=0;i<n;i++) pts.push({
+      x:Math.random()*W, y:H*(0.22+Math.random()*0.52), // городская полоса
+      r:Math.random()*1.8+0.7, a:Math.random()*6.28,
+      sp:0.7+Math.random()*1.8, warm:Math.random()<0.68
+    });
+  }
+  function draw(){
+    requestAnimationFrame(draw);
+    if(!slide.classList.contains('active')){ ctx.clearRect(0,0,W,H); return; }
+    t+=0.016; ctx.clearRect(0,0,W,H);
+    for(const p of pts){
+      const al=0.35+0.6*(0.5+0.5*Math.sin(t*p.sp+p.a));
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.3);
+      ctx.fillStyle=p.warm?'rgba(255,210,130,'+al+')':'rgba(130,215,255,'+al+')';
+      ctx.shadowBlur=8; ctx.shadowColor=ctx.fillStyle; ctx.fill();
+    }
+    ctx.shadowBlur=0;
+  }
+  size(); window.addEventListener('resize',size);
+  if(!reduce) draw();
+})();
+
+// ---- сворачивание любой панели ----
+document.querySelectorAll('.panel-toggle').forEach(b=>b.addEventListener('click',e=>{
+  e.stopPropagation();
+  const p=b.closest('.panel'); if(p) p.classList.toggle('collapsed');
+}));
+
+// ---- заставка-загрузка ----
+(function(){
+  const intro=document.getElementById('intro'); if(!intro) return;
+  const fill=document.getElementById('introFill'), pct=document.getElementById('introPct');
+  let p=0;
+  const timer=setInterval(()=>{
+    p+=Math.random()*2.2+1.9;                  // загрузка ~2 секунды
+    if(p>=100){ p=100; clearInterval(timer); finish(); }
+    fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+  },60);
+  function finish(){
+    setTimeout(()=>intro.classList.add('loaded'),300);  // прячем скайлайн/заголовок/бар
+    setTimeout(()=>intro.classList.add('done'),1500);    // гасим тёмный фон — открывается титул, логотип остаётся
+    // ачивка титула теперь по ТРИГГЕРУ (навёл на «?» → допечатался текст), не по таймеру
+  }
+})();
+
+render();
+</script>
+</body>
+</html>
