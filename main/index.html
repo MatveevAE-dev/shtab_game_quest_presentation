@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSCOW BUSINESS QUEST — Презентация блока МСП</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== палитра утверждённого стиля «Летняя Дневная Москва» ===== */
+:root{
+  --bg:#070d1a; --panel:rgba(10,22,42,.62);
+  --cyan:#3fd0ff; --cyan-soft:rgba(63,208,255,.55);
+  --gold:#ffcd6b; --sky:#6CC0E5; --green:#5dffa0;
+  --neon:#3fd0ff; --neon-soft:rgba(63,208,255,.55); --neon-bright:#9fe9ff; --neon-white:#eaffff;
+  --text:#eaf4ff; --text-dim:#9fb6d4;
+  --title-font:'Orbitron',sans-serif; --ui:'Rajdhani',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:var(--ui);color:var(--text)}
+body{display:flex;align-items:center;justify-content:center}
+
+/* ===== сцена под экран зала: сверхширокий ~3:1 (7680×2592 ≈ 2,96:1) ===== */
+.stage{position:relative;flex:0 0 auto;
+  width:min(100vw, 300vh); aspect-ratio:2172 / 724; max-height:100vh;
+  overflow:hidden; background:#0b1422; box-shadow:0 0 60px rgba(0,0,0,.6)}
+
+/* ===== верхняя панель: бренд · прогресс уровней · счётчик ===== */
+.topbar{position:absolute;top:0;left:0;right:0;z-index:30;height:6.5%;
+  display:flex;align-items:center;gap:1.2vw;padding:0 1.4vw;
+  background:linear-gradient(180deg,rgba(4,10,20,.7),transparent)}
+.brand{font-family:var(--title-font);font-weight:900;font-size:1.05vw;letter-spacing:.18em;color:#fff;white-space:nowrap}
+.brand b{color:var(--cyan)}
+/* прогресс-бар: сегменты вех + гексы-достижения между ними */
+.progress{display:flex;flex:1;align-items:center;gap:0}
+.pseg{flex:1;height:.45vw;min-height:6px;border-radius:3px;background:rgba(63,208,255,.14);
+  border:1px solid var(--cyan-soft);overflow:hidden}
+.pseg .pf{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#9fe9ff);
+  box-shadow:0 0 8px var(--cyan-soft);transition:width .5s ease}
+.phex{flex:0 0 auto;width:1.5vw;height:1.5vw;min-width:18px;min-height:18px;margin:0 .25vw;cursor:help}
+.phex svg{width:100%;height:100%;overflow:visible}
+.phex .ph{fill:rgba(8,20,38,.65);stroke:var(--cyan-soft);stroke-width:2;transition:.25s}
+.phex .pchk{opacity:0;stroke:var(--green);stroke-width:2.4;fill:none;transition:.25s}
+.phex.done .ph{fill:rgba(63,208,255,.28);stroke:var(--cyan);filter:drop-shadow(0 0 6px var(--cyan))}
+.phex.done .pchk{opacity:1}
+.phex:hover .ph{stroke:#fff}
+
+/* ===== дек слайдов ===== */
+.deck{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s ease;background:#0b1422}
+.slide.active{opacity:1;visibility:visible}
+.slide .bg{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat}
+.slide .bg::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(4,10,20,.42) 100%)}
+
+/* ===== заглушка «в разработке» ===== */
+.stub{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2vw;
+  background:radial-gradient(120% 90% at 50% 35%,rgba(63,208,255,.08),transparent 60%),linear-gradient(180deg,#0a1426,#070d1a)}
+.stub .lock{width:5vw;height:5vw;border-radius:14px;border:1.5px dashed var(--cyan-soft);
+  display:flex;align-items:center;justify-content:center;color:var(--cyan)}
+.stub .lock svg{width:2.4vw;height:2.4vw;fill:none;stroke:currentColor;stroke-width:1.6}
+.stub .vtag{font-family:var(--title-font);font-size:.95vw;letter-spacing:.3em;color:var(--cyan);text-transform:uppercase}
+.stub h2{font-family:var(--title-font);font-weight:900;font-size:2.2vw;letter-spacing:.04em;color:#fff;text-transform:uppercase;text-align:center}
+.stub p{color:var(--text-dim);font-size:1.05vw}
+
+/* ===== HUD слайда 0 — заголовок ===== */
+.title{position:absolute;top:8%;left:50%;transform:translateX(-50%);z-index:20;text-align:center;text-shadow:0 2px 18px rgba(4,12,24,.9)}
+.title .lvltag{font-family:var(--title-font);font-size:1vw;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase;opacity:.95}
+.title h1{font-family:var(--title-font);font-weight:900;font-size:2.9vw;line-height:1;margin:.35vw 0 .5vw;
+  letter-spacing:.04em;color:#fff;text-shadow:0 0 22px rgba(63,208,255,.45),0 2px 16px rgba(4,12,24,.9)}
+.title .sub{font-size:1.2vw;font-weight:500;color:var(--text)}
+.title .sub b{color:var(--gold)}
+
+/* ===== Игровая панель (из базы): сворачивается, угловые скобки, дыхание ===== */
+.panel{position:absolute;z-index:20;background:rgba(10,22,42,.92);border:1px solid var(--cyan-soft);
+  backdrop-filter:blur(6px);overflow:hidden;transition:width .25s,height .25s;
+  box-shadow:0 0 40px rgba(63,208,255,.15), inset 0 0 24px rgba(63,208,255,.05);
+  clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%)}
+.panel::before,.panel::after{content:"";position:absolute;width:22px;height:22px;border:2px solid var(--cyan)}
+.panel::before{top:8px;right:8px;border-left:0;border-bottom:0}
+.panel::after{bottom:8px;left:8px;border-right:0;border-top:0}
+.panel .panel-body{padding:1.4vw 1.1vw 1.1vw}
+.panel-player{left:1.4%;top:9%;width:min(21%,280px)}
+.panel-toggle{position:absolute;top:8px;right:8px;z-index:2;width:26px;height:26px;cursor:pointer;
+  border:1px solid var(--cyan-soft);background:rgba(8,18,34,.6);color:var(--cyan);
+  font-family:var(--title-font);font-size:15px;line-height:1;border-radius:4px;transition:.2s}
+.panel-toggle:hover{background:rgba(63,208,255,.15);color:#fff}
+.panel.collapsed{width:46px;height:46px}
+.panel.collapsed .panel-body{display:none}
+.panel.collapsed .panel-toggle{transform:rotate(180deg)}
+.panel .tag{font-family:var(--title-font);font-size:.72vw;letter-spacing:.2em;color:#9fe9ff;text-transform:uppercase}
+.panel-name{font-family:var(--title-font);font-weight:900;font-size:1.25vw;line-height:1.1;color:#fff;
+  text-transform:uppercase;margin:.3vw 0 .5vw;text-shadow:0 0 10px rgba(63,208,255,.4)}
+.lvl-badge{display:inline-block;font-family:var(--title-font);font-size:.68vw;letter-spacing:.12em;
+  color:#bfe6ff;border:1px solid var(--cyan-soft);padding:.2vw .7vw;margin:0 0 .8vw;
+  background:rgba(63,208,255,.16);text-transform:uppercase}
+.skills-title{font-size:.66vw;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin:.3vw 0 .5vw}
+.skills{display:flex;gap:.5vw}
+.skill{flex:1;min-width:0;text-align:center;border:1px solid var(--cyan-soft);padding:.5vw .2vw .45vw;
+  background:rgba(63,208,255,.05);font-size:.62vw;color:#cfe0ff;text-transform:uppercase;letter-spacing:.2px;line-height:1.2}
+.skill .ic{display:block;width:1.5vw;height:1.5vw;min-width:18px;min-height:18px;margin:0 auto .35vw}
+.skill .sbar{height:4px;margin-top:.4vw;border:1px solid var(--cyan-soft);border-radius:2px;overflow:hidden;background:rgba(63,208,255,.08)}
+.skill .sbar i{display:block;height:100%;border-radius:2px}
+.skill.know  .sbar i{background:linear-gradient(90deg,#1c9fe0,var(--cyan))}
+.skill.civic .sbar i{background:linear-gradient(90deg,#2bbf7a,var(--green))}
+.skill.grow  .sbar i{background:linear-gradient(90deg,#d8a23e,var(--gold))}
+.ach-list{display:flex;gap:.5vw;flex-wrap:wrap}
+.ach-badge{width:2vw;height:2vw;min-width:26px;min-height:26px;border:1px solid var(--gold);border-radius:6px;
+  background:rgba(255,205,107,.1);display:flex;align-items:center;justify-content:center;cursor:help;transition:.2s}
+/* бейдж скрыт, пока ачивка не прилетела из уведомления */
+.ach-badge.pending{opacity:0;transform:scale(.5);pointer-events:none}
+.ach-badge .ic{width:1.3vw;height:1.3vw;min-width:16px;min-height:16px;stroke:var(--gold)}
+.ach-badge.justgot{animation:achpop .6s ease}
+@keyframes achpop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+/* появление и дыхание панели */
+.panel-player{animation:hudIn .55s cubic-bezier(.2,.8,.2,1) both, breathe 4.5s 1s ease-in-out infinite}
+@keyframes hudIn{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes breathe{0%,100%{box-shadow:0 0 40px rgba(63,208,255,.15), inset 0 0 24px rgba(63,208,255,.05)}
+  50%{box-shadow:0 0 62px rgba(63,208,255,.30), inset 0 0 30px rgba(63,208,255,.10)}}
+
+/* ===== контуры объектов (неон-линия + вертикальная стена свечения, режим A) ===== */
+.objs{position:absolute;inset:0;z-index:13;width:100%;height:100%;pointer-events:none}
+.objline{fill:none;stroke:var(--neon);stroke-width:3;stroke-linejoin:round;
+  filter:drop-shadow(0 0 1.2px rgba(2,20,30,.9)) drop-shadow(0 0 4px var(--neon-soft));
+  pointer-events:stroke;cursor:pointer;transition:stroke-width .2s,stroke .2s,filter .2s}
+.objline:hover,.objline.hot{stroke:var(--neon-white);stroke-width:4.2;filter:drop-shadow(0 0 12px #fff)}
+/* вертикальное свечение (стена света) — прозрачность на каждом path */
+.objglow{mix-blend-mode:screen}
+.objglow path{opacity:.5;animation:vglowpulse 3.4s ease-in-out infinite;transition:stroke-width .2s,stroke .2s}
+.objglow path.gactive{opacity:1;stroke:var(--neon-bright);stroke-width:10;filter:url(#vglowStrong);animation:none}
+@keyframes vglowpulse{0%,100%{opacity:.32}50%{opacity:.68}}
+
+/* ===== гексы-цифры (размер как у замочков, якорь снизу) ===== */
+.spot{position:absolute;z-index:15;transform:translate(-50%,-100%);cursor:pointer;
+  width:3vw;height:3.6vw;min-width:40px;min-height:48px;border:none;background:none;padding:0}
+.spot .hex{width:100%;height:100%;overflow:visible;animation:hexpulse 2.4s ease-in-out infinite}
+.spot .hexlock{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
+.spot .hx{fill:rgba(6,26,38,.5);stroke:var(--neon);stroke-width:1.8;transition:.25s}
+.spot .num{font-family:var(--title-font);font-weight:900;fill:#fff;text-anchor:middle;font-size:15px;
+  paint-order:stroke;stroke:rgba(4,12,24,.55);stroke-width:.5}
+.spot .conn{stroke:var(--neon);stroke-width:1;opacity:.85}
+.spot .cdot{fill:var(--neon-white)}
+.spot:hover .hex,.spot.lit .hex{animation:none;filter:drop-shadow(0 0 10px var(--neon))}
+.spot:hover .hx,.spot.lit .hx,.spot.sel .hx{fill:rgba(63,208,255,.35);stroke:#fff}
+.spot.sel .hx{fill:rgba(93,255,160,.35);stroke:var(--green)}
+
+/* ===== замочки-landmarks (hexlock из базы) ===== */
+.lockspot{position:absolute;z-index:14;transform:translate(-50%,-100%);cursor:help;
+  width:3vw;height:3.6vw;min-width:40px;min-height:48px;border:none;background:none;padding:0}
+.lockspot svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 1px 3px rgba(4,28,16,.85));animation:hexpulse 2.4s ease-in-out infinite}
+.lockspot .hx{fill:rgba(6,26,38,.5);stroke:var(--neon);stroke-width:1.7}
+.lockspot .lkbody{fill:rgba(63,208,255,.22);stroke:var(--neon-bright);stroke-width:1.1}
+.lockspot .lkbar{fill:none;stroke:var(--neon-bright);stroke-width:1.2}
+.lockspot .lkhole{fill:var(--neon-white)}
+.lockspot .hexlock{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
+.lockspot .conn{stroke:var(--neon);stroke-width:1;opacity:.85}
+.lockspot .cdot{fill:var(--neon-white)}
+.lockspot:hover svg,.lockspot.lit svg{animation:none;filter:drop-shadow(0 0 10px var(--neon))}
+.lockspot:hover .hx,.lockspot.lit .hx{stroke:#fff}
+.lockspot:hover .lkbody,.lockspot.lit .lkbody{fill:rgba(63,208,255,.5)}
+@keyframes hexspin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+@keyframes hexpulse{0%,100%{filter:drop-shadow(0 1px 3px rgba(4,12,24,.8)) drop-shadow(0 0 3px var(--neon))}
+  50%{filter:drop-shadow(0 1px 3px rgba(4,12,24,.8)) drop-shadow(0 0 9px var(--neon))}}
+
+/* ===== тултип (из базы: печать по буквам) ===== */
+.tip{position:fixed;z-index:60;max-width:300px;pointer-events:none;
+  background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);
+  box-shadow:0 0 24px rgba(63,208,255,.25);padding:12px 14px;
+  opacity:0;transform:translateY(6px);transition:opacity .15s, transform .15s}
+.tip.show{opacity:1;transform:none}
+.tip b{display:block;font-family:var(--title-font);font-size:14px;color:#fff;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.tip .row{font-size:14px;line-height:1.5;color:#dcebff}
+.tip .row.rew{color:var(--gold);margin-top:4px}
+.tip .row .tipico{opacity:0;transform:translateY(3px);transition:opacity .3s,transform .3s}
+.tip .row.in .tipico{opacity:1;transform:none}
+.tip .stars{letter-spacing:2px}
+.tip .star{display:inline-block;font-size:15px;line-height:1;animation:starpop .28s ease}
+.tip .star.on{color:var(--gold);text-shadow:0 0 6px rgba(255,205,107,.6)}
+.tip .star.off{color:rgba(255,255,255,.22)}
+@keyframes starpop{0%{opacity:0;transform:scale(.4)}60%{transform:scale(1.25)}100%{opacity:1;transform:none}}
+.tip.lock{border-color:rgba(255,205,107,.5)}
+.tip.lock b{color:var(--gold)}
+.tipico{width:15px;height:15px;vertical-align:-2px;margin-right:6px;fill:none;stroke:var(--neon);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tip .row.rew .tipico{stroke:var(--gold)}
+.ic{fill:none;stroke:var(--neon);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+/* печать-каретка в тултипе героя/ачивки */
+.tip .row.qtype{display:block}
+.tip .row.qtype::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .8s step-end infinite}
+@keyframes qcaret{50%{opacity:0}}
+.tip-ach-ico{width:15px;height:15px;vertical-align:-2px;margin-right:6px;fill:none;stroke:var(--gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===== «?» над героем + уведомление о достижении ===== */
+.hero-q{position:absolute;z-index:16;transform:translate(-50%,-100%);
+  width:2vw;height:2vw;min-width:26px;min-height:26px;border-radius:50%;cursor:help;padding:0;
+  border:1.6px solid var(--cyan);background:rgba(8,18,34,.72);color:var(--cyan);
+  font-family:var(--title-font);font-weight:700;font-size:1.1vw;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 10px var(--cyan-soft),inset 0 0 8px rgba(63,208,255,.2);
+  animation:heroqbob 2.6s ease-in-out infinite}
+.hero-q:hover{background:rgba(63,208,255,.2);box-shadow:0 0 16px var(--cyan);color:#fff}
+@keyframes heroqbob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,calc(-100% - 6px))}}
+/* уведомление о достижении — всплывает, потом улетает в панель игрока */
+.ach-note{position:absolute;bottom:13%;left:50%;transform:translateX(-50%) translateY(12px);z-index:40;
+  display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;
+  font-size:1vw;font-weight:600;color:var(--gold);
+  border:1px solid rgba(255,205,107,.5);border-left:3px solid var(--gold);
+  padding:.55vw 1vw;background:rgba(24,18,6,.8);box-shadow:0 0 20px rgba(255,205,107,.18);
+  transition:opacity .45s ease, transform .75s cubic-bezier(.5,0,.2,1)}
+.ach-note.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ach-note .ach-fly-ico .ic{display:block;width:1.3vw;height:1.3vw;min-width:18px;min-height:18px;stroke:var(--gold)}
+.ach-note .ach-text{transition:opacity .25s ease}
+.ach-note.fly{animation:achfly 1.1s cubic-bezier(.45,0,.25,1) forwards}
+.ach-note.fly .ach-text{opacity:0}
+@keyframes achfly{0%{opacity:1;transform:translateX(-50%) translate(0,0) scale(1)}80%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) translate(var(--dx,0),var(--dy,0)) scale(.28)}}
+
+/* ===== подсказка-голосование ===== */
+.vote{position:absolute;bottom:11%;left:50%;transform:translateX(-50%);z-index:20;text-align:center}
+.vote .pill{display:inline-flex;align-items:center;gap:.5vw;font-weight:600;font-size:1.05vw;color:#fff;
+  background:rgba(8,20,38,.7);border:1px solid var(--cyan-soft);border-radius:40px;padding:.45vw 1.2vw;box-shadow:0 0 22px rgba(63,208,255,.18)}
+.vote .pill .d{width:.7vw;height:.7vw;border-radius:50%;background:var(--green);animation:vpulse 1.4s infinite}
+@keyframes vpulse{0%,100%{opacity:.5}50%{opacity:1}}
+.vote .hint{margin-top:.45vw;font-size:.82vw;color:var(--text-dim)}
+
+/* ===== панель союзников (4 ромба-подведа) ===== */
+.panel-allies{left:1.6%;bottom:8%}
+.panel-allies .tag{display:block;margin-bottom:.7vw}
+.panel-allies{animation:breathe 4.5s 1s ease-in-out infinite}
+.dock{display:flex;gap:1vw}
+
+/* ===== панель заданий ===== */
+.panel-tasks{right:1.6%;top:9%;width:min(21%,290px)}
+.panel-tasks .tag{display:block;margin-bottom:.6vw}
+.panel-tasks{animation:breathe 4.5s 1s ease-in-out infinite}
+.tasks{display:flex;flex-direction:column;gap:.45vw}
+.task{display:flex;align-items:center;gap:.55vw;font-size:.85vw;color:var(--text);cursor:pointer;transition:.2s}
+.task .box{width:1.05vw;height:1.05vw;min-width:15px;min-height:15px;flex:0 0 auto;
+  border:1.5px solid var(--cyan-soft);border-radius:3px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.task .box svg{width:72%;height:72%;opacity:0;stroke:var(--green);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+.task:hover{color:#fff}
+.task.done .box{border-color:var(--green);background:rgba(93,255,160,.15)}
+.task.done .box svg{opacity:1}
+.task.done .txt{color:var(--green);text-decoration:line-through;opacity:.85}
+.task.empty{cursor:default;opacity:.55;font-size:.78vw}
+.gem{display:flex;align-items:center;justify-content:center;opacity:.55;cursor:help;transition:.25s}
+.gem .rh{width:2.6vw;height:2.6vw;display:flex;align-items:center;justify-content:center;
+  transform:rotate(45deg);border:1.5px solid currentColor;border-radius:5px;background:rgba(8,20,38,.5);transition:.25s}
+.gem .rh b{transform:rotate(-45deg);font-family:var(--title-font);font-weight:700;font-size:.78vw;color:#fff}
+.gem.mbm{color:var(--cyan)} .gem.fsk{color:var(--gold)} .gem.fpsp{color:var(--green)} .gem.shtab{color:var(--sky)}
+/* подсветка при наведении */
+.gem:hover{opacity:1}
+.gem:hover .rh{background:rgba(8,20,38,.8);box-shadow:0 0 16px currentColor, inset 0 0 12px rgba(255,255,255,.1);transform:rotate(45deg) scale(1.08)}
+
+/* ===== нижняя навигация ===== */
+.nav{position:absolute;bottom:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:1vw;
+  padding:.7vw 1.4vw;background:linear-gradient(0deg,rgba(4,10,20,.78),transparent)}
+.nav button{font-family:var(--ui);font-weight:600;font-size:.95vw;color:var(--text);
+  background:rgba(8,20,38,.65);border:1px solid var(--cyan-soft);border-radius:6px;padding:.45vw 1vw;cursor:pointer;transition:.2s}
+.nav button:hover{background:rgba(63,208,255,.2);color:#fff}
+.dots{display:flex;gap:.5vw;flex:1;justify-content:center}
+.dot{width:.75vw;height:.75vw;min-width:9px;min-height:9px;border-radius:50%;border:1px solid var(--cyan-soft);background:transparent;cursor:pointer;transition:.2s}
+.dot.active{background:var(--cyan);box-shadow:0 0 10px var(--cyan-soft)}
+.nav .hint{position:absolute;left:50%;transform:translateX(-50%);bottom:2.6vw;font-size:.72vw;color:var(--text-dim);white-space:nowrap;opacity:.75}
+
+/* ===== заставка-загрузка ===== */
+#intro{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.intro-bg{position:absolute;inset:0;transition:opacity .9s ease;background:linear-gradient(rgba(4,8,16,.84),rgba(4,8,16,.92)), url('slide0.png') center/cover}
+#intro.done .intro-bg{opacity:0}
+#intro.done .intro-inner{opacity:0;transition:opacity .6s ease}
+.intro-inner{position:relative;z-index:1;width:min(60%,740px);display:flex;flex-direction:column;align-items:center;gap:1.1vw;text-align:center}
+.skyline{width:min(72%,460px);height:auto;overflow:visible;filter:drop-shadow(0 0 3px var(--cyan-soft)) drop-shadow(0 0 6px rgba(63,208,255,.35))}
+.skyline .sky{stroke:var(--cyan);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.skyline .star{fill:var(--cyan);stroke:none}
+.intro-title{font-family:var(--title-font);font-weight:900;color:var(--text);letter-spacing:6px;font-size:clamp(26px,3.4vw,54px);line-height:1;text-shadow:0 0 18px rgba(63,208,255,.3)}
+.intro-title span{display:block;font-size:.46em;letter-spacing:9px;color:var(--cyan);margin-top:10px;font-weight:700}
+.intro-load{font-size:1vw;color:var(--text-dim);letter-spacing:1px}
+.intro-bar{width:min(72%,470px);height:16px;border:1px solid var(--cyan-soft);border-radius:4px;padding:3px;background:rgba(63,208,255,.06)}
+.intro-bar>i{display:block;height:100%;width:0;border-radius:2px;background:linear-gradient(90deg,var(--cyan),#9fe9ff);box-shadow:0 0 14px var(--cyan);transition:width .1s linear}
+.intro-pct{font-family:var(--title-font);font-size:.95vw;color:var(--cyan);letter-spacing:1px}
+.intro-logo{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:2;width:min(28%,360px);height:auto;opacity:.95;
+  filter:drop-shadow(0 0 7px var(--cyan-soft));transition:left .8s ease,right .8s ease,top .8s ease,bottom .8s ease,width .8s ease}
+#intro.done .intro-logo{left:auto;right:1.6vw;bottom:auto;top:8%;transform:none;width:min(14%,180px)}
+#intro.loaded .skyline,#intro.loaded .intro-title,#intro.loaded .intro-load,
+#intro.loaded .intro-bar,#intro.loaded .intro-pct{opacity:0;transition:opacity .5s ease;pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- неоновые иконки (из базы) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-idea" viewBox="0 0 24 24"><path d="M9 18h6 M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.4c.7.7 1 1.3 1 2.6h6c0-1.3.3-1.9 1-2.6A6 6 0 0 0 12 3Z"/></symbol>
+  <symbol id="ic-motiv" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></symbol>
+  <symbol id="ic-req" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z M14 3v4h4 M9 12h6 M9 16h6"/></symbol>
+  <symbol id="ic-reward" viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z M7 6H4v1a3 3 0 0 0 3 3 M17 6h3v1a3 3 0 0 1-3 3 M12 13v4 M9 21h6 M10 17h4l-.5 4h-3z"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8 6.8 19.2l1-5.8L3.6 9.3l5.8-.8z"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6C10.4 4.7 8.4 4.2 6.4 4.2 5.5 4.2 4.8 4.4 4 4.7v13c.8-.3 1.5-.5 2.4-.5 2 0 4 .5 5.6 1.8 1.6-1.3 3.6-1.8 5.6-1.8.9 0 1.6.2 2.4.5v-13c-.8-.3-1.5-.5-2.4-.5-2 0-4 .5-5.6 1.8Z"/><path d="M12 6v12.8"/></symbol>
+</svg>
+
+<div class="stage" id="stage">
+
+  <!-- верхняя панель -->
+  <div class="topbar">
+    <div class="brand">MOSCOW <b>BUSINESS QUEST</b></div>
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <!-- дек -->
+  <div class="deck" id="deck">
+
+    <!-- ===== Слайд 0 — Выбор направления ===== -->
+    <section class="slide" data-notes="Уровень 0. Герой на распутье — три отрасли: общепит, салон красоты, торговля. Зал голосует, какой путь выбрать. На фоне — узнаваемые места города (Москва-Сити, Ломоносов, фабрика Подарков), пока заблокированы.">
+      <div class="bg" style="background-image:url('slide0.png')"></div>
+
+      <!-- контуры объектов (неон-линия + стена свечения) — координаты из layout-SVG «Слайд 0 объекты.svg» -->
+      <svg class="objs" viewBox="0 0 2172 724" preserveAspectRatio="none">
+        <defs>
+          <!-- вертикальное размытие = вертикальная стена свечения -->
+          <filter id="vglow" x="-20%" y="-140%" width="140%" height="380%"><feGaussianBlur stdDeviation="2.5 22"/></filter>
+          <filter id="vglowStrong" x="-40%" y="-360%" width="180%" height="820%"><feGaussianBlur stdDeviation="4 62"/></filter>
+        </defs>
+        <!-- стена свечения (под чёткой линией) -->
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-food" filter="url(#vglow)" d="M23.5 496.5L7.35951 507.741C3.46334 510.454 5.18798 516.561 9.92795 516.835L504.265 545.457C504.752 545.486 505.241 545.442 505.716 545.329L550.339 534.658C550.778 534.553 551.2 534.389 551.595 534.171L666.383 470.711C669.76 468.844 669.839 464.018 666.525 462.041L646.103 449.86C645.703 449.621 645.272 449.44 644.821 449.32L612.129 440.666C611.711 440.556 611.281 440.5 610.849 440.5H590.5"/>
+          <path id="glow-beauty" filter="url(#vglow)" d="M1063.5 551.5H1369.13C1369.71 551.5 1370.28 551.401 1370.82 551.209L1417.71 534.46C1421.37 533.155 1422.2 528.366 1419.21 525.896L1318.24 442.524C1317.43 441.858 1316.44 441.462 1315.4 441.391L1273 438.5M988 551.5H782.802C782.271 551.5 781.743 551.415 781.238 551.249L740.562 537.85C739.863 537.62 739.223 537.237 738.688 536.731L724.169 522.975C722.149 521.062 722.079 517.868 724.014 515.869L735.165 504.347C735.388 504.116 735.632 503.908 735.895 503.724L788.5 467L817.5 447.5L835.62 435.102C836.2 434.705 836.857 434.435 837.549 434.309L864 429.5"/>
+          <path id="glow-trade" filter="url(#vglow)" d="M2062 469L2154.75 513.284C2159.46 515.533 2158 522.588 2152.79 522.792L1688.42 540.984C1688.14 540.994 1687.86 540.982 1687.58 540.946L1634.82 534.107C1634.28 534.036 1633.75 533.876 1633.25 533.632L1478.4 457.172C1475.96 455.966 1474.93 453.026 1476.09 450.56L1476.72 449.214C1477.51 447.544 1479.15 446.442 1481 446.35L1597.5 440.5"/>
+          <path id="glow-city" filter="url(#vglow)" d="M143.5 204.5L127.622 210.81C122.548 212.827 123.918 220.356 129.377 220.456L404.5 225.5L442.872 221.628C447.768 221.134 449.081 214.609 444.758 212.26L436 207.5"/>
+          <path id="glow-lomonosov" filter="url(#vglow)" d="M873.5 259.5L860.688 268.981C856.813 271.849 858.841 278 863.662 278H1193C1195.76 278 1198 275.761 1198 273V271.177C1198 269.106 1196.72 267.249 1194.79 266.508L1176.5 259.5"/>
+          <path id="glow-gift" filter="url(#vglow)" d="M1652.5 277.5H1486.16C1481.34 277.5 1479.31 271.349 1483.19 268.481L1496 259"/>
+        </g>
+        <!-- чёткая линия-контур -->
+        <g class="objlines">
+          <path class="objline" id="obj-food" d="M23.5 496.5L7.35951 507.741C3.46334 510.454 5.18798 516.561 9.92795 516.835L504.265 545.457C504.752 545.486 505.241 545.442 505.716 545.329L550.339 534.658C550.778 534.553 551.2 534.389 551.595 534.171L666.383 470.711C669.76 468.844 669.839 464.018 666.525 462.041L646.103 449.86C645.703 449.621 645.272 449.44 644.821 449.32L612.129 440.666C611.711 440.556 611.281 440.5 610.849 440.5H590.5"/>
+          <path class="objline" id="obj-beauty" d="M1063.5 551.5H1369.13C1369.71 551.5 1370.28 551.401 1370.82 551.209L1417.71 534.46C1421.37 533.155 1422.2 528.366 1419.21 525.896L1318.24 442.524C1317.43 441.858 1316.44 441.462 1315.4 441.391L1273 438.5M988 551.5H782.802C782.271 551.5 781.743 551.415 781.238 551.249L740.562 537.85C739.863 537.62 739.223 537.237 738.688 536.731L724.169 522.975C722.149 521.062 722.079 517.868 724.014 515.869L735.165 504.347C735.388 504.116 735.632 503.908 735.895 503.724L788.5 467L817.5 447.5L835.62 435.102C836.2 434.705 836.857 434.435 837.549 434.309L864 429.5"/>
+          <path class="objline" id="obj-trade" d="M2062 469L2154.75 513.284C2159.46 515.533 2158 522.588 2152.79 522.792L1688.42 540.984C1688.14 540.994 1687.86 540.982 1687.58 540.946L1634.82 534.107C1634.28 534.036 1633.75 533.876 1633.25 533.632L1478.4 457.172C1475.96 455.966 1474.93 453.026 1476.09 450.56L1476.72 449.214C1477.51 447.544 1479.15 446.442 1481 446.35L1597.5 440.5"/>
+          <path class="objline" id="obj-city" d="M143.5 204.5L127.622 210.81C122.548 212.827 123.918 220.356 129.377 220.456L404.5 225.5L442.872 221.628C447.768 221.134 449.081 214.609 444.758 212.26L436 207.5"/>
+          <path class="objline" id="obj-lomonosov" d="M873.5 259.5L860.688 268.981C856.813 271.849 858.841 278 863.662 278H1193C1195.76 278 1198 275.761 1198 273V271.177C1198 269.106 1196.72 267.249 1194.79 266.508L1176.5 259.5"/>
+          <path class="objline" id="obj-gift" d="M1652.5 277.5H1486.16C1481.34 277.5 1479.31 271.349 1483.19 268.481L1496 259"/>
+        </g>
+      </svg>
+
+      <!-- маркеры (цифры) и замочки (landmarks) добавляются скриптом -->
+
+      <!-- значок «?» над героем (ховер → реплика → достижение) -->
+      <button class="hero-q" style="left:47%;top:63%"
+        data-q-title="Новичок"
+        data-q-text="Идея есть, желание есть… а с чего начать бизнес в Москве — пока непонятно. Куда пойти?">?</button>
+    </section>
+
+    <!-- ===== Слайд 1 — Открыть бизнес (выбран общепит · кафе) ===== -->
+    <section class="slide" data-notes="Уровень 1. Концепция, налоги, локация, привлечение средств. Кафе пока без ремонта. Слева — банк (ФСК) и центр помощи МБМ.">
+      <div class="bg" style="background-image:url('slide1.png')"></div>
+      <!-- контуры объектов — координаты из layout-SVG «Слайд 1 объекты.svg» -->
+      <svg class="objs" viewBox="0 0 2172 724" preserveAspectRatio="none">
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-mbm1" filter="url(#vglow)" d="M92 424.5L18.4907 461.255C17.5231 461.738 16.7385 462.523 16.2546 463.491L12.996 470.008C11.5009 472.998 13.3048 476.585 16.5967 477.168L66.5 486L252.331 493.473C252.775 493.491 253.219 493.45 253.653 493.35L303 482M303 482L443 436L373 459L303 482Z"/>
+          <path id="glow-bank" filter="url(#vglow)" d="M443 442.5L361.744 479.702C360.621 480.216 359.728 481.127 359.237 482.26L356.425 488.749C355.022 491.988 357.326 495.622 360.854 495.735L681.105 505.955C682.017 505.985 682.921 505.763 683.716 505.315L789.372 445.857C793.856 443.334 792.065 436.5 786.92 436.5H783.5"/>
+          <path id="glow-cafe" filter="url(#vglow)" d="M1026.5 519.5L1330.31 525.985C1330.77 525.995 1331.22 525.942 1331.67 525.827L1383.17 512.522C1386.77 511.593 1388.13 507.204 1385.7 504.4L1332.17 442.851C1331.42 441.977 1330.38 441.395 1329.23 441.202L1295.5 435.5M923.5 519.5C883.224 519.5 827.072 509.359 816.319 507.345C815.13 507.123 814.091 506.474 813.349 505.52L806.556 496.786C805.075 494.882 805.164 492.192 806.768 490.391L836.193 457.345C836.397 457.115 836.622 456.905 836.865 456.717L855.881 441.979C856.291 441.662 856.748 441.41 857.236 441.233L867.5 437.5"/>
+        </g>
+        <g class="objlines">
+          <path class="objline" id="obj-mbm1" d="M92 424.5L18.4907 461.255C17.5231 461.738 16.7385 462.523 16.2546 463.491L12.996 470.008C11.5009 472.998 13.3048 476.585 16.5967 477.168L66.5 486L252.331 493.473C252.775 493.491 253.219 493.45 253.653 493.35L303 482M303 482L443 436L373 459L303 482Z"/>
+          <path class="objline" id="obj-bank" d="M443 442.5L361.744 479.702C360.621 480.216 359.728 481.127 359.237 482.26L356.425 488.749C355.022 491.988 357.326 495.622 360.854 495.735L681.105 505.955C682.017 505.985 682.921 505.763 683.716 505.315L789.372 445.857C793.856 443.334 792.065 436.5 786.92 436.5H783.5"/>
+          <path class="objline" id="obj-cafe" d="M1026.5 519.5L1330.31 525.985C1330.77 525.995 1331.22 525.942 1331.67 525.827L1383.17 512.522C1386.77 511.593 1388.13 507.204 1385.7 504.4L1332.17 442.851C1331.42 441.977 1330.38 441.395 1329.23 441.202L1295.5 435.5M923.5 519.5C883.224 519.5 827.072 509.359 816.319 507.345C815.13 507.123 814.091 506.474 813.349 505.52L806.556 496.786C805.075 494.882 805.164 492.192 806.768 490.391L836.193 457.345C836.397 457.115 836.622 456.905 836.865 456.717L855.881 441.979C856.291 441.662 856.748 441.41 857.236 441.233L867.5 437.5"/>
+        </g>
+      </svg>
+      <!-- маркеры/замочки слайда 1 добавляются скриптом -->
+    </section>
+    <section class="slide" data-notes="Уровень 2. Обязательные требования — красные точки рисков на фасаде. МБМ + Штаб.">
+      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Веха 2</div><h2>Обязательные требования</h2><p>в разработке — генерируем сцену</p></div>
+    </section>
+    <section class="slide" data-notes="Уровень 3. Форс-мажор — карточка случайного события. Решаем через Штаб.">
+      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Веха 3</div><h2>Урегулировать форс-мажор</h2><p>в разработке — генерируем сцену</p></div>
+    </section>
+    <section class="slide" data-notes="Уровень 4. Развилка: масштаб / производство / общество / соц-бизнес. Герой выбирает сам.">
+      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Веха 4</div><h2>Масштабирование</h2><p>в разработке — генерируем сцену</p></div>
+    </section>
+    <section class="slide" data-notes="Уровень 5. Наследие — рабочие места, влияние на город. Герой и 4 подведа в плащах.">
+      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Веха 5</div><h2>Наследие</h2><p>в разработке — генерируем сцену</p></div>
+    </section>
+    <section class="slide" data-notes="Уровень 6. Финал. Камера вверх — тысячи маршрутов. «Возможности для бизнеса» → «Возможности для города».">
+      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Веха 6</div><h2>Возможности для города</h2><p>в разработке — генерируем сцену</p></div>
+    </section>
+
+  </div><!-- /deck -->
+
+  <!-- ===== общие HUD-панели (видны на всех слайдах) ===== -->
+  <!-- панель игрока -->
+  <div class="panel panel-player" id="playerPanel">
+    <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+    <div class="panel-body">
+      <span class="tag">Игрок</span>
+      <h3 class="panel-name">Новичок</h3>
+      <div class="lvl-badge" id="playerLvl">Уровень 0 · Готов к старту</div>
+      <div class="skills-title">Навыки</div>
+      <div class="skills">
+        <div class="skill know" title="Знания"><svg class="ic"><use href="#ic-book"/></svg><span>Знания</span><div class="sbar"><i style="width:4%"></i></div></div>
+        <div class="skill civic" title="Общественный вклад"><svg class="ic"><use href="#ic-reward"/></svg><span>Общество</span><div class="sbar"><i style="width:3%"></i></div></div>
+        <div class="skill grow" title="Развитие бизнеса"><svg class="ic"><use href="#ic-motiv"/></svg><span>Развитие</span><div class="sbar"><i style="width:5%"></i></div></div>
+      </div>
+      <div class="skills-title">Достижения</div>
+      <div class="ach-list" id="achList">
+        <button class="ach-badge pending" data-title="Выслушал героя — узнал, с чего начать"><svg class="ic"><use href="#ic-book"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- панель союзников: 4 ромба-подведа -->
+  <div class="panel panel-allies" id="alliesPanel">
+    <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+    <div class="panel-body">
+      <span class="tag">Союзники · блок МСП</span>
+      <div class="dock">
+        <div class="gem mbm" data-key="mbm"><div class="rh"><b>МБМ</b></div></div>
+        <div class="gem fsk" data-key="fsk"><div class="rh"><b>ФСК</b></div></div>
+        <div class="gem fpsp" data-key="fpsp"><div class="rh"><b>ФПСП</b></div></div>
+        <div class="gem shtab" data-key="shtab"><div class="rh"><b>ШТАБ</b></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- панель заданий (прогресс-бар заполняется по выполнению) -->
+  <div class="panel panel-tasks" id="tasksPanel">
+    <button class="panel-toggle" title="Свернуть / развернуть">‹</button>
+    <div class="panel-body">
+      <span class="tag">Задания · веха <span id="tasksVeha">0</span></span>
+      <div class="tasks" id="tasksList"></div>
+    </div>
+  </div>
+
+  <!-- уведомление о достижении (одно на все) — всплывает, улетает в бейдж панели -->
+  <div class="ach-note" id="achNote">
+    <span class="ach-fly-ico"><svg class="ic"><use href="#ic-book"/></svg></span>
+    <span class="ach-text">Достижение разблокировано</span>
+  </div>
+
+  <!-- навигация -->
+  <div class="nav">
+    <button id="prev">‹ Назад</button>
+    <div class="dots" id="dots"></div>
+    <span class="hint">← → стрелки · клик по точкам · 1/2/3 — выбор на слайде 0</span>
+    <button id="next">Дальше ›</button>
+  </div>
+
+  <!-- заставка-загрузка -->
+  <div id="intro">
+    <div class="intro-bg"></div>
+    <div class="intro-inner">
+      <img class="skyline" src="skyline.svg" alt="Скайлайн Москвы">
+      <h1 class="intro-title">MOSCOW<span>BUSINESS QUEST</span></h1>
+      <div class="intro-load">Загрузка мира предпринимателя…</div>
+      <div class="intro-bar"><i id="introFill"></i></div>
+      <div class="intro-pct" id="introPct">0%</div>
+    </div>
+    <img class="intro-logo" src="logo.svg" alt="Штаб по защите бизнеса · ДПИиР">
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+// ===== единый источник данных объектов (для тултипа-печати) =====
+const OBJECTS={
+  // 3 объекта выбора
+  food:     {t:'Общепит',              d:3, r:'Помещение, оборудование, персонал', w:'Постоянные клиенты'},
+  beauty:   {t:'Салон красоты',        d:2, r:'Помещение, мастера, лицензии',      w:'Высокая маржа'},
+  trade:    {t:'Торговля',             d:2, r:'Аренда точки, товарный запас',      w:'Поток покупателей'},
+  // 3 фоновых landmark (заблокированы)
+  city:     {t:'Москва-Сити',          d:5, r:'Офис класса А, капитал',            w:'Статус и масштаб', lock:true},
+  lomonosov:{t:'Кластер «Ломоносов»',  d:2, r:'Резидентство, R&D-команда',         w:'Гранты и партнёры', lock:true},
+  gift:     {t:'Фабрика подарков',     d:3, r:'Лофт, производство',                w:'Креатив и товар',   lock:true},
+  // ---- слайд 1: открыть бизнес (кафе) ----
+  cafe:     {t:'Ваше кафе',            d:3, r:'Концепция, ремонт, оборудование, персонал', w:'Запуск кафе'},
+  bank:     {t:'Банк · ФСК',          d:2, r:'Бизнес-план, поручительство ФСК',    w:'Стартовый капитал'},
+  mbm1:     {t:'Центр МБМ',           d:1, r:'Заявка на консультацию',            w:'Знания и бизнес-план'},
+  city1:    {t:'Москва-Сити',          d:5, r:'Офис класса А, капитал',            w:'Статус и масштаб', lock:true},
+  lom1:     {t:'Кластер «Ломоносов»',  d:2, r:'Резидентство, R&D-команда',         w:'Гранты и партнёры', lock:true},
+  gift1:    {t:'Фабрика подарков',     d:3, r:'Лофт, производство',                w:'Креатив и товар',   lock:true}
+};
+// 3 объекта выбора (цифры) — координаты из layout-SVG «Слайд 0 объекты.svg» (2172×724)
+const SPOTS=[
+  {n:1, key:'food',   x:15.6, y:57, cap:'Общепит',       task:'s0-dir'},
+  {n:2, key:'beauty', x:49.3, y:55, cap:'Салон красоты', task:'s0-dir'},
+  {n:3, key:'trade',  x:83.7, y:57, cap:'Торговля',      task:'s0-dir'}
+];
+// фоновые landmarks (замочки) — координаты из layout-SVG
+const LOCKS=[
+  {key:'city',      x:13.2, y:26},
+  {key:'lomonosov', x:47.4, y:34},
+  {key:'gift',      x:72.2, y:34}
+];
+// ---- слайд 1: объекты сцены (координаты из «Слайд 1 объекты.svg») ----
+const SPOTS1=[
+  {key:'mbm1', x:10.5, y:56, cap:'Центр МБМ'},
+  {key:'bank', x:26.4, y:57, cap:'Банк · ФСК'},
+  {key:'cafe', x:50.4, y:57, cap:'Ваше кафе'}
+];
+const LOCKS1=[
+  {key:'city1', x:13.1, y:26},
+  {key:'lom1',  x:47.5, y:31},
+  {key:'gift1', x:75.3, y:30}
+];
+
+const stage=document.getElementById('stage');
+const slidesAll=document.querySelectorAll('.slide');
+const slide0=slidesAll[0], slide1=slidesAll[1];
+
+// тултип — в body, position:fixed (как в базе)
+const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+
+// ---- печать тултипа по буквам (из базы) ----
+let tipTyper=[];
+function typeTip(key){
+  tipTyper.forEach(clearTimeout); tipTyper=[];
+  const o=OBJECTS[key]||{};
+  const title=o.t||'Объект', req=o.r||'—', rew=o.w||'—', diff=Math.max(0,Math.min(5,o.d||0));
+  tip.className='tip show'+(o.lock?' lock':'');
+  tip.innerHTML=
+    '<b id="tipT"></b>'+
+    (o.lock?'<div class="row" id="rowL" style="color:#ffcd6b;margin-bottom:6px">🔒 Заблокировано · поздний уровень</div>':'')+
+    '<div class="row diff" id="rowD"><svg class="tipico"><use href="#ic-star"/></svg>Сложность: <span id="tipD" class="stars"></span></div>'+
+    '<div class="row" id="rowR"><svg class="tipico"><use href="#ic-req"/></svg><span id="tipR"></span></div>'+
+    '<div class="row rew" id="rowW"><svg class="tipico"><use href="#ic-reward"/></svg><span id="tipW"></span></div>';
+  const eT=tip.querySelector('#tipT'), eD=tip.querySelector('#tipD'), eR=tip.querySelector('#tipR'), eW=tip.querySelector('#tipW');
+  const rowD=tip.querySelector('#rowD'), rowR=tip.querySelector('#rowR'), rowW=tip.querySelector('#rowW');
+  const sp1=22;
+  function typeInto(el,text,start){ for(let i=1;i<=text.length;i++){ tipTyper.push(setTimeout(()=>{el.textContent=text.slice(0,i);},start+i*sp1)); } return start+text.length*sp1; }
+  let d=typeInto(eT,title,0)+160;
+  tipTyper.push(setTimeout(()=>rowD.classList.add('in'),Math.max(0,d-120))); d+=120;
+  for(let s=0;s<5;s++){ const on=s<diff; tipTyper.push(setTimeout(()=>{eD.insertAdjacentHTML('beforeend','<span class="star '+(on?'on':'off')+'">★</span>');},d)); d+=110; }
+  d+=160;
+  tipTyper.push(setTimeout(()=>rowR.classList.add('in'),Math.max(0,d-120)));
+  d=typeInto(eR,'Требования: '+req,d)+160;
+  tipTyper.push(setTimeout(()=>rowW.classList.add('in'),Math.max(0,d-120)));
+  typeInto(eW,'Награда: '+rew,d);
+}
+function moveTip(e){ let x=e.clientX+16,y=e.clientY+16;
+  if(x+310>window.innerWidth)x=e.clientX-310;
+  if(y+170>window.innerHeight)y=e.clientY-170;   // не вылезать за нижний край (ромбы внизу)
+  tip.style.left=x+'px'; tip.style.top=y+'px'; }
+function hideTip(){ tipTyper.forEach(clearTimeout); tip.classList.remove('show'); }
+
+// ---- построение маркеров (гекс-цифра/объект + замочек) ----
+function buildSpot(container,s){
+  const b=document.createElement('button'); b.className='spot'; b.style.left=s.x+'%'; b.style.top=s.y+'%'; b.dataset.obj=s.key;
+  const inner = s.n
+    ? '<text class="num" x="22" y="20">'+s.n+'</text>'           // гекс с цифрой (выбор)
+    : '<circle cx="22" cy="16" r="2.6" fill="var(--neon-white)"/>'; // гекс с точкой (объект сцены)
+  b.innerHTML='<svg class="hex" viewBox="0 0 44 52">'+
+      '<line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/>'+
+      '<g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/>'+inner+'</g></svg>';
+  b.addEventListener('mouseenter',()=>{hl(s.key,true);typeTip(s.key);});
+  b.addEventListener('mousemove',moveTip);
+  b.addEventListener('mouseleave',()=>{hl(s.key,false);hideTip();});
+  b.addEventListener('click',()=>selectSpot(b,s));
+  container.appendChild(b);
+}
+function buildLock(container,l){
+  const b=document.createElement('button'); b.className='lockspot'; b.style.left=l.x+'%'; b.style.top=l.y+'%'; b.dataset.obj=l.key;
+  b.innerHTML='<svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/><circle class="cdot" cx="22" cy="50" r="2"/>'+
+      '<g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/>'+
+      '<rect class="lkbody" x="17" y="15" width="10" height="8" rx="1.3"/>'+
+      '<path class="lkbar" d="M18.6,15 v-2.4 a3.4,3.4 0 0 1 6.8,0 v2.4"/>'+
+      '<circle class="lkhole" cx="22" cy="18.8" r="1.1"/></g></svg>';
+  b.addEventListener('mouseenter',()=>{hl(l.key,true);typeTip(l.key);});
+  b.addEventListener('mousemove',moveTip);
+  b.addEventListener('mouseleave',()=>{hl(l.key,false);hideTip();});
+  container.appendChild(b);
+}
+// сцена 0
+SPOTS.forEach(s=>buildSpot(slide0,s));  LOCKS.forEach(l=>buildLock(slide0,l));
+// сцена 1
+SPOTS1.forEach(s=>buildSpot(slide1,s)); LOCKS1.forEach(l=>buildLock(slide1,l));
+
+// ---- взаимная подсветка: объект ↔ его гекс/замочек ----
+function hl(key,on){
+  const line=document.getElementById('obj-'+key);
+  const glow=document.getElementById('glow-'+key);
+  if(line) line.classList.toggle('hot',on);
+  if(glow) glow.classList.toggle('gactive',on);
+  document.querySelectorAll('.spot[data-obj="'+key+'"],.lockspot[data-obj="'+key+'"]').forEach(m=>m.classList.toggle('lit',on));
+}
+// наведение на контур объекта — подсветка + тултип
+document.querySelectorAll('.objline').forEach(o=>{
+  const key=o.id.replace('obj-','');
+  o.addEventListener('mouseenter',()=>{hl(key,true);typeTip(key);});
+  o.addEventListener('mousemove',moveTip);
+  o.addEventListener('mouseleave',()=>{hl(key,false);hideTip();});
+});
+
+// ---- тултип-описание подведов (4 ромба) ----
+const GEMS={
+  mbm:  {t:'МБМ · Малый бизнес Москвы',                d:'Консультации, обучение, мероприятия и онлайн-сервисы для предпринимателей.'},
+  fsk:  {t:'ФСК · Фонд содействия кредитованию',        d:'Поручительства по кредитам и помощь в получении финансирования.'},
+  fpsp: {t:'ФПСП · Фонд поддержки социальных проектов', d:'Поддержка соцпроектов, квотирование, социальная ответственность бизнеса.'},
+  shtab:{t:'ШТАБ · Штаб по защите бизнеса',             d:'Досудебное разрешение споров бизнеса и власти, снятие системных рисков.'}
+};
+document.querySelectorAll('.gem').forEach(g=>{
+  const o=GEMS[g.dataset.key]; if(!o) return;
+  g.addEventListener('mouseenter',()=>{ tipTyper.forEach(clearTimeout); tip.className='tip show'; tip.innerHTML='<b>'+o.t+'</b><div class="row">'+o.d+'</div>'; });
+  g.addEventListener('mousemove',moveTip);
+  g.addEventListener('mouseleave',hideTip);
+});
+
+// ===== достижения: очередь уведомление → полёт → бейдж в панели игрока =====
+let qTimer=null;
+const earnedVeha=new Set();
+const achQueue=[]; let achBusy=false;
+function enqueueAch(text,icon,badge){ if(!badge) return; achQueue.push({text,icon,badge}); pumpAch(); }
+function pumpAch(){
+  if(achBusy||!achQueue.length) return; achBusy=true;
+  const {text,icon,badge}=achQueue.shift();
+  const note=document.getElementById('achNote');
+  note.querySelector('.ach-text').textContent=text;
+  note.querySelector('.ach-fly-ico use').setAttribute('href',icon);
+  note.classList.remove('fly'); note.style.removeProperty('--dx'); note.style.removeProperty('--dy');
+  note.classList.add('show');                       // всплыло снизу
+  setTimeout(()=>{                                  // полёт к бейджу
+    const ni=note.querySelector('.ach-fly-ico').getBoundingClientRect();
+    const br=badge.getBoundingClientRect();
+    note.style.setProperty('--dx',((br.left+br.width/2)-(ni.left+ni.width/2))+'px');
+    note.style.setProperty('--dy',((br.top+br.height/2)-(ni.top+ni.height/2))+'px');
+    note.classList.add('fly');
+  },1800);
+  setTimeout(()=>{ badge.classList.remove('pending'); badge.classList.add('justgot'); note.classList.remove('show','fly'); achBusy=false; pumpAch(); },2900);
+}
+// тултип бейджа достижения (печать)
+function bindAchBadge(b){
+  b.addEventListener('mouseenter',()=>{
+    tipTyper.forEach(clearTimeout);
+    const use=b.querySelector('use'), icon=use?use.getAttribute('href'):'#ic-book';
+    tip.className='tip show'; tip.innerHTML='<b><svg class="tip-ach-ico"><use href="'+icon+'"/></svg>Достижение</b><div class="row qtype"></div>';
+    const row=tip.querySelector('.qtype'), full=b.dataset.title||''; let i=0; clearInterval(qTimer);
+    qTimer=setInterval(()=>{ row.textContent=full.slice(0,++i); if(i>=full.length) clearInterval(qTimer); },28);
+  });
+  b.addEventListener('mousemove',moveTip);
+  b.addEventListener('mouseleave',()=>{clearInterval(qTimer);hideTip();});
+}
+document.querySelectorAll('.ach-badge').forEach(bindAchBadge);
+
+// достижение «Выслушал героя» (книга) → в панель игрока
+function grantS0Ach(){
+  const badge=document.querySelector('#achList .ach-badge');
+  if(badge && badge.classList.contains('pending')) enqueueAch('Достижение: «Выслушал героя»','#ic-book',badge);
+  completeTask('s0-hero');
+}
+// достижение вехи (награда) → бейдж в панели игрока. silent=true — без полёта (прошлые вехи)
+function grantVehaAch(i,silent){
+  if(earnedVeha.has(i)) return; earnedVeha.add(i);
+  const list=document.getElementById('achList'); if(!list) return;
+  const badge=document.createElement('button');
+  badge.className='ach-badge'+(silent?'':' pending'); badge.dataset.title='Веха '+i+': «'+VEHA_ACH[i]+'»';
+  badge.innerHTML='<svg class="ic"><use href="#ic-reward"/></svg>';
+  list.appendChild(badge); bindAchBadge(badge);
+  if(silent) badge.classList.add('justgot');
+  else enqueueAch('Достижение вехи '+i+': «'+VEHA_ACH[i]+'»','#ic-reward',badge);
+}
+// показать бейдж «книга» (Выслушал героя) сразу, без полёта (когда прошли слайд 0)
+function revealBookSilent(){
+  const b=document.querySelector('#achList .ach-badge');
+  if(b && b.classList.contains('pending')){ b.classList.remove('pending'); b.classList.add('justgot'); }
+}
+
+// «?» над героем — реплика печатается; допечаталась → достижение
+document.querySelectorAll('.hero-q').forEach(q=>{
+  q.addEventListener('mouseenter',()=>{
+    tipTyper.forEach(clearTimeout);
+    const full=q.dataset.qText||'';
+    tip.className='tip show'; tip.innerHTML='<b>'+(q.dataset.qTitle||'Игрок')+'</b><div class="row qtype"></div>';
+    const row=tip.querySelector('.qtype'); let i=0; clearInterval(qTimer);
+    qTimer=setInterval(()=>{ row.textContent=full.slice(0,++i); if(i>=full.length){ clearInterval(qTimer); grantS0Ach(); } },28);
+  });
+  q.addEventListener('mousemove',moveTip);
+  q.addEventListener('mouseleave',()=>{clearInterval(qTimer);hideTip();});
+});
+
+function selectSpot(b,s){
+  b.closest('.slide').querySelectorAll('.spot').forEach(el=>el.classList.remove('sel'));
+  b.classList.add('sel');
+  if(s.task) completeTask(s.task);
+}
+
+// сворачивание панели (из базы)
+document.querySelectorAll('.panel-toggle').forEach(btn=>btn.addEventListener('click',e=>{
+  e.stopPropagation(); const p=btn.closest('.panel'); if(p) p.classList.toggle('collapsed');
+}));
+
+// ===== каркас презентации =====
+const slides=Array.from(document.querySelectorAll('.slide'));
+const total=slides.length; let cur=0;
+const dotsEl=document.getElementById('dots');
+slides.forEach((s,i)=>{ const d=document.createElement('div'); d.className='dot'; d.onclick=()=>go(i); dotsEl.appendChild(d); });
+const dots=Array.from(document.querySelectorAll('.dot'));
+
+// ===== задания по вехам (индекс = слайд); прогресс заполняется по их выполнению =====
+const TASKS=[
+  [ {id:'s0-hero', t:'Выслушать героя'}, {id:'s0-dir', t:'Выбрать направление'} ], // веха 0
+  [ {id:'s1-concept', t:'Концепция и бизнес-модель'}, {id:'s1-tax', t:'Система налогообложения'},
+    {id:'s1-loc', t:'Подобрать локацию'}, {id:'s1-money', t:'Привлечь средства'} ],   // веха 1
+  [],[],[],[],[]   // вехи 2–6 — задания добавим при сборке сцен
+];
+const VEHA_ACH=['Путь выбран','Бизнес открыт','Всё по правилам','Кризис пройден','Новый уровень','Опора города','Возможности для города'];
+const doneTasks=new Set();
+
+// строим прогресс-бар: сегмент вехи + гекс-достижение между вехами
+const progressEl=document.getElementById('progress');
+const segs=[], hexes=[];
+TASKS.forEach((tasks,i)=>{
+  const seg=document.createElement('div'); seg.className='pseg'; seg.innerHTML='<i class="pf"></i>'; progressEl.appendChild(seg); segs.push(seg);
+  const hex=document.createElement('div'); hex.className='phex'; hex.dataset.veha=i;
+  hex.innerHTML='<svg viewBox="0 0 24 26"><polygon class="ph" points="12,2 22,7.5 22,18.5 12,24 2,18.5 2,7.5"/><path class="pchk" d="M7 13l3.4 3.4L17 9"/></svg>';
+  hex.addEventListener('mouseenter',()=>{ tipTyper.forEach(clearTimeout); const done=hex.classList.contains('done');
+    tip.className='tip show'; tip.innerHTML='<b><svg class="tip-ach-ico"><use href="#ic-reward"/></svg>Достижение вехи '+i+'</b><div class="row">«'+VEHA_ACH[i]+'»'+(done?' — получено ✓':' · заблокировано')+'</div>'; });
+  hex.addEventListener('mousemove',moveTip);
+  hex.addEventListener('mouseleave',hideTip);
+  progressEl.appendChild(hex); hexes.push(hex);
+});
+
+function updateProgress(silent){
+  TASKS.forEach((tasks,i)=>{
+    const tot=tasks.length, dn=tasks.filter(t=>doneTasks.has(t.id)).length;
+    segs[i].querySelector('.pf').style.width=(tot?dn/tot*100:0)+'%';
+    const full= tot>0 && dn===tot;
+    hexes[i].classList.toggle('done', full);
+    if(full) grantVehaAch(i,silent);   // веха пройдена → ачивка в панель игрока
+  });
+}
+// авто-завершить все вехи ДО текущего слайда (прошлый прогресс виден на следующих)
+function syncPriorProgress(){
+  for(let v=0; v<cur; v++) (TASKS[v]||[]).forEach(t=>doneTasks.add(t.id));
+  if(cur>0) revealBookSilent();          // книга-достижение слайда 0
+  updateProgress(true);                  // прошлые вехи — молча (без полёта плашки)
+}
+function completeTask(id){ if(doneTasks.has(id))return; doneTasks.add(id); updateProgress(); renderTasks(); }
+function toggleTask(id){ doneTasks.has(id)?doneTasks.delete(id):doneTasks.add(id); updateProgress(); renderTasks(); }
+
+const tasksListEl=document.getElementById('tasksList'), tasksVehaEl=document.getElementById('tasksVeha');
+function renderTasks(){
+  if(!tasksListEl) return;
+  const tasks=TASKS[cur]||[]; if(tasksVehaEl) tasksVehaEl.textContent=cur;
+  if(!tasks.length){ tasksListEl.innerHTML='<div class="task empty">— задания появятся при сборке вехи —</div>'; return; }
+  tasksListEl.innerHTML=tasks.map(t=>'<div class="task'+(doneTasks.has(t.id)?' done':'')+'" data-id="'+t.id+'">'+
+    '<span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="txt">'+t.t+'</span></div>').join('');
+  tasksListEl.querySelectorAll('.task[data-id]').forEach(el=>el.onclick=()=>toggleTask(el.dataset.id));
+}
+
+const LVL_NAME=['Готов к старту','Открывает бизнес','Обязательные требования','Форс-мажор','Масштабирование','Наследие','Финал'];
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+  const lvlEl=document.getElementById('playerLvl'); if(lvlEl) lvlEl.textContent='Уровень '+cur+' · '+(LVL_NAME[cur]||'');
+  syncPriorProgress();   // прошлые вехи завершены и видны
+  renderTasks(); hideTip();
+}
+function go(i){ cur=(i+total)%total; render(); }
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight') go(cur+1);
+  else if(e.key==='ArrowLeft') go(cur-1);
+  else if(cur===0){ const i={'1':0,'2':1,'3':2}[e.key]; if(i!==undefined){ const sp=document.querySelectorAll('.spot')[i]; selectSpot(sp,SPOTS[i]); } }
+});
+
+// ===== заставка-загрузка: прогресс по реальной загрузке фона =====
+(function(){
+  const intro=document.getElementById('intro'); if(!intro) return;
+  const fill=document.getElementById('introFill'), pct=document.getElementById('introPct');
+  let imgReady=false;
+  (function(){const im=new Image();const m=()=>{imgReady=true;};im.onload=m;im.onerror=m;im.src='slide0.png';if(im.complete)m();})();
+  const t0=Date.now(),MIN=1200,MAX=12000; let p=0,fin=false;
+  const t=setInterval(()=>{
+    const el=Date.now()-t0, cap=imgReady?100:90;
+    p=Math.min(cap,p+Math.random()*2.2+1.9);
+    if((imgReady&&el>=MIN)||el>=MAX) p=100;
+    fill.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+    if(p>=100&&!fin){ fin=true; clearInterval(t); finish(); }
+  },60);
+  function finish(){ setTimeout(()=>intro.classList.add('loaded'),300); setTimeout(()=>intro.classList.add('done'),1500); }
+})();
+
+updateProgress();
+render();
+</script>
+</body>
+</html>
