@@ -138,6 +138,9 @@ body{display:flex;align-items:center;justify-content:center}
 .objglow path{opacity:.5;animation:vglowpulse 3.4s ease-in-out infinite;transition:stroke-width .2s,stroke .2s}
 .objglow path.gactive{opacity:1;stroke:var(--neon-bright);stroke-width:10;filter:url(#vglowStrong);animation:none}
 @keyframes vglowpulse{0%,100%{opacity:.32}50%{opacity:.68}}
+/* слайд 1: без постоянной линии-контура — только свечение-стена при наведении */
+.slide.no-objline .objline{stroke:transparent}
+.slide.no-objline .objglow path:not(.gactive):not(.galert){opacity:0;animation:none}
 /* мигание объекта при открытой задаче — в ритме мигания скилла-помощника (1.25s) */
 .objline.objalert{animation:objblink 1.25s ease-in-out infinite}
 @keyframes objblink{0%,100%{stroke:var(--neon);stroke-width:3;filter:drop-shadow(0 0 1.2px rgba(2,20,30,.9)) drop-shadow(0 0 4px var(--neon-soft))}
@@ -321,6 +324,15 @@ body{display:flex;align-items:center;justify-content:center}
   border:1px solid var(--cyan-soft);background:rgba(63,208,255,.05);padding:.55vw .8vw;
   clip-path:polygon(0 8px,8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%)}
 .tm-sub .ic{width:1.5vw;height:1.5vw;min-width:20px;min-height:20px;flex:0 0 auto;stroke:var(--cyan)}
+/* карточка помощника внутри окна задачи */
+.tm-ally-info{margin-top:1vw;padding:.7vw .9vw;border:1px solid var(--cyan-soft);border-left-width:3px;
+  background:rgba(63,208,255,.06);clip-path:polygon(0 8px,8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);
+  animation:tmAiIn .35s ease}
+@keyframes tmAiIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tm-ally-info .tm-ai-head{display:flex;align-items:center;gap:.5vw;font-family:var(--title-font);font-weight:700;
+  font-size:.92vw;letter-spacing:.04em;margin-bottom:.35vw}
+.tm-ally-info .tm-ai-head .ic{width:1.4vw;height:1.4vw;min-width:18px;min-height:18px;flex:0 0 auto}
+.tm-ally-info .tm-ai-desc{font-size:.85vw;line-height:1.4;color:var(--text)}
 .tm-foot{display:flex;justify-content:flex-end;margin-top:1.2vw}
 .tm-check{display:flex;align-items:center;gap:.55vw;cursor:pointer;font-family:var(--ui);font-weight:600;font-size:.92vw;
   color:var(--text);background:rgba(8,20,38,.65);border:1px solid var(--cyan-soft);border-radius:6px;padding:.5vw 1.1vw;transition:.2s}
@@ -360,7 +372,8 @@ body{display:flex;align-items:center;justify-content:center}
 .intro-pct{font-family:var(--title-font);font-size:.95vw;color:var(--cyan);letter-spacing:1px}
 .intro-logo{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:2;width:min(28%,360px);height:auto;opacity:.95;
   filter:drop-shadow(0 0 7px var(--cyan-soft));transition:left .8s ease,right .8s ease,top .8s ease,bottom .8s ease,width .8s ease}
-#intro.done .intro-logo{left:auto;right:1.6vw;bottom:auto;top:8%;transform:none;width:min(14%,180px)}
+/* лого Штаба+Департамента — в правый НИЖНИЙ угол, над нав-баром (не на кнопку «Дальше») */
+#intro.done .intro-logo{left:auto;top:auto;right:1.6vw;bottom:3.6vw;transform:none;width:min(14%,180px)}
 #intro.loaded .skyline,#intro.loaded .intro-title,#intro.loaded .intro-load,
 #intro.loaded .intro-bar,#intro.loaded .intro-pct{opacity:0;transition:opacity .5s ease;pointer-events:none}
 </style>
@@ -400,6 +413,15 @@ body{display:flex;align-items:center;justify-content:center}
   <symbol id="ic-help" viewBox="0 0 24 24"><path d="M5 4.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-6.5L8 19.5V16.5H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/><path d="M8.5 10.5h.01 M12 10.5h.01 M15.5 10.5h.01"/></symbol>
   <!-- кофейный стакан (кафе) -->
   <symbol id="ic-coffee" viewBox="0 0 24 24"><path d="M9.5 6c-.6-1 .6-1.6 0-2.6 M12.5 6c-.6-1 .6-1.6 0-2.6 M6 8.4h11l-.5 1.8H6.5z M7 10.2h9l-1 9.6a1 1 0 0 1-1 .9H9a1 1 0 0 1-1-.9z M8.4 14h6.2"/></symbol>
+  <!-- иконки подзадач слайда 2 -->
+  <symbol id="ic-paint" viewBox="0 0 24 24"><path d="M3 5.5h12v4H3z M15 6.5h3.5v3H10 M10 9.5v3H7.5v8.5H10z"/></symbol>
+  <symbol id="ic-helmet" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0 M3 15h18v2.5H3z M10 7.2V5h4v2.2"/></symbol>
+  <symbol id="ic-sanitary" viewBox="0 0 24 24"><path d="M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.5 9 7 12 3Z M9.8 12.5a2.2 2.2 0 0 0 2.2 2.2"/></symbol>
+  <symbol id="ic-fire" viewBox="0 0 24 24"><path d="M12 3c1 3 4 4.2 4 8a4 4 0 0 1-8 0c0-1.6.6-2.6 1.6-3.2.2 1 .8 1.6 1.5 1.9C10.4 7.3 11 5.2 12 3Z"/></symbol>
+  <symbol id="ic-bottle" viewBox="0 0 24 24"><path d="M10 3h4 M10.5 3v3.6L9 9.2V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V9.2l-1.5-2.6V3 M9 13.2h6"/></symbol>
+  <symbol id="ic-staff" viewBox="0 0 24 24"><path d="M8 9.2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M16 9.2a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z M3 19v-1a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v1 M14.5 14H17a4 4 0 0 1 4 4v1"/></symbol>
+  <symbol id="ic-access" viewBox="0 0 24 24"><path d="M12 5a1.6 1.6 0 1 0 0-3.2A1.6 1.6 0 0 0 12 5Z M11 7.5v4.5h4l2.2 5.5 M11 9.5h-.6a4.2 4.2 0 1 0 4.3 5.2"/></symbol>
+  <symbol id="ic-equip" viewBox="0 0 24 24"><path d="M4 4h16v16H4z M4 9.2h16 M7 6.6h.01 M10 6.6h.01 M7.5 12h9v5.5h-9z"/></symbol>
 </svg>
 
 <div class="stage" id="stage">
@@ -453,28 +475,58 @@ body{display:flex;align-items:center;justify-content:center}
     </section>
 
     <!-- ===== Слайд 1 — Открыть бизнес (выбран общепит · кафе) ===== -->
-    <section class="slide" data-notes="Уровень 1. Создать компанию, спланировать бизнес, подобрать площадку, привлечь финансирование. Слева — «Мой бизнес» (МБМ), в центре — будущее кафе, справа — Московский гарантийный фонд (ФСК).">
+    <section class="slide no-objline" data-notes="Уровень 1. Создать компанию, спланировать бизнес, подобрать площадку, привлечь финансирование. Слева — «Мой бизнес» (МБМ), в центре — будущее кафе, справа — Московский гарантийный фонд (ФСК).">
       <div class="bg" style="background-image:url('slide1.png')"></div>
       <!-- контуры объектов — координаты из layout-SVG «Слайд 1 объекты.svg» -->
       <svg class="objs" viewBox="0 0 2172 724" preserveAspectRatio="none">
         <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
-          <path id="glow-mbm1" filter="url(#vglow)" d="M718.5 276.125V533.939C718.5 536.91 715.925 539.226 712.971 538.911L591.471 525.976C588.929 525.705 587 523.561 587 521.004V310.773C587 308.54 588.481 306.578 590.629 305.965L712.129 271.317C715.322 270.406 718.5 272.804 718.5 276.125Z"/>
+          <path id="glow-mbm1" filter="url(#vglow)" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
           <path id="glow-cafe" filter="url(#vglow)" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.478 182.322C880.408 183.023 879.034 184.987 879.083 187.171L883.5 381.5"/>
           <path id="glow-fsk1" filter="url(#vglow)" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
         </g>
         <g class="objlines">
-          <path class="objline" id="obj-mbm1" d="M718.5 276.125V533.939C718.5 536.91 715.925 539.226 712.971 538.911L591.471 525.976C588.929 525.705 587 523.561 587 521.004V310.773C587 308.54 588.481 306.578 590.629 305.965L712.129 271.317C715.322 270.406 718.5 272.804 718.5 276.125Z"/>
+          <path class="objline" id="obj-mbm1" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
           <path class="objline" id="obj-cafe" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.478 182.322C880.408 183.023 879.034 184.987 879.083 187.171L883.5 381.5"/>
           <path class="objline" id="obj-fsk1" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
         </g>
       </svg>
       <!-- маркеры/замочки слайда 1 добавляются скриптом -->
     </section>
-    <section class="slide" data-notes="Уровень 2. Обязательные требования — красные точки рисков на фасаде. МБМ + Штаб.">
-      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Уровень 2</div><h2>Обязательные требования</h2><p>в разработке — генерируем сцену</p></div>
+    <!-- ===== Слайд 2 — кафе на ремонте ===== -->
+    <section class="slide no-objline" data-notes="Уровень 2. Кафе на ремонте: фасад обновлён, монтируют вывеску «Ваш любимый КОФЕ», герой с прорабом обсуждают работы. Слева — «Мой бизнес» (МБМ), справа — Гарантийный фонд (ФСК).">
+      <div class="bg" style="background-image:url('slide2.png')"></div>
+      <!-- контуры объектов — координаты из layout-SVG «Слайд 2 объекты.svg» (та же улица) -->
+      <svg class="objs" viewBox="0 0 2172 724" preserveAspectRatio="none">
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-mbm2" filter="url(#vglow)" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
+          <path id="glow-cafe2" filter="url(#vglow)" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.478 182.322C880.408 183.023 879.034 184.987 879.083 187.171L883.5 381.5"/>
+          <path id="glow-fsk2" filter="url(#vglow)" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
+        </g>
+        <g class="objlines">
+          <path class="objline" id="obj-mbm2" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
+          <path class="objline" id="obj-cafe2" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.478 182.322C880.408 183.023 879.034 184.987 879.083 187.171L883.5 381.5"/>
+          <path class="objline" id="obj-fsk2" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
+        </g>
+      </svg>
+      <!-- маркеры слайда 2 добавляются скриптом -->
     </section>
-    <section class="slide" data-notes="Уровень 3. Форс-мажор — карточка случайного события. Решаем через Штаб.">
-      <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Уровень 3</div><h2>Урегулировать форс-мажор</h2><p>в разработке — генерируем сцену</p></div>
+    <!-- ===== Слайд 3 — кафе открыто и работает ===== -->
+    <section class="slide no-objline" data-notes="Уровень 3. Кафе открылось: вывеска «Ваш любимый КОФЕ», летняя терраса, гости внутри. Слева — ЦУБ (центр услуг для бизнеса), справа — Гарантийный фонд (ФСК).">
+      <div class="bg" style="background-image:url('slide3.png')"></div>
+      <!-- контуры объектов — координаты из layout-SVG «Слайд 3 объекты.svg» -->
+      <svg class="objs" viewBox="0 0 2172 724" preserveAspectRatio="none">
+        <g class="objglow" stroke="#3FD0FF" stroke-width="4" fill="none">
+          <path id="glow-mbm3" filter="url(#vglow)" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
+          <path id="glow-cafe3" filter="url(#vglow)" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.396 182.35C880.366 183.037 879 184.942 879 187.085V266"/>
+          <path id="glow-fsk3" filter="url(#vglow)" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
+        </g>
+        <g class="objlines">
+          <path class="objline" id="obj-mbm3" d="M740.37 254.979L735.103 536.98C735.048 539.936 732.453 542.199 729.517 541.852L591.413 525.522C588.896 525.224 587 523.091 587 520.556V300.652C587 298.477 588.407 296.551 590.479 295.889L733.85 250.123C737.113 249.081 740.434 251.555 740.37 254.979Z"/>
+          <path class="objline" id="obj-cafe3" d="M924.5 579L1430.65 660.063C1433.71 660.553 1436.47 658.171 1436.44 655.073L1429.57 3.89562C1429.54 0.494891 1426.19 -1.87854 1422.97 -0.787285L882.396 182.35C880.366 183.037 879 184.942 879 187.085V266"/>
+          <path class="objline" id="obj-fsk3" d="M2110.5 1.5L2130.36 713.861C2130.44 716.676 2128.17 719 2125.36 719H1793.37C1793.12 719 1792.88 718.982 1792.63 718.945L1458.28 669.138C1455.82 668.772 1454.01 666.657 1454.02 664.173L1456.5 1.5"/>
+        </g>
+      </svg>
+      <!-- маркеры слайда 3 добавляются скриптом -->
     </section>
     <section class="slide" data-notes="Уровень 4. Развилка: масштаб / производство / общество / соц-бизнес. Герой выбирает сам.">
       <div class="stub"><div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><div class="vtag">Уровень 4</div><h2>Масштабирование</h2><p>в разработке — генерируем сцену</p></div>
@@ -547,6 +599,7 @@ body{display:flex;align-items:center;justify-content:center}
         <h3 class="tm-name" id="tmName"></h3>
         <div class="tm-hint">Что нужно сделать на этом шаге:</div>
         <div class="tm-subs" id="tmSubs"></div>
+        <div class="tm-ally-info" id="tmAllyInfo" hidden></div>
         <div class="tm-foot">
           <button class="tm-check" id="tmCheck">
             <span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
@@ -594,7 +647,15 @@ const OBJECTS={
   // ---- слайд 1: открыть бизнес (кафе) ----
   cafe:     {t:'Ваше кафе',            d:3, r:'Концепция, ремонт, оборудование, персонал', w:'Запуск кафе'},
   mbm1:     {t:'«Мой бизнес» · МБМ',   d:1, r:'Консультации, обучение, бизнес-план', w:'Знания и поддержка'},
-  fsk1:     {t:'Московский гарантийный фонд · ФСК', d:2, r:'Бизнес-план, поручительство по кредиту', w:'Стартовый капитал'}
+  fsk1:     {t:'Московский гарантийный фонд · ФСК', d:2, r:'Бизнес-план, поручительство по кредиту', w:'Стартовый капитал'},
+  // ---- слайд 2: кафе на ремонте ----
+  cafe2:    {t:'Ваше кафе · ремонт',   d:3, r:'Отделка, оборудование, монтаж вывески', w:'Скоро открытие'},
+  mbm2:     {t:'«Мой бизнес» · МБМ',   d:1, r:'Консультации, обучение, бизнес-план', w:'Знания и поддержка'},
+  fsk2:     {t:'Московский гарантийный фонд · ФСК', d:2, r:'Бизнес-план, поручительство по кредиту', w:'Стартовый капитал'},
+  // ---- слайд 3: кафе открыто ----
+  cafe3:    {t:'Кафе «Ваш любимый кофе»', d:3, r:'Открыто и работает: терраса, гости', w:'Поток гостей'},
+  mbm3:     {t:'Центр услуг для бизнеса · ЦУБ', d:1, r:'Консультации и услуги для бизнеса', w:'Поддержка'},
+  fsk3:     {t:'Московский гарантийный фонд · ФСК', d:2, r:'Бизнес-план, поручительство по кредиту', w:'Стартовый капитал'}
 };
 // 3 объекта выбора (цифры) — координаты из layout-SVG «Слайд 0 объекты.svg» (2172×724)
 const SPOTS=[
@@ -610,15 +671,27 @@ const LOCKS=[
 ];
 // ---- слайд 1: объекты сцены (координаты из «Слайд 1 объекты.svg») ----
 const SPOTS1=[
-  {key:'mbm1', x:30,   y:37, cap:'«Мой бизнес» · МБМ',      ic:'#ic-help'},
+  {key:'mbm1', x:30.5, y:34, cap:'«Мой бизнес» · МБМ',      ic:'#ic-help'},
   {key:'cafe', x:53,   y:30, cap:'Ваше кафе', ic:'#ic-coffee'},
   {key:'fsk1', x:84,   y:16, cap:'Гарантийный фонд · ФСК',  ic:'#ic-help'}
 ];
 const LOCKS1=[];   // на слайде 1 landmark-замочков нет
+// ---- слайд 2: кафе на ремонте (та же улица, ключи объектов с суффиксом 2) ----
+const SPOTS2=[
+  {key:'mbm2',  x:30.5, y:34, cap:'«Мой бизнес» · МБМ',      ic:'#ic-help'},
+  {key:'cafe2', x:53,   y:30, cap:'Ваше кафе · ремонт',      ic:'#ic-coffee'},
+  {key:'fsk2',  x:84,   y:16, cap:'Гарантийный фонд · ФСК',  ic:'#ic-help'}
+];
+// ---- слайд 3: кафе открыто ----
+const SPOTS3=[
+  {key:'mbm3',  x:30.5, y:34, cap:'Центр услуг для бизнеса · ЦУБ', ic:'#ic-help'},
+  {key:'cafe3', x:53,   y:30, cap:'Кафе «Ваш любимый кофе»',       ic:'#ic-coffee'},
+  {key:'fsk3',  x:84,   y:16, cap:'Гарантийный фонд · ФСК',        ic:'#ic-help'}
+];
 
 const stage=document.getElementById('stage');
 const slidesAll=document.querySelectorAll('.slide');
-const slide0=slidesAll[0], slide1=slidesAll[1];
+const slide0=slidesAll[0], slide1=slidesAll[1], slide2=slidesAll[2], slide3=slidesAll[3];
 
 // тултип — в body, position:fixed (как в базе)
 const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
@@ -688,6 +761,10 @@ function buildLock(container,l){
 SPOTS.forEach(s=>buildSpot(slide0,s));  LOCKS.forEach(l=>buildLock(slide0,l));
 // сцена 1
 SPOTS1.forEach(s=>buildSpot(slide1,s)); LOCKS1.forEach(l=>buildLock(slide1,l));
+// сцена 2 (ремонт кафе)
+SPOTS2.forEach(s=>buildSpot(slide2,s));
+// сцена 3 (кафе открыто)
+SPOTS3.forEach(s=>buildSpot(slide3,s));
 
 // ---- взаимная подсветка: объект ↔ его гекс/замочек ----
 function hl(key,on){
@@ -827,14 +904,36 @@ const TASKS=[
       {t:'Подготовить предварительные расчёты',        ic:'#ic-calc'},
       {t:'Сформировать бизнес-план',                   ic:'#ic-plan'},
       {t:'Составить дорожную карту запуска проекта',   ic:'#ic-road'} ]},
-    {id:'s1-place', t:'Подобрать площадку', ally:null, subs:[
+    {id:'s1-place', t:'Подобрать площадку', ally:'mbm',
+      allyNote:'Поможет оценить потенциал локации, подобрать помещение и проверить договор аренды.', subs:[
       {t:'Определиться с локацией (оценка потенциала)',        ic:'#ic-pin'},
       {t:'Подобрать помещение и заключить договор аренды',     ic:'#ic-key'} ]},
     {id:'s1-finance', t:'Привлечь финансирование', ally:'fsk', subs:[
       {t:'Открыть счёт в банке',     ic:'#ic-bank'},
       {t:'Привлечь финансирование',  ic:'#ic-coin'} ]}
   ],
-  [],[],[],[],[]   // вехи 2–6 — задания добавим при сборке сцен
+  // веха 2 — подготовка объекта к работе
+  [
+    {id:'s2-remont', t:'Сделать ремонт', ally:null, subs:[
+      {t:'Ремонт фасада и косметический ремонт помещения',            ic:'#ic-paint'},
+      {t:'Соблюдать правила проведения строительно-монтажных работ',  ic:'#ic-helmet'} ]},
+    {id:'s2-trebovaniya', t:'Выполнить обязательные требования', ally:'mbm',
+      allyNote:'Подскажет, какие обязательные требования нужно выполнить, и поможет ничего не упустить.', subs:[
+      {t:'Выполнить санитарные требования',                  ic:'#ic-sanitary'},
+      {t:'Выполнить требования пожарной безопасности',       ic:'#ic-fire'},
+      {t:'Выполнить требования по защите прав потребителей', ic:'#ic-rules'},
+      {t:'Оформить лицензию на продажу алкоголя',            ic:'#ic-bottle'} ]},
+    {id:'s2-hire', t:'Нанять сотрудников', ally:'fpsp',
+      allyNote:'Поможет с квотированием рабочих мест для инвалидов и социальными обязательствами работодателя.', subs:[
+      {t:'Нанять основной персонал: повар, официант, менеджер',   ic:'#ic-staff'},
+      {t:'Нанять бухгалтера',                                     ic:'#ic-calc'},
+      {t:'Выполнить требования трудового законодательства',       ic:'#ic-form'},
+      {t:'Квотирование рабочих мест для инвалидов',               ic:'#ic-access'} ]},
+    {id:'s2-equip', t:'Приобрести оборудование', ally:'fsk',
+      allyNote:'Поможет привлечь финансирование на закупку оборудования.', subs:[
+      {t:'Подобрать и закупить оборудование для кухни и зала',    ic:'#ic-equip'} ]}
+  ],
+  [],[],[],[]   // вехи 3–6 — задания добавим при сборке сцен
 ];
 // помощники-подведы (для меток и мигания)
 const ALLY_NAME={mbm:'МБМ',fsk:'ФСК',fpsp:'ФПСП',shtab:'ШТАБ'};
@@ -850,7 +949,7 @@ const VEHA_ACH=[
   {n:'Возможности для города', d:'Бизнес героя — часть больших возможностей Москвы.',                   ic:'#ic-future'}
 ];
 // названия уровней/вех (общие для бейджа игрока и панели заданий)
-const VEHA_NAME=['Выбор направления','Открыть бизнес','Обязательные требования','Урегулировать форс-мажор','Масштабирование','Наследие','Возможности для города'];
+const VEHA_NAME=['Выбор направления','Открыть бизнес','Подготовка объекта к работе','Урегулировать форс-мажор','Масштабирование','Наследие','Возможности для города'];
 const doneTasks=new Set();
 
 // ===== навыки героя: какое задание сколько даёт (know=Знания, civic=Общество, grow=Бизнес) =====
@@ -861,7 +960,11 @@ const TASK_SKILL={
   's1-company': {know:12, grow:8},
   's1-plan':    {know:12, grow:10},
   's1-place':   {grow:12},
-  's1-finance': {grow:14, civic:4}
+  's1-finance': {grow:14, civic:4},
+  's2-remont':      {grow:8},
+  's2-trebovaniya': {know:10, civic:6},
+  's2-hire':        {civic:10, grow:6},
+  's2-equip':       {grow:10}
 };
 let skillPrev={know:0,civic:0,grow:0};
 function setSkill(cls,v){ const el=document.querySelector('.skill.'+cls+' .sbar i'); if(el) el.style.width=v+'%'; }
@@ -956,18 +1059,18 @@ const tmName=document.getElementById('tmName'), tmAlly=document.getElementById('
 const tmSubs=document.getElementById('tmSubs'), tmCheck=document.getElementById('tmCheck');
 let modalTask=null;
 function blinkAlly(key){ document.querySelectorAll('.gem').forEach(g=>g.classList.toggle('alert', !!key && g.dataset.key===key)); }
-// помощник → объект сцены, который он подсвечивает (МБМ → «Мой бизнес», ФСК → гарантийный фонд)
-const ALLY_OBJ={mbm:'mbm1',fsk:'fsk1'};
+// помощник → объект сцены (МБМ → «Мой бизнес», ФСК → гарантийный фонд); ключ = база + номер слайда
+const ALLY_OBJ={mbm:'mbm',fsk:'fsk'};
 let litObjKey=null;
 function setObjAlert(key,on){
-  const line=document.getElementById('obj-'+key), glow=document.getElementById('glow-'+key);
-  if(line) line.classList.toggle('objalert',on);
-  if(glow) glow.classList.toggle('galert',on);
+  const glow=document.getElementById('glow-'+key);
+  if(glow) glow.classList.toggle('galert',on);   // мигает только свечение-стена (без линии)
   document.querySelectorAll('.spot[data-obj="'+key+'"],.lockspot[data-obj="'+key+'"]').forEach(m=>m.classList.toggle('lit',on));
 }
 function lightSceneObj(ally){
   if(litObjKey){ setObjAlert(litObjKey,false); litObjKey=null; }   // погасить прошлый
-  const k=ally&&ALLY_OBJ[ally]; if(k){ setObjAlert(k,true); litObjKey=k; }   // мигание в ритме скилла
+  const base=ally&&ALLY_OBJ[ally]; const k=base?base+cur:null;     // объект на текущем слайде (mbm1/mbm2/fsk1/fsk2)
+  if(k){ setObjAlert(k,true); litObjKey=k; }                       // мигание в ритме скилла
 }
 // неон-искра (шлейф кометы и залпы фейерверка) — с «гравитацией»
 function spawnSpark(x,y,color,ang,dist,dur,size){
@@ -1033,6 +1136,13 @@ function showModal(t){
   tmAlly.textContent = t.ally ? ('Помощник · '+ALLY_NAME[t.ally]) : 'Самостоятельный шаг';
   tmAlly.style.color = t.ally ? ALLY_COLOR[t.ally] : 'var(--cyan)';
   tmSubs.innerHTML=t.subs.map(s=>'<div class="tm-sub"><svg class="ic"><use href="'+s.ic+'"/></svg><span>'+s.t+'</span></div>').join('');
+  // карточка помощника
+  const info=document.getElementById('tmAllyInfo');
+  if(t.ally){ const g=GEMS[t.ally];
+    info.hidden=false; info.style.borderLeftColor=ALLY_COLOR[t.ally];
+    info.innerHTML='<div class="tm-ai-head" style="color:'+ALLY_COLOR[t.ally]+'"><svg class="ic" style="stroke:'+ALLY_COLOR[t.ally]+'"><use href="#ic-help"/></svg>'+(g?g.t:ALLY_NAME[t.ally])+'</div>'+
+      '<div class="tm-ai-desc">'+(t.allyNote||(g?g.d:''))+'</div>';
+  } else info.hidden=true;
   tmCheck.classList.toggle('done',doneTasks.has(t.id));
   modalEl.classList.add('show');
   blinkAlly(t.ally);       // помощник продолжает мигать, пока окно открыто

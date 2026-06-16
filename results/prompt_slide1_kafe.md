@@ -215,3 +215,49 @@ cartoon; low detail.
 - **Без машин**, небольшие деревья. Москва-Сити — мелким намёком вдали.
 - Герой теперь виден **в 3/4 спереди** (лицо), с планшетом — одно и то же лицо во всех слайдах.
 - Сверхширокий `--ar 3:1`, апскейл до 7680×2592.
+
+---
+---
+
+# ДОРИСОВКА ВЫВЕСОК на готовую картинку (edit / inpaint)
+
+**Задача:** на уже сгенерённый кадр `ChatGPT Image ...11_25_19.png` добавить ДВЕ вывески и
+**больше ничего не менять** (геометрия, свет, герой, качество — без изменений).
+
+**Как запускать (важно — иначе перерисует весь кадр и уронит качество):**
+- В **ChatGPT / DALL-E edit** или **Midjourney (Vary Region / inpaint)**: загрузить картинку,
+  **выделить маской только зону вывески** (узкая полоса над входом) и применить промпт ниже.
+  Маска = ИИ трогает только выделенное, остальное пиксель-в-пиксель сохраняется.
+- Делать **в два прохода** (две маски) — отдельно правая вывеска, отдельно левая. Так точнее.
+- ⚠️ Кириллица в AI всё равно может поплыть. Самый надёжный путь для госпрезентации —
+  **не дорисовывать в картинке, а наложить вывеску текстом/PNG-логотипом в HTML или в фоторедакторе.**
+
+## Промпт — проход 1: вывеска «Московский гарантийный фонд» (правое колонное здание)
+```
+Edit ONLY the masked area. Keep the entire rest of the image 100% unchanged — same composition,
+same buildings, same hero, same lighting, same colors, same resolution and sharpness. Do NOT
+re-render or restyle anything outside the mask.
+
+Inside the masked strip above the entrance of the dark stone columned building on the RIGHT, add a
+clean modern horizontal SIGNBOARD reading "Московский гарантийный фонд" in crisp white sans-serif
+Cyrillic letters, neatly aligned, realistic 3D channel letters with soft shadow, matching the
+building's perspective and the warm daylight. Keep it photoreal and subtle, like a real corporate
+sign. No other changes.
+```
+
+## Промпт — проход 2: вывеска «Мой бизнес» (светлый фасад с витриной слева/в глубине)
+```
+Edit ONLY the masked area. Keep the entire rest of the image 100% unchanged — same composition,
+same buildings, same hero, same lighting, same colors, same resolution and sharpness. Do NOT
+re-render or restyle anything outside the mask.
+
+Inside the masked strip above the shopfront of the light-coloured building on the LEFT, add a clean
+modern SIGNBOARD reading "Мой бизнес" in large white sans-serif Cyrillic letters with a small line
+"центр оказания услуг" beneath, plus a simple location-pin emblem on the right end, realistic 3D
+channel letters with soft shadow, matching the building's perspective and the warm daylight.
+Photoreal, subtle, like a real service-center sign. No other changes.
+```
+
+**Точный эталон надписей** (если ИИ исказит — поправить в редакторе по этим образцам):
+- `Московский гарантийный фонд` — белый, на тёмно-бордовом/тёмном поле.
+- `Мой бизнес` + `центр оказания услуг` — белый на коричневом, справа знак-локация.
