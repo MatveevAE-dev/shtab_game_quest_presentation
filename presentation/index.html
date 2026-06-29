@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>На одной волне — 2026 · Блок МСП</title>
+
+<!-- pdf.js (CDN) — рендер презентаций подведов прямо из PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+/* ============================================================
+   ШРИФТ — ALS Hauss Next (по гайдбуку).
+   Файлы шрифта в репо нет → положи их в presentation/fonts/.
+   Пока файлов нет — fallback на системный гротеск.
+   ============================================================ */
+@font-face{
+  font-family:"ALS Hauss Next";
+  src:url("fonts/ALSHaussNext-Regular.woff2") format("woff2");
+  font-weight:400; font-display:swap;
+}
+@font-face{
+  font-family:"ALS Hauss Next";
+  src:url("fonts/ALSHaussNext-Bold.woff2") format("woff2");
+  font-weight:700; font-display:swap;
+}
+@font-face{
+  font-family:"ALS Hauss Next Wide";
+  src:url("fonts/ALSHaussNextWide-Bold.woff2") format("woff2");
+  font-weight:700; font-display:swap;
+}
+
+:root{
+  /* размеры экрана-эталона */
+  --scr-w: 7680;
+  --scr-h: 2592;
+  /* зоны: 1536 + 4608 + 1536 = 7680 (центр держит 16:9) */
+  --zone-side: 20%;      /* 1536/7680 */
+  --zone-center: 60%;    /* 4608/7680 */
+
+  /* палитра «дневная Москва» */
+  --green:#2FAF6E;
+  --gold:#F4B740;
+  --sky:#6CC0E5;
+  --text:#15241c;
+  --text-dim:#41594d;
+  --panel:rgba(255,255,255,.62);
+  --panel-edge:rgba(255,255,255,.85);
+
+  --title-font:"ALS Hauss Next Wide","ALS Hauss Next",system-ui,Arial,sans-serif;
+  --body-font:"ALS Hauss Next",system-ui,Arial,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b1410}
+body{font-family:var(--body-font);color:var(--text)}
+
+/* СЦЕНА — масштабируется в окно превью, сохраняя 7680×2592 */
+.stage{
+  position:relative;
+  width:100vw; height:calc(100vw * var(--scr-h) / var(--scr-w));
+  max-height:100vh; max-width:calc(100vh * var(--scr-w) / var(--scr-h));
+  margin:auto; top:50%; transform:translateY(-50%);
+  background:#cfe6dd;
+  background-image:url("../img/slide0_day.png"); /* единый фон «дневная Москва» */
+  background-size:cover; background-position:center;
+  overflow:hidden;
+}
+
+/* три зоны */
+.zones{position:absolute;inset:0;display:flex}
+.zone{position:relative;height:100%}
+.zone-left{width:var(--zone-side)}
+.zone-center{width:var(--zone-center)}
+.zone-right{width:var(--zone-side)}
+
+/* блюр-подложка под боковыми зонами (фон читаем под текстом) */
+.zone-left::before,.zone-right::before{
+  content:"";position:absolute;inset:0;
+  backdrop-filter:blur(10px) saturate(1.05);
+  -webkit-backdrop-filter:blur(10px) saturate(1.05);
+  background:linear-gradient(180deg,rgba(20,40,30,.34),rgba(20,40,30,.5));
+  z-index:0;
+}
+.zone-left{box-shadow:inset -2px 0 0 rgba(255,255,255,.18)}
+.zone-right{box-shadow:inset 2px 0 0 rgba(255,255,255,.18)}
+
+/* ----- ЦЕНТР: PDF подведа.
+   Зона уже ровно 16:9 (4608×2592) → рамка заполняет её ЦЕЛИКОМ, без зазоров. ----- */
+.zone-center{padding:0}
+.pdf-frame{
+  position:relative;
+  width:100%; height:100%;
+  background:#fff;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+#pdfCanvas{width:100%;height:100%;display:block}
+.pdf-placeholder{
+  color:var(--text-dim);font-size:1.4vw;text-align:center;padding:2vw;line-height:1.4;
+}
+.pdf-placeholder b{display:block;font-family:var(--title-font);color:var(--text);
+  font-size:2vw;margin-bottom:.6vw}
+
+/* ----- БОКОВЫЕ ЗОНЫ: общий контейнер контента ----- */
+.zone-inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;
+  padding:3% 7%;color:#f3fbf6}
+
+/* ЛЕВО: общая инфа + герой */
+.org-tagline{font-family:var(--title-font);font-weight:700;
+  font-size:1.7vw;line-height:1;letter-spacing:.01em;color:var(--gold);
+  text-transform:uppercase;margin-bottom:1.2vw}
+.org-info{font-size:1.05vw;line-height:1.3;color:#eaf6ef;
+  white-space:pre-line; /* отбивка абзацев */}
+.hero{margin-top:auto;align-self:center;width:62%;max-width:60%}
+.hero svg{width:100%;height:auto;filter:drop-shadow(0 1vw 1.6vw rgba(0,0,0,.5))}
+
+/* ПРАВО: название подразделения + оглавление */
+.org-name{font-family:var(--title-font);font-weight:700;
+  font-size:1.9vw;line-height:1.04;color:#fff;margin-bottom:.4vw}
+.org-sub{font-size:1vw;color:var(--sky);margin-bottom:1.6vw;font-weight:700}
+.toc{list-style:none;display:flex;flex-direction:column;gap:.55vw;overflow:auto}
+.toc li{display:flex;align-items:flex-start;gap:.6vw;
+  font-size:1.02vw;line-height:1.2;color:#cfe3d8;cursor:pointer;
+  padding:.5vw .7vw;border-radius:.4vw;border-left:.25vw solid transparent;
+  transition:.2s}
+.toc li .arrow{color:var(--green);font-weight:700}
+.toc li:hover{background:rgba(255,255,255,.08)}
+.toc li.active{
+  background:rgba(47,175,110,.22);
+  border-left-color:var(--gold);
+  color:#fff;font-weight:700;
+}
+.toc li.active .arrow{color:var(--gold)}
+
+/* ── РЕЖИМ ВСТУПЛЕНИЯ: сначала только фон, без зон ── */
+/* в режиме intro зоны и панель листания скрыты — виден чистый фон */
+.stage.intro .zones{display:none}
+.stage.intro .ctl{display:none}
+/* кнопка «Начать» по центру вступления */
+.start{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:6;
+  display:none;font-family:var(--title-font);font-weight:700;font-size:1.5vw;
+  letter-spacing:.02em;color:#fff;cursor:pointer;border:none;
+  padding:1vw 2.6vw;border-radius:1vw;
+  background:var(--green);box-shadow:0 .6vw 2vw rgba(0,0,0,.4)}
+.start:hover{filter:brightness(1.08)}
+.stage.intro .start{display:block}
+/* кнопка «к вступлению» в режиме показа */
+.to-intro{position:absolute;left:1%;top:2%;z-index:6;display:none;
+  font-family:var(--body-font);font-weight:700;font-size:.9vw;cursor:pointer;
+  border:none;padding:.5vw 1vw;border-radius:.6vw;
+  background:var(--panel);color:var(--text);backdrop-filter:blur(6px)}
+.stage.present .to-intro{display:block}
+
+/* верхняя панель управления (выбор подведа + листание) — служебная, на превью */
+.ctl{position:absolute;left:50%;bottom:1%;transform:translateX(-50%);z-index:5;
+  display:flex;gap:.6vw;align-items:center;
+  background:var(--panel);border:1px solid var(--panel-edge);
+  border-radius:1vw;padding:.5vw .8vw;backdrop-filter:blur(6px)}
+.ctl button{font-family:var(--body-font);font-weight:700;font-size:.95vw;
+  border:none;border-radius:.5vw;padding:.45vw .9vw;cursor:pointer;
+  background:var(--green);color:#fff}
+.ctl button.ghost{background:rgba(255,255,255,.6);color:var(--text)}
+.ctl .page{font-size:.95vw;color:var(--text);min-width:4vw;text-align:center}
+.ctl select{font-family:var(--body-font);font-size:.95vw;padding:.4vw .6vw;
+  border-radius:.5vw;border:1px solid var(--panel-edge);background:#fff;color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- stage.intro — только фон (вступление); stage.present — деление на 3 зоны -->
+<div class="stage intro">
+  <div class="zones">
+
+    <!-- ЛЕВО: общая инфа + фигура героя -->
+    <div class="zone zone-left">
+      <div class="zone-inner">
+        <div class="org-tagline">На одной волне · 2026</div>
+        <div class="org-info" id="leftInfo"></div>
+        <!-- фигура героя-предпринимателя (SVG-заглушка; заменить на арт) -->
+        <div class="hero" aria-label="Герой-предприниматель">
+          <svg viewBox="0 0 120 220" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="60" cy="212" rx="40" ry="7" fill="rgba(0,0,0,.35)"/>
+            <circle cx="60" cy="34" r="22" fill="#f0c9a6"/>
+            <path d="M40 30c2-16 38-16 40 0 2 8-4 10-4 10s-2-12-16-12-16 12-16 12-6-2-4-10z" fill="#3a2a1c"/>
+            <rect x="34" y="58" width="52" height="86" rx="16" fill="var(--green)"/>
+            <rect x="52" y="58" width="16" height="50" fill="#ffffff" opacity=".85"/>
+            <rect x="22" y="64" width="16" height="64" rx="8" fill="var(--green)"/>
+            <rect x="82" y="64" width="16" height="64" rx="8" fill="var(--green)"/>
+            <rect x="40" y="140" width="18" height="68" rx="8" fill="#2a3b54"/>
+            <rect x="62" y="140" width="18" height="68" rx="8" fill="#2a3b54"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЦЕНТР: PDF подведа 16:9 -->
+    <div class="zone zone-center">
+      <div class="pdf-frame">
+        <canvas id="pdfCanvas" hidden></canvas>
+        <div class="pdf-placeholder" id="pdfPlaceholder">
+          <b id="phName">Презентация подведа</b>
+          Положи PDF (16:9) в <code>presentation/pdf/</code> и укажи путь
+          в конфиге <code>PODVEDY[].pdfPath</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРАВО: название подразделения + оглавление с подсветкой -->
+    <div class="zone zone-right">
+      <div class="zone-inner">
+        <div class="org-name" id="orgName"></div>
+        <div class="org-sub" id="orgSub"></div>
+        <ul class="toc" id="toc"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- вступление: кнопка перехода к показу презентаций -->
+  <button class="start" id="startBtn">Начать</button>
+  <!-- вернуться к вступлению (чистый фон) -->
+  <button class="to-intro" id="toIntroBtn">← К началу</button>
+
+  <!-- служебная панель (выбор подведа + листание PDF) -->
+  <div class="ctl">
+    <select id="orgSelect"></select>
+    <button class="ghost" id="prev">←</button>
+    <span class="page" id="pageLabel">— / —</span>
+    <button class="ghost" id="next">→</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   КОНФИГ ПОДВЕДОВ блока МСП (данные из «Конфепция_одна волна»).
+   toc: page — номер страницы PDF, с которой начинается раздел.
+   ============================================================ */
+const PODVEDY = [
+  {
+    id:"mbm",
+    name:"ГБУ «Малый бизнес Москвы»",
+    sub:"Нефинансовая поддержка бизнеса",
+    leftInfo:"Единое окно для предпринимателя: от поиска идеи и регистрации до масштабирования.\n\n→ 46 тыс. консультаций\n→ 32 тыс. на дистанционных курсах\n→ 29 тыс. обращений к онлайн-сервисам",
+    pdfPath:"pdf/franchising.pdf",
+    toc:[
+      {title:"Развитие франчайзинга в Москве", page:1},
+      {title:"Предпринимательство Москвы", page:2},
+      {title:"Истории франчайзи", page:3},
+      {title:"Нефинансовые меры поддержки", page:7},
+      {title:"Финансовая поддержка", page:8},
+      {title:"Продвижение · городские проекты", page:9},
+      {title:"Контакты", page:12},
+    ],
+  },
+  {
+    id:"fsk",
+    name:"Московский гарантийный фонд",
+    sub:"Содействие кредитованию МСП",
+    leftInfo:"Помогаем бизнесу привлекать финансирование, когда не хватает залога — выступаем поручителем перед банком.\n\n→ 24 тыс. поручительств\n→ 210 млрд ₽ поручительств\n→ 438 млрд ₽ привлечённого финансирования",
+    pdfPath:"",
+    toc:[
+      {title:"Задача фонда", page:1},
+      {title:"Центр содействия кредитованию", page:2},
+      {title:"Гарантии и льготные программы", page:3},
+    ],
+  },
+  {
+    id:"fpsp",
+    name:"Фонд поддержки социальных проектов",
+    sub:"Поддержка социальных проектов",
+    leftInfo:"Поддержка социальных проектов предпринимателей города Москвы.",
+    pdfPath:"",
+    toc:[
+      {title:"О фонде", page:1},
+      {title:"Направления поддержки", page:2},
+    ],
+  },
+  {
+    id:"shtab",
+    name:"Штаб по защите бизнеса",
+    sub:"Досудебное разрешение споров",
+    leftInfo:"Ключевая площадка взаимодействия бизнеса и власти под председательством Мэра Москвы.\n\n→ 16 органов власти Москвы + 7 федеральных\n→ 500+ обращений в год\n→ 120+ деловых объединений",
+    pdfPath:"",
+    toc:[
+      {title:"О Штабе", page:1},
+      {title:"Индивидуальные обращения", page:2},
+      {title:"Системные проблемы", page:3},
+      {title:"Совет предпринимателей", page:4},
+    ],
+  },
+];
+
+/* ---------- состояние ---------- */
+let orgIdx = 0;
+let pageNum = 1;
+let pdfDoc = null;
+let rendering = false, pendingPage = null;
+
+const $ = s => document.querySelector(s);
+const canvas = $("#pdfCanvas");
+const ctx = canvas.getContext("2d");
+
+/* ---------- инициализация селектора подведов ---------- */
+const orgSelect = $("#orgSelect");
+PODVEDY.forEach((p,i)=>{
+  const o=document.createElement("option");
+  o.value=i; o.textContent=p.name; orgSelect.appendChild(o);
+});
+orgSelect.addEventListener("change",e=>loadOrg(+e.target.value));
+
+/* ---------- загрузка подведа ---------- */
+function loadOrg(i){
+  orgIdx=i; pageNum=1; pdfDoc=null;
+  const p=PODVEDY[i];
+  $("#orgName").textContent=p.name;
+  $("#orgSub").textContent=p.sub;
+  $("#leftInfo").textContent=p.leftInfo;
+  $("#phName").textContent=p.name;
+  renderToc();
+
+  if(p.pdfPath){
+    $("#pdfPlaceholder").hidden=true;
+    canvas.hidden=false;
+    pdfjsLib.GlobalWorkerOptions.workerSrc=
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    pdfjsLib.getDocument(p.pdfPath).promise.then(doc=>{
+      pdfDoc=doc; queueRender(1);
+    }).catch(()=>{ showPlaceholder("Не удалось загрузить PDF: "+p.pdfPath); });
+  }else{
+    showPlaceholder();
+  }
+  updatePageLabel();
+}
+
+function showPlaceholder(msg){
+  canvas.hidden=true;
+  const ph=$("#pdfPlaceholder"); ph.hidden=false;
+  if(msg) ph.querySelector("b").nextSibling.textContent=" "+msg;
+}
+
+/* ---------- оглавление (право) с подсветкой ---------- */
+function renderToc(){
+  const toc=$("#toc"); toc.innerHTML="";
+  PODVEDY[orgIdx].toc.forEach(sec=>{
+    const li=document.createElement("li");
+    li.innerHTML='<span class="arrow">→</span><span>'+sec.title+'</span>';
+    li.dataset.page=sec.page;
+    li.addEventListener("click",()=>queueRender(sec.page));
+    toc.appendChild(li);
+  });
+  highlightToc();
+}
+
+function highlightToc(){
+  const secs=PODVEDY[orgIdx].toc;
+  // активный раздел = последний, чья стартовая страница <= текущей
+  let active=0;
+  secs.forEach((s,k)=>{ if(pageNum>=s.page) active=k; });
+  document.querySelectorAll("#toc li").forEach((li,k)=>{
+    li.classList.toggle("active",k===active);
+  });
+}
+
+/* ---------- рендер страницы PDF ---------- */
+function queueRender(n){
+  if(!pdfDoc) { pageNum=n; highlightToc(); updatePageLabel(); return; }
+  n=Math.max(1,Math.min(n,pdfDoc.numPages));
+  pageNum=n;
+  if(rendering){ pendingPage=n; }
+  else renderPage(n);
+  highlightToc(); updatePageLabel();
+}
+
+function renderPage(n){
+  rendering=true;
+  pdfDoc.getPage(n).then(page=>{
+    const frame=canvas.parentElement.getBoundingClientRect();
+    const vp0=page.getViewport({scale:1});
+    const scale=Math.min(frame.width/vp0.width, frame.height/vp0.height);
+    const vp=page.getViewport({scale:scale*window.devicePixelRatio});
+    // двойная буферизация: рисуем в скрытый холст, чтобы видимый не мигал белым
+    const off=document.createElement("canvas");
+    off.width=vp.width; off.height=vp.height;
+    page.render({canvasContext:off.getContext("2d"),viewport:vp}).promise.then(()=>{
+      // страница готова — переносим её в видимый холст одним кадром (без белого пробела)
+      canvas.width=off.width; canvas.height=off.height;
+      canvas.style.width="100%"; canvas.style.height="100%";
+      ctx.drawImage(off,0,0);
+      rendering=false;
+      if(pendingPage!==null){ const p=pendingPage; pendingPage=null; renderPage(p); }
+    });
+  });
+}
+
+function updatePageLabel(){
+  const total=pdfDoc?pdfDoc.numPages:"—";
+  $("#pageLabel").textContent=pageNum+" / "+total;
+}
+
+/* ---------- навигация ---------- */
+$("#prev").addEventListener("click",()=>queueRender(pageNum-1));
+$("#next").addEventListener("click",()=>queueRender(pageNum+1));
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft") queueRender(pageNum-1);
+  if(e.key==="ArrowRight") queueRender(pageNum+1);
+});
+// перерисовка PDF при ресайзе окна
+let rz; window.addEventListener("resize",()=>{
+  clearTimeout(rz); rz=setTimeout(()=>{ if(pdfDoc) renderPage(pageNum); },200);
+});
+
+/* ---------- режимы: вступление (только фон) ↔ показ (3 зоны) ---------- */
+const stage=document.querySelector(".stage");
+function enterPresent(){
+  stage.classList.remove("intro"); stage.classList.add("present");
+  // в intro зоны были скрыты → у рамки была нулевая ширина; перерисуем PDF по факту.
+  requestAnimationFrame(()=>{ if(pdfDoc) renderPage(pageNum); });
+}
+function enterIntro(){
+  stage.classList.add("intro"); stage.classList.remove("present");
+}
+$("#startBtn").addEventListener("click",enterPresent);
+$("#toIntroBtn").addEventListener("click",enterIntro);
+document.addEventListener("keydown",e=>{
+  if(stage.classList.contains("intro")){
+    if(e.key==="Enter"||e.key===" ") enterPresent();
+  }else if(e.key==="Escape") enterIntro();
+});
+
+/* старт — грузим первый подвед сразу, но показываем только фон */
+loadOrg(0);
+</script>
+</body>
+</html>

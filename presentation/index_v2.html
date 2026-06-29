@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>На одной волне — 2026 · Вариант 2 (текст поверх)</title>
+<style>
+/* Шрифт ALS Hauss Next — файлы в presentation/fonts/ (пока нет → системный fallback) */
+@font-face{font-family:"ALS Hauss Next";src:url("fonts/ALSHaussNext-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"ALS Hauss Next";src:url("fonts/ALSHaussNext-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"ALS Hauss Next Wide";src:url("fonts/ALSHaussNextWide-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+
+:root{
+  --green:#2FAF6E; --gold:#F4B740; --sky:#6CC0E5;
+  --title-font:"ALS Hauss Next Wide","ALS Hauss Next",system-ui,Arial,sans-serif;
+  --body-font:"ALS Hauss Next",system-ui,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b1410}
+body{font-family:var(--body-font);color:#f3fbf6}
+
+/* сцена = картинка слайда (2172×724, 3:1) */
+.stage{
+  position:relative;
+  width:100vw; height:calc(100vw*724/2172);
+  max-height:100vh; max-width:calc(100vh*2172/724);
+  margin:auto; top:50%; transform:translateY(-50%);
+  background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
+  overflow:hidden;
+}
+
+/* затемнение фона — появляется в режиме показа */
+.dim{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .6s ease;
+  background:radial-gradient(120% 120% at 30% 50%, rgba(8,20,14,.55), rgba(8,20,14,.82));
+  backdrop-filter:blur(3px) saturate(1.05); -webkit-backdrop-filter:blur(3px) saturate(1.05);}
+.stage.present .dim{opacity:1}
+
+/* блок текста поверх затемнённой картинки (левая колонка) */
+.content{position:absolute;z-index:2;left:5%;top:50%;transform:translateY(-50%);
+  width:52%;max-width:60%;opacity:0;transition:opacity .5s ease .15s}
+.stage.present .content{opacity:1}
+.tagline{font-family:var(--title-font);font-weight:700;text-transform:uppercase;
+  letter-spacing:.02em;color:var(--gold);font-size:1.6vw;margin-bottom:1vw}
+.org-name{font-family:var(--title-font);font-weight:700;color:#fff;
+  font-size:3vw;line-height:1.02;margin-bottom:.5vw}
+.org-sub{color:var(--sky);font-weight:700;font-size:1.3vw;margin-bottom:1.6vw}
+.org-info{font-size:1.15vw;line-height:1.35;color:#eaf6ef;white-space:pre-line;margin-bottom:1.8vw;max-width:90%}
+
+/* оглавление с подсветкой активного раздела */
+.toc{list-style:none;display:flex;flex-direction:column;gap:.5vw}
+.toc li{display:flex;gap:.7vw;align-items:flex-start;font-size:1.2vw;line-height:1.2;
+  color:#bcd3c7;padding:.45vw .8vw;border-left:.28vw solid transparent;border-radius:.4vw;
+  cursor:pointer;transition:.2s}
+.toc li .arrow{color:var(--green);font-weight:700}
+.toc li:hover{background:rgba(255,255,255,.07)}
+.toc li.active{background:rgba(47,175,110,.25);border-left-color:var(--gold);color:#fff;font-weight:700}
+.toc li.active .arrow{color:var(--gold)}
+
+/* кнопки управления */
+.start{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:5;display:none;
+  font-family:var(--title-font);font-weight:700;font-size:1.5vw;color:#fff;cursor:pointer;border:none;
+  padding:1vw 2.6vw;border-radius:1vw;background:var(--green);box-shadow:0 .6vw 2vw rgba(0,0,0,.4)}
+.stage.intro .start{display:block}
+.ctl{position:absolute;left:50%;bottom:3%;transform:translateX(-50%);z-index:5;display:none;
+  gap:.6vw;align-items:center;background:rgba(255,255,255,.6);border-radius:1vw;padding:.5vw .8vw;
+  backdrop-filter:blur(6px)}
+.stage.present .ctl{display:flex}
+.ctl select{font-family:var(--body-font);font-size:.95vw;padding:.4vw .6vw;border-radius:.5vw;border:none;background:#fff;color:#15241c}
+.ctl button{font-family:var(--body-font);font-weight:700;font-size:.95vw;border:none;border-radius:.5vw;padding:.45vw .9vw;cursor:pointer;background:var(--green);color:#fff}
+.to-intro{position:absolute;left:1.5%;top:3%;z-index:5;display:none;font-weight:700;font-size:.9vw;cursor:pointer;
+  border:none;padding:.5vw 1vw;border-radius:.6vw;background:rgba(255,255,255,.6);color:#15241c}
+.stage.present .to-intro{display:block}
+</style>
+</head>
+<body>
+<div class="stage intro">
+  <div class="dim"></div>
+
+  <div class="content">
+    <div class="tagline">На одной волне · 2026</div>
+    <div class="org-name" id="orgName"></div>
+    <div class="org-sub" id="orgSub"></div>
+    <div class="org-info" id="leftInfo"></div>
+    <ul class="toc" id="toc"></ul>
+  </div>
+
+  <button class="start" id="startBtn">Начать</button>
+  <button class="to-intro" id="toIntroBtn">← К началу</button>
+  <div class="ctl">
+    <select id="orgSelect"></select>
+    <button id="prev">←</button>
+    <button id="next">→</button>
+  </div>
+</div>
+
+<script>
+/* Конфиг подведов (как в index.html, но без PDF — только текст) */
+const PODVEDY = [
+  { name:"ГБУ «Малый бизнес Москвы»", sub:"Нефинансовая поддержка бизнеса",
+    leftInfo:"Единое окно для предпринимателя: от поиска идеи и регистрации до масштабирования.\n\n→ 46 тыс. консультаций\n→ 32 тыс. на дистанционных курсах\n→ 29 тыс. обращений к онлайн-сервисам",
+    toc:["Цели и приоритеты","Комплекс мер поддержки","Путь предпринимателя","Единое окно · цифровизация"] },
+  { name:"Московский гарантийный фонд", sub:"Содействие кредитованию МСП",
+    leftInfo:"Помогаем бизнесу привлекать финансирование, когда не хватает залога — выступаем поручителем перед банком.\n\n→ 24 тыс. поручительств\n→ 210 млрд ₽ поручительств\n→ 438 млрд ₽ привлечённого финансирования",
+    toc:["Задача фонда","Центр содействия кредитованию","Гарантии и льготные программы"] },
+  { name:"Фонд поддержки социальных проектов", sub:"Поддержка социальных проектов",
+    leftInfo:"Поддержка социальных проектов предпринимателей города Москвы.",
+    toc:["О фонде","Направления поддержки"] },
+  { name:"Штаб по защите бизнеса", sub:"Досудебное разрешение споров",
+    leftInfo:"Ключевая площадка взаимодействия бизнеса и власти под председательством Мэра Москвы.\n\n→ 16 органов власти Москвы + 7 федеральных\n→ 500+ обращений в год\n→ 120+ деловых объединений",
+    toc:["О Штабе","Индивидуальные обращения","Системные проблемы","Совет предпринимателей"] },
+];
+
+let orgIdx=0, secIdx=0;
+const $=s=>document.querySelector(s);
+const stage=$(".stage");
+
+const sel=$("#orgSelect");
+PODVEDY.forEach((p,i)=>{const o=document.createElement("option");o.value=i;o.textContent=p.name;sel.appendChild(o);});
+sel.addEventListener("change",e=>loadOrg(+e.target.value));
+
+function loadOrg(i){
+  orgIdx=i; secIdx=0;
+  const p=PODVEDY[i];
+  $("#orgName").textContent=p.name;
+  $("#orgSub").textContent=p.sub;
+  $("#leftInfo").textContent=p.leftInfo;
+  const toc=$("#toc"); toc.innerHTML="";
+  p.toc.forEach((t,k)=>{
+    const li=document.createElement("li");
+    li.innerHTML='<span class="arrow">→</span><span>'+t+'</span>';
+    li.addEventListener("click",()=>{secIdx=k;highlight();});
+    toc.appendChild(li);
+  });
+  highlight();
+}
+function highlight(){
+  document.querySelectorAll("#toc li").forEach((li,k)=>li.classList.toggle("active",k===secIdx));
+}
+function step(d){
+  const n=PODVEDY[orgIdx].toc.length;
+  secIdx=Math.max(0,Math.min(secIdx+d,n-1));
+  highlight();
+}
+
+$("#prev").addEventListener("click",()=>step(-1));
+$("#next").addEventListener("click",()=>step(1));
+$("#startBtn").addEventListener("click",()=>{stage.classList.remove("intro");stage.classList.add("present");});
+$("#toIntroBtn").addEventListener("click",()=>{stage.classList.add("intro");stage.classList.remove("present");});
+document.addEventListener("keydown",e=>{
+  if(stage.classList.contains("intro")){ if(e.key==="Enter"||e.key===" ") {stage.classList.remove("intro");stage.classList.add("present");} return; }
+  if(e.key==="Escape"){stage.classList.add("intro");stage.classList.remove("present");}
+  if(e.key==="ArrowLeft") step(-1);
+  if(e.key==="ArrowRight") step(1);
+});
+
+loadOrg(0);
+</script>
+</body>
+</html>
