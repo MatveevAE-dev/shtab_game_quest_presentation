@@ -3,127 +3,304 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Слайд 1 — сцена (3 фазы)</title>
+<title>На одной волне — сценарий показа</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#0b1410}
+html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:system-ui,sans-serif}
+:root{--neon:#27e3ff;
+  --cyan:#3fd0ff; --cyan-soft:rgba(63,208,255,.55);
+  --text:#eaf4ff; --text-dim:#9fb6d4;
+  --title-font:'Orbitron',sans-serif; --ui:'Rajdhani',sans-serif;
+  --hauss:"ALS Hauss Next",system-ui,Arial,sans-serif}
+/* ALS Hauss Next — для GitHub Pages положи файлы в presentation/fonts/ (локально берётся из системы) */
+@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next"),url("fonts/ALSHaussNext-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next Bold"),local("ALS Hauss Next"),url("fonts/ALSHaussNext-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
 
+/* @property нужен, чтобы CSS-переход анимировал радиус радиального проявления */
+@property --r{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --vr{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+@property --cr{syntax:'<length-percentage>';inherits:false;initial-value:185%}
+
+/* ── СЦЕНА-КАРТА (общий низший слой) ── */
 .stage{
-  position:relative;
+  position:absolute; inset:0; margin:auto;        /* центрирование по обеим осям */
   width:100vw; height:calc(100vw*724/2172);
   max-height:100vh; max-width:calc(100vh*2172/724);
-  margin:auto; top:50%; transform:translateY(-50%);
   background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
+  /* контейнер: текст подведа меряется в cqw (% ширины СЦЕНЫ), а не vw (окна) */
+  container-type:size; container-name:stage;
 }
 .overlay{position:absolute;inset:0;width:100%;height:100%}
 
-/* ── контуры объектов ── */
-.objline{fill:none;stroke:#27e3ff;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
-  filter:drop-shadow(0 0 3px #27e3ff);animation:objpulse 2.4s ease-in-out infinite;transition:opacity .5s}
+/* контуры объектов — горят только когда у .stage класс .lit */
+.objline{fill:none;stroke:var(--neon);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
+  opacity:0;transition:opacity .6s}
+.stage.lit .objline{opacity:.6;filter:drop-shadow(0 0 3px var(--neon));animation:objpulse 2.4s ease-in-out infinite}
 @keyframes objpulse{0%,100%{opacity:.5}50%{opacity:1}}
+/* контур ОДНОГО объекта: загорается и пульсирует, когда объект раскрыт (комета доехала / рандом) */
+.objline.revealed{opacity:.85;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 7px var(--neon));
+  animation:objreveal 1.6s ease-in-out infinite}
+@keyframes objreveal{0%,100%{opacity:.5;stroke-width:2}50%{opacity:1;stroke-width:3.4}}
 
-/* ── маршруты: прозрачность задаём ГРУППЕ #routes, а не каждой линии,
-      иначе общие участки складываются и горят ярче ── */
-.route{fill:none;stroke:#27e3ff;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
-#routes{opacity:.3;transition:opacity .5s}
+/* ── ОКТАЭДР объекта (вращается) + название (печатается над ним) ── */
+.mapoct{position:absolute;z-index:7;transform:translate(-50%,-50%);
+  width:3vw;height:3.6vw;min-width:34px;min-height:42px;pointer-events:none;
+  opacity:0;transition:opacity .45s ease}
+.mapoct.show{opacity:1}
+.mapoct svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 1px 3px rgba(4,18,28,.85))}
+.mapoct.show svg{animation:octpulse 2.4s ease-in-out infinite}
+@keyframes octpulse{0%,100%{filter:drop-shadow(0 1px 3px rgba(4,18,28,.85)) drop-shadow(0 0 3px var(--neon))}
+  50%{filter:drop-shadow(0 1px 3px rgba(4,18,28,.85)) drop-shadow(0 0 10px var(--neon))}}
+/* вращение гекса вокруг вертикали — эффект объёмного октаэдра (как в base) */
+.mapoct .hexlock{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
+.mapoct .hx{fill:rgba(6,26,38,.55);stroke:var(--neon);stroke-width:1.7}
+.mapoct .conn{stroke:var(--neon);stroke-width:1;opacity:.85}
+.mapoct .cdot{fill:#eaffff}
+.mapoct .octic{fill:none;stroke:#eaffff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@keyframes hexspin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+/* название над октаэдром — печатается по буквам, с мигающей кареткой */
+.mapname{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:.35vw;
+  white-space:nowrap;font-family:var(--hauss);font-weight:700;font-size:1.2cqw;line-height:1;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.85),0 0 10px rgba(39,227,255,.5)}
+.mapname:empty{display:none}
+.mapname::after{content:"▌";color:var(--neon);margin-left:1px;animation:qcaret .7s step-end infinite}
+.mapname.typed::after{content:""}
+@keyframes qcaret{50%{opacity:0}}
+/* СТИЛЬ 2 названия: как тултип объекта из main (.tip b) — Orbitron 14px, белый, uppercase, циан-короб */
+.mapname.boxed{font-family:var(--title-font);font-size:14px;font-weight:700;color:#fff;
+  text-transform:uppercase;letter-spacing:1px;
+  background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);border-radius:4px;
+  padding:7px 12px;text-shadow:none;box-shadow:0 0 24px rgba(63,208,255,.25)}
+.mapname.boxed::after{color:var(--cyan)}
+/* объект без октаэдра (герой): панель названия НАД точкой, привязка левым-нижним углом */
+.mapoct.nooct{width:auto;height:auto;min-width:0;min-height:0;transform:translate(0,-100%)}
+.mapoct.nooct .mapname{position:static;bottom:auto;left:auto;transform:none;margin:0}
+/* ПАНЕЛЬ ГЕРОЯ: звёзды над текстом, всё в одной рамке (boxed) */
+.mapname.herobox{display:flex;flex-direction:column;align-items:center;gap:5px}
+.mapname.herobox::after{content:none}
+/* звёзды (стиль .tip .star из main): on — золото со свечением, off — тусклая */
+.herobox .hstars{display:flex;gap:3px;line-height:1}
+.herobox .hstars .star{font-size:15px;line-height:1}
+.herobox .hstars .star.on{color:#ffd24a;text-shadow:0 0 6px rgba(255,210,74,.6)}
+.herobox .hstars .star.off{color:rgba(255,255,255,.22)}
+.herobox .htext{display:block;line-height:1}
+.herobox .htext::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
+.herobox .htext.typed::after{content:""}
 
-/* ── узлы (в цвет контуров) ── */
-.node{fill:#27e3ff;stroke:#fff;stroke-width:2;opacity:.45;transition:.25s}
-.node.start{opacity:.9;filter:drop-shadow(0 0 6px #27e3ff)}
-.node.active{opacity:1;filter:drop-shadow(0 0 12px #27e3ff)}
+/* маршруты: прозрачность задаём ГРУППЕ, иначе общие участки горят ярче */
+.route{fill:none;stroke:var(--neon);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+#routes{opacity:0;transition:opacity .5s}
+.stage.routes-on #routes{opacity:.3}
 
-/* ── всплывающее название объекта над финишем ── */
+/* узлы — появляются ТОЛЬКО когда есть маршруты (.routes-on), не раньше */
+.node{fill:var(--neon);stroke:#fff;stroke-width:2;opacity:0;transition:.35s}
+.stage.routes-on .node{opacity:.45}
+/* стартовая точка — обычный неактивный узел (без постоянной подсветки) */
+.node.active{opacity:1;filter:drop-shadow(0 0 12px var(--neon))}
+/* финиши маршрутов не показываем — маркер объекта = октаэдр */
+#ends .node{display:none}
+/* ключевой узел (фаза «4 опоры») — крупная золотая подсветка */
+.node.key{fill:#ffd24a;opacity:1;filter:drop-shadow(0 0 14px #ffb300) drop-shadow(0 0 26px #ff9800);
+  animation:keypulse 1.8s ease-in-out infinite}
+@keyframes keypulse{0%,100%{r:12}50%{r:18}}
+
+/* всплывающее название объекта над финишем */
 .objlabel{fill:#fff;font-family:"Dela Gothic One",system-ui,sans-serif;font-size:26px;
   paint-order:stroke;stroke:rgba(0,0,0,.7);stroke-width:6px;stroke-linejoin:round;
   opacity:0;transition:opacity .25s ease}
 .objlabel.show{opacity:1}
 
-/* ── комета по активному маршруту ── */
-.comet{opacity:0;transition:opacity .2s ease}
-.comet.on{opacity:1}
-#cometTrail{fill:none;stroke:#aef4ff;stroke-width:6;stroke-linecap:round;
-  filter:drop-shadow(0 0 6px #27e3ff)}
-#cometHead{fill:#fff;filter:drop-shadow(0 0 8px #27e3ff) drop-shadow(0 0 14px #27e3ff)}
+/* комета */
+.ctrail{fill:none;stroke:#aef4ff;stroke-width:6;stroke-linecap:round;filter:drop-shadow(0 0 6px var(--neon))}
+.chead{fill:#fff;filter:drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 14px var(--neon))}
 
-/* ── эскаватор + эффекты (только фаза 3) ── */
-#exc{opacity:0;
-  filter:drop-shadow(0 0 3px #ff7a00) drop-shadow(0 0 8px #ff7a00) drop-shadow(0 0 16px rgba(255,122,0,.6))}
+/* эскаватор + снос (сцена Штаб) */
+#exc{opacity:0;filter:drop-shadow(0 0 3px #ff7a00) drop-shadow(0 0 8px #ff7a00) drop-shadow(0 0 16px rgba(255,122,0,.6))}
 .puff{fill:#d2c5ac}
-/* объект под снос — красный контур, по умолчанию скрыт */
-.demolish{fill:none;stroke:#ff2a2a;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;
-  opacity:0}
+.demolish{fill:none;stroke:#ff2a2a;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;opacity:0}
 .demolish.show{filter:drop-shadow(0 0 8px #ff2a2a);animation:redpulse 2.4s ease-in-out infinite}
 @keyframes redpulse{0%,100%{opacity:.5}50%{opacity:1}}
 .spark2{fill:#ffd24a;filter:drop-shadow(0 0 4px #ff8a00)}
-/* тройка-защитники — скрыта, появляется через JS */
 #troika{opacity:0;filter:drop-shadow(0 .4vw .8vw rgba(0,0,0,.45))}
 .star{fill:#fff3b0;filter:drop-shadow(0 0 5px #ffd24a)}
 .burst{fill:#ffffff;filter:drop-shadow(0 0 6px #ffe08a)}
 
-/* ── затемнение + текст: ЕДИНАЯ логика для фаз 2 и 4 ── */
-/* тёмная заливка въезжает ВОЛНОЙ слева→направо (явный wipe) */
-.dim,.veil{position:absolute;inset:0;pointer-events:none;
-  /* как в референсе: градиент чёрного слева .03 → справа .7 (ровный тёмный правый край) */
-  background:linear-gradient(90deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.7) 100%);
-  clip-path:inset(0 100% 0 0);                  /* скрыто: волна у левого края */
-  transition:clip-path .85s cubic-bezier(.22,.61,.36,1)}
-.dim{z-index:3}
-.veil{z-index:5}
-.stage.p2 .dim{clip-path:inset(0 0 0 0)}         /* волна доходит до правого края */
-.stage.p4 .veil{clip-path:inset(0 0 0 0)}
+/* ── РАДИАЛЬНОЕ ПРОЯВЛЕНИЕ (тьма с дыркой над предпринимателем) ──
+   точка раскрытия ≈ предприниматель в нижне-левом углу (7% / 70%) */
+.darkness{position:absolute;inset:0;z-index:4;background:#04090a;--r:175%;   /* по умолчанию ОТКРЫТО — город виден */
+  -webkit-mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r 1.4s cubic-bezier(.4,.1,.2,1); pointer-events:none}
+.stage.dark    .darkness{--r:8%;transition:none}     /* мгновенный тёмный старт — виден только предприниматель */
+.stage.reveal  .darkness{--r:175%}   /* карта раскрывается анимированно */
+.stage.open    .darkness{--r:175%;transition:none}  /* дальше держим раскрытой */
 
-/* блок текста (одинаково для обеих фаз): строки выходят снизу по очереди */
-.stext{position:absolute;z-index:6;left:5%;top:9%;
-  width:55%;color:#fff;font-family:"Dela Gothic One",system-ui,sans-serif;
+/* ── затемнение подведов: РАДИАЛЬНОЕ (вдох-выдох от предпринимателя 7%/70%) ──
+   градиент .03 → .7 (темнее справа), круг-маска растёт/схлопывается через --vr */
+.veil{position:absolute;inset:0;z-index:6;pointer-events:none;--vr:0%;
+  /* по шаблону (Rectangle 555): левые 13.9% чисто, далее градиент .03 → .7 */
+  background:linear-gradient(90deg, transparent 0 13.9%, rgba(0,0,0,.03) 13.9%, rgba(0,0,0,.7) 100%);
+  -webkit-mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--vr) - 3%), transparent var(--vr));
+  mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--vr) - 3%), transparent var(--vr));
+  transition:--vr .8s cubic-bezier(.4,.1,.2,1)}
+.stage.veil-on .veil{--vr:185%}   /* вдох: затемнение раскрылось */
+
+/* ── ШАБЛОН подведа (как фазы 2/4): заголовок сверху-слева, белый текст,
+      строки выходят снизу по очереди. Единицы cqw — от ширины СЦЕНЫ ── */
+/* ── КАРТОЧКА подведа: фон-картинка + затемнение, наезжает целиком при переходе ── */
+.podcard{position:absolute;inset:0;z-index:6;display:none;overflow:hidden;--cr:185%;
+  background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
+  /* радиальная маска от предпринимателя (7%/70%) — для вдоха-выдоха */
+  -webkit-mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--cr) - 3%), transparent var(--cr));
+  mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--cr) - 3%), transparent var(--cr));
+  transition:transform .6s cubic-bezier(.4,.1,.2,1), opacity .45s ease, --cr .7s cubic-bezier(.4,.1,.2,1)}
+.podcard.active{display:block}
+.podcard::after{content:"";position:absolute;inset:0;pointer-events:none;
+  /* затемнение по шаблону (Rectangle 555): левые 13.9% чисто → градиент .03→.7 */
+  background:linear-gradient(90deg, transparent 0 13.9%, rgba(0,0,0,.03) 13.9%, rgba(0,0,0,.7) 100%)}
+/* фото-сцены кафе (слайды 6,7,11) ярче спокойного фона — усиливаем затемнение,
+   чтобы белый текст читался так же, как на слайде 4 «Обзор» */
+.podcard[data-pod="mbm2"]::after,
+.podcard[data-pod="mbm3"]::after,
+.podcard[data-pod="finale"]::after{
+  background:linear-gradient(90deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%)}
+.podcard.sl-r{transform:translateX(100%)}
+.podcard.sl-l{transform:translateX(-100%)}
+
+/* текст подведа — внутри карточки, поверх затемнения */
+.podtext{position:absolute;z-index:1;right:4%;top:9%;width:55%;text-align:right;
+  color:#fff;font-family:var(--hauss);
   text-shadow:0 .2vw 1vw rgba(0,0,0,.55);pointer-events:none}
-.stext .ln{display:block;opacity:0;transform:translateY(30px);
+.podtext .ln{display:block;opacity:0;transform:translateY(30px);
   transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1)}
-.stext .h{font-size:4.2vw;line-height:1.08;margin-bottom:1.2vw}
-.stext .s{font-size:1.9vw;line-height:1.25;font-family:system-ui,sans-serif;font-weight:600}
-/* строки появляются ПОСЛЕ того как волна заливки прошла */
-.stext .ln:nth-child(1){transition-delay:.5s}
-.stext .ln:nth-child(2){transition-delay:.68s}
-.stext .ln:nth-child(3){transition-delay:.86s}
-.stage.p2 #slideText .ln, .stage.p4 #slide4Text .ln{opacity:1;transform:none}
-.stage.p2 #slideText .s, .stage.p4 #slide4Text .s{opacity:.92}
+.podtext .h{font-size:3cqw;line-height:1.08;font-weight:700;margin-bottom:1.2cqw}
+.podtext .s{font-size:1.7cqw;line-height:1.28;font-weight:600;margin-bottom:.7cqw}
+.podtext .ln:nth-child(1){transition-delay:.5s}
+.podtext .ln:nth-child(2){transition-delay:.68s}
+.podtext .ln:nth-child(3){transition-delay:.86s}
+.podtext .ln:nth-child(4){transition-delay:1.04s}
+.podtext .ln:nth-child(5){transition-delay:1.22s}
+.podtext .ln:nth-child(6){transition-delay:1.4s}
+/* строки проявляются, когда карточка активна */
+.podcard.active .ln{opacity:1;transform:none}
+.podcard.active .s{opacity:.92}
+/* во время слайда строки статичны (без стаггера) */
+.stage.sliding .podcard .ln{opacity:1;transform:none;transition:none}
 
-.stage.p3 #exc{opacity:1}
-.stage.p3 .fx{opacity:1}
+/* ── слайд 4 «Обзор»: слева большие имена подведов, справа буллеты ── */
+#pod-overview{left:0;right:0;top:0;bottom:0;
+  width:100%;text-align:left;padding:0 4% 0 26%;
+  display:flex;flex-direction:column;justify-content:center;gap:1.4cqw}
+#pod-overview .ln{display:flex;align-items:center;gap:3cqw}
+#pod-overview .ovname{flex:0 0 5em;font-family:var(--hauss);font-weight:700;font-size:4.4cqw;
+  line-height:1;color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+#pod-overview .ovdesc{font-family:var(--hauss);font-weight:700;font-size:1.8cqw;line-height:1.2;
+  color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
 
-/* в фазах 2 и 4 приглушаем контуры/маршруты/узлы под заливкой */
-.stage.p2 .objline,.stage.p4 .objline{opacity:.1 !important;animation:none}
-.stage.p2 #routes,.stage.p4 #routes{opacity:.06}
-.stage.p2 .node,.stage.p4 .node{opacity:.08}
+/* ── шаблон слайда подведа: заголовок сверху + буллеты под ним, справа над затемнением ── */
+.podbig{left:auto;right:4%;top:0;bottom:0;width:52%;text-align:left;
+  display:flex;flex-direction:column;justify-content:center;gap:1.6cqw}
+.podbig .ptitle{font-family:var(--hauss);font-weight:700;font-size:3.1cqw;line-height:1.07;
+  color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+.podbig .psub{font-family:var(--hauss);font-weight:600;font-size:1.9cqw;line-height:1.3;
+  color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+.podbig .pbul{list-style:none;display:flex;flex-direction:column;gap:.7cqw;margin:0}
+.podbig .pbul li{position:relative;padding-left:1.3em;font-family:var(--hauss);font-weight:600;
+  font-size:1.7cqw;line-height:1.25;color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+.podbig .pbul li::before{content:"•";position:absolute;left:0;color:#fff}
 
-/* подсказка по навигации */
-.hint{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);z-index:6;
-  font-family:system-ui,sans-serif;font-size:.9vw;color:#fff;background:rgba(0,0,0,.4);
-  padding:.4vw .9vw;border-radius:.6vw;opacity:.65}
+/* приглушаем карту/контуры под затемнением текстовых сцен */
+.stage.veil-on .objline{opacity:.12 !important;animation:none}
+.stage.veil-on #routes{opacity:.06}
+.stage.veil-on .node{opacity:.1}
+/* 4 опоры на слайде «Обзор»: точки и названия приглушены под затемнением (не отвлекают от текста) */
+.stage.veil-on .node.key{opacity:.5}
+.stage.veil-on .objlabel.show{opacity:.45}
+
+/* ── СПЛЕШ (сцена 0): титул в стиле экрана загрузки ── */
+.splash{position:absolute;inset:0;margin:auto;z-index:20;          /* сверхширокая — как слайды */
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  display:flex;flex-direction:column;overflow:hidden;
+  align-items:center;justify-content:center;text-align:center;
+  font-family:var(--ui);color:var(--text);transition:opacity .8s ease, visibility 0s linear .8s}
+.splash .intro-bg{position:absolute;inset:0;z-index:0;
+  background:linear-gradient(rgba(4,8,16,.84),rgba(4,8,16,.92)), url("Слайд 1 изображение.png") center/cover}
+.splash .intro-inner{position:relative;z-index:1;width:min(66%,860px);
+  display:flex;flex-direction:column;align-items:center;gap:1.1vw}
+.splash .skyline{width:min(74%,860px);height:auto;overflow:visible;
+  filter:drop-shadow(0 0 4px var(--cyan-soft)) drop-shadow(0 0 9px rgba(63,208,255,.4));
+  opacity:0;animation:fadeUp .9s .2s forwards}
+.splash .kicker{font-family:var(--title-font);font-weight:700;font-size:1.6vw;letter-spacing:.32em;color:var(--cyan);
+  text-transform:uppercase;text-shadow:0 0 16px rgba(63,208,255,.4);opacity:0;animation:fadeUp .8s .45s forwards}
+.splash .intro-title{font-family:var(--title-font);font-weight:900;color:var(--text);
+  letter-spacing:.14em;font-size:clamp(28px,3.6vw,58px);line-height:1;
+  text-shadow:0 0 18px rgba(63,208,255,.35);opacity:0;animation:fadeUp .9s .6s forwards}
+.splash .intro-title span{display:block;font-size:.46em;letter-spacing:.2em;color:var(--cyan);
+  margin-top:.6vw;font-weight:700}
+/* прогресс загрузки */
+.splash .intro-bar{width:min(64%,720px);height:1.1vw;min-height:14px;margin-top:1.4vw;
+  border:1px solid var(--cyan-soft);border-radius:5px;padding:3px;background:rgba(63,208,255,.06);
+  opacity:0;animation:fadeUp .8s .7s forwards}
+.splash .intro-bar>i{display:block;height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,var(--cyan),#9fe9ff);box-shadow:0 0 14px var(--cyan);transition:width .12s linear}
+.splash .intro-pct{font-family:var(--title-font);font-size:1vw;color:var(--cyan);letter-spacing:1px;margin-top:.6vw;
+  opacity:0;animation:fadeUp .8s .8s forwards}
+.splash .intro-load{font-size:1.15vw;color:var(--text-dim);letter-spacing:1px;margin-top:.4vw;min-height:1.4em;
+  opacity:0;animation:fadeUp .8s .9s forwards}
+.splash .intro-logo{position:absolute;left:50%;bottom:6%;z-index:2;
+  width:min(22%,300px);height:auto;opacity:0;filter:drop-shadow(0 0 7px var(--cyan-soft));
+  animation:logoUp 1s .85s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+/* отдельная анимация: сохраняет горизонтальное центрирование translateX(-50%) */
+@keyframes logoUp{from{opacity:0;transform:translate(-50%,26px)}to{opacity:1;transform:translateX(-50%)}}
+@keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
+.splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+
+/* ── ДЕКА (сцена 1): полноэкранные слайды вводной презы ── */
+.deck{position:absolute;inset:0;z-index:18;background:#000;display:none}
+.deck.show{display:block}
+.deck img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  opacity:0;transition:opacity .5s ease}
+.deck img.cur{opacity:1}
+.deck .dots{position:absolute;left:50%;bottom:2.5%;transform:translateX(-50%);
+  display:flex;gap:.7vw;z-index:2}
+.deck .dots i{width:.8vw;height:.8vw;border-radius:50%;background:rgba(255,255,255,.35)}
+.deck .dots i.on{background:var(--neon);box-shadow:0 0 8px var(--neon)}
+
+/* подсказка/навигация */
+.hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
+  font-size:.85vw;color:#fff;background:rgba(0,0,0,.45);padding:.4vw .9vw;border-radius:.6vw;opacity:.6}
 </style>
 </head>
 <body>
-<div class="stage p1">
-  <svg class="overlay" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <filter id="dustBlur" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="16"/>
-      </filter>
-    </defs>
 
-    <!-- КОНТУРЫ ОБЪЕКТОВ (без героя) -->
+<!-- ════════ СЛОЙ КАРТЫ ════════ -->
+<div class="stage scene-splash">
+  <svg class="overlay" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="dustBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter></defs>
+
+    <!-- КОНТУРЫ ОБЪЕКТОВ (id = ключ объекта; первые 10 — с маршрутом, далее 7 — без) -->
     <g id="objects">
-      <path class="objline" d="M197 410.5C197 410.5 186.5 410.5 190.5 422C194.5 433.5 219 497 227 502.5C235 508 274 528.5 288 530.5C302 532.5 445.5 513.5 454.5 508C463.5 502.5 461.5 497 461 493.5C460.5 490 447.5 467.5 447.5 467.5C447.5 467.5 435.006 451.349 427 441"/>
-      <path class="objline" d="M1754 129L1738.76 134.717C1738.25 134.904 1737.79 135.171 1737.37 135.506L1724.87 145.586C1723.42 146.761 1722.74 148.652 1723.11 150.486L1725.29 161.028C1725.71 163.108 1727.41 164.69 1729.51 164.975L1987.73 199.896C1988.24 199.965 1988.76 199.955 1989.27 199.866L2054 188.5L2093.28 176.668C2094.69 176.244 2095.84 175.223 2096.42 173.875L2099.14 167.622C2099.96 165.738 2099.55 163.545 2098.09 162.093L2086 150"/>
-      <path class="objline" d="M824 158.5C819.702 159.026 819.515 165.191 823.774 165.977L921.5 184L961.139 192.919C961.379 192.973 961.623 193.009 961.869 193.027L1043 199L1085.73 203.37C1086.56 203.455 1087.4 203.33 1088.18 203.005L1138.95 181.654C1139.95 181.233 1140.75 180.454 1141.21 179.469C1142.38 176.928 1140.88 173.958 1138.14 173.391L1129 171.5"/>
-      <path class="objline" d="M609.5 359L619.279 363.781C623.516 365.852 622.819 372.09 618.22 373.135C580.322 381.748 476.841 405.184 469.5 406C460.5 407 444.5 407.5 436 402.5C428.875 398.309 386.616 353.362 373.132 338.932C370.981 336.63 371.496 332.958 374.177 331.303L386 324"/>
-      <path class="objline" d="M694.5 159L698.486 161.607C702.048 163.935 701.258 169.364 697.181 170.582L670.534 178.542C669.536 178.84 668.47 178.819 667.485 178.482L631.337 166.124C626.301 164.402 627.084 157.049 632.371 156.427L636 156"/>
-      <path class="objline" d="M999 266L972.101 277.917C967.829 279.81 968.257 286.008 972.75 287.295L1157.06 340.087C1158 340.356 1159 340.344 1159.93 340.051L1564.5 213.099C1566.58 212.445 1568 210.513 1568 208.329V192C1568 189.239 1565.76 187 1563 187H1559"/>
-      <path class="objline" d="M1133.5 462C1133.5 462 1118.5 474.5 1108.5 478C1098.5 481.5 1301 572.5 1319.5 571.5C1334.83 570.671 1388.59 522.823 1406.59 506.436C1409.33 503.934 1408.41 499.473 1404.93 498.174L1379 488.5"/>
-      <path class="objline" d="M734.5 425L819.099 472.434C820.311 473.114 821.752 473.259 823.074 472.833L988.627 419.636C993.047 418.216 993.314 412.063 989.033 410.266L936 388"/>
-      <path class="objline" d="M575 723.5L660.391 688.609C663.86 687.192 664.594 682.602 661.74 680.173L566.025 598.723C564.759 597.646 563.04 597.268 561.439 597.715L431.5 634"/>
-      <path class="objline" d="M1411 325L1391.76 337.207C1388.64 339.188 1388.68 343.756 1391.83 345.69L1449.28 380.944C1450.38 381.621 1451.71 381.844 1452.97 381.564L1532.06 364.097C1532.35 364.033 1532.65 363.994 1532.95 363.983L1626.5 360.5L1736.02 345.364C1740.63 344.726 1741.94 338.691 1738.02 336.192L1716.5 322.5"/>
+      <path id="o-rest" class="objline" d="M197 410.5C197 410.5 186.5 410.5 190.5 422C194.5 433.5 219 497 227 502.5C235 508 274 528.5 288 530.5C302 532.5 445.5 513.5 454.5 508C463.5 502.5 461.5 497 461 493.5C460.5 490 447.5 467.5 447.5 467.5C447.5 467.5 435.006 451.349 427 441"/>
+      <path id="o-delc" class="objline" d="M1754 129L1738.76 134.717C1738.25 134.904 1737.79 135.171 1737.37 135.506L1724.87 145.586C1723.42 146.761 1722.74 148.652 1723.11 150.486L1725.29 161.028C1725.71 163.108 1727.41 164.69 1729.51 164.975L1987.73 199.896C1988.24 199.965 1988.76 199.955 1989.27 199.866L2054 188.5L2093.28 176.668C2094.69 176.244 2095.84 175.223 2096.42 173.875L2099.14 167.622C2099.96 165.738 2099.55 163.545 2098.09 162.093L2086 150"/>
+      <path id="o-tech" class="objline" d="M824 158.5C819.702 159.026 819.515 165.191 823.774 165.977L921.5 184L961.139 192.919C961.379 192.973 961.623 193.009 961.869 193.027L1043 199L1085.73 203.37C1086.56 203.455 1087.4 203.33 1088.18 203.005L1138.95 181.654C1139.95 181.233 1140.75 180.454 1141.21 179.469C1142.38 176.928 1140.88 173.958 1138.14 173.391L1129 171.5"/>
+      <path id="o-bizc" class="objline" d="M609.5 359L619.279 363.781C623.516 365.852 622.819 372.09 618.22 373.135C580.322 381.748 476.841 405.184 469.5 406C460.5 407 444.5 407.5 436 402.5C428.875 398.309 386.616 353.362 373.132 338.932C370.981 336.63 371.496 332.958 374.177 331.303L386 324"/>
+      <path id="o-shop" class="objline" d="M694.5 159L698.486 161.607C702.048 163.935 701.258 169.364 697.181 170.582L670.534 178.542C669.536 178.84 668.47 178.819 667.485 178.482L631.337 166.124C626.301 164.402 627.084 157.049 632.371 156.427L636 156"/>
+      <path id="o-mall" class="objline" d="M999 266L972.101 277.917C967.829 279.81 968.257 286.008 972.75 287.295L1157.06 340.087C1158 340.356 1159 340.344 1159.93 340.051L1564.5 213.099C1566.58 212.445 1568 210.513 1568 208.329V192C1568 189.239 1565.76 187 1563 187H1559"/>
+      <path id="o-clust" class="objline" d="M1133.5 462C1133.5 462 1118.5 474.5 1108.5 478C1098.5 481.5 1301 572.5 1319.5 571.5C1334.83 570.671 1388.59 522.823 1406.59 506.436C1409.33 503.934 1408.41 499.473 1404.93 498.174L1379 488.5"/>
+      <path id="o-bank" class="objline" d="M734.5 425L819.099 472.434C820.311 473.114 821.752 473.259 823.074 472.833L988.627 419.636C993.047 418.216 993.314 412.063 989.033 410.266L936 388"/>
+      <path id="o-cafe" class="objline" d="M575 723.5L660.391 688.609C663.86 687.192 664.594 682.602 661.74 680.173L566.025 598.723C564.759 597.646 563.04 597.268 561.439 597.715L431.5 634"/>
+      <path id="o-gov" class="objline" d="M1411 325L1391.76 337.207C1388.64 339.188 1388.68 343.756 1391.83 345.69L1449.28 380.944C1450.38 381.621 1451.71 381.844 1452.97 381.564L1532.06 364.097C1532.35 364.033 1532.65 363.994 1532.95 363.983L1626.5 360.5L1736.02 345.364C1740.63 344.726 1741.94 338.691 1738.02 336.192L1716.5 322.5"/>
+      <!-- объекты БЕЗ маршрута -->
+      <path id="o-park" class="objline" d="M1881 336.5H1895.46C1895.82 336.5 1896.17 336.536 1896.52 336.616C1901.28 337.686 1937.46 345.997 1944 353C1951 360.5 1956.5 388 1951 411.501C1945.96 433.034 1921.61 476.392 1917.57 483.503C1917.19 484.178 1916.73 484.682 1916.08 485.109C1905.42 492.138 1805.62 557.668 1790.89 557.035C1790.59 557.022 1790.36 556.953 1790.08 556.86L1564.98 482.319C1562.68 481.556 1561.26 479.268 1561.7 476.88C1563.55 466.808 1569.14 441.061 1579.5 431.5C1592.5 419.5 1688 389 1688 389L1774 359.5L1870 336.5"/>
+      <path id="o-cowork" class="objline" d="M735.5 447L760.639 465.759C764.003 468.27 763.024 473.541 758.959 474.588C722.827 483.894 601.157 515.149 593.5 516C584.5 517 568.5 517.5 560 512.5C553.11 508.447 512.055 463.987 496.748 447.288C494.167 444.473 495.588 439.936 499.309 439.073L525.5 433"/>
+      <path id="o-start" class="objline" d="M390.5 57L419.054 65.2282C419.678 65.4083 420.262 65.7086 420.772 66.1123L421.53 66.7117C425.154 69.5808 423.278 75.4097 418.661 75.6266L358.113 78.4711C357.706 78.4903 357.298 78.4595 356.898 78.3796L343.837 75.768C339.988 74.9983 338.486 70.2967 341.176 67.4383L351 57"/>
+      <path id="o-incub" class="objline" d="M383.5 265.001L310.221 274.16C308.526 274.372 306.84 273.703 305.751 272.388L246.783 201.189C244.083 197.93 246.401 193 250.633 193H256.5"/>
+      <path id="o-tower" class="objline" d="M125.73 695.711L114 574.499L97.392 494.878C97.1397 493.669 97.3443 492.408 97.9665 491.34L132.116 432.732C133.233 430.815 135.479 429.863 137.633 430.394L165.412 437.238C167.296 437.702 168.742 439.215 169.12 441.118L217.031 682.14C217.327 683.631 216.929 685.176 215.949 686.338L185.01 723.023C183.534 724.773 181.058 725.297 179 724.295L128.519 699.725C126.954 698.963 125.898 697.443 125.73 695.711Z"/>
+      <path id="o-square" class="objline" d="M975 646.001L1099.37 714.063C1100.99 714.948 1102.96 714.872 1104.51 713.863L1291.05 592.019C1294.51 589.757 1293.89 584.507 1289.99 583.122L1239 565.001"/>
+      <path id="o-square2" class="objline" d="M876 586.5L798.231 537.782C794.608 535.513 795.319 530.038 799.402 528.77L898.5 498"/>
     </g>
 
     <!-- МАРШРУТЫ -->
@@ -150,126 +327,423 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0b1410}
       <circle class="node" cx="1615" cy="353" r="12"/><circle class="node" cx="1225" cy="507" r="12"/>
     </g>
 
-    <!-- КОМЕТА по активному маршруту -->
-    <g id="comet" class="comet">
-      <path id="cometTrail"/>
-      <circle id="cometHead" r="6"/>
-    </g>
+    <!-- кометы и подписи создаются в JS (по одной на каждый маршрут/финиш) -->
+    <g id="comets"></g>
 
-    <!-- название объекта (всплывает над финишем) -->
-    <text id="objLabel" class="objlabel" text-anchor="middle"></text>
-
-    <!-- пыль из-под гусениц при въезде (за эскаватором) -->
     <g id="dustTrail" filter="url(#dustBlur)"></g>
-
-    <!-- большое облако пыли на всё здание (за эскаватором) -->
     <g id="buildingDust" filter="url(#dustBlur)"></g>
-
-    <!-- объект под снос — красный контур (только фаза 3, после приезда) -->
     <path id="obj-demolish" class="demolish" d="M798.722 528.41L995.636 455.688C996.833 455.246 998.154 455.278 999.328 455.778L1278.57 574.699C1282.31 576.291 1282.69 581.443 1279.22 583.564L1080.1 705.41C1078.5 706.386 1076.49 706.39 1074.9 705.42L797.861 537.375C794.282 535.204 794.796 529.86 798.722 528.41Z"/>
-
-    <!-- ЭСКАВАТОР с неоновым контуром — ПЕРЕД пылью -->
     <image id="exc" href="excavator.png" x="1132" y="440" width="328" height="245" preserveAspectRatio="xMidYMid meet"/>
-
-    <!-- мультяшный удар под ковшом (звёзды, вспышки, искры) -->
     <g id="impact"></g>
-
-    <!-- тройка-защитники (только фаза 3, появляются после пыли) — поверх всего -->
     <image id="troika" href="troika.png" x="918" y="540" width="240" height="145" preserveAspectRatio="xMidYMid meet"/>
   </svg>
 
-  <!-- затемнение + текст (фаза 2) -->
-  <div class="dim"></div>
-  <div class="stext" id="slideText">
-    <span class="ln h">Заголовок слайда</span>
-    <span class="ln s">Короткий тезис — заменишь на свой текст</span>
+  <!-- тьма для радиального проявления -->
+  <div class="darkness"></div>
+
+  <!-- ── КАРТОЧКИ подведов: фон-картинка + затемнение + текст (наезжают при переходе) ── -->
+
+  <!-- [4] обзор 4 подведов: имена слева, буллеты справа -->
+  <div class="podcard" data-pod="overview">
+    <div class="podtext" id="pod-overview">
+      <div class="ln"><span class="ovname">МБМ</span>
+        <span class="ovdesc">комплексная поддержка бизнеса от старта до развития</span></div>
+      <div class="ln"><span class="ovname">ФСК</span>
+        <span class="ovdesc">финансовое обеспечение бизнес-процессов</span></div>
+      <div class="ln"><span class="ovname">ФПСП</span>
+        <span class="ovdesc">поддержка социальных проектов</span></div>
+      <div class="ln"><span class="ovname">ШТАБ</span>
+        <span class="ovdesc">практическая помощь в проблемных ситуациях</span></div>
+    </div>
   </div>
 
-  <!-- затемнение + текст презентации (фаза 4) -->
-  <div class="veil"></div>
-  <div class="stext" id="slide4Text">
-    <span class="ln h">Заголовок презентации</span>
-    <span class="ln s">Короткий тезис подведа — заменишь на свой текст</span>
+  <!-- [5] МБМ · слайд 1 — миссия -->
+  <div class="podcard" data-pod="mbm1">
+    <div class="podtext podbig" id="pod-mbm1">
+      <span class="ln ptitle">Малый бизнес Москвы</span>
+      <span class="ln psub">Главная миссия МБМ — создание новых бизнесов, повышение выживаемости МСП, а также рост и масштабирование</span>
+    </div>
   </div>
 
-  <div class="hint" id="hint">Фаза 1 / 4 · → или пробел — далее, ← — назад</div>
+  <!-- [6] МБМ · слайд 2 — нефинансовые услуги (фон: сцена кафе со слайда 2 main) -->
+  <div class="podcard" data-pod="mbm2" style="background-image:url('../main/slide1.png')">
+    <div class="podtext podbig" id="pod-mbm2">
+      <span class="ln ptitle">Полный комплекс нефинансовых услуг для бизнеса</span>
+      <ul class="ln pbul">
+        <li>поиск идеи</li>
+        <li>регистрация бизнеса</li>
+        <li>масштабирование</li>
+        <li>Консультации — 46 тыс. консультаций с начала года</li>
+        <li>Обучающие и деловые мероприятия — &gt;32 тыс. получателей образовательной поддержки с начала года</li>
+        <li>Электронные услуги и сервисы — &gt;29 тыс. обращений к онлайн-сервисам с начала года</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- [7] МБМ · слайд 3 — единый консультационный центр (фон: сцена кафе со слайда 3 main) -->
+  <div class="podcard" data-pod="mbm3" style="background-image:url('../main/slide2.png')">
+    <div class="podtext podbig" id="pod-mbm3">
+      <span class="ln ptitle">Единый консультационный центр</span>
+      <ul class="ln pbul">
+        <li>&gt;400 тематик от 25 ОИВ г.Москвы</li>
+        <li>&gt;85% услуг оказывается в электронном виде</li>
+        <li>Предприниматель может получить консультации по всем вопросам в режиме «одно окно»</li>
+        <li>&gt;25 услуг оказывается в автоматизированном режиме (ИИ)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- [8] ФСК -->
+  <div class="podcard" data-pod="fsk">
+    <div class="podtext" id="pod-fsk">
+      <span class="ln h">ФСК — финансирование бизнеса</span>
+      <span class="ln s">Поручительство, когда не хватает залога. Кредитный брокеридж, оценка, льготное кредитование.</span>
+      <span class="ln s">5 гарантийных продуктов · 438 млрд ₽ привлечено</span>
+    </div>
+  </div>
+
+  <!-- [9] ФПСП -->
+  <div class="podcard" data-pod="fpsp">
+    <div class="podtext" id="pod-fpsp">
+      <span class="ln h">ФПСП — социальный бизнес</span>
+      <span class="ln s">От идеи до масштабирования: обучение, акселерация, краудфандинг, упаковка в социальную франшизу.</span>
+      <span class="ln s">Университет СП · Акселератор 4.0 · Школа краудфандинга</span>
+    </div>
+  </div>
+
+  <!-- [10] Штаб -->
+  <div class="podcard" data-pod="shtab">
+    <div class="podtext" id="pod-shtab">
+      <span class="ln h">Штаб — защита бизнеса</span>
+      <span class="ln s">Возникла проблема на пути — Штаб защитит: обращения, барьеры, системные вопросы.</span>
+      <span class="ln s">500+ обращений в год · решение за 15 дней · 120+ объединений</span>
+    </div>
+  </div>
+
+  <!-- [11] Финал — бизнес работает (фон: сцена открытого кафе со слайда 4 main) -->
+  <div class="podcard" data-pod="finale" style="background-image:url('../main/slide3.png')">
+    <div class="podtext podbig" id="pod-finale">
+      <span class="ln ptitle">Бизнес открыт и работает</span>
+      <span class="ln psub">Путь пройден вместе: от идеи до своего дела. Город и бизнес — на одной волне.</span>
+    </div>
+  </div>
 </div>
 
+<!-- ════════ СПЛЕШ ════════ -->
+<div class="splash" id="splash">
+  <div class="intro-bg"></div>
+  <div class="intro-inner">
+    <img class="skyline" src="skyline.svg" alt="Скайлайн Москвы">
+    <div class="kicker">На одной волне · 2026</div>
+    <div class="intro-bar"><i id="loadFill"></i></div>
+    <div class="intro-pct" id="loadPct">0%</div>
+    <div class="intro-load" id="loadCap">Гружу…</div>
+  </div>
+  <img class="intro-logo" src="logo_dep.svg" alt="Департамент предпринимательства и инновационного развития города Москвы">
+</div>
+
+<!-- ════════ ДЕКА (вводная преза) ════════ -->
+<div class="deck" id="deck">
+  <img src="intro/dpiir1.svg" alt="">
+  <img src="intro/dpiir2.svg" alt="">
+  <img src="intro/dpiir3.svg" alt="">
+  <img src="intro/dpiir4.svg" alt="">
+  <div class="dots" id="deckDots"></div>
+</div>
+
+<div class="hint" id="hint"></div>
+
 <script>
-/* ===== фазы ===== */
-const stage = document.querySelector('.stage');
-const hint  = document.getElementById('hint');
-let phase = 1;
-function setPhase(p){
-  phase = (p+4-1)%4+1;            // 1..4 циклично
-  stage.classList.remove('p1','p2','p3','p4');
-  stage.classList.add('p'+phase);
-  hint.textContent = 'Фаза '+phase+' / 4 · → или пробел — далее, ← — назад';
-  if(phase===3){ runDemolition(); }
-  else { resetDemolition(); }
+/* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
+const stage  = document.querySelector('.stage');
+const splash = document.getElementById('splash');
+const deck   = document.getElementById('deck');
+const hint   = document.getElementById('hint');
+const deckImgs = [...deck.querySelectorAll('img')];
+const deckDots = document.getElementById('deckDots');
+deckImgs.forEach((_,i)=>{const d=document.createElement('i');if(i===0)d.className='on';deckDots.appendChild(d);});
+const dots=[...deckDots.children];
+
+/* порядок сцен показа */
+const SCENES=[
+  {id:'splash',   label:'Заставка'},
+  {id:'map',      label:'Карта: старт → раскрытие → объекты → маршруты → 4 опоры'},
+  {id:'deck',     label:'Вводная презентация'},
+  {id:'overview', label:'Обзор подведов'},
+  {id:'mbm1',     label:'МБМ — миссия'},
+  {id:'mbm2',     label:'МБМ — нефинансовые услуги'},
+  {id:'mbm3',     label:'МБМ — единый центр'},
+  {id:'fsk',      label:'ФСК — финансирование'},
+  {id:'fpsp',     label:'ФПСП — соц. предпринимательство'},
+  {id:'shtab',    label:'Штаб — защита бизнеса'},
+  {id:'finale',   label:'Финал — бизнес работает'},
+];
+/* какому подведу соответствует какая текстовая панель */
+const POD={overview:'pod-overview',mbm1:'pod-mbm1',mbm2:'pod-mbm2',mbm3:'pod-mbm3',
+           fsk:'pod-fsk',fpsp:'pod-fpsp',shtab:'pod-shtab',finale:'pod-finale'};
+/* ключевые узлы для «4 опор»: индексы в #ends → МБМ,ФСК,ФПСП,Штаб */
+const KEY_NODES=[1,4,9,8];
+
+let cur=0;          // индекс активной сцены
+let deckSub=0;      // под-индекс слайда деки
+let mapStep=0;      // шаг внутри слайда «Карта» (0..2) — играет автоматически
+const MAP_STEPS=3;  // 0 тёмный старт · 1 раскрытие карты · 2 маршруты+объекты
+const MAP_LABELS=['тёмный старт','карта раскрывается','маршруты и объекты'];
+/* пауза ПЕРЕД переходом к следующему шагу (мс), для шагов 0..1; шаг 2 финальный */
+const MAP_HOLD=[600, 1300];
+let mapTimer=null;
+function clearMapTimer(){ if(mapTimer){ clearTimeout(mapTimer); mapTimer=null; } }
+/* авто-проигрыш шагов Карты от заданного шага */
+function startMapAuto(from){
+  clearMapTimer();
+  mapStep=from; applyScene();
+  if(mapStep<MAP_STEPS-1){
+    mapTimer=setTimeout(()=>{ if(id()==='map') startMapAuto(mapStep+1); }, MAP_HOLD[mapStep]);
+  }
+}
+
+function id(){return SCENES[cur].id;}
+
+function applyScene(){
+  const sid=id();
+  const veil = sid in POD;
+  if(sid!=='map') clearMapTimer();        // ушли с Карты — гасим авто-проигрыш
+  // классы стадии под текущую сцену
+  stage.className='stage scene-'+sid;
+  // слайд «Карта» — 5 авто-шагов
+  if(sid==='map'){
+    if(mapStep===0){ stage.classList.add('dark'); }                 // виден только предприниматель
+    else if(mapStep===1){ stage.classList.add('reveal'); }          // анимированное раскрытие
+    else { stage.classList.add('open','routes-on'); }               // карта раскрыта + маршруты/объекты
+  }
+  // подвед: карточка (фон+затемнение+текст) сама перекрывает карту — доп. классы не нужны
+
+  // сплеш
+  splash.classList.toggle('hidden', sid!=='splash');
+  // дека
+  deck.classList.toggle('show', sid==='deck');
+  if(sid==='deck'){ showDeck(); }
+
+  // карточки подведов: показать активную, сбросить остальные
+  document.querySelectorAll('.podcard').forEach(c=>{ c.classList.remove('active','sl-r','sl-l'); c.style.zIndex=''; c.style.opacity=''; c.style.removeProperty('--cr'); });
+  if(veil){ cardOf(sid).classList.add('active'); }
+
+  // узлы-финиши, кометы, объекты
+  if(sid==='map' && mapStep===2){ startRoutes(); }   // шаг 2 — кометы пробегают 1 раз
+  else { clearComets(); }
+  // слайд 4 «Обзор» — только текст, без пульсирующих точек и названий
+
+  // снос (Штаб)
+  if(sid==='shtab') runDemolition(); else resetDemolition();
+
+  let label=SCENES[cur].label;
+  if(sid==='map') label='Карта · шаг '+(mapStep+1)+'/'+MAP_STEPS+' — '+MAP_LABELS[mapStep];
+  hint.textContent='['+(cur+1)+'/'+SCENES.length+'] '+label+'  ·  → далее  ← назад';
+}
+
+/* === дека: показ текущего слайда === */
+function showDeck(){
+  deckImgs.forEach((im,i)=>im.classList.toggle('cur',i===deckSub));
+  dots.forEach((d,i)=>d.classList.toggle('on',i===deckSub));
+}
+
+/* === навигация === */
+const isPod=sid=>sid in POD;
+const cardOf=sid=>document.querySelector('.podcard[data-pod="'+sid+'"]');
+/* ФЛАГ перехода между подведами: 'slide' (карточка наезжает) | 'breathe' (кроссфейд) */
+const TRANSITION='slide';
+let breatheT=null, slideT=null;
+/* вдох-выдох: старая карточка схлопывается радиально к предпринимателю, затем новая раскрывается оттуда же */
+function podBreathe(prevId){
+  clearTimeout(breatheT);
+  const oldC=cardOf(prevId), newC=cardOf(id());
+  oldC.classList.add('active'); oldC.style.setProperty('--cr','185%');
+  void oldC.offsetWidth;
+  requestAnimationFrame(()=>{ oldC.style.setProperty('--cr','0%'); });   // ВЫДОХ: схлопнуть к точке
+  breatheT=setTimeout(()=>{
+    oldC.classList.remove('active'); oldC.style.removeProperty('--cr');
+    newC.classList.add('active'); newC.style.setProperty('--cr','0%');   // новая скрыта в точке
+    void newC.offsetWidth;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ newC.style.setProperty('--cr','185%'); }));  // ВДОХ: раскрыть
+    breatheT=setTimeout(applyScene, 760);
+  }, 760);
+}
+/* slide: КАРТОЧКА (фон+текст) наезжает на старую (dir>0 справа налево, dir<0 слева направо) */
+function podSlide(prevId, dir){
+  clearTimeout(slideT);
+  const oldC=cardOf(prevId), newC=cardOf(id());
+  stage.classList.add('sliding');                       // строки статичны во время слайда
+  oldC.classList.add('active'); oldC.classList.remove('sl-r','sl-l');   // старый СТОИТ на месте
+  newC.classList.add('active', dir>0?'sl-r':'sl-l');    // новый за краем (справа/слева)
+  newC.style.zIndex='8';                                // въезжающая карточка — ПОВЕРХ старой
+  void newC.offsetWidth;                                // reflow — стартовая позиция применилась
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ // два кадра: чтобы transition точно стартовал
+    newC.classList.remove('sl-r','sl-l');               // новый наезжает поверх неподвижного старого
+  }));
+  slideT=setTimeout(()=>{
+    oldC.classList.remove('active','sl-l','sl-r');
+    newC.classList.remove('sl-r','sl-l'); newC.style.zIndex='';
+    stage.classList.remove('sliding');
+    applyScene();                                       // финализировать
+  }, 660);
+}
+/* выбор перехода между подведами по флагу */
+function podGo(prevId, dir){ TRANSITION==='slide' ? podSlide(prevId,dir) : podBreathe(prevId); }
+function next(){
+  if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
+  if(cur<SCENES.length-1){ const fromId=id(); cur++;
+    if(id()==='deck'){ deckSub=0; applyScene(); }
+    else if(id()==='map'){ startMapAuto(0); }
+    else if(isPod(id()) && isPod(fromId)){ podGo(fromId, +1); }   // подвед→подвед вперёд
+    else applyScene();
+  }
+}
+function prev(){
+  if(id()==='deck' && deckSub>0){ deckSub--; showDeck(); return; }
+  if(cur>0){ const fromId=id(); cur--;
+    if(id()==='deck'){ deckSub=deckImgs.length-1; applyScene(); showDeck(); }
+    else if(id()==='map'){ mapStep=MAP_STEPS-1; applyScene(); }       // возврат на Карту — финал (4 опоры)
+    else if(isPod(id()) && isPod(fromId)){ podGo(fromId, -1); }   // подвед→подвед назад
+    else applyScene();
+  }
 }
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); setPhase(phase+1); }
-  if(e.key==='ArrowLeft'){ e.preventDefault(); setPhase(phase===1?4:phase-1); }
+  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(); }
+  if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
 });
+document.addEventListener('click',()=>next());   // клик/тап — далее
 
-/* ===== шагающие стопы по маршрутам (фаза 1) ===== */
+/* ============ КОМЕТЫ ПО МАРШРУТАМ (все одновременно) ============ */
+const NS='http://www.w3.org/2000/svg';
 const routes=[...document.querySelectorAll('.route')];
 const ends  =[...document.querySelectorAll('#ends .node')];
-const comet=document.getElementById('comet');
-const cometTrail=document.getElementById('cometTrail');
-const cometHead=document.getElementById('cometHead');
-const objLabel=document.getElementById('objLabel');
-/* НАЗВАНИЯ ОБЪЕКТОВ — порядок = порядок финишей (#ends). Заменишь на реальные. */
-const NAMES=['ДПиИР','МБМ','Кафе','Шаурмечная','ФСК',
-             'Кластер Ломоносов','Сеть кафе','Торговый центр','Штаб','ФПСП'];
-function showLabel(node,name){
-  if(!node||!name)return;
-  objLabel.textContent=name;
-  objLabel.setAttribute('x', node.getAttribute('cx'));
-  objLabel.setAttribute('y', (+node.getAttribute('cy'))-20);  // над узлом
-  objLabel.classList.add('show');
+const cometsG=document.getElementById('comets');
+const TAIL=75;
+
+/* по комете на каждый маршрут */
+const comets=routes.map(path=>{
+  const L=path.getTotalLength();
+  const g=document.createElementNS(NS,'g'); g.style.opacity='0'; g.style.transition='opacity .2s';
+  const trail=document.createElementNS(NS,'path');
+  trail.setAttribute('class','ctrail'); trail.setAttribute('d',path.getAttribute('d'));
+  trail.style.strokeDasharray=TAIL+' '+(L+TAIL); trail.style.strokeDashoffset=TAIL;
+  const head=document.createElementNS(NS,'circle'); head.setAttribute('class','chead'); head.setAttribute('r','6');
+  g.appendChild(trail); g.appendChild(head); cometsG.appendChild(g);
+  return {path,L,g,trail,head};
+});
+
+/* ── РЕЕСТР ОБЪЕКТОВ: контур(ы) + точка октаэдра (коорд. 2172×724) + название + индекс маршрута ──
+   route: индекс маршрута (объект раскрывается, когда комета доедет) или null (раскрытие в рандомный момент) */
+const OBJS=[
+  {oids:['o-delc'],  mx:1896, my:53,  name:'Деловой центр',         route:0},
+  {oids:['o-bizc'],  mx:485,  my:199, name:'Бизнес-центр',          route:1},
+  {oids:['o-rest'],  mx:252,  my:362, name:'Ресторан',              route:2},
+  {oids:['o-cafe'],  mx:530,  my:583, name:'Салон красоты',         route:3},
+  {oids:['o-bank'],  mx:833,  my:280, name:'Банк',                  route:4},
+  {oids:['o-tech'],  mx:984,  my:96,  name:'Технопарк',             route:5},
+  {oids:['o-shop'],  mx:660,  my:128, name:'Магазин',               route:6},
+  {oids:['o-mall'],  mx:1086, my:175, name:'Торговый центр',        route:7},
+  {oids:['o-gov'],   mx:1583, my:236, name:'Правительство Москвы',  route:8},
+  {oids:['o-clust'], mx:1248, my:352, name:'Фитнес-клуб',           route:9},
+  {oids:['o-park'],               mx:1757, my:394, name:'Креативный кластер',    route:null},
+  {oids:['o-cowork'],             mx:640,  my:358, name:'Кафе',                  route:null},
+  {oids:['o-start'],              mx:384,  my:90,  name:'Инновационный кластер', route:null},
+  {oids:['o-incub'],              mx:303,  my:189, name:'Мастерская',            route:null},
+  /* герой: только название НАД героем (точка из SVG-маркера 141/407) — без октаэдра и без подсветки контура.
+     stars: ряд звёзд над названием. filled — закрашено сейчас (растёт по ходу презентации); total — всего слотов */
+  {oids:['o-tower'],              mx:141,  my:407, name:'Начинающий предприниматель', route:null, noline:true, nooct:true, stars:{total:5, filled:1}},
+  {oids:['o-square','o-square2'], mx:1042, my:466, name:'Завод',                 route:null},
+];
+/* иконка здания внутри октаэдра */
+const OCT_ICO='<path d="M5 21V8l7-4 7 4v13 M5 21h14 M9 21v-4h6v4 M8.5 11h2.2 M13.3 11h2.2 M8.5 14.6h2.2 M13.3 14.6h2.2"/>';
+/* ФЛАГ стиля названия: 1 — белый текст (как было) · 2 — золото в рамке (как на референсе) */
+const NAME_STYLE=2;
+const NAME_CLS='mapname'+(NAME_STYLE===2?' boxed':'');
+/* строим октаэдр + подпись для каждого объекта (HTML над сценой) */
+OBJS.forEach(o=>{
+  const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'');
+  el.style.left=(o.mx/2172*100)+'%'; el.style.top=(o.my/724*100)+'%';
+  const oct = o.nooct ? '' :                                  // герой — без октаэдра, только название
+    '<svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/>'+
+    '<circle class="cdot" cx="22" cy="50" r="2"/>'+
+    '<g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/>'+
+    '<g class="octic" transform="translate(13.4 6.6) scale(0.72)">'+OCT_ICO+'</g></g></svg>';
+  if(o.stars){
+    // герой: звёзды ВНУТРИ панели названия (стиль .tip .star из main): on — золото, off — тусклая
+    let st=''; for(let i=0;i<o.stars.total;i++) st+='<span class="star '+(i<o.stars.filled?'on':'off')+'">★</span>';
+    el.innerHTML='<div class="'+NAME_CLS+' herobox"><span class="hstars">'+st+'</span><span class="htext"></span></div>';
+    o.nameEl=el.querySelector('.htext');
+  } else {
+    el.innerHTML='<span class="'+NAME_CLS+'"></span>'+oct;
+    o.nameEl=el.querySelector('.mapname');
+  }
+  o.el=el;
+  o.lines=o.oids.map(id=>document.getElementById(id));
+  stage.appendChild(el);
+});
+
+let typeTimers=[], revealTimers=[];
+/* печать названия по буквам с мигающей кареткой */
+function typeName(o){
+  const el=o.nameEl, txt=o.name; el.classList.remove('typed'); el.textContent='';
+  for(let i=1;i<=txt.length;i++){
+    typeTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*45));
+  }
 }
-function hideLabel(){ objLabel.classList.remove('show'); }
-const SPEED=400,GAP=250,TAIL=75;
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-routes.forEach(r=>r.dataset.len=r.getTotalLength());
-/* комета летит вдоль маршрута: хвост = бегущий штрих, голова = яркая точка */
-function cometRun(path){return new Promise(res=>{
-  const L=+path.dataset.len, dur=Math.max(700,(L/SPEED)*1000);
-  cometTrail.setAttribute('d', path.getAttribute('d'));
-  cometTrail.style.strokeDasharray=TAIL+' '+(L+TAIL);
+/* раскрыть объект: контур загорается+пульсирует → октаэдр (вращается) → печать названия */
+function revealObject(o){
+  if(o.shown) return; o.shown=true;
+  if(!o.noline) o.lines.forEach(l=>l&&l.classList.add('revealed'));   // герой — без подсветки контура
+  o.el.classList.add('show');
+  typeName(o);
+}
+function clearComets(){
+  comets.forEach(c=>{c.g.style.opacity='0'; c.trail.style.strokeDashoffset=TAIL; c.done=false;});
+  ends.forEach(n=>n.classList.remove('active','key'));
+  typeTimers.forEach(clearTimeout); typeTimers=[];
+  revealTimers.forEach(clearTimeout); revealTimers=[];
+  OBJS.forEach(o=>{ o.shown=false; o.el.classList.remove('show');
+    o.nameEl.textContent=''; o.nameEl.classList.remove('typed');
+    o.lines.forEach(l=>l&&l.classList.remove('revealed')); });
+}
+/* комета доехала до финиша: узел активен (+золото для опор) → раскрыть объект этого маршрута */
+function arrive(i){
+  if(comets[i]) comets[i].g.style.opacity='0';   // комета исчезает на финише
+  if(ends[i]) ends[i].classList.add('active');
+  if(KEY_NODES.includes(i) && ends[i]) ends[i].classList.add('key');
+  const o=OBJS.find(o=>o.route===i); if(o) revealObject(o);
+}
+/* запуск сцены: все кометы стартуют из точки, едут с ОДИНАКОВОЙ скоростью,
+   проходят маршрут ОДИН раз; длинные маршруты дольше. По прибытии — arrive() */
+const PXMS=0.4;   // скорость кометы, пикселей в миллисекунду (равная для всех)
+function startRoutes(){
+  clearComets();
+  comets.forEach(c=>{ c.g.style.opacity='1'; c.done=false; });
+  // объекты БЕЗ маршрута — раскрыть в случайный момент: от старта комет до прибытия последней
+  const lastArrive=Math.max(...comets.map(c=>c.L))/PXMS;
+  OBJS.filter(o=>o.route===null).forEach(o=>{
+    revealTimers.push(setTimeout(()=>{ if(id()==='map'&&mapStep>=2) revealObject(o); }, Math.random()*lastArrive));
+  });
   let t0=null;
-  function frame(ts){ if(t0===null)t0=ts; let p=(ts-t0)/dur; if(p>1)p=1;
-    const d=p*L;
-    cometTrail.style.strokeDashoffset=(TAIL-d);              // хвост тянется за головой
-    const pt=path.getPointAtLength(d);
-    cometHead.setAttribute('cx',pt.x); cometHead.setAttribute('cy',pt.y);
-    if(p<1) requestAnimationFrame(frame); else res();
+  function frame(ts){
+    if(!(id()==='map' && mapStep>=2)) return;   // ушли со сцены/шага — стоп
+    if(t0===null)t0=ts; const el=ts-t0;
+    let allDone=true;
+    comets.forEach((c,i)=>{
+      const dur=c.L/PXMS;
+      let p=el/dur; if(p>=1)p=1; else allDone=false;
+      const d=p*c.L;
+      c.trail.style.strokeDashoffset=(TAIL-d);
+      const pt=c.path.getPointAtLength(d);
+      c.head.setAttribute('cx',pt.x); c.head.setAttribute('cy',pt.y);
+      if(p>=1 && !c.done){ c.done=true; arrive(i); }   // финиш достигнут
+    });
+    if(!allDone) requestAnimationFrame(frame);          // дошли все — стоп (без цикла)
   }
   requestAnimationFrame(frame);
-});}
-async function walkAll(){
-  while(true){
-    for(let i=0;i<routes.length;i++){
-      if(phase!==1){ comet.classList.remove('on'); hideLabel(); await wait(300); continue; }
-      const r=routes[i],node=ends[i];
-      if(node)node.classList.add('active'); comet.classList.add('on');    // маршрут НЕ подсвечиваем
-      await cometRun(r);                                                  // комета: старт→финиш
-      comet.classList.remove('on');
-      showLabel(node, NAMES[i]);                                          // название над объектом
-      await wait(1100);
-      hideLabel(); if(node)node.classList.remove('active');
-      await wait(GAP);
-    }
-  }
 }
-walkAll();
 
-/* ===================== ФАЗА 3: СНОС (последовательность) =====================
-   1) эскаватор въезжает справа, из-под гусениц тянется пыль (тает следом);
-   2) под ковшом — мультяшный удар: вспышки-«бам», звёзды, искры (повторяются);
-   3) пыль вырастает и накрывает ВСЁ здание.                                     */
+/* ===================== СЦЕНА «ШТАБ»: СНОС ===================== */
 const SVGNS='http://www.w3.org/2000/svg';
 const excEl=document.getElementById('exc');
 const dustTrailG=document.getElementById('dustTrail');
@@ -277,14 +751,12 @@ const buildingDustG=document.getElementById('buildingDust');
 const impactG=document.getElementById('impact');
 const demolishEl=document.getElementById('obj-demolish');
 const troikaEl=document.getElementById('troika');
-const TROIKA={x:1038, y:686};                    // центр/низ тройки (для пыли из-под ног)
-
-const EXC_X=1132, EXC_IN=620, EXC_DUR=1400;      // финальный x, смещение въезда, длительность
-const IMPACT={x:1150, y:520};                    // точка под ковшом (на здании)
-const BLD={x:1039, y:578};                       // центр здания (для облака пыли)
+const TROIKA={x:1038, y:686};
+const EXC_X=1132, EXC_IN=620, EXC_DUR=1400;
+const IMPACT={x:1150, y:520};
+const BLD={x:1039, y:578};
 const easeOut=t=>1-Math.pow(1-t,3);
-const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;   // плавный старт И финиш
-
+const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let excRAF=null, trailInt=null, excBackRAF=null;
 let impactTimer=null, dustBreath=null, troikaWiggle=null, troikaEnter=null;
 const seqTimers=[];
@@ -297,140 +769,106 @@ function starPts(cx,cy,spikes,outer,inner){let p=[],step=Math.PI/spikes,a=-Math.
   for(let i=0;i<spikes*2;i++){const r=i%2?inner:outer;
     p.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1));a+=step;}
   return p.join(' ');}
-
-/* — пыль из-под гусениц (тянется и тает) — */
 function trailPuff(x,y){
   for(let k=0;k<3;k++){
     const c=mk('circle',{cx:x+(Math.random()*44-22), cy:y+(Math.random()*14-7),
       r:(18+Math.random()*16).toFixed(1)},'puff');
-    c.style.fill='#efe6d2';                 // ярче (светлая пыль)
-    dustTrailG.appendChild(c);
+    c.style.fill='#efe6d2'; dustTrailG.appendChild(c);
     c.animate([{opacity:1,transform:'scale(.5)'},{opacity:0,transform:'scale(2.1)'}],
       {duration:1100+Math.random()*500,easing:'ease-out',fill:'forwards'}).onfinish=()=>c.remove();
   }
 }
-
-/* — мультяшный удар под ковшом — */
 function impactPop(){
-  // центральная вспышка-«бам»
   const burst=mk('polygon',{points:starPts(IMPACT.x,IMPACT.y,12,28,11)},'burst');
   impactG.appendChild(burst);
-  burst.animate([{opacity:1,transform:'scale(.3) rotate(0deg)'},
-                 {opacity:0,transform:'scale(1.5) rotate(25deg)'}],
+  burst.animate([{opacity:1,transform:'scale(.3) rotate(0deg)'},{opacity:0,transform:'scale(1.5) rotate(25deg)'}],
     {duration:360,easing:'ease-out',fill:'forwards'}).onfinish=()=>burst.remove();
-  // звёздочки вокруг
   for(let i=0;i<3;i++){
     const ox=Math.random()*70-35, oy=Math.random()*40-28;
     const st=mk('polygon',{points:starPts(IMPACT.x+ox,IMPACT.y+oy,5,9,3.6)},'star');
     impactG.appendChild(st);
-    st.animate([{opacity:1,transform:'scale(.2) rotate(0deg)'},
-                {opacity:0,transform:'scale(1.2) rotate(40deg)'}],
+    st.animate([{opacity:1,transform:'scale(.2) rotate(0deg)'},{opacity:0,transform:'scale(1.2) rotate(40deg)'}],
       {duration:520,easing:'ease-out',fill:'forwards'}).onfinish=()=>st.remove();
   }
-  // искры — летят вниз/в стороны
   for(let i=0;i<5;i++){
     const sp=mk('circle',{cx:IMPACT.x,cy:IMPACT.y,r:(Math.random()*2+1).toFixed(1)},'spark2');
     impactG.appendChild(sp);
     const dx=Math.random()*70-35, dy=Math.random()*30+10;
-    sp.animate([{opacity:1,transform:'translate(0,0)'},
-                {opacity:0,transform:`translate(${dx}px,${dy}px)`}],
+    sp.animate([{opacity:1,transform:'translate(0,0)'},{opacity:0,transform:`translate(${dx}px,${dy}px)`}],
       {duration:420+Math.random()*260,easing:'ease-out',fill:'forwards'}).onfinish=()=>sp.remove();
   }
 }
 function startImpact(){ if(impactTimer)return; impactTimer=setInterval(impactPop,260); }
 function stopImpact(){ clearInterval(impactTimer); impactTimer=null; impactG.innerHTML=''; }
-
-/* — облако пыли, накрывающее всё здание — */
 function growBuildingDust(){
   buildingDustG.innerHTML='';
-  const spots=[[0,0,300,150],[-180,-15,180,120],[170,10,200,130],
-               [-60,45,210,120],[80,-55,180,110],[-250,30,150,90],[260,35,160,95]];
+  const spots=[[0,0,300,150],[-180,-15,180,120],[170,10,200,130],[-60,45,210,120],[80,-55,180,110],[-250,30,150,90],[260,35,160,95]];
   spots.forEach((s,i)=>{
     const e=mk('ellipse',{cx:BLD.x+s[0],cy:BLD.y+s[1],rx:s[2],ry:s[3]},'puff');
     buildingDustG.appendChild(e);
     e.animate([{opacity:0,transform:'scale(.3)'},{opacity:.32,transform:'scale(1)'}],
       {duration:1000,delay:i*70,easing:'ease-out',fill:'forwards'});
   });
-  // лёгкое «дыхание» после того как накрыло (полупрозрачно — здание просвечивает)
-  seqTimers.push(setTimeout(()=>{ if(phase===3)
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab')
     dustBreath=buildingDustG.animate([{opacity:.85},{opacity:.6},{opacity:.85}],
       {duration:3500,iterations:Infinity,easing:'ease-in-out'}); }, 1200));
 }
-
-/* — пыль тает (тройка отстояла здание) — */
 function hideBuildingDust(){
   if(dustBreath){dustBreath.cancel();dustBreath=null;}
   const a=buildingDustG.animate([{opacity:1},{opacity:0}],{duration:800,easing:'ease-out',fill:'forwards'});
   a.onfinish=()=>{ buildingDustG.innerHTML=''; };
 }
-
-/* — пыль из-под ног тройки при приземлении — */
 function troikaPoof(){
   for(let k=0;k<6;k++){
     const c=mk('circle',{cx:TROIKA.x+(Math.random()*300-150), cy:TROIKA.y+(Math.random()*12-6),
       r:(14+Math.random()*16).toFixed(1)},'puff');
-    c.style.fill='#efe6d2';
-    dustTrailG.appendChild(c);
+    c.style.fill='#efe6d2'; dustTrailG.appendChild(c);
     c.animate([{opacity:.9,transform:'scale(.4)'},{opacity:0,transform:'scale(2)'}],
       {duration:900+Math.random()*300,easing:'ease-out',fill:'forwards'}).onfinish=()=>c.remove();
   }
 }
-
-/* — тройка плавно поднимается и заслоняет здание — */
 function showTroika(){
   troikaEl.style.transformBox='fill-box';
   troikaEl.style.transformOrigin='bottom center';
   troikaPoof();
-  // мягкий подъём+проявление, без резкого отскока (fill:forwards держит видимость)
   troikaEnter=troikaEl.animate([
     {opacity:0, transform:'translateY(54px) scale(.9)'},
     {opacity:1, transform:'translateY(0) scale(1)'}
   ],{duration:900,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'});
   troikaEnter.onfinish=()=>{
-    if(phase!==3)return;
-    // едва заметное «дыхание»-покачивание — стоят, не дают снести
+    if(id()!=='shtab')return;
     troikaWiggle=troikaEl.animate(
       [{transform:'rotate(-.8deg)'},{transform:'rotate(.8deg)'}],
       {duration:900,direction:'alternate',iterations:Infinity,easing:'ease-in-out'});
   };
 }
-
-/* — эскаватор плавно сдаёт назад (вправо, откуда приехал) — */
 function excBackup(){
   const x0=+excEl.getAttribute('x'), x1=x0+175, dur=1500; let t0=null;
   function fr(ts){ if(t0===null)t0=ts; let p=(ts-t0)/dur; if(p>1)p=1;
-    excEl.setAttribute('x', x0+(x1-x0)*easeInOut(p));   // плавный старт и финиш
+    excEl.setAttribute('x', x0+(x1-x0)*easeInOut(p));
     if(p<1) excBackRAF=requestAnimationFrame(fr); else excBackRAF=null; }
   excBackRAF=requestAnimationFrame(fr);
 }
-
-/* — запуск всей сцены сноса — */
 function runDemolition(){
   resetDemolition();
-  // 1) въезд справа + пыль из-под гусениц (спавн по таймеру — виден при любом FPS)
   let t0=null;
   function frame(ts){
     if(t0===null)t0=ts;
     let p=(ts-t0)/EXC_DUR; if(p>1)p=1;
     const e=easeOut(p), x=EXC_X+EXC_IN*(1-e);
-    excEl.setAttribute('x', x);
-    excEl.style.opacity=e;
+    excEl.setAttribute('x', x); excEl.style.opacity=e;
     if(p<1) excRAF=requestAnimationFrame(frame);
     else { excRAF=null; if(trailInt){clearInterval(trailInt);trailInt=null;} }
   }
   excRAF=requestAnimationFrame(frame);
   trailInt=setInterval(()=>{ const x=+excEl.getAttribute('x'); trailPuff(x+150,655); }, 70);
   seqTimers.push(setTimeout(()=>{ if(trailInt){clearInterval(trailInt);trailInt=null;} }, EXC_DUR+200));
-  // 2) после приезда — подсветить объект под снос красным + удар под ковшом
-  seqTimers.push(setTimeout(()=>{ if(phase===3) demolishEl.classList.add('show'); }, EXC_DUR+200));
-  seqTimers.push(setTimeout(()=>{ if(phase===3) startImpact(); }, EXC_DUR+450));
-  // 3) пыль накрывает здание; удар стихает, когда накрыло
-  seqTimers.push(setTimeout(()=>{ if(phase===3) growBuildingDust(); }, EXC_DUR+1600));
-  // 4) тройка врывается и заслоняет здание; красная метка сноса гаснет
-  seqTimers.push(setTimeout(()=>{ if(phase===3){ stopImpact(); showTroika(); demolishEl.classList.remove('show'); } }, EXC_DUR+2700));
-  // 5) эскаватор сдаёт назад, пыль тает
-  seqTimers.push(setTimeout(()=>{ if(phase===3) excBackup(); }, EXC_DUR+2950));
-  seqTimers.push(setTimeout(()=>{ if(phase===3) hideBuildingDust(); }, EXC_DUR+3100));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') demolishEl.classList.add('show'); }, EXC_DUR+200));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') startImpact(); }, EXC_DUR+450));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') growBuildingDust(); }, EXC_DUR+1600));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab'){ stopImpact(); showTroika(); demolishEl.classList.remove('show'); } }, EXC_DUR+2700));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') excBackup(); }, EXC_DUR+2950));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') hideBuildingDust(); }, EXC_DUR+3100));
 }
 function resetDemolition(){
   if(excRAF){cancelAnimationFrame(excRAF);excRAF=null;}
@@ -441,14 +879,33 @@ function resetDemolition(){
   stopImpact();
   demolishEl.classList.remove('show');
   dustTrailG.innerHTML=''; buildingDustG.innerHTML='';
-  // сброс тройки — отменяем анимации, возвращается CSS opacity:0 (скрыта)
   if(troikaEnter){troikaEnter.cancel();troikaEnter=null;}
   if(troikaWiggle){troikaWiggle.cancel();troikaWiggle=null;}
   troikaEl.style.transform='';
-  excEl.setAttribute('x',EXC_X); excEl.style.opacity='';   // CSS вернёт 0 вне фазы 3
+  excEl.setAttribute('x',EXC_X); excEl.style.opacity='';
 }
 
-setPhase(1);
+applyScene();
+
+/* ===== загрузка на сплеше: бар + % + ступенчатая подпись ===== */
+const loadFill=document.getElementById('loadFill');
+const loadPct =document.getElementById('loadPct');
+const loadCap =document.getElementById('loadCap');
+const LOAD_STEPS=[[0,'Гружу…'],[40,'Гружу! Гружу!'],[80,'Московский предпринимательский квест']];
+function runLoading(){
+  const dur=3600; let t0=null;
+  function frame(now){
+    if(t0===null)t0=now;
+    let p=Math.min(100,(now-t0)/dur*100);
+    loadFill.style.width=p+'%'; loadPct.textContent=Math.round(p)+'%';
+    let cap=LOAD_STEPS[0][1]; for(const s of LOAD_STEPS) if(p>=s[0]) cap=s[1];
+    loadCap.textContent=cap;
+    if(p<100) requestAnimationFrame(frame);
+    else setTimeout(()=>{ if(id()==='splash') splash.classList.add('hidden'); }, 1000); // показать квест-титул → открыть город
+  }
+  requestAnimationFrame(frame);
+}
+setTimeout(runLoading, 700);   // запуск после появления бара
 </script>
 </body>
 </html>
