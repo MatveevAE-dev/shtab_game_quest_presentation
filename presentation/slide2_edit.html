@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Слайд 2 — редактор расположения (Боб)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:system-ui,sans-serif}
+:root{--neon:#27e3ff;--cyan:#3fd0ff;--cyan-soft:rgba(63,208,255,.55);
+  --title-font:'Orbitron',sans-serif;--hauss:"ALS Hauss Next",system-ui,Arial,sans-serif}
+@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next"),url("fonts/ALSHaussNext-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next Bold"),local("ALS Hauss Next"),url("fonts/ALSHaussNext-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@keyframes qcaret{50%{opacity:0}}
+
+/* ── сцена (letterbox 2172×724, как в основном) ── */
+.hstage{position:absolute;inset:0;margin:auto;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  background:#0a1016 url("Слайд 1 - герой на крыше на терассе.png") center/cover no-repeat;
+  container-type:size;container-name:hstage}
+
+/* ── стрелки + подсветка бинокля (SVG, координаты 2172×724) ── */
+.hlines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2}
+.hring{fill:none;stroke:#ffd24a;stroke-width:3;filter:drop-shadow(0 0 6px #ffd24a);opacity:.9;
+  transform-box:fill-box;transform-origin:center;animation:hringPulse 1.8s ease-in-out infinite}
+@keyframes hringPulse{0%,100%{stroke-width:3;opacity:.8}50%{stroke-width:5;opacity:1}}
+.harrow{fill:none;stroke:var(--neon);stroke-width:3;filter:drop-shadow(0 0 4px var(--neon))}
+
+/* ── имя героя (ЕДИНЫЙ стиль .mapname.boxed.herobox) ── */
+.mapname{white-space:nowrap;font-family:var(--hauss);font-weight:700;line-height:1;color:#fff}
+.mapname.boxed{font-family:var(--title-font);font-size:14px;font-weight:700;color:#fff;
+  text-transform:uppercase;letter-spacing:1px;
+  background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);border-radius:4px;
+  padding:7px 12px;box-shadow:0 0 24px rgba(63,208,255,.25)}
+.mapname.herobox{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.herobox .hstars{display:flex;gap:3px;line-height:1}
+.herobox .hstars .star{font-size:15px;line-height:1}
+.herobox .hstars .star.on{color:#ffd24a;text-shadow:0 0 6px rgba(255,210,74,.6)}
+.herobox .hstars .star.off{color:rgba(255,255,255,.22)}
+.herobox .htext{display:block;white-space:normal;text-align:left;width:min-content;line-height:1.15}
+/* обёртка ПОЗИЦИИ имени (двигай тут) */
+.hchip{position:absolute;left:46%;top:3%;transform:translateX(-50%);z-index:3}
+.hchip .mapname{position:static;transform:none}
+
+/* ── выноски (панель + золотой акцент) ── */
+.hcall{position:absolute;z-index:3;max-width:27%;background:rgba(8,16,30,.9);
+  border:1px solid var(--cyan-soft);border-radius:10px;padding:1.5cqh 1.9cqh;
+  font-family:var(--hauss);font-size:2.4cqh;line-height:1.35;color:#fff;
+  box-shadow:0 0 22px rgba(63,208,255,.25)}
+.hcall b{color:#ffd24a;font-weight:800;text-shadow:0 0 8px rgba(255,210,74,.45)}
+.hcall.left{left:3%;top:20%}
+.hcall.right{right:3%;top:26%}
+
+/* ── реплика героя (единый стиль .hero-say) ── */
+.hero-say{position:absolute;z-index:16;max-width:34%;
+  background:rgba(8,16,30,.94);border:1px solid var(--cyan-soft);border-radius:12px;
+  padding:14px 18px;color:#fff;font-family:var(--hauss);font-weight:600;font-size:1.9cqh;line-height:1.3;
+  box-shadow:0 0 26px rgba(63,208,255,.3)}
+.hero-say::after{content:"";position:absolute;left:28px;bottom:-9px;width:16px;height:16px;
+  background:rgba(8,16,30,.94);border-right:1px solid var(--cyan-soft);border-bottom:1px solid var(--cyan-soft);transform:rotate(45deg)}
+.hero-say .say-caret{color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
+.hero-hook{left:53%;top:1%;max-width:30%;font-size:2.2cqh}
+</style>
+</head>
+<body>
+<div class="hstage">
+  <!-- стрелки + подсветка бинокля -->
+  <svg class="hlines" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="hArrow" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+        <path d="M0 0L9 4.5L0 9Z" fill="#27e3ff"/>
+      </marker>
+    </defs>
+    <!-- подсветка бинокля (cx,cy,r) -->
+    <circle class="hring" cx="1000" cy="278" r="60"/>
+    <!-- стрелка к герою -->
+    <path class="harrow a-hero" d="M545 250 Q740 250 905 300" marker-end="url(#hArrow)"/>
+    <!-- стрелка к биноклю -->
+    <path class="harrow a-binoc" d="M1470 300 Q1260 300 1060 272" marker-end="url(#hArrow)"/>
+  </svg>
+
+  <!-- имя героя (двигай .hchip) -->
+  <div class="hchip">
+    <div class="mapname boxed herobox">
+      <span class="hstars">
+        <span class="star off">★</span><span class="star off">★</span><span class="star off">★</span><span class="star off">★</span><span class="star off">★</span>
+      </span>
+      <span class="htext">Боб</span>
+    </div>
+  </div>
+
+  <!-- выноска про героя (двигай .hcall.left) -->
+  <div class="hcall left">
+    <b>Это Боб.</b><br>Мечтает открыть свой бизнес — но пока не знает, с чего начать.
+  </div>
+
+  <!-- выноска про бинокль (двигай .hcall.right) -->
+  <div class="hcall right">
+    <b>Бинокль</b> — его инструмент разведки: искать объекты и помощников в городе.
+  </div>
+
+  <!-- реплика героя (двигай .hero-hook) -->
+  <div class="hero-say hero-hook">
+    <span class="say-txt">Как же хочется открыть свой бизнес! Но чем же заняться? Какие есть варианты?</span><span class="say-caret">▌</span>
+  </div>
+</div>
+</body>
+</html>

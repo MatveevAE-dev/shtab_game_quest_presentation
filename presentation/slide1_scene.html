@@ -27,6 +27,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* ── СЦЕНА-КАРТА (общий низший слой) ── */
 .stage{
   position:absolute; inset:0; margin:auto;        /* центрирование по обеим осям */
+  overflow:hidden;                                 /* не выпускать подписи/октаэдры на чёрные поля вокруг сцены */
   width:100vw; height:calc(100vw*724/2172);
   max-height:100vh; max-width:calc(100vh*2172/724);
   background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
@@ -135,7 +136,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .darkness{position:absolute;inset:0;z-index:4;background:#04090a;--r:175%;   /* по умолчанию ОТКРЫТО — город виден */
   -webkit-mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
   mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
-  transition:--r 1.4s cubic-bezier(.4,.1,.2,1); pointer-events:none}
+  transition:--r 4.2s cubic-bezier(.4,.1,.2,1); pointer-events:none}   /* раскрытие ×3 медленнее */
 .stage.dark    .darkness{--r:8%;transition:none}     /* мгновенный тёмный старт — виден только предприниматель */
 .stage.reveal  .darkness{--r:175%}   /* карта раскрывается анимированно */
 .stage.open    .darkness{--r:175%;transition:none}  /* дальше держим раскрытой */
@@ -297,6 +298,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .binoc-img{position:absolute;inset:0;transform-origin:0 0;transform:scale(1.16);
   background:#0a1016 url("Слайд 1 изображение.png") center/cover no-repeat;
   transition:transform 1.2s cubic-bezier(.45,0,.25,1)}
+/* сворачивание бинокля в точку-фокус (шаблон перехода #2): чёрная вуаль с радиальной маской, --r 175%→0% */
+.binoc-veil{position:absolute;inset:0;z-index:4;background:#04070c;pointer-events:none;opacity:0;
+  --r:175%;--fx:50%;--fy:50%;
+  -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy),transparent calc(var(--r) - 2%),#000 var(--r));
+  mask-image:radial-gradient(circle at var(--fx) var(--fy),transparent calc(var(--r) - 2%),#000 var(--r));
+  transition:--r 1.8s cubic-bezier(.5,.05,.25,1)}
+.binoc-veil.on{opacity:1}
+/* текст рассказчика на чёрном фоне (финал разведки на карте) — по центру, печать через typeSay */
+.binoc-narr{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:0 12%;pointer-events:none;
+  font-family:var(--hauss);font-weight:700;color:#eaf6ff;font-size:3.2cqh;line-height:1.4;
+  text-shadow:0 0 18px rgba(63,208,255,.45);
+  opacity:0;visibility:hidden;transition:opacity .7s ease,visibility 0s linear .7s}
+.binoc-narr.show{opacity:1;visibility:visible;transition:opacity .7s ease}
+.binoc-narr .say-caret{color:var(--cyan);margin-left:2px;animation:qcaret .7s step-end infinite}
 /* линзы бинокля — без ободков и без виньетки (равномерная заливка, зона пересечения не выделяется) */
 .lens{display:none}
 /* названия объектов в бинокле — короб (стиль-флаг 2), двигаются/зумятся вместе с картой */
@@ -317,10 +333,25 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   font-size:12.5px;line-height:1.4;font-weight:400;text-transform:none;letter-spacing:0}
 .bmark-name .bn-params span{color:#9fbdd4}
 .bmark-name .bn-params b{color:#fff;white-space:nowrap}
-/* герой: звёзды над именем (как на карте) */
-.bmark-name.herobox{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
-  transform:translate(0,-100%)}
-.bmark-name.herobox .hname{white-space:normal;line-height:1.15;max-width:200px}
+/* герой в бинокле: только ПОЗИЦИЯ (обёртка без короба), имя рисуется единым стилем героя (.mapname.boxed.herobox) */
+.bmark-name.hero-wrap{background:none;border:none;box-shadow:none;padding:0;transform:translate(0,-100%)}
+.bmark-name.hero-wrap .mapname{position:static;transform:none}
+/* крючок: панель-вопрос героя (после кафе, на полной карте) */
+/* ── ЕДИНЫЙ СТИЛЬ РЕЧИ ГЕРОЯ (шаблон): панель-«речь» с хвостиком + печать посимвольно с кареткой ── */
+.hero-say{position:absolute;z-index:16;max-width:34%;
+  background:rgba(8,16,30,.94);border:1px solid var(--cyan-soft);border-radius:12px;
+  padding:14px 18px;color:#fff;font-family:var(--hauss);font-weight:600;font-size:1.9cqh;line-height:1.3;
+  box-shadow:0 0 26px rgba(63,208,255,.3);
+  opacity:0;transform:translateY(10px) scale(.96);transform-origin:left bottom;visibility:hidden;
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
+.hero-say.show{opacity:1;transform:none;visibility:visible;transition:opacity .5s ease,transform .5s ease}
+.hero-say::after{content:"";position:absolute;left:28px;bottom:-9px;width:16px;height:16px;
+  background:rgba(8,16,30,.94);border-right:1px solid var(--cyan-soft);border-bottom:1px solid var(--cyan-soft);transform:rotate(45deg)}
+.hero-say .say-caret{color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
+/* позиция конкретной реплики: крючок бинокля (у героя слева) */
+.askbubble{left:6%;top:33%;max-width:24%}
+/* реплика героя на карте (сцена 3) — позиция: ниже и правее, над кафе/рестораном (по центру карты) */
+.map-reply{left:17%;bottom:36%;max-width:30%}
 /* оверлей карты внутри бинокля: контуры + маршруты + узлы + октаэдры + названия (двигаются с картинкой) */
 .binoc-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .binoc-overlay .route{fill:none;stroke:var(--neon);stroke-width:2;opacity:.28;
@@ -338,6 +369,60 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .binoc-overlay .bspin{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
 /* строки параметров кафе — скрыты, печатаются по очереди */
 .bmark-name .bn-params .prow{display:none}
+
+/* ── СЛАЙД ЗНАКОМСТВА С ГЕРОЕМ (Боб) ── */
+.herointro{position:absolute;inset:0;z-index:17;background:#04070c;display:none;opacity:0}
+.herointro.show{display:block;animation:heroFade .6s ease forwards}
+@keyframes heroFade{to{opacity:1}}
+.herointro .hstage{position:absolute;inset:0;margin:auto;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  background:#0a1016 url("Слайд 1 - герой на крыше на терассе.png") center/cover no-repeat;
+  container-type:size;container-name:hstage}
+/* ШАБЛОННАЯ вуаль перехода: радиальное раскрытие/сворачивание из точки-фокуса (--fx/--fy) */
+.hveil{position:absolute;inset:0;z-index:1;background:#04070c;pointer-events:none;
+  --r:175%;--fx:46%;--fy:38%;
+  -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r 3.4s cubic-bezier(.4,.1,.2,1)}
+.hlines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2}
+.hring{fill:none;stroke:#ffd24a;stroke-width:3;filter:drop-shadow(0 0 6px #ffd24a);
+  opacity:0;transform-box:fill-box;transform-origin:center}
+.hring.draw{animation:heroRingIn .5s ease forwards, hringPulse 1.8s ease-in-out .5s infinite}
+@keyframes heroRingIn{from{opacity:0}to{opacity:.9}}
+@keyframes hringPulse{0%,100%{stroke-width:3;opacity:.8}50%{stroke-width:5;opacity:1}}
+.harrow{fill:none;stroke:var(--neon);stroke-width:3;filter:drop-shadow(0 0 4px var(--neon));
+  stroke-dasharray:1000;stroke-dashoffset:1000;opacity:0}
+/* стрелки рисуются по команде (в такт очереди печати) */
+.harrow.draw{animation:hdraw .9s ease forwards}
+@keyframes hdraw{from{stroke-dashoffset:1000;opacity:1}to{stroke-dashoffset:0;opacity:1}}
+/* при сворачивании слайда — прячем ВСЕ элементы над картинкой (остаётся только вуаль-переход) */
+.herointro.collapsing .hchip,
+.herointro.collapsing .hcall,
+.herointro.collapsing .hero-hook,
+.herointro.collapsing .hlines{opacity:0!important;transition:opacity .35s ease}
+/* имя героя над героем — только ПОЗИЦИЯ; показывается по очереди (класс .show) */
+.hchip{position:absolute;left:46%;top:3%;transform:translateX(-50%);z-index:3;
+  opacity:0;transition:opacity .4s ease}
+.hchip.show{opacity:1}
+.hchip .mapname{position:static;transform:none}
+/* выноски (крупнее, акцент — золото в цвет подсветки бинокля, текст печатается по очереди) */
+.hcall{position:absolute;z-index:3;max-width:27%;background:rgba(8,16,30,.9);
+  border:1px solid var(--cyan-soft);border-radius:10px;padding:1.5cqh 1.9cqh;
+  font-family:var(--hauss);font-size:2.4cqh;line-height:1.35;color:#fff;
+  box-shadow:0 0 22px rgba(63,208,255,.25);
+  opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease}
+.hcall.show{opacity:1;transform:none}
+.hcall b{color:#ffd24a;font-weight:800;text-shadow:0 0 8px rgba(255,210,74,.45)}
+.hcall.left{left:3%;top:20%}
+.hcall.right{right:3%;top:26%}          /* ниже, чтобы не пересекаться с репликой над героем */
+/* крючок = реплика героя: единый стиль .hero-say, над героем справа от имени */
+.hero-hook{left:53%;top:1%;max-width:30%;font-size:2.2cqh}
+/* каретка печати (мигающее место вставки буквы) */
+.tw-caret::after{content:"▌";color:var(--cyan);margin-left:1px;
+  animation:qcaret .7s step-end infinite}
+/* каретка печати (мигающее место вставки буквы) */
+.tw-caret::after{content:"▌";color:var(--cyan);margin-left:1px;
+  animation:qcaret .7s step-end infinite}
 
 /* подсказка/навигация */
 .hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
@@ -503,6 +588,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
     <div class="binoc-mask"><div class="binoc-img" id="binocImg"></div></div>
     <div class="lens lensL"></div>
     <div class="lens lensR"></div>
+    <div class="hero-say askbubble" id="askBubble"></div>
+    <div class="binoc-veil" id="binocVeil"></div>   <!-- сворачивание с фокусом (переход #2) -->
+    <div class="binoc-narr" id="binocNarr"></div>   <!-- текст рассказчика на чёрном (финал разведки на карте) -->
   </div>
 </div>
 
@@ -528,13 +616,50 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   <div class="dots" id="deckDots"></div>
 </div>
 
+<!-- ════════ ЗНАКОМСТВО С ГЕРОЕМ (Боб) ════════ -->
+<div class="herointro" id="heroIntro">
+  <div class="hstage">
+    <div class="hveil" id="hveil"></div>
+    <svg class="hlines" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="hArrow" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
+          <path d="M0 0L9 4.5L0 9Z" fill="#27e3ff"/>
+        </marker>
+      </defs>
+      <!-- подсветка бинокля -->
+      <circle class="hring" cx="1000" cy="278" r="60"/>
+      <!-- стрелка к герою (от левой выноски) -->
+      <path class="harrow a-hero" d="M545 250 Q740 250 905 300" marker-end="url(#hArrow)"/>
+      <!-- стрелка к биноклю (от правой выноски, ниже) -->
+      <path class="harrow a-binoc" d="M1470 300 Q1260 300 1060 272" marker-end="url(#hArrow)"/>
+    </svg>
+    <!-- имя + звёзды над героем -->
+    <div class="hchip" id="heroChip"></div>
+    <!-- выноска про героя (слева) -->
+    <div class="hcall left" id="heroCallL">
+      <b data-tw>Это Боб.</b><br><span data-tw>Мечтает открыть свой бизнес — но пока не знает, с чего начать.</span>
+    </div>
+    <!-- выноска про бинокль (справа) -->
+    <div class="hcall right" id="heroCallR">
+      <b data-tw>Бинокль</b><span data-tw> — его инструмент разведки: искать объекты и помощников в городе.</span>
+    </div>
+    <!-- крючок = реплика героя (единый стиль .hero-say, печатается) -->
+    <div class="hero-say hero-hook" id="heroHook"></div>
+  </div>
+</div>
+
 <div class="hint" id="hint"></div>
 
 <script>
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
 const splash = document.getElementById('splash');
+const heroIntro = document.getElementById('heroIntro');
 const deck   = document.getElementById('deck');
+/* герой (слайд 2) — единый стиль имени (.mapname.boxed.herobox); звёзды ВСЕ пустые, имя печатается */
+document.getElementById('heroChip').innerHTML=
+  '<div class="mapname boxed herobox"><span class="hstars">'+
+  '<span class="star off">★</span>'.repeat(5)+'</span><span class="htext"></span></div>';
 const hint   = document.getElementById('hint');
 const deckImgs = [...deck.querySelectorAll('img')];
 const deckDots = document.getElementById('deckDots');
@@ -544,9 +669,10 @@ const dots=[...deckDots.children];
 /* порядок сцен показа */
 const SCENES=[
   {id:'splash',   label:'Заставка'},
-  {id:'map',      label:'Карта: старт → раскрытие → объекты → маршруты → 4 опоры'},
-  {id:'binoc',    label:'Разведка в бинокль → выбор кафе'},
-  {id:'deck',     label:'Вводная презентация'},
+  {id:'hero',     label:'Знакомство — Боб'},
+  {id:'map',      label:'Сцена 3 — карта: объекты + маршруты → разведка → Правительство'},
+  {id:'deck',     label:'Сцена 4 — вводная презентация'},
+  {id:'binoc',    label:'Сцена 5 — разведка → выбор кафе'},
   {id:'overview', label:'Обзор подведов'},
   {id:'mbm1',     label:'МБМ — миссия'},
   {id:'mbm2',     label:'МБМ — нефинансовые услуги'},
@@ -565,33 +691,42 @@ const KEY_NODES=[1,4,9,8];
 /* ===== СЦЕНА «БИНОКЛЬ»: осмотр → поднятие бинокля → тур по объектам → панель ===== */
 const binoc   =document.getElementById('binoc');
 const binocImg=document.getElementById('binocImg');
+const askBubble=document.getElementById('askBubble');
+const binocVeil=document.getElementById('binocVeil');   // вуаль сворачивания (переход #2)
+const binocNarr=document.getElementById('binocNarr');   // текст рассказчика на чёрном
 let binocCafe=null;               // короб-панель кафе (создаётся в buildBinocOverlay)
 let binocTimers=[];
-/* таймер, срабатывает только пока активна сцена бинокля */
-function bTimer(fn,ms){ binocTimers.push(setTimeout(()=>{ if(id()==='binoc') fn(); },ms)); }
+let binocScene='binoc';           // в какой сцене сейчас идёт разведка (задаётся в runBinoc): 'map' (сцена 3) | 'binoc' (сцена 5)
+let mapFinaleReady=false;         // финал разведки на карте: текст рассказчика напечатан, ждём клик для сворачивания
+let mapCollapsing=false;          // идёт сворачивание с фокусом → переход на следующий слайд
+/* таймер, срабатывает только пока активна сцена разведки */
+function bTimer(fn,ms){ binocTimers.push(setTimeout(()=>{ if(id()===binocScene) fn(); },ms)); }
 /* задать трансформ картинки: зум z, центр в точке (mx,my) сцены 2172×724; клампим, чтобы кадр не выходил за края */
-function bTf(z,tx,ty,dur){
-  const lim=-(z-1)*100;
-  tx=Math.max(lim,Math.min(0,tx)); ty=Math.max(lim,Math.min(0,ty));
+function bTf(z,tx,ty,dur,noClamp){
+  if(!noClamp){ const lim=-(z-1)*100;                       // при осмотре (полный кадр) — кламп, чтобы не показать чёрные края
+    tx=Math.max(lim,Math.min(0,tx)); ty=Math.max(lim,Math.min(0,ty)); }
   binocImg.style.transitionDuration=dur+'ms';
   binocImg.style.transform='translate('+tx.toFixed(2)+'%,'+ty.toFixed(2)+'%) scale('+z+')';
 }
-function focusObj(mx,my,z,dur){ bTf(z,(0.5-mx/2172*z)*100,(0.5-my/724*z)*100,dur); }
-/* центр и зум объекта берём из bbox его контура: объект строго по центру круга, ~70% диаметра */
-function objFocus(oid, biasY){
+function focusObj(mx,my,z,dur,noClamp){ bTf(z,(0.5-mx/2172*z)*100,(0.5-my/724*z)*100,dur,noClamp); }
+/* центр и зум объекта берём из bbox его контура. Параметры фокуса F — СВОИ для каждой сцены разведки (cfg.focus):
+   F.lift — на сколько поднять центр (ед. сцены); F.zoomDiv — во сколько раз уменьшить зум; F.cover — доля круга (~0.7). */
+function objFocus(oid, biasY, F){
+  F=F||{};
+  const LIFT=F.lift||0, ZDIV=F.zoomDiv||1, COVER=F.cover||0.7;
   const b=document.getElementById(oid).getBBox();
-  const cx=b.x+b.width/2, cy=b.y+b.height/2+(biasY||0);   // biasY<0 — поднять кадр (освободить место под панель сверху)
+  const cx=b.x+b.width/2, cy=b.y+b.height/2+(biasY||0)-LIFT;   // biasY<0 — поднять кадр (освободить место под панель сверху)
   const fx=cx/2172, fy=cy/724;
   const D=2*0.40*724;                                  // диаметр круга (2×--br) в ед. сцены
-  const fit=0.7*D/Math.max(b.width,b.height);          // зум под ~70% круга
+  const fit=COVER*D/Math.max(b.width,b.height);        // зум под ~COVER круга
   // мин. зум, при котором точку МОЖНО вывести в центр (иначе кламп сдвинет объект от центра, особенно у края)
   const need=Math.max(0.5/fx, 0.5/(1-fx), 0.5/fy, 0.5/(1-fy));
-  const z=Math.min(3.4, Math.max(1.5, fit, need*1.02));
+  const z=Math.max(1.15, Math.min(3.4, Math.max(1.5, fit, need*1.02))/ZDIV);   // зум уменьшаем в ZDIV раз
   return {cx,cy,z, zW:Math.max(1.15, z*0.6)};          // zW — «отъезд/наведение»
 }
 /* блюр картинки (расфокус/фокус) — плавно от текущего значения к целевому */
 let curBlur=0, blurAnim=null;
-function setBlur(px,dur,ease){ if(id()!=='binoc')return;
+function setBlur(px,dur,ease){ if(id()!==binocScene)return;
   if(blurAnim) blurAnim.cancel();
   blurAnim=binocImg.animate([{filter:'blur('+curBlur+'px)'},{filter:'blur('+px+'px)'}],
     {duration:dur,easing:ease||'ease',fill:'forwards'});
@@ -605,11 +740,11 @@ function typeCafe(){
   rows.forEach(r=>{ r.style.display='none'; r.querySelector('b').textContent=''; });
   let ri=0;
   function nextRow(){
-    if(id()!=='binoc' || ri>=rows.length) return;
+    if(id()!==binocScene || ri>=rows.length) return;
     const row=rows[ri]; row.style.display='flex';
     const b=row.querySelector('b'), full=b.getAttribute('data-val'); let ci=0;
     (function typeChar(){
-      if(id()!=='binoc') return;
+      if(id()!==binocScene) return;
       b.textContent=full.slice(0,ci++);
       if(ci<=full.length) binocTimers.push(setTimeout(typeChar,42));
       else { ri++; binocTimers.push(setTimeout(nextRow,220)); }
@@ -617,41 +752,98 @@ function typeCafe(){
   }
   nextRow();
 }
-/* «доехать» до объекта: отъезд+наведение (резко) → приближение с расфокусом (параллельно) → фокус (коротко) → [печать] */
-function travel(t,oid,panel,biasY){
-  const f=objFocus(oid,biasY);
-  bTimer(()=>focusObj(f.cx,f.cy,f.zW,850), t);                                  // отъезд+наведение
-  bTimer(()=>{ focusObj(f.cx,f.cy,f.z,900); setBlur(7,900,'ease-in'); }, t+950);// приближение + расфокус ВМЕСТЕ
+/* «доехать» до объекта: отъезд+наведение (резко) → приближение с расфокусом (параллельно) → фокус (коротко) → [печать].
+   F — параметры фокуса сцены (cfg.focus): lift/zoomDiv/cover + clamp (true — кадр не выходит за края, false — точный центр). */
+function travel(t,oid,panel,biasY,F){
+  const f=objFocus(oid,biasY,F);
+  const nc=!(F&&F.clamp);                                                       // clamp:true → кламп вкл (nc=false); иначе точный центр без клампа
+  bTimer(()=>focusObj(f.cx,f.cy,f.zW,850,nc), t);                               // отъезд+наведение
+  bTimer(()=>{ focusObj(f.cx,f.cy,f.z,900,nc); setBlur(7,900,'ease-in'); }, t+950);// приближение + расфокус ВМЕСТЕ
   bTimer(()=>setBlur(0,650,'ease-out'),    t+1900);                             // фокусируемся (коротко)
   if(panel) bTimer(()=>typeCafe(),         t+2750);                             // после фокуса — печать
+}
+/* сброс вуали-сворачивания и текста рассказчика (финал разведки на карте) */
+function resetBinocFinale(){
+  binocVeil.classList.remove('on'); binocVeil.style.transition='none';
+  binocVeil.style.setProperty('--r','175%'); void binocVeil.offsetWidth; binocVeil.style.transition='';
+  binocNarr.classList.remove('show'); binocNarr.innerHTML='';
 }
 function resetBinoc(){
   binocTimers.splice(0).forEach(clearTimeout);
   binoc.classList.remove('show','lenses','full');
   if(binocCafe) binocCafe.classList.remove('show');
+  askBubble.classList.remove('show');
+  resetBinocFinale();
   if(blurAnim){ blurAnim.cancel(); blurAnim=null; } curBlur=0; binocImg.style.filter='';
 }
-function runBinoc(){
+function runBinoc(cfg){
+  binocScene=cfg.scene||'binoc';                     // в какой сцене идёт разведка (гарды bTimer/setBlur)
   binocTimers.splice(0).forEach(clearTimeout);
   if(binocCafe) binocCafe.classList.remove('show');
+  askBubble.classList.remove('show');
+  resetBinocFinale();
   if(blurAnim){ blurAnim.cancel(); blurAnim=null; } curBlur=0; binocImg.style.filter='';
   binoc.classList.remove('lenses');
   binoc.classList.remove('lenses');
   binoc.classList.add('show','full');
   binoc.style.setProperty('--br','0px');
-  bTf(1.16,-8,-8,0);                 // полный кадр, центр (мгновенно)
+  bTf(1.0,-8,-8,0);                  // старт: полный кадр без зума (центр), мгновенно
   void binocImg.offsetWidth;
-  // фаза осмотра: вправо, затем влево
-  bTimer(()=>bTf(1.16,-14,-8,1400),  60);
-  bTimer(()=>bTf(1.16,-2,-8,1400),  1650);
+  // этап 1: ПЛАВНО приближаемся к рабочему зуму 1.16 — скорость как у зума в бинокле (тур ~900мс, тот же easing)
+  bTimer(()=>bTf(1.16,-8,-8,900),   60);
+  // фаза осмотра: вправо, затем влево (после наезда зума)
+  bTimer(()=>bTf(1.16,-14,-8,1400), 1060);
+  bTimer(()=>bTf(1.16,-2,-8,1400),  2650);
   // поднимаем бинокль: круги раскрываются
   bTimer(()=>{ bTf(1.16,-8,-8,300); binoc.classList.remove('full'); binoc.classList.add('lenses');
-               binoc.style.setProperty('--br','40cqh'); }, 3150);
-  // тур: Банк → Креативный кластер → Кафе (шаг ~3с: наведение → приближение с расфокусом → короткий фокус)
-  travel(3550, 'o-bank',   false);        // Банк
-  travel(6550, 'o-park',   false);        // Креативный кластер
-  travel(9550, 'o-cowork', true, -130);   // Кафе + печать параметров
+               binoc.style.setProperty('--br','40cqh'); }, 4150);
+  // тур по объектам из конфига (шаг ~3с: наведение → приближение с расфокусом → короткий фокус [→ печать])
+  let tt=4550, hasPanel=false;
+  cfg.stops.forEach(s=>{ travel(tt, s.oid, !!s.panel, s.biasY||0, {...(cfg.focus||{}), ...(s.focus||{})}); if(s.panel) hasPanel=true; tt+=3000; });
+  const lastStart=tt-3000;
+  const hookAt=lastStart+(hasPanel?6250:3300);          // с панелью-печатью ждём дольше
+  if(cfg.finale){
+    // ФИНАЛ РАЗВЕДКИ НА КАРТЕ: остаёмся на объекте → сворачивание с фокусом (переход #2) в точку → чёрный → текст рассказчика.
+    // Стоп; дальше клик/→ уводит на следующий слайд (общий блок next()).
+    mapFinaleReady=false;
+    bTimer(()=>{
+      binocVeil.style.setProperty('--fx','50%'); binocVeil.style.setProperty('--fy','50%');   // объект сфокусирован в центре линзы
+      binocVeil.style.transition='none'; binocVeil.style.setProperty('--r','175%');
+      binocVeil.classList.add('on');
+      void binocVeil.offsetWidth;
+      binocVeil.style.transition='';                                                            // вернуть CSS-переход
+      requestAnimationFrame(()=>requestAnimationFrame(()=>binocVeil.style.setProperty('--r','0%')));   // сворачивание в точку-фокус → чёрный
+    }, hookAt);
+    // на чёрном фоне — текст рассказчика; после него разрешаем уход по клику
+    bTimer(()=>{ typeSay(binocNarr, cfg.finale, ()=>id()===binocScene, binocTimers); mapFinaleReady=true; }, hookAt+2000);
+  } else {
+    // КРЮЧОК: опускаем бинокль → отъезд к полной карте с подписями → вопрос героя (мостик к следующей сцене)
+    bTimer(()=>{
+      setBlur(0,300);
+      binoc.classList.remove('lenses');
+      binoc.style.setProperty('--br','200cqh');           // круги раскрываются в полный кадр
+      bTf(1.0,0,0,1500);                                  // отъезд ко всей карте
+      if(binocCafe) binocCafe.classList.remove('show');
+    }, hookAt);
+    bTimer(()=>typeSay(askBubble, cfg.hook, ()=>id()===binocScene, binocTimers), hookAt+1300);   // крючок героя — печать
+  }
 }
+/* КОНФИГИ РАЗВЕДКИ (шаблонная механика бинокля): маршрут поиска (stops) + крючок героя.
+   panel:true — на объекте печатается панель параметров (сейчас только у кафе). */
+const RECON={
+  map:{                                               // Сцена 3 — карта + разведка (в ТОЙ ЖЕ сцене после комет)
+    scene:'map',
+    focus:{lift:60, zoomDiv:1.3, cover:0.7, clamp:false},   // объекты у краёв → без клампа, зум мельче, центр выше
+    stops:[{oid:'o-delc'},{oid:'o-bizc'},{oid:'o-gov'}],   // Деловой центр → Бизнес-центр → Правительство Москвы
+    finale:'Мы знаем, как развивается бизнес и в каком направлении лучше начать двигаться!'   // на Правительстве: сворачивание с фокусом → чёрный → текст рассказчика
+  },
+  binoc:{                                             // Сцена 5 — выбор кафе
+    scene:'binoc',
+    focus:{lift:0, zoomDiv:1, cover:0.7, clamp:true},   // прежнее поведение: кадр не выходит за края, объект по центру круга
+    stops:[{oid:'o-bank'},{oid:'o-park'},{oid:'o-cowork',panel:true,biasY:-130}],  // Банк → Креативный кластер → Кафе(панель)
+    hook:'У кого бы узнать, с чего начать, чтобы открыть своё кафе?'
+  }
+};
 /* оверлей карты внутри бинокля: копия контуров/маршрутов/узлов + октаэдры и названия (в координатах 2172×724) */
 function hexPts(cx,cy,r){ let p=[]; for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-90);
   p.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1)); } return p.join(' '); }
@@ -660,25 +852,25 @@ function buildBinocOverlay(){
   svg.setAttribute('class','binoc-overlay');
   svg.setAttribute('viewBox','0 0 2172 724');
   svg.setAttribute('preserveAspectRatio','xMidYMid meet');
-  // клоны групп маршрутов, узлов, контуров (снизу вверх) — без дублей id
-  ['routes','ends','objects'].forEach(gid=>{
+  // клон только контуров зданий (маршруты/узлы убраны из сцены — в разведке их нет) — без дублей id
+  ['objects'].forEach(gid=>{
     const c=document.getElementById(gid).cloneNode(true);
-    if(gid==='objects'){ const h=c.querySelector('#o-tower'); if(h) h.remove(); }   // герой без контура
+    const h=c.querySelector('#o-tower'); if(h) h.remove();   // герой без контура
     c.removeAttribute('id'); c.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
     svg.appendChild(c);
   });
-  const st=document.querySelector('.node.start'); if(st) svg.appendChild(st.cloneNode(true));
   // октаэдры: коннектор+точка привязки (снизу) + вращающийся гекс с иконкой (как на карте)
   OBJS.forEach(o=>{
     if(o.nooct) return;
     const g=document.createElementNS(NS,'g');
     const ln=document.createElementNS(NS,'line');
     ln.setAttribute('class','bconn');
+    const cyEnd = o.shortConn ? o.my+22 : o.my+34;      // короткий коннектор — точка ближе к октаэдру
     ln.setAttribute('x1',o.mx); ln.setAttribute('y1',o.my+13);
-    ln.setAttribute('x2',o.mx); ln.setAttribute('y2',o.my+34);
+    ln.setAttribute('x2',o.mx); ln.setAttribute('y2',cyEnd);
     g.appendChild(ln);
     const dot=document.createElementNS(NS,'circle');
-    dot.setAttribute('class','bcdot'); dot.setAttribute('cx',o.mx); dot.setAttribute('cy',o.my+34); dot.setAttribute('r',2.5);
+    dot.setAttribute('class','bcdot'); dot.setAttribute('cx',o.mx); dot.setAttribute('cy',cyEnd); dot.setAttribute('r',2.5);
     g.appendChild(dot);
     const spin=document.createElementNS(NS,'g'); spin.setAttribute('class','bspin');
     const hex=document.createElementNS(NS,'polygon');
@@ -697,13 +889,14 @@ function buildBinocOverlay(){
   OBJS.forEach(o=>{
     const isCafe=o.oids[0]==='o-cowork';
     const lab=document.createElement('div');
-    lab.className='bmark-name'+(isCafe?' cafe':'')+(o.stars?' herobox':'');
+    lab.className='bmark-name'+(isCafe?' cafe':'')+(o.stars?' hero-wrap':'');
     lab.style.left=(o.mx/2172*100)+'%';
     lab.style.top =((o.nooct?o.my:o.my-30)/724*100)+'%';
     if(o.stars){
-      // герой: звёзды + имя (как на карте)
+      // герой: единый стиль имени (.mapname.boxed.herobox) — звёзды-ранг над именем
       let st=''; for(let i=0;i<o.stars.total;i++) st+='<span class="star '+(i<o.stars.filled?'on':'off')+'">★</span>';
-      lab.innerHTML='<span class="hstars">'+st+'</span><span class="hname">'+o.name+'</span>';
+      lab.innerHTML='<div class="mapname boxed herobox"><span class="hstars">'+st+'</span>'+
+        '<span class="htext typed">'+o.name+'</span></div>';
     } else if(isCafe){
       lab.innerHTML='<div class="bn-title">'+o.name+'</div>'+
         '<div class="bn-params">'+
@@ -724,7 +917,7 @@ let mapStep=0;      // шаг внутри слайда «Карта» (0..2) �
 const MAP_STEPS=3;  // 0 тёмный старт · 1 раскрытие карты · 2 маршруты+объекты
 const MAP_LABELS=['тёмный старт','карта раскрывается','маршруты и объекты'];
 /* пауза ПЕРЕД переходом к следующему шагу (мс), для шагов 0..1; шаг 2 финальный */
-const MAP_HOLD=[600, 1300];
+const MAP_HOLD=[600, 4400];   /* шаг «раскрытие» держим дольше, чтобы медленная анимация доиграла */
 let mapTimer=null;
 function clearMapTimer(){ if(mapTimer){ clearTimeout(mapTimer); mapTimer=null; } }
 /* авто-проигрыш шагов Карты от заданного шага */
@@ -734,6 +927,15 @@ function startMapAuto(from){
   if(mapStep<MAP_STEPS-1){
     mapTimer=setTimeout(()=>{ if(id()==='map') startMapAuto(mapStep+1); }, MAP_HOLD[mapStep]);
   }
+}
+/* сцена 3, шаг 3: по клику/→ прячем реплику и запускаем разведку в бинокль (маршрут → Правительство) */
+function startMapRecon(){
+  clearMapTimer();
+  reconStarted=true;
+  mapFinaleReady=false; mapCollapsing=false;
+  if(typeof replyTimers!=='undefined'){ replyTimers.forEach(clearTimeout); replyTimers=[]; }
+  if(typeof mapReply!=='undefined') mapReply.classList.remove('show');
+  runBinoc(RECON.map);
 }
 
 function id(){return SCENES[cur].id;}
@@ -752,11 +954,14 @@ function applyScene(){
   }
   // подвед: карточка (фон+затемнение+текст) сама перекрывает карту — доп. классы не нужны
 
-  // бинокль-разведка
-  if(sid==='binoc') runBinoc(); else resetBinoc();
+  // бинокль-разведка: кафе (сцена 5) — здесь; сцена 3 запускается из карты после комет
+  if(sid==='binoc') runBinoc(RECON.binoc); else resetBinoc();
 
   // сплеш
   splash.classList.toggle('hidden', sid!=='splash');
+  // знакомство с героем
+  heroIntro.classList.toggle('show', sid==='hero');
+  if(sid==='hero') heroReveal(); else resetHeroText();
   // дека
   deck.classList.toggle('show', sid==='deck');
   if(sid==='deck'){ showDeck(); }
@@ -826,8 +1031,97 @@ function podSlide(prevId, dir){
 }
 /* выбор перехода между подведами по флагу */
 function podGo(prevId, dir){ TRANSITION==='slide' ? podSlide(prevId,dir) : podBreathe(prevId); }
+/* ── ШАБЛОН перехода: раскрытие из фокуса (вход) / сворачивание в фокус (выход) ── */
+const hveil=document.getElementById('hveil');
+let heroLeaving=false, heroTimers=[];
+const heroCallL=document.getElementById('heroCallL');
+const heroCallR=document.getElementById('heroCallR');
+const heroHook =document.getElementById('heroHook');
+/* ── печать выноски по частям [data-tw] с кареткой; done — по завершении всех частей ── */
+function typeSeq(container, speed, guard, done){
+  const parts=[...container.querySelectorAll('[data-tw]')];
+  parts.forEach(p=>{ if(p.dataset.full===undefined) p.dataset.full=p.textContent; p.textContent=''; p.classList.remove('tw-caret'); });
+  container.classList.add('show');
+  let pi=0;
+  function part(){
+    if(guard && !guard()) return;
+    if(pi>=parts.length){ done&&done(); return; }
+    const el=parts[pi], full=el.dataset.full; let ci=0; el.classList.add('tw-caret');
+    (function ch(){
+      if(guard && !guard()) return;
+      el.textContent=full.slice(0,ci++);
+      if(ci<=full.length) heroTimers.push(setTimeout(ch, speed));
+      else { el.classList.remove('tw-caret'); pi++; heroTimers.push(setTimeout(part, 180)); }
+    })();
+  }
+  part();
+}
+/* печать имени героя в chip (стиль .htext с кареткой ▌; .typed — снять каретку) */
+const heroChipEl=document.getElementById('heroChip');
+function typeChipName(name, guard, done){
+  heroChipEl.classList.add('show');
+  const h=heroChipEl.querySelector('.htext'); if(!h){ done&&done(); return; }
+  h.classList.remove('typed'); h.textContent=''; let i=0;
+  (function ch(){
+    if(guard && !guard()) return;
+    h.textContent=name.slice(0,i++);
+    if(i<=name.length) heroTimers.push(setTimeout(ch, 100));
+    else { h.classList.add('typed'); done&&done(); }
+  })();
+}
+function resetHeroText(){
+  heroTimers.splice(0).forEach(clearTimeout);
+  heroChipEl.classList.remove('show');
+  const h=heroChipEl.querySelector('.htext'); if(h){ h.textContent=''; h.classList.remove('typed'); }
+  [heroCallL,heroCallR].forEach(c=>{ c.classList.remove('show');
+    c.querySelectorAll('[data-tw]').forEach(p=>{ if(p.dataset.full!==undefined) p.textContent=''; p.classList.remove('tw-caret'); }); });
+  heroHook.classList.remove('show'); heroHook.innerHTML='';   // реплика (.hero-say) — сброс
+  heroIntro.querySelectorAll('.harrow,.hring').forEach(e=>e.classList.remove('draw'));  // стрелки/кольцо
+}
+/* раскрытие слайда 2 из точки-фокуса (бинокль) + печать выносок/реплики */
+function heroReveal(){
+  heroLeaving=false;
+  heroIntro.classList.remove('collapsing');
+  resetHeroText();
+  hveil.style.setProperty('--fx','46%'); hveil.style.setProperty('--fy','38%');   // фокус раскрытия — бинокль
+  hveil.style.transition='none'; hveil.style.setProperty('--r','6%');
+  void hveil.offsetWidth;
+  hveil.style.transition='';                                                       // вернуть CSS-переход 3.4с
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ hveil.style.setProperty('--r','175%'); }));
+  // СТРОГАЯ очередность: каждый блок печатается ПОЛНОСТЬЮ, потом следующий
+  const alive=()=>id()==='hero';
+  heroTimers.push(setTimeout(()=>{ if(!alive())return;
+    typeChipName('Боб', alive, ()=>{                        // 1) имя героя
+      heroIntro.querySelector('.a-hero').classList.add('draw');    // стрелка к герою
+      typeSeq(heroCallL, 30, alive, ()=>{                   // 2) «Это Боб…»
+        heroIntro.querySelector('.a-binoc').classList.add('draw'); // стрелка к биноклю
+        heroIntro.querySelector('.hring').classList.add('draw');   // подсветка бинокля
+        typeSeq(heroCallR, 30, alive, ()=>{                 // 3) «Бинокль…»
+          typeSay(heroHook, HERO_HOOK_TXT, alive, heroTimers);     // 4) реплика героя
+        });
+      });
+    });
+  }, 3400));                                                // старт после раскрытия
+}
+const HERO_HOOK_TXT='Как же хочется открыть свой бизнес! Но чем же заняться? Какие есть варианты?';
+/* сворачивание слайда 2 в точку-фокус (Москва-Сити) → затем переход к карте */
+function heroLeave(){
+  if(heroLeaving) return; heroLeaving=true;
+  heroTimers.splice(0).forEach(clearTimeout);                                      // остановить печать
+  heroIntro.classList.add('collapsing');                                           // спрятать подписи/стрелки/имя
+  hveil.style.setProperty('--fx','92%'); hveil.style.setProperty('--fy','24%');    // фокус сворачивания — Москва-Сити
+  hveil.style.setProperty('--r','0%');
+  setTimeout(()=>{ heroLeaving=false; cur++; startMapAuto(0); }, 3400);            // hero → карта (её раскрытие продолжит цепочку)
+}
 function next(){
+  if(id()==='hero'){ heroLeave(); return; }   // слайд 2 уходит сворачиванием
   if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
+  if(id()==='map'){                            // сцена 3 — внутренние шаги
+    if(mapStep<MAP_STEPS-1){ startMapAuto(mapStep+1); return; }   // доиграть авто-шаги карты
+    if(!reconStarted){ startMapRecon(); return; }                // после реплики — клик/→ поднимает бинокль
+    if(!mapFinaleReady) return;                                  // разведка/сворачивание ещё идёт — клик игнорируем
+    // финал показан (чёрный + текст) → клик уводит на деку (общий блок ниже)
+  }
   if(cur<SCENES.length-1){ const fromId=id(); cur++;
     if(id()==='deck'){ deckSub=0; applyScene(); }
     else if(id()==='map'){ startMapAuto(0); }
@@ -855,6 +1149,7 @@ const NS='http://www.w3.org/2000/svg';
 const routes=[...document.querySelectorAll('.route')];
 const ends  =[...document.querySelectorAll('#ends .node')];
 const cometsG=document.getElementById('comets');
+const routesG=document.getElementById('routes');   // группа маршрутов — гасим её, когда кометы прошли
 const TAIL=75;
 
 /* по комете на каждый маршрут */
@@ -872,7 +1167,7 @@ const comets=routes.map(path=>{
 /* ── РЕЕСТР ОБЪЕКТОВ: контур(ы) + точка октаэдра (коорд. 2172×724) + название + индекс маршрута ──
    route: индекс маршрута (объект раскрывается, когда комета доедет) или null (раскрытие в рандомный момент) */
 const OBJS=[
-  {oids:['o-delc'],  mx:1896, my:53,  name:'Деловой центр',         route:0},
+  {oids:['o-delc'],  mx:1896, my:128, name:'Деловой центр',         route:0},
   {oids:['o-bizc'],  mx:485,  my:199, name:'Бизнес-центр',          route:1},
   {oids:['o-rest'],  mx:252,  my:362, name:'Ресторан',              route:2},
   {oids:['o-cafe'],  mx:530,  my:583, name:'Салон красоты',         route:3},
@@ -884,7 +1179,7 @@ const OBJS=[
   {oids:['o-clust'], mx:1248, my:352, name:'Фитнес-клуб',           route:9},
   {oids:['o-park'],               mx:1757, my:394, name:'Креативный кластер',    route:null},
   {oids:['o-cowork'],             mx:640,  my:358, name:'Кафе',                  route:null},
-  {oids:['o-start'],              mx:384,  my:16,  name:'Инновационный кластер', route:null, labelR:true},
+  {oids:['o-start'],              mx:384,  my:44,  name:'Инновационный кластер', route:null, labelR:true, shortConn:true},
   {oids:['o-incub'],              mx:303,  my:189, name:'Мастерская',            route:null},
   /* герой: только название НАД героем (точка из SVG-маркера 141/407) — без октаэдра и без подсветки контура.
      stars: ряд звёзд над названием. filled — закрашено сейчас (растёт по ходу презентации); total — всего слотов */
@@ -918,9 +1213,10 @@ const NAME_CLS='mapname'+(NAME_STYLE===2?' boxed':'');
 OBJS.forEach(o=>{
   const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'')+(o.labelR?' labelright':'');
   el.style.left=(o.mx/2172*100)+'%'; el.style.top=(o.my/724*100)+'%';
+  const cy = o.shortConn ? 38 : 50;                          // короткий коннектор — точка привязки ближе к октаэдру
   const oct = o.nooct ? '' :                                  // герой — без октаэдра, только название
-    '<svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/>'+
-    '<circle class="cdot" cx="22" cy="50" r="2"/>'+
+    '<svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="'+cy+'"/>'+
+    '<circle class="cdot" cx="22" cy="'+cy+'" r="2"/>'+
     '<g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/>'+
     '<g class="octic" transform="translate(13.4 6.6) scale(0.72)">'+(ICONS[o.oids[0]]||OCT_ICO)+'</g></g></svg>';
   if(o.stars){
@@ -937,8 +1233,32 @@ OBJS.forEach(o=>{
   stage.appendChild(el);
 });
 buildBinocOverlay();   // копия карты (контуры/маршруты/узлы/октаэдры/названия) внутрь бинокля
+/* реплика героя на карте (сцена 3): показывается после комет; по клику/→ запускает разведку в бинокль */
+const mapReply=document.createElement('div');
+mapReply.className='hero-say map-reply';
+stage.appendChild(mapReply);
+let mapReplyShown=false;
+const MAP_REPLY_TXT='Ого, сколько возможностей! А как обстоят дела у бизнеса в Москве и какой бизнес имеет высокий потенциал роста?';
+let replyTimers=[];
+/* ── ШАБЛОН РЕЧИ ГЕРОЯ: показать панель .hero-say и напечатать text посимвольно с мигающей кареткой ── */
+function typeSay(el, text, guard, timers){
+  el.classList.add('show');
+  el.innerHTML='<span class="say-txt"></span><span class="say-caret">▌</span>';
+  const t=el.querySelector('.say-txt'); let i=0;
+  (function step(){
+    if(guard && !guard()) return;                        // ушли со сцены — стоп
+    t.textContent=text.slice(0,i++);
+    if(i<=text.length) timers.push(setTimeout(step,32));
+  })();
+}
+/* реплика героя на карте (сцена 3) — через общий шаблон */
+function typeReply(){
+  replyTimers.forEach(clearTimeout); replyTimers=[];
+  typeSay(mapReply, MAP_REPLY_TXT, ()=>id()==='map'&&!reconStarted, replyTimers);
+}
 
 let typeTimers=[], revealTimers=[];
+let reconStarted=false;   // разведка сцены 3 запускается один раз, когда кометы прошли
 /* печать названия по буквам с мигающей кареткой */
 function typeName(o){
   const el=o.nameEl, txt=o.name; el.classList.remove('typed'); el.textContent='';
@@ -955,6 +1275,11 @@ function revealObject(o){
 }
 function clearComets(){
   comets.forEach(c=>{c.g.style.opacity='0'; c.trail.style.strokeDashoffset=TAIL; c.done=false;});
+  routesG.style.opacity='';                             // вернуть маршруты (для повторного проигрыша карты)
+  reconStarted=false; mapReplyShown=false;              // сброс триггеров сцены 3
+  mapFinaleReady=false; mapCollapsing=false;            // сброс финала разведки
+  if(typeof replyTimers!=='undefined'){ replyTimers.forEach(clearTimeout); replyTimers=[]; }
+  if(typeof mapReply!=='undefined') mapReply.classList.remove('show');   // спрятать реплику
   ends.forEach(n=>n.classList.remove('active','key'));
   typeTimers.forEach(clearTimeout); typeTimers=[];
   revealTimers.forEach(clearTimeout); revealTimers=[];
@@ -995,6 +1320,13 @@ function startRoutes(){
       if(p>=1 && !c.done){ c.done=true; arrive(i); }   // финиш достигнут
     });
     if(!allDone) requestAnimationFrame(frame);          // дошли все — стоп (без цикла)
+    else {                                              // все кометы прошли
+      routesG.style.opacity='0';                        // убрать маршруты из сцены
+      if(id()==='map' && !mapReplyShown && !reconStarted){   // шаг 2 — реплика героя, ждём клик/→
+        mapReplyShown=true;
+        setTimeout(()=>{ if(id()==='map' && !reconStarted) typeReply(); }, 3000);   // задержка появления реплики 3 сек
+      }
+    }
   }
   requestAnimationFrame(frame);
 }
@@ -1157,7 +1489,7 @@ function runLoading(){
     let cap=LOAD_STEPS[0][1]; for(const s of LOAD_STEPS) if(p>=s[0]) cap=s[1];
     loadCap.textContent=cap;
     if(p<100) requestAnimationFrame(frame);
-    else setTimeout(()=>{ if(id()==='splash') splash.classList.add('hidden'); }, 1000); // показать квест-титул → открыть город
+    else setTimeout(()=>{ if(id()==='splash') next(); }, 1000); // после титула → знакомство с героем
   }
   requestAnimationFrame(frame);
 }
