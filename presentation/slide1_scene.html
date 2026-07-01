@@ -22,6 +22,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 @property --r{syntax:'<length-percentage>';inherits:false;initial-value:0%}
 @property --vr{syntax:'<length-percentage>';inherits:false;initial-value:0%}
 @property --cr{syntax:'<length-percentage>';inherits:false;initial-value:185%}
+@property --br{syntax:'<length>';inherits:true;initial-value:0px}   /* радиус кругов бинокля */
 
 /* ── СЦЕНА-КАРТА (общий низший слой) ── */
 .stage{
@@ -74,18 +75,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);border-radius:4px;
   padding:7px 12px;text-shadow:none;box-shadow:0 0 24px rgba(63,208,255,.25)}
 .mapname.boxed::after{color:var(--cyan)}
+/* название СПРАВА от октаэдра (для объектов у верхнего края — сверху не влезает) */
+.mapoct.labelright .mapname{bottom:auto;left:100%;top:50%;transform:translateY(-50%);margin:0 0 0 .5vw}
 /* объект без октаэдра (герой): панель названия НАД точкой, привязка левым-нижним углом */
 .mapoct.nooct{width:auto;height:auto;min-width:0;min-height:0;transform:translate(0,-100%)}
 .mapoct.nooct .mapname{position:static;bottom:auto;left:auto;transform:none;margin:0}
 /* ПАНЕЛЬ ГЕРОЯ: звёзды над текстом, всё в одной рамке (boxed) */
-.mapname.herobox{display:flex;flex-direction:column;align-items:center;gap:5px}
+.mapname.herobox{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .mapname.herobox::after{content:none}
 /* звёзды (стиль .tip .star из main): on — золото со свечением, off — тусклая */
 .herobox .hstars{display:flex;gap:3px;line-height:1}
 .herobox .hstars .star{font-size:15px;line-height:1}
 .herobox .hstars .star.on{color:#ffd24a;text-shadow:0 0 6px rgba(255,210,74,.6)}
 .herobox .hstars .star.off{color:rgba(255,255,255,.22)}
-.herobox .htext{display:block;line-height:1}
+.herobox .htext{display:block;white-space:normal;text-align:left;width:min-content;line-height:1.15}
 .herobox .htext::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
 .herobox .htext.typed::after{content:""}
 
@@ -243,11 +246,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .splash .intro-bar{width:min(64%,720px);height:1.1vw;min-height:14px;margin-top:1.4vw;
   border:1px solid var(--cyan-soft);border-radius:5px;padding:3px;background:rgba(63,208,255,.06);
   opacity:0;animation:fadeUp .8s .7s forwards}
-.splash .intro-bar>i{display:block;height:100%;width:0;border-radius:3px;
+.splash .intro-bar>i{position:relative;display:block;height:100%;width:0;border-radius:3px;overflow:hidden;
   background:linear-gradient(90deg,var(--cyan),#9fe9ff);box-shadow:0 0 14px var(--cyan);transition:width .12s linear}
+/* пульсация-блик бежит от начала бара к финишу */
+.splash .intro-bar>i::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 0,rgba(255,255,255,.85) 50%,transparent 100%);
+  transform:translateX(-100%);animation:barsweep 1.25s ease-in-out infinite}
+@keyframes barsweep{0%{transform:translateX(-100%)}100%{transform:translateX(120%)}}
 .splash .intro-pct{font-family:var(--title-font);font-size:1vw;color:var(--cyan);letter-spacing:1px;margin-top:.6vw;
   opacity:0;animation:fadeUp .8s .8s forwards}
-.splash .intro-load{font-size:1.15vw;color:var(--text-dim);letter-spacing:1px;margin-top:.4vw;min-height:1.4em;
+.splash .intro-load{font-size:1.15vw;color:#fff;letter-spacing:1px;margin-top:.4vw;min-height:1.4em;
   opacity:0;animation:fadeUp .8s .9s forwards}
 .splash .intro-logo{position:absolute;left:50%;bottom:6%;z-index:2;
   width:min(22%,300px);height:auto;opacity:0;filter:drop-shadow(0 0 7px var(--cyan-soft));
@@ -268,6 +276,68 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   display:flex;gap:.7vw;z-index:2}
 .deck .dots i{width:.8vw;height:.8vw;border-radius:50%;background:rgba(255,255,255,.35)}
 .deck .dots i.on{background:var(--neon);box-shadow:0 0 8px var(--neon)}
+
+/* ── СЦЕНА «БИНОКЛЬ»: разведка объектов ── */
+.binoc{position:absolute;inset:0;z-index:16;background:#04070c;overflow:hidden;
+  --bd:23cqh;                                   /* смещение центров кругов от центра сцены */
+  opacity:0;visibility:hidden;
+  transition:opacity .5s ease,visibility 0s linear .5s,--br 1s ease}
+.binoc.show{opacity:1;visibility:visible;transition:opacity .5s ease,--br 1s ease}
+/* слой с картинкой — панорамируется/зумится трансформом; сам НЕ несёт маску */
+.binoc-mask{position:absolute;inset:0;overflow:hidden;
+  -webkit-mask:
+    radial-gradient(circle at calc(50% - var(--bd)) 50%,#000 var(--br),transparent calc(var(--br) + 3cqh)),
+    radial-gradient(circle at calc(50% + var(--bd)) 50%,#000 var(--br),transparent calc(var(--br) + 3cqh));
+  -webkit-mask-composite:source-over;
+          mask:
+    radial-gradient(circle at calc(50% - var(--bd)) 50%,#000 var(--br),transparent calc(var(--br) + 3cqh)),
+    radial-gradient(circle at calc(50% + var(--bd)) 50%,#000 var(--br),transparent calc(var(--br) + 3cqh));
+          mask-composite:add}
+.binoc.full .binoc-mask{-webkit-mask:none;mask:none}   /* фаза осмотра — полный кадр */
+.binoc-img{position:absolute;inset:0;transform-origin:0 0;transform:scale(1.16);
+  background:#0a1016 url("Слайд 1 изображение.png") center/cover no-repeat;
+  transition:transform 1.2s cubic-bezier(.45,0,.25,1)}
+/* линзы бинокля — без ободков и без виньетки (равномерная заливка, зона пересечения не выделяется) */
+.lens{display:none}
+/* названия объектов в бинокле — короб (стиль-флаг 2), двигаются/зумятся вместе с картой */
+.bmark-name{position:absolute;transform:translate(-50%,-100%);z-index:2;
+  font-family:var(--hauss);font-weight:700;color:#fff;white-space:nowrap;line-height:1;
+  text-transform:uppercase;letter-spacing:.4px;font-size:14px;
+  background:rgba(8,16,30,.92);border:1px solid var(--cyan-soft);border-radius:5px;
+  padding:5px 9px;box-shadow:0 0 14px rgba(63,208,255,.22);pointer-events:none}
+/* кафе: тот же короб-название + раскрывающиеся параметры */
+.bmark-name.cafe{padding:8px 12px;min-width:150px}
+.bmark-name .bn-title{font-family:var(--hauss);font-weight:700;text-transform:uppercase;
+  letter-spacing:.4px;color:#fff;font-size:14px;transition:margin .3s}
+.bmark-name.cafe.show .bn-title{margin-bottom:6px;padding-bottom:5px;
+  border-bottom:1px solid var(--cyan-soft)}
+.bmark-name .bn-params{display:none}
+.bmark-name.cafe.show .bn-params{display:block}
+.bmark-name .bn-params>div{display:flex;justify-content:space-between;gap:16px;
+  font-size:12.5px;line-height:1.4;font-weight:400;text-transform:none;letter-spacing:0}
+.bmark-name .bn-params span{color:#9fbdd4}
+.bmark-name .bn-params b{color:#fff;white-space:nowrap}
+/* герой: звёзды над именем (как на карте) */
+.bmark-name.herobox{display:flex;flex-direction:column;align-items:flex-start;gap:5px;
+  transform:translate(0,-100%)}
+.bmark-name.herobox .hname{white-space:normal;line-height:1.15;max-width:200px}
+/* оверлей карты внутри бинокля: контуры + маршруты + узлы + октаэдры + названия (двигаются с картинкой) */
+.binoc-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.binoc-overlay .route{fill:none;stroke:var(--neon);stroke-width:2;opacity:.28;
+  filter:drop-shadow(0 0 2px var(--neon))}
+.binoc-overlay .node{fill:#eaffff;stroke:var(--neon);stroke-width:2;filter:drop-shadow(0 0 3px var(--neon))}
+.binoc-overlay .node.start{fill:#ffd98a;stroke:#ffcf6b}
+.binoc-overlay .objline{fill:none;stroke:var(--neon);stroke-width:2;opacity:.85;
+  filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 7px var(--neon));
+  animation:objreveal 1.6s ease-in-out infinite}   /* пульс границ, как на последнем шаге карты */
+.binoc-overlay .bhex{fill:rgba(6,26,38,.6);stroke:var(--neon);stroke-width:1.7}
+.binoc-overlay .bic{fill:none;stroke:#eaffff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.binoc-overlay .bconn{stroke:var(--neon);stroke-width:1.4;opacity:.85}
+.binoc-overlay .bcdot{fill:#eaffff}
+/* вращение октаэдра (rotateY) — как .hexlock на карте */
+.binoc-overlay .bspin{transform-box:fill-box;transform-origin:center;animation:hexspin 7s linear infinite}
+/* строки параметров кафе — скрыты, печатаются по очереди */
+.bmark-name .bn-params .prow{display:none}
 
 /* подсказка/навигация */
 .hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
@@ -427,6 +497,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
       <span class="ln psub">Путь пройден вместе: от идеи до своего дела. Город и бизнес — на одной волне.</span>
     </div>
   </div>
+
+  <!-- ════ РАЗВЕДКА В БИНОКЛЬ ════ -->
+  <div class="binoc" id="binoc">
+    <div class="binoc-mask"><div class="binoc-img" id="binocImg"></div></div>
+    <div class="lens lensL"></div>
+    <div class="lens lensR"></div>
+  </div>
 </div>
 
 <!-- ════════ СПЛЕШ ════════ -->
@@ -468,6 +545,7 @@ const dots=[...deckDots.children];
 const SCENES=[
   {id:'splash',   label:'Заставка'},
   {id:'map',      label:'Карта: старт → раскрытие → объекты → маршруты → 4 опоры'},
+  {id:'binoc',    label:'Разведка в бинокль → выбор кафе'},
   {id:'deck',     label:'Вводная презентация'},
   {id:'overview', label:'Обзор подведов'},
   {id:'mbm1',     label:'МБМ — миссия'},
@@ -483,6 +561,162 @@ const POD={overview:'pod-overview',mbm1:'pod-mbm1',mbm2:'pod-mbm2',mbm3:'pod-mbm
            fsk:'pod-fsk',fpsp:'pod-fpsp',shtab:'pod-shtab',finale:'pod-finale'};
 /* ключевые узлы для «4 опор»: индексы в #ends → МБМ,ФСК,ФПСП,Штаб */
 const KEY_NODES=[1,4,9,8];
+
+/* ===== СЦЕНА «БИНОКЛЬ»: осмотр → поднятие бинокля → тур по объектам → панель ===== */
+const binoc   =document.getElementById('binoc');
+const binocImg=document.getElementById('binocImg');
+let binocCafe=null;               // короб-панель кафе (создаётся в buildBinocOverlay)
+let binocTimers=[];
+/* таймер, срабатывает только пока активна сцена бинокля */
+function bTimer(fn,ms){ binocTimers.push(setTimeout(()=>{ if(id()==='binoc') fn(); },ms)); }
+/* задать трансформ картинки: зум z, центр в точке (mx,my) сцены 2172×724; клампим, чтобы кадр не выходил за края */
+function bTf(z,tx,ty,dur){
+  const lim=-(z-1)*100;
+  tx=Math.max(lim,Math.min(0,tx)); ty=Math.max(lim,Math.min(0,ty));
+  binocImg.style.transitionDuration=dur+'ms';
+  binocImg.style.transform='translate('+tx.toFixed(2)+'%,'+ty.toFixed(2)+'%) scale('+z+')';
+}
+function focusObj(mx,my,z,dur){ bTf(z,(0.5-mx/2172*z)*100,(0.5-my/724*z)*100,dur); }
+/* центр и зум объекта берём из bbox его контура: объект строго по центру круга, ~70% диаметра */
+function objFocus(oid, biasY){
+  const b=document.getElementById(oid).getBBox();
+  const cx=b.x+b.width/2, cy=b.y+b.height/2+(biasY||0);   // biasY<0 — поднять кадр (освободить место под панель сверху)
+  const fx=cx/2172, fy=cy/724;
+  const D=2*0.40*724;                                  // диаметр круга (2×--br) в ед. сцены
+  const fit=0.7*D/Math.max(b.width,b.height);          // зум под ~70% круга
+  // мин. зум, при котором точку МОЖНО вывести в центр (иначе кламп сдвинет объект от центра, особенно у края)
+  const need=Math.max(0.5/fx, 0.5/(1-fx), 0.5/fy, 0.5/(1-fy));
+  const z=Math.min(3.4, Math.max(1.5, fit, need*1.02));
+  return {cx,cy,z, zW:Math.max(1.15, z*0.6)};          // zW — «отъезд/наведение»
+}
+/* блюр картинки (расфокус/фокус) — плавно от текущего значения к целевому */
+let curBlur=0, blurAnim=null;
+function setBlur(px,dur,ease){ if(id()!=='binoc')return;
+  if(blurAnim) blurAnim.cancel();
+  blurAnim=binocImg.animate([{filter:'blur('+curBlur+'px)'},{filter:'blur('+px+'px)'}],
+    {duration:dur,easing:ease||'ease',fill:'forwards'});
+  curBlur=px;
+}
+/* печать параметров кафе в той же панели (панель растягивается по строкам) */
+function typeCafe(){
+  if(!binocCafe) return;
+  binocCafe.classList.add('show');
+  const rows=[...binocCafe.querySelectorAll('.bn-params .prow')];
+  rows.forEach(r=>{ r.style.display='none'; r.querySelector('b').textContent=''; });
+  let ri=0;
+  function nextRow(){
+    if(id()!=='binoc' || ri>=rows.length) return;
+    const row=rows[ri]; row.style.display='flex';
+    const b=row.querySelector('b'), full=b.getAttribute('data-val'); let ci=0;
+    (function typeChar(){
+      if(id()!=='binoc') return;
+      b.textContent=full.slice(0,ci++);
+      if(ci<=full.length) binocTimers.push(setTimeout(typeChar,42));
+      else { ri++; binocTimers.push(setTimeout(nextRow,220)); }
+    })();
+  }
+  nextRow();
+}
+/* «доехать» до объекта: отъезд+наведение (резко) → приближение с расфокусом (параллельно) → фокус (коротко) → [печать] */
+function travel(t,oid,panel,biasY){
+  const f=objFocus(oid,biasY);
+  bTimer(()=>focusObj(f.cx,f.cy,f.zW,850), t);                                  // отъезд+наведение
+  bTimer(()=>{ focusObj(f.cx,f.cy,f.z,900); setBlur(7,900,'ease-in'); }, t+950);// приближение + расфокус ВМЕСТЕ
+  bTimer(()=>setBlur(0,650,'ease-out'),    t+1900);                             // фокусируемся (коротко)
+  if(panel) bTimer(()=>typeCafe(),         t+2750);                             // после фокуса — печать
+}
+function resetBinoc(){
+  binocTimers.splice(0).forEach(clearTimeout);
+  binoc.classList.remove('show','lenses','full');
+  if(binocCafe) binocCafe.classList.remove('show');
+  if(blurAnim){ blurAnim.cancel(); blurAnim=null; } curBlur=0; binocImg.style.filter='';
+}
+function runBinoc(){
+  binocTimers.splice(0).forEach(clearTimeout);
+  if(binocCafe) binocCafe.classList.remove('show');
+  if(blurAnim){ blurAnim.cancel(); blurAnim=null; } curBlur=0; binocImg.style.filter='';
+  binoc.classList.remove('lenses');
+  binoc.classList.remove('lenses');
+  binoc.classList.add('show','full');
+  binoc.style.setProperty('--br','0px');
+  bTf(1.16,-8,-8,0);                 // полный кадр, центр (мгновенно)
+  void binocImg.offsetWidth;
+  // фаза осмотра: вправо, затем влево
+  bTimer(()=>bTf(1.16,-14,-8,1400),  60);
+  bTimer(()=>bTf(1.16,-2,-8,1400),  1650);
+  // поднимаем бинокль: круги раскрываются
+  bTimer(()=>{ bTf(1.16,-8,-8,300); binoc.classList.remove('full'); binoc.classList.add('lenses');
+               binoc.style.setProperty('--br','40cqh'); }, 3150);
+  // тур: Банк → Креативный кластер → Кафе (шаг ~3с: наведение → приближение с расфокусом → короткий фокус)
+  travel(3550, 'o-bank',   false);        // Банк
+  travel(6550, 'o-park',   false);        // Креативный кластер
+  travel(9550, 'o-cowork', true, -130);   // Кафе + печать параметров
+}
+/* оверлей карты внутри бинокля: копия контуров/маршрутов/узлов + октаэдры и названия (в координатах 2172×724) */
+function hexPts(cx,cy,r){ let p=[]; for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-90);
+  p.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1)); } return p.join(' '); }
+function buildBinocOverlay(){
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('class','binoc-overlay');
+  svg.setAttribute('viewBox','0 0 2172 724');
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  // клоны групп маршрутов, узлов, контуров (снизу вверх) — без дублей id
+  ['routes','ends','objects'].forEach(gid=>{
+    const c=document.getElementById(gid).cloneNode(true);
+    if(gid==='objects'){ const h=c.querySelector('#o-tower'); if(h) h.remove(); }   // герой без контура
+    c.removeAttribute('id'); c.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+    svg.appendChild(c);
+  });
+  const st=document.querySelector('.node.start'); if(st) svg.appendChild(st.cloneNode(true));
+  // октаэдры: коннектор+точка привязки (снизу) + вращающийся гекс с иконкой (как на карте)
+  OBJS.forEach(o=>{
+    if(o.nooct) return;
+    const g=document.createElementNS(NS,'g');
+    const ln=document.createElementNS(NS,'line');
+    ln.setAttribute('class','bconn');
+    ln.setAttribute('x1',o.mx); ln.setAttribute('y1',o.my+13);
+    ln.setAttribute('x2',o.mx); ln.setAttribute('y2',o.my+34);
+    g.appendChild(ln);
+    const dot=document.createElementNS(NS,'circle');
+    dot.setAttribute('class','bcdot'); dot.setAttribute('cx',o.mx); dot.setAttribute('cy',o.my+34); dot.setAttribute('r',2.5);
+    g.appendChild(dot);
+    const spin=document.createElementNS(NS,'g'); spin.setAttribute('class','bspin');
+    const hex=document.createElementNS(NS,'polygon');
+    hex.setAttribute('class','bhex'); hex.setAttribute('points',hexPts(o.mx,o.my,13));
+    spin.appendChild(hex);
+    const ic=document.createElementNS(NS,'g');
+    ic.setAttribute('class','bic');
+    ic.setAttribute('transform','translate('+(o.mx-9).toFixed(1)+' '+(o.my-9).toFixed(1)+') scale(0.75)');
+    ic.innerHTML=ICONS[o.oids[0]]||OCT_ICO;   // своя иконка объекта
+    spin.appendChild(ic);
+    g.appendChild(spin);
+    svg.appendChild(g);
+  });
+  binocImg.appendChild(svg);
+  // названия — HTML-короба над октаэдром (кафе несёт параметры)
+  OBJS.forEach(o=>{
+    const isCafe=o.oids[0]==='o-cowork';
+    const lab=document.createElement('div');
+    lab.className='bmark-name'+(isCafe?' cafe':'')+(o.stars?' herobox':'');
+    lab.style.left=(o.mx/2172*100)+'%';
+    lab.style.top =((o.nooct?o.my:o.my-30)/724*100)+'%';
+    if(o.stars){
+      // герой: звёзды + имя (как на карте)
+      let st=''; for(let i=0;i<o.stars.total;i++) st+='<span class="star '+(i<o.stars.filled?'on':'off')+'">★</span>';
+      lab.innerHTML='<span class="hstars">'+st+'</span><span class="hname">'+o.name+'</span>';
+    } else if(isCafe){
+      lab.innerHTML='<div class="bn-title">'+o.name+'</div>'+
+        '<div class="bn-params">'+
+        '<div class="prow"><span>Площадь</span><b data-val="100 кв.м"></b></div>'+
+        '<div class="prow"><span>Аренда</span><b data-val="90 000 ₽ / мес"></b></div>'+
+        '<div class="prow"><span>Состояние</span><b data-val="требует ремонта"></b></div>'+
+        '<div class="prow"><span>Проходимость</span><b data-val="5 000 чел./сут"></b></div>'+
+        '</div>';
+      binocCafe=lab;
+    } else lab.textContent=o.name;
+    binocImg.appendChild(lab);
+  });
+}
 
 let cur=0;          // индекс активной сцены
 let deckSub=0;      // под-индекс слайда деки
@@ -517,6 +751,9 @@ function applyScene(){
     else { stage.classList.add('open','routes-on'); }               // карта раскрыта + маршруты/объекты
   }
   // подвед: карточка (фон+затемнение+текст) сама перекрывает карту — доп. классы не нужны
+
+  // бинокль-разведка
+  if(sid==='binoc') runBinoc(); else resetBinoc();
 
   // сплеш
   splash.classList.toggle('hidden', sid!=='splash');
@@ -647,27 +884,45 @@ const OBJS=[
   {oids:['o-clust'], mx:1248, my:352, name:'Фитнес-клуб',           route:9},
   {oids:['o-park'],               mx:1757, my:394, name:'Креативный кластер',    route:null},
   {oids:['o-cowork'],             mx:640,  my:358, name:'Кафе',                  route:null},
-  {oids:['o-start'],              mx:384,  my:90,  name:'Инновационный кластер', route:null},
+  {oids:['o-start'],              mx:384,  my:16,  name:'Инновационный кластер', route:null, labelR:true},
   {oids:['o-incub'],              mx:303,  my:189, name:'Мастерская',            route:null},
   /* герой: только название НАД героем (точка из SVG-маркера 141/407) — без октаэдра и без подсветки контура.
      stars: ряд звёзд над названием. filled — закрашено сейчас (растёт по ходу презентации); total — всего слотов */
-  {oids:['o-tower'],              mx:141,  my:407, name:'Начинающий предприниматель', route:null, noline:true, nooct:true, stars:{total:5, filled:1}},
+  {oids:['o-tower'],              mx:40,   my:407, name:'Начинающий предприниматель', route:null, noline:true, nooct:true, stars:{total:5, filled:1}},
   {oids:['o-square','o-square2'], mx:1042, my:466, name:'Завод',                 route:null},
 ];
-/* иконка здания внутри октаэдра */
+/* иконка-заглушка (fallback) внутри октаэдра */
 const OCT_ICO='<path d="M5 21V8l7-4 7 4v13 M5 21h14 M9 21v-4h6v4 M8.5 11h2.2 M13.3 11h2.2 M8.5 14.6h2.2 M13.3 14.6h2.2"/>';
+/* иконки под каждый объект (неон-лайн 24×24 в стиле сайта) — ключ = id контура */
+const ICONS={
+  'o-delc':'<path d="M6 21V6l6-3 6 3v15 M4 21h16 M9.5 9h.01 M12 9h.01 M14.5 9h.01 M9.5 12.5h.01 M12 12.5h.01 M14.5 12.5h.01 M10 21v-4h4v4"/>',
+  'o-bizc':'<path d="M4 21V9h7v12 M11 21V5l8 3.5V21 M3 21h18 M6 12h2 M6 15h2 M6 18h2 M14 11h.01 M17 11h.01 M14 14h.01 M17 14h.01 M14 17h.01 M17 17h.01"/>',
+  'o-rest':'<path d="M8 3v6.5 M6 3v4a2 2 0 0 0 4 0V3 M8 9.5V21 M16.5 3c-1.6 0-2.6 2.2-2.6 5.2 0 2 .9 3 2.6 3V21"/>',
+  'o-cafe':'<path d="M8 7.2a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z M8 12.4a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z M10 8.7L20 16 M10 15.3L20 8"/>',
+  'o-bank':'<path d="M4 9l8-4.5 8 4.5 M5 9.5v8 M9.5 9.5v8 M14.5 9.5v8 M19 9.5v8 M3.5 20.5h17 M5 9.5h14"/>',
+  'o-tech':'<path d="M8 8h8v8H8z M10.5 10.5h3v3h-3z M10 4v2 M14 4v2 M10 18v2 M14 18v2 M4 10h2 M4 14h2 M18 10h2 M18 14h2"/>',
+  'o-shop':'<path d="M4.5 9l1.3-4h12.4L19.5 9 M5.5 9v10h13V9 M4.5 9h15 M9 19v-5h6v5"/>',
+  'o-mall':'<path d="M7 8h10l1 11H6z M9.5 8V6.2a2.5 2.5 0 0 1 5 0V8 M9.5 11c0 1.5 1.2 2.5 2.5 2.5s2.5-1 2.5-2.5"/>',
+  'o-gov':'<path d="M5 21V8h9v13 M14 21h5V11h-5 M5 8V5l9-2 M4 21h16 M8 12h3 M8 15.5h3 M9 3v-1.6 M9 1.4l3 .8-3 .9"/>',
+  'o-clust':'<path d="M6.5 8v8 M4.3 9.6v4.8 M17.5 8v8 M19.7 9.6v4.8 M6.5 12h11"/>',
+  'o-park':'<path d="M12 4.5c-4.4 0-7.5 2.7-7.5 6 0 3.3 3 5.5 6 5.5 .9 0 1.3-.6 1.3-1.3 0-.9 .7-1.5 1.6-1.5H16a3 3 0 0 0 3-3c0-3.3-3.1-5.7-7-5.7Z M8 10h.01 M11 8h.01 M15 8.5h.01 M15.5 11.5h.01"/>',
+  'o-cowork':'<path d="M9.5 6c-.6-1 .6-1.6 0-2.6 M12.5 6c-.6-1 .6-1.6 0-2.6 M6 8.4h11l-.5 1.8H6.5z M7 10.2h9l-1 9.6a1 1 0 0 1-1 .9H9a1 1 0 0 1-1-.9z M8.4 14h6.2"/>',
+  'o-start':'<path d="M9 18h6 M10 21h4 M12 3a6 6 0 0 0-4 10.4c.7.7 1 1.3 1 2.6h6c0-1.3.3-1.9 1-2.6A6 6 0 0 0 12 3Z"/>',
+  'o-incub':'<path d="M15 5.5a3.5 3.5 0 0 0-4.7 4.4L4 16.2V20h3.8l6.3-6.3a3.5 3.5 0 0 0 4.4-4.7l-2.4 2.4-2.1-2.1z"/>',
+  'o-square':'<path d="M4 21V11l5 3V11l5 3V8l6 3v10z M3.5 21h17 M7 21v-3 M12 21v-3 M16.5 21v-3 M6 8V4.5h2V8"/>'
+};
 /* ФЛАГ стиля названия: 1 — белый текст (как было) · 2 — золото в рамке (как на референсе) */
 const NAME_STYLE=2;
 const NAME_CLS='mapname'+(NAME_STYLE===2?' boxed':'');
 /* строим октаэдр + подпись для каждого объекта (HTML над сценой) */
 OBJS.forEach(o=>{
-  const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'');
+  const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'')+(o.labelR?' labelright':'');
   el.style.left=(o.mx/2172*100)+'%'; el.style.top=(o.my/724*100)+'%';
   const oct = o.nooct ? '' :                                  // герой — без октаэдра, только название
     '<svg viewBox="0 0 44 52"><line class="conn" x1="22" y1="28" x2="22" y2="50"/>'+
     '<circle class="cdot" cx="22" cy="50" r="2"/>'+
     '<g class="hexlock"><polygon class="hx" points="22,3 35,9.5 35,22.5 22,29 9,22.5 9,9.5"/>'+
-    '<g class="octic" transform="translate(13.4 6.6) scale(0.72)">'+OCT_ICO+'</g></g></svg>';
+    '<g class="octic" transform="translate(13.4 6.6) scale(0.72)">'+(ICONS[o.oids[0]]||OCT_ICO)+'</g></g></svg>';
   if(o.stars){
     // герой: звёзды ВНУТРИ панели названия (стиль .tip .star из main): on — золото, off — тусклая
     let st=''; for(let i=0;i<o.stars.total;i++) st+='<span class="star '+(i<o.stars.filled?'on':'off')+'">★</span>';
@@ -681,6 +936,7 @@ OBJS.forEach(o=>{
   o.lines=o.oids.map(id=>document.getElementById(id));
   stage.appendChild(el);
 });
+buildBinocOverlay();   // копия карты (контуры/маршруты/узлы/октаэдры/названия) внутрь бинокля
 
 let typeTimers=[], revealTimers=[];
 /* печать названия по буквам с мигающей кареткой */
@@ -893,7 +1149,7 @@ const loadPct =document.getElementById('loadPct');
 const loadCap =document.getElementById('loadCap');
 const LOAD_STEPS=[[0,'Гружу…'],[40,'Гружу! Гружу!'],[80,'Московский предпринимательский квест']];
 function runLoading(){
-  const dur=3600; let t0=null;
+  const dur=4680; let t0=null;
   function frame(now){
     if(t0===null)t0=now;
     let p=Math.min(100,(now-t0)/dur*100);
