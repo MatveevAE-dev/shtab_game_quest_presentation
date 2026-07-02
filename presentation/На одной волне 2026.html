@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>На одной волне — сценарий показа</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- шрифты локально, встроены base64 (офлайн, без интернета) — см. assets/fonts/fonts.css -->
+<link href="assets/fonts/fonts.css" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:system-ui,sans-serif}
@@ -13,10 +13,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   --cyan:#3fd0ff; --cyan-soft:rgba(63,208,255,.55);
   --text:#eaf4ff; --text-dim:#9fb6d4;
   --title-font:'Orbitron',sans-serif; --ui:'Rajdhani',sans-serif;
-  --hauss:"ALS Hauss Next",system-ui,Arial,sans-serif}
+  --hauss:"ALS Hauss Next",'Rajdhani',system-ui,Arial,sans-serif}
 /* ALS Hauss Next — для GitHub Pages положи файлы в presentation/fonts/ (локально берётся из системы) */
-@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next"),url("fonts/ALSHaussNext-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"ALS Hauss Next";src:local("ALS Hauss Next Bold"),local("ALS Hauss Next"),url("fonts/ALSHaussNext-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+/* все шрифты встроены в fonts/fonts.css (base64) — работает офлайн и по двойному клику (file://) */
 
 /* @property нужен, чтобы CSS-переход анимировал радиус радиального проявления */
 @property --r{syntax:'<length-percentage>';inherits:false;initial-value:0%}
@@ -30,7 +29,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   overflow:hidden;                                 /* не выпускать подписи/октаэдры на чёрные поля вокруг сцены */
   width:100vw; height:calc(100vw*724/2172);
   max-height:100vh; max-width:calc(100vh*2172/724);
-  background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
+  background:#cfe6dd url("assets/img/bg/map.png") center/cover no-repeat;
   /* контейнер: текст подведа меряется в cqw (% ширины СЦЕНЫ), а не vw (окна) */
   container-type:size; container-name:stage;
 }
@@ -165,7 +164,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
       строки выходят снизу по очереди. Единицы cqw — от ширины СЦЕНЫ ── */
 /* ── КАРТОЧКА подведа: фон-картинка + затемнение, наезжает целиком при переходе ── */
 .podcard{position:absolute;inset:0;z-index:6;display:none;overflow:hidden;--cr:185%;
-  background:#cfe6dd url("Слайд 1 изображение.png") center/cover no-repeat;
+  background:#cfe6dd url("assets/img/bg/map.png") center/cover no-repeat;
   /* радиальная маска от предпринимателя (7%/70%) — для вдоха-выдоха */
   -webkit-mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--cr) - 3%), transparent var(--cr));
   mask-image:radial-gradient(circle at 7% 70%, #000 calc(var(--cr) - 3%), transparent var(--cr));
@@ -242,7 +241,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   align-items:center;justify-content:center;text-align:center;
   font-family:var(--ui);color:var(--text);transition:opacity .8s ease, visibility 0s linear .8s}
 .splash .intro-bg{position:absolute;inset:0;z-index:0;
-  background:linear-gradient(rgba(4,8,16,.84),rgba(4,8,16,.92)), url("Слайд 1 изображение.png") center/cover}
+  background:linear-gradient(rgba(4,8,16,.55),rgba(4,8,16,.68)), url("assets/img/bg/Карта Москвы без героя.png") center/cover}
 .splash .intro-inner{position:relative;z-index:1;width:min(66%,860px);
   display:flex;flex-direction:column;align-items:center;gap:1.1vw}
 .splash .skyline{width:min(74%,860px);height:auto;overflow:visible;
@@ -250,18 +249,35 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   opacity:0;animation:fadeUp .9s .2s forwards}
 .splash .kicker{font-family:var(--title-font);font-weight:700;font-size:1.6vw;letter-spacing:.32em;color:var(--cyan);
   text-transform:uppercase;text-shadow:0 0 16px rgba(63,208,255,.4);opacity:0;animation:fadeUp .8s .45s forwards}
-/* титул квеста — БЕЛЫЙ, в стиле «На одной волне»; ПОД kicker'ом, по центру; появляется вырастая из точки */
-.splash .quest-title{display:none;margin-top:1.4vw;text-align:center;
-  font-family:var(--title-font);font-weight:900;color:#fff;font-size:2.9vw;letter-spacing:.14em;
-  text-transform:uppercase;line-height:1.16;text-shadow:0 2px 20px rgba(0,0,0,.55),0 0 34px rgba(63,208,255,.35);
-  transform-origin:center}
-.splash .quest-title.show{display:block;animation:titlePop 1.8s cubic-bezier(.2,.7,.25,1) forwards}
+/* заставка после загрузки — 3 строки ПОЯВЛЯЮТСЯ ПО ОЧЕРЕДИ друг под другом и ОСТАЮТСЯ */
+.splash .quest-title{display:none;text-align:center;
+  font-family:var(--title-font);font-weight:900;color:#fff;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1.0;text-shadow:0 2px 20px rgba(0,0,0,.55),0 0 34px rgba(63,208,255,.35);
+  transform-origin:center}   /* кегль = интерлиньяж → line-height 1.0 */
+.splash .quest-title.show{display:flex;flex-direction:column;align-items:center;gap:2.5vw}   /* отступ между блоками = 1 кегль */
+.splash .quest-title .qt-line{opacity:0;transform:scale(.18);transform-origin:center;
+  font-size:2.5vw;color:#fff}   /* единый стиль всех строк */
+.splash .quest-title .qt-line.on{animation:titlePop 1.8s cubic-bezier(.2,.7,.25,1) forwards}
 @keyframes titlePop{
   0%{opacity:0;transform:scale(.18)}
   60%{opacity:1;transform:scale(1.06)}
   100%{opacity:1;transform:scale(1)}}
-/* после загрузки — плавно схлопываем бар, процент и подпись (чтобы титул встал под «На одной волне») */
-.splash.loaded .intro-bar,.splash.loaded .intro-pct,.splash.loaded .intro-load{
+/* накопительный лог загрузки (НАД баром): строки появляются по очереди и ОСТАЮТСЯ.
+   пока грузится — пульсирует с «…»; догрузилось — галка ✓ + пульс стоп */
+.splash .load-log{margin-bottom:1.3vw;display:flex;flex-direction:column;gap:.55vw;align-items:center;
+  font-family:var(--hauss);font-weight:700;font-size:1.5vw;color:#eaf6ff;letter-spacing:.02em}
+.splash .load-log .ll{display:flex;align-items:center;gap:.35em;
+  opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease}
+.splash .load-log .ll.on{opacity:1;transform:none}
+.splash .load-log .ll .chk{color:var(--cyan);opacity:0;transition:opacity .3s ease;text-shadow:0 0 10px rgba(63,208,255,.6)}
+.splash .load-log .ll.done .chk{opacity:1}
+.splash .load-log .ll.done{color:#fff}
+.splash .load-log .ll .dots{opacity:0}
+.splash .load-log .ll.pulsing{animation:logpulse 1.05s ease-in-out infinite}
+.splash .load-log .ll.pulsing .dots{opacity:1;animation:dotpulse 1s ease-in-out infinite}
+@keyframes logpulse{0%,100%{opacity:.62}50%{opacity:1;text-shadow:0 0 14px rgba(63,208,255,.6)}}
+/* после загрузки — плавно схлопываем бар, процент и лог (чтобы титул встал по центру) */
+.splash.loaded .intro-bar,.splash.loaded .intro-pct,.splash.loaded .intro-load,.splash.loaded .load-log{
   max-height:0;min-height:0;opacity:0;margin:0;padding:0;border-width:0;overflow:hidden;pointer-events:none;
   transition:opacity .45s ease,max-height .45s ease,margin .45s ease,padding .45s ease}
 .splash .intro-title{font-family:var(--title-font);font-weight:900;color:var(--text);
@@ -329,7 +345,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
           mask-composite:add}
 .binoc.full .binoc-mask{-webkit-mask:none;mask:none}   /* фаза осмотра — полный кадр */
 .binoc-img{position:absolute;inset:0;transform-origin:0 0;transform:scale(1.16);
-  background:#0a1016 url("Слайд 1 изображение.png") center/cover no-repeat;
+  background:#0a1016 url("assets/img/bg/map.png") center/cover no-repeat;
   transition:transform 1.2s cubic-bezier(.45,0,.25,1)}
 /* сворачивание бинокля в точку-фокус (шаблон перехода #2): чёрная вуаль с радиальной маской, --r 175%→0% */
 .binoc-veil{position:absolute;inset:0;z-index:4;background:#04070c;pointer-events:none;opacity:0;
@@ -409,7 +425,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 @keyframes heroFade{to{opacity:1}}
 .herointro .hstage{position:absolute;inset:0;margin:auto;
   width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
-  background:#0a1016 url("Слайд 1 - герой на крыше на терассе.png") center/cover no-repeat;
+  background:#0a1016 url("assets/img/bg/hero-terrace.png") center/cover no-repeat;
   container-type:size;container-name:hstage}
 /* ШАБЛОННАЯ вуаль перехода: радиальное раскрытие/сворачивание из точки-фокуса (--fx/--fy) */
 .hveil{position:absolute;inset:0;z-index:1;background:#04070c;pointer-events:none;
@@ -417,39 +433,48 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
   mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
   transition:--r 3.4s cubic-bezier(.4,.1,.2,1)}
-.hlines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2}
-.hring{fill:none;stroke:#ffd24a;stroke-width:3;filter:drop-shadow(0 0 6px #ffd24a);
-  opacity:0;transform-box:fill-box;transform-origin:center}
-.hring.draw{animation:heroRingIn .5s ease forwards, hringPulse 1.8s ease-in-out .5s infinite}
-@keyframes heroRingIn{from{opacity:0}to{opacity:.9}}
-@keyframes hringPulse{0%,100%{stroke-width:3;opacity:.8}50%{stroke-width:5;opacity:1}}
-.harrow{fill:none;stroke:var(--neon);stroke-width:3;filter:drop-shadow(0 0 4px var(--neon));
-  stroke-dasharray:1000;stroke-dashoffset:1000;opacity:0}
-/* стрелки рисуются по команде (в такт очереди печати) */
-.harrow.draw{animation:hdraw .9s ease forwards}
-@keyframes hdraw{from{stroke-dashoffset:1000;opacity:1}to{stroke-dashoffset:0;opacity:1}}
+/* вырез героя (тугой кроп) поверх фона; позиция подгоняется под героя фона переменными --hx/--hy/--hh */
+.hero-outline{position:absolute;--hx:41.85%;--hy:6%;--hh:95.1%;
+  left:var(--hx);top:var(--hy);height:var(--hh);width:auto;
+  z-index:2;pointer-events:none;opacity:0.1;transition:opacity .5s ease}
+/* пульс как у границы объектов (слайд 4): цвет --neon, opacity .55→1 + свечение 3/7px */
+.hero-outline.show{opacity:1;animation:heroGlow 1.6s ease-in-out infinite}
+@keyframes heroGlow{
+  0%,100%{opacity:.55;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 7px var(--neon))}
+  50%{opacity:1;filter:drop-shadow(0 0 4px var(--neon)) drop-shadow(0 0 10px var(--neon))}}
+/* выноска: линия от точки на герое к панели имени + пульсирующая точка */
+.hlead{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2;
+  opacity:0;transition:opacity .5s ease}
+.hlead.show{opacity:1}
+/* линия и точка — цвет фона панели героя (тёмно-синий), лёгкая циан-обводка/свечение для читаемости */
+.hlead-line{stroke:rgba(8,16,30,.95);stroke-width:3;filter:drop-shadow(0 0 3px var(--cyan-soft))}
+.hlead-dot{fill:rgba(8,16,30,.95);stroke:var(--cyan-soft);stroke-width:1.5;
+  filter:drop-shadow(0 0 5px var(--cyan-soft));
+  transform-box:fill-box;transform-origin:center;animation:hleadPulse 1.6s ease-in-out infinite}
+@keyframes hleadPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.6);opacity:1}}
 /* при сворачивании слайда — прячем ВСЕ элементы над картинкой (остаётся только вуаль-переход) */
 .herointro.collapsing .hchip,
-.herointro.collapsing .hcall,
-.herointro.collapsing .hero-hook,
-.herointro.collapsing .hlines{opacity:0!important;transition:opacity .35s ease}
-/* имя героя над героем — только ПОЗИЦИЯ; показывается по очереди (класс .show) */
-.hchip{position:absolute;left:46%;top:3%;transform:translateX(-50%);z-index:3;
+.herointro.collapsing .hlead,
+.herointro.collapsing .hero-outline,
+.herointro.collapsing .hqs{opacity:0!important;transition:opacity .35s ease}
+/* имя героя — ПРАВЫЙ-НИЖНИЙ угол панели в точке касания линии (846;113.5 из SVG = 38.95%;15.68%) */
+.hchip{position:absolute;left:38.95%;top:15.68%;transform:translate(-100%,-100%);z-index:3;
   opacity:0;transition:opacity .4s ease}
 .hchip.show{opacity:1}
 .hchip .mapname{position:static;transform:none}
-/* выноски (крупнее, акцент — золото в цвет подсветки бинокля, текст печатается по очереди) */
-.hcall{position:absolute;z-index:3;max-width:27%;background:rgba(8,16,30,.9);
-  border:1px solid var(--cyan-soft);border-radius:10px;padding:1.5cqh 1.9cqh;
-  font-family:var(--hauss);font-size:2.4cqh;line-height:1.35;color:#fff;
-  box-shadow:0 0 22px rgba(63,208,255,.25);
-  opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease}
-.hcall.show{opacity:1;transform:none}
-.hcall b{color:#ffd24a;font-weight:800;text-shadow:0 0 8px rgba(255,210,74,.45)}
-.hcall.left{left:3%;top:20%}
-.hcall.right{right:3%;top:26%}          /* ниже, чтобы не пересекаться с репликой над героем */
-/* крючок = реплика героя: единый стиль .hero-say, над героем справа от имени */
-.hero-hook{left:53%;top:1%;max-width:30%;font-size:2.2cqh}
+/* имя на слайде 2 — в одну строку, короб по длине текста (не фиксированный/переносимый) */
+.hchip .herobox .htext{white-space:nowrap;width:auto}
+/* вопросы предпринимателя — единый стиль реплик героя (.hero-say), печатаются по очереди */
+.hqs{position:absolute;inset:0;z-index:3;pointer-events:none}
+/* СТИЛЬ «мысли героя — рукопись»: только золотой рукописный текст (без короба, не путать с .hero-say) */
+.hthink{position:absolute;z-index:16;max-width:46%;color:#ffd24a;
+  font-family:"Segoe Script","Marck Script","Comic Sans MS",cursive;font-weight:700;
+  font-size:6.8cqh;line-height:1.25;text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 18px rgba(0,0,0,.65);
+  opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
+.hthink.show{opacity:1;transform:none}
+/* каждая буква «вытекает» чернилами (проступает из размытия) */
+.hw-ch{opacity:0;animation:hwink .3s ease forwards}
+@keyframes hwink{from{opacity:0;filter:blur(2px)}to{opacity:1;filter:none}}
 /* каретка печати (мигающее место вставки буквы) */
 .tw-caret::after{content:"▌";color:var(--cyan);margin-left:1px;
   animation:qcaret .7s step-end infinite}
@@ -462,7 +487,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .cover.gone{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility 0s linear .8s}
 .cover-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
   width:100vw;height:calc(100vw*9/16);max-height:100vh;max-width:calc(100vh*16/9);
-  background:#050b18 url("cover.png") center/cover no-repeat;container-type:size;container-name:cstage}
+  background:#050b18 url("assets/img/bg/cover.png") center/cover no-repeat;container-type:size;container-name:cstage}
 /* импульс: ядро + расходящиеся кольца (центр вспышки на листе) */
 .cimp{position:absolute;left:74.5%;top:56.5%;transform:translate(-50%,-50%);pointer-events:none}
 .cimp .core{position:absolute;left:50%;top:50%;width:4cqh;height:4cqh;margin:-2cqh 0 0 -2cqh;border-radius:50%;
@@ -508,22 +533,70 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   text-shadow:0 2px 20px rgba(0,0,0,.6),0 0 26px rgba(63,208,255,.25)}
 /* кнопка «Начать игру» */
 .cbtn{position:absolute;left:50%;bottom:9%;transform:translateX(-50%) translateY(14px);z-index:4;
-  font-family:var(--title-font);font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:2.6cqh;
+  font-family:var(--hauss);font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:2.6cqh;
   color:#eaf6ff;background:linear-gradient(180deg,rgba(30,90,160,.55),rgba(12,40,80,.65));
   border:1.5px solid var(--cyan);border-radius:12px;padding:1.4cqh 3.4cqh;cursor:pointer;
   box-shadow:0 0 26px rgba(63,208,255,.45),inset 0 0 18px rgba(63,208,255,.2);
-  opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s;
+  opacity:0;visibility:hidden;overflow:hidden;
+  transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s;
   animation:cBtnPulse 2s ease-in-out infinite}
+.cbtn-txt{position:relative;z-index:2}
+/* бегущая подсветка (блик пробегает слева направо) */
+.cbtn::after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;z-index:1;
+  background:linear-gradient(100deg,transparent 0%,rgba(180,230,255,.15) 40%,rgba(230,248,255,.55) 50%,rgba(180,230,255,.15) 60%,transparent 100%);
+  transform:skewX(-18deg);animation:cBtnSweep 2.6s ease-in-out infinite}
 .cbtn.show{opacity:1;visibility:visible;transform:translateX(-50%)}
 .cbtn:hover{background:linear-gradient(180deg,rgba(40,110,190,.7),rgba(16,52,100,.8));
   box-shadow:0 0 34px rgba(63,208,255,.7)}
 @keyframes cBtnPulse{0%,100%{box-shadow:0 0 22px rgba(63,208,255,.4),inset 0 0 18px rgba(63,208,255,.2)}
   50%{box-shadow:0 0 38px rgba(63,208,255,.75),inset 0 0 22px rgba(63,208,255,.3)}}
+@keyframes cBtnSweep{0%{left:-60%}55%,100%{left:120%}}
 /* подсказка на обложке */
 .cover-hint{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:4;
   font-family:var(--hauss);font-size:1.6cqh;color:rgba(220,235,255,.65);letter-spacing:.05em;
   animation:cHintBlink 1.8s ease-in-out infinite}
 @keyframes cHintBlink{0%,100%{opacity:.4}50%{opacity:.9}}
+
+/* ── ПРАВИЛА ИГРЫ: 3 слайда на фоне города, смена по клику БЕЗ анимаций ── */
+.rules{position:absolute;inset:0;z-index:15;display:none;background:#04070c}
+.rules.show{display:block}
+/* бокс-сцена 2172×724 (как .stage) — картинка ложится 1:1, без «зума».
+   затемнение — как на слайде 8 (подведы): темнее справа, под белый текст */
+.rules-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  background:linear-gradient(90deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%),
+             url("assets/img/bg/Карта Москвы без героя.png") center/cover;
+  container-type:size}
+/* текст — В ПРАВОЙ части экрана (как подвед), белый, размеры шрифта из слайда 8 */
+.rules-inner{position:absolute;left:auto;right:4%;top:0;bottom:0;width:52%;
+  display:flex;flex-direction:column;justify-content:center;
+  color:#fff;font-family:var(--hauss);text-align:left}
+.rules .rslide{display:none}
+.rules .rslide.cur{display:flex;flex-direction:column;gap:1.6cqw}
+.rules .rtitle{font-family:var(--hauss);font-weight:700;font-size:3.1cqw;line-height:1.07;margin:0;
+  text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+.rules .rlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7cqw}
+.rules .rlist li{position:relative;padding-left:1.3em;font-weight:600;font-size:1.7cqw;line-height:1.25;
+  color:#fff;text-shadow:0 .2vw 1vw rgba(0,0,0,.55)}
+.rules .rlist li::before{content:"•";position:absolute;left:0;color:var(--cyan)}
+.rules .rlist li b{color:var(--cyan);font-weight:800}
+/* вступительный титул «ПРАВИЛА ИГРЫ» — слева, формат заставки (крупно, Orbitron, titlePop) */
+.rules-title{position:absolute;left:6cqw;top:0;bottom:0;z-index:4;display:none;align-items:center;
+  padding-bottom:44cqh;                              /* поднять на уровень заголовков подслайдов */
+  font-family:var(--title-font);font-weight:900;color:#fff;text-transform:uppercase;white-space:nowrap;
+  font-size:8cqh;line-height:1.0;letter-spacing:.05em;transform-origin:left center;
+  text-shadow:0 2px 20px rgba(0,0,0,.55),0 0 34px rgba(63,208,255,.35)}
+.rules-title.show{display:flex;animation:titlePop 1.2s cubic-bezier(.2,.7,.25,1)}
+.rules-title.out{animation:rtFade .5s ease forwards}
+@keyframes rtFade{to{opacity:0}}
+/* пока идёт вступительный титул — контент подслайдов спрятан */
+.rules.intro .rslide{display:none !important}
+/* шаблонная вуаль перехода правил (как .hveil): раскрытие/сворачивание из фокуса --fx/--fy */
+.rules-veil{position:absolute;inset:0;z-index:5;background:#04070c;pointer-events:none;
+  --r:175%;--fx:10%;--fy:50%;
+  -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r 1.6s cubic-bezier(.4,.1,.2,1)}
 
 /* подсказка/навигация */
 .hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
@@ -589,9 +662,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
     <g id="dustTrail" filter="url(#dustBlur)"></g>
     <g id="buildingDust" filter="url(#dustBlur)"></g>
     <path id="obj-demolish" class="demolish" d="M798.722 528.41L995.636 455.688C996.833 455.246 998.154 455.278 999.328 455.778L1278.57 574.699C1282.31 576.291 1282.69 581.443 1279.22 583.564L1080.1 705.41C1078.5 706.386 1076.49 706.39 1074.9 705.42L797.861 537.375C794.282 535.204 794.796 529.86 798.722 528.41Z"/>
-    <image id="exc" href="excavator.png" x="1132" y="440" width="328" height="245" preserveAspectRatio="xMidYMid meet"/>
+    <image id="exc" href="assets/img/objects/excavator.png" x="1132" y="440" width="328" height="245" preserveAspectRatio="xMidYMid meet"/>
     <g id="impact"></g>
-    <image id="troika" href="troika.png" x="918" y="540" width="240" height="145" preserveAspectRatio="xMidYMid meet"/>
+    <image id="troika" href="assets/img/objects/troika.png" x="918" y="540" width="240" height="145" preserveAspectRatio="xMidYMid meet"/>
   </svg>
 
   <!-- тьма для радиального проявления -->
@@ -600,7 +673,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   <!-- аларм-тревога (сцена Штаб): пульсирующий красный по краям экрана -->
   <div class="alarm" id="alarm"></div>
   <!-- звук сирены (сцена Штаб) -->
-  <audio id="siren" src="siren.mp3" preload="auto"></audio>
+  <audio id="siren" src="assets/audio/siren.mp3" preload="auto"></audio>
 
   <!-- ── КАРТОЧКИ подведов: фон-картинка + затемнение + текст (наезжают при переходе) ── -->
 
@@ -627,7 +700,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   </div>
 
   <!-- [6] МБМ · слайд 2 — нефинансовые услуги (фон: сцена кафе со слайда 2 main) -->
-  <div class="podcard" data-pod="mbm2" style="background-image:url('../main/slide1.png')">
+  <div class="podcard" data-pod="mbm2" style="background-image:url('assets/img/bg/cafe-1.png')">
     <div class="podtext podbig" id="pod-mbm2">
       <span class="ln ptitle">Полный комплекс нефинансовых услуг для бизнеса</span>
       <ul class="ln pbul">
@@ -642,7 +715,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   </div>
 
   <!-- [7] МБМ · слайд 3 — единый консультационный центр (фон: сцена кафе со слайда 3 main) -->
-  <div class="podcard" data-pod="mbm3" style="background-image:url('../main/slide2.png')">
+  <div class="podcard" data-pod="mbm3" style="background-image:url('assets/img/bg/cafe-2.png')">
     <div class="podtext podbig" id="pod-mbm3">
       <span class="ln ptitle">Единый консультационный центр</span>
       <ul class="ln pbul">
@@ -682,7 +755,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   </div>
 
   <!-- [11] Финал — бизнес работает (фон: сцена открытого кафе со слайда 4 main) -->
-  <div class="podcard" data-pod="finale" style="background-image:url('../main/slide3.png')">
+  <div class="podcard" data-pod="finale" style="background-image:url('assets/img/bg/cafe-3.png')">
     <div class="podtext podbig" id="pod-finale">
       <span class="ln ptitle">Бизнес открыт и работает</span>
       <span class="ln psub">Путь пройден вместе: от идеи до своего дела. Город и бизнес — на одной волне.</span>
@@ -710,7 +783,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
       <span class="ring" style="animation-delay:4.6s,0s"></span>
     </div>
     <div class="cover-hint" id="coverHint">нажмите, чтобы продолжить</div>
-    <button class="cbtn" id="coverBtn">Начать игру</button>
+    <button class="cbtn" id="coverBtn"><span class="cbtn-txt">Начать</span></button>
   </div>
 </div>
 
@@ -718,22 +791,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 <div class="splash" id="splash">
   <div class="intro-bg"></div>
   <div class="intro-inner">
-    <img class="skyline" src="skyline.svg" alt="Скайлайн Москвы">
-    <div class="kicker">На одной волне · 2026</div>
-    <div class="quest-title" id="questTitle">Московский предпринимательский квест</div>
+    <div class="quest-title" id="questTitle">
+      <div class="qt-line qt-1">Московский предпринимательский квест</div>
+      <div class="qt-line qt-2">На одной волне 2026</div>
+      <div class="qt-line qt-3">Новый импульс</div>
+    </div>
+    <div class="load-log" id="loadLog"></div>
     <div class="intro-bar"><i id="loadFill"></i></div>
     <div class="intro-pct" id="loadPct">0%</div>
     <div class="intro-load"><span id="loadCap">Гружу</span><span class="load-dots" id="loadDots">…</span></div>
   </div>
-  <img class="intro-logo" src="logo_dep.svg" alt="Департамент предпринимательства и инновационного развития города Москвы">
 </div>
 
 <!-- ════════ ДЕКА (вводная преза) ════════ -->
 <div class="deck" id="deck">
-  <img src="intro/dpiir1.svg" alt="">
-  <img src="intro/dpiir2.svg" alt="">
-  <img src="intro/dpiir3.svg" alt="">
-  <img src="intro/dpiir4.svg" alt="">
+  <img src="assets/img/intro/dpiir1.svg" alt="">
+  <img src="assets/img/intro/dpiir2.svg" alt="">
+  <img src="assets/img/intro/dpiir3.svg" alt="">
+  <img src="assets/img/intro/dpiir4.svg" alt="">
   <div class="dots" id="deckDots"></div>
 </div>
 
@@ -741,31 +816,61 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 <div class="herointro" id="heroIntro">
   <div class="hstage">
     <div class="hveil" id="hveil"></div>
-    <svg class="hlines" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <marker id="hArrow" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto">
-          <path d="M0 0L9 4.5L0 9Z" fill="#27e3ff"/>
-        </marker>
-      </defs>
-      <!-- подсветка бинокля -->
-      <circle class="hring" cx="1000" cy="278" r="60"/>
-      <!-- стрелка к герою (от левой выноски) -->
-      <path class="harrow a-hero" d="M545 250 Q740 250 905 300" marker-end="url(#hArrow)"/>
-      <!-- стрелка к биноклю (от правой выноски, ниже) -->
-      <path class="harrow a-binoc" d="M1470 300 Q1260 300 1060 272" marker-end="url(#hArrow)"/>
+    <!-- только контур героя (заливки нет): пульсирующая светящаяся обводка -->
+    <img class="hero-outline" id="heroOutline"
+         src="assets/img/objects/hero-outline.png" alt="">
+    <!-- выноска: точка на герое + линия к панели имени -->
+    <svg class="hlead" id="heroLead" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet">
+      <line class="hlead-line" x1="845.686" y1="113.389" x2="974.686" y2="217.389"/>
+      <circle class="hlead-dot" cx="974.686" cy="217.389" r="8"/>
     </svg>
-    <!-- имя + звёзды над героем -->
+    <!-- имя героя (без звёзд), слева от героя -->
     <div class="hchip" id="heroChip"></div>
-    <!-- выноска про героя (слева) -->
-    <div class="hcall left" id="heroCallL">
-      <b data-tw>Это Боб.</b><br><span data-tw>Мечтает открыть свой бизнес — но пока не знает, с чего начать.</span>
+    <!-- вопросы, которые мучают предпринимателя (белым, слева направо, по очереди) -->
+    <div class="hqs" id="heroQs"></div>
+  </div>
+</div>
+
+<!-- ════════ ПРАВИЛА ИГРЫ (3 слайда на фоне города) ════════ -->
+<div class="rules" id="rules">
+  <div class="rules-stage">
+  <div class="rules-inner">
+    <!-- слайд 1 — количество игроков -->
+    <div class="rslide" data-i="0">
+      <h2 class="rtitle">Предпринимательство<br>Москвы</h2>
+      <ul class="rlist">
+        <li><b>&gt;937 тыс.</b> субъектов МСП — <b>&gt;84%</b> всех предприятий города</li>
+        <li><b>&gt;3,5 млн</b> занятых — каждый 3-й работает в секторе МСП</li>
+        <li><b>&gt;1,25 трлн ₽</b> налогов — каждый 4-й рубль налогов Москвы от МСП</li>
+      </ul>
     </div>
-    <!-- выноска про бинокль (справа) -->
-    <div class="hcall right" id="heroCallR">
-      <b data-tw>Бинокль</b><span data-tw> — его инструмент разведки: искать объекты и помощников в городе.</span>
+    <!-- слайд 2 — тренды -->
+    <div class="rslide" data-i="1">
+      <h2 class="rtitle">Тренды<br>предпринимательства 2026</h2>
+      <ul class="rlist">
+        <li>Устойчивость бизнес-моделей</li>
+        <li>Цифровизация</li>
+        <li>Качество вместо количества</li>
+        <li>DIGITAL-форматы</li>
+        <li>Региональная экспансия</li>
+      </ul>
     </div>
-    <!-- крючок = реплика героя (единый стиль .hero-say, печатается) -->
-    <div class="hero-say hero-hook" id="heroHook"></div>
+    <!-- слайд 3 — вызовы -->
+    <div class="rslide" data-i="2">
+      <h2 class="rtitle">Вызовы для<br>предпринимателей</h2>
+      <ul class="rlist">
+        <li>Налоговая реформа</li>
+        <li>Высокая ключевая ставка</li>
+        <li>Переход населения к сберегательной модели поведения</li>
+        <li>Изменение потребительских принципов</li>
+        <li>Рост доли наличных расчётов и теневого сектора</li>
+      </ul>
+    </div>
+  </div>
+  <!-- вступительный крупный титул (формат заставки), слева -->
+  <div class="rules-title" id="rulesTitle">Правила игры</div>
+  <!-- шаблонная вуаль перехода: раскрытие/сворачивание из точки-фокуса -->
+  <div class="rules-veil" id="rulesVeil"></div>
   </div>
 </div>
 
@@ -776,11 +881,51 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 const stage  = document.querySelector('.stage');
 const splash = document.getElementById('splash');
 const heroIntro = document.getElementById('heroIntro');
+const rules  = document.getElementById('rules');
+const rSlides= [...rules.querySelectorAll('.rslide')];
+const rulesVeil=document.getElementById('rulesVeil');
+const rulesTitle=document.getElementById('rulesTitle');
+let rulesStep= 0;         // текущий подслайд правил (0..2)
+let rulesAnim= false;     // идёт анимация разворачивания/сворачивания/интро — блок кликов
+let rulesTimers=[];
+/* фокусы шаблона: открытие — слева по центру; закрытие — объект «Правительство Москвы» (o-gov 1583/236) */
+const RULES_OPEN={fx:'10%',fy:'50%'};
+const RULES_GOV ={fx:(1583/2172*100).toFixed(1)+'%', fy:(236/724*100).toFixed(1)+'%'};
+function showRules(){ rSlides.forEach((s,i)=>s.classList.toggle('cur', i===rulesStep)); }
+function rulesFocus(f){ rulesVeil.style.setProperty('--fx',f.fx); rulesVeil.style.setProperty('--fy',f.fy); }
+/* РАЗВОРАЧИВАНИЕ из точки-фокуса: старт чёрный (--r 0) → раскрытие (--r 175%) */
+function rulesReveal(focus, dur){
+  rulesFocus(focus||RULES_OPEN);
+  rulesVeil.style.transition='none'; rulesVeil.style.setProperty('--r','0%');
+  void rulesVeil.offsetWidth;
+  rulesVeil.style.transition='--r '+(dur||1.6)+'s cubic-bezier(.4,.1,.2,1)';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ rulesVeil.style.setProperty('--r','175%'); }));
+}
+/* СВОРАЧИВАНИЕ в точку-фокус: --r → 0, затем cb */
+function rulesCollapse(focus, dur, cb){
+  rulesFocus(focus);
+  rulesVeil.style.transition='--r '+(dur||1.4)+'s cubic-bezier(.4,.1,.2,1)';
+  requestAnimationFrame(()=>{ rulesVeil.style.setProperty('--r','0%'); });
+  setTimeout(cb, (dur||1.4)*1000);
+}
+/* ВСТУПЛЕНИЕ 1-го слайда: крупный «ПРАВИЛА ИГРЫ» слева → исчезает → появляется текст слайда 1 */
+function rulesIntro(){
+  rulesTimers.splice(0).forEach(clearTimeout);
+  rulesAnim=true;
+  rules.classList.add('intro');                        // спрятать контент подслайдов
+  rulesTitle.classList.remove('out'); void rulesTitle.offsetWidth; rulesTitle.classList.add('show');
+  rulesTimers.push(setTimeout(()=>{ rulesTitle.classList.add('out'); }, 2100));   // держим ~2с → гасим
+  rulesTimers.push(setTimeout(()=>{
+    if(id()!=='rules') return;
+    rulesTitle.classList.remove('show','out');
+    rules.classList.remove('intro'); showRules();       // текст слайда 1
+    rulesAnim=false;
+  }, 2700));
+}
 const deck   = document.getElementById('deck');
-/* герой (слайд 2) — единый стиль имени (.mapname.boxed.herobox); звёзды ВСЕ пустые, имя печатается */
+/* герой (слайд 2) — единый стиль имени (.mapname.boxed.herobox); БЕЗ звёзд («Новый игрок»), имя печатается */
 document.getElementById('heroChip').innerHTML=
-  '<div class="mapname boxed herobox"><span class="hstars">'+
-  '<span class="star off">★</span>'.repeat(5)+'</span><span class="htext"></span></div>';
+  '<div class="mapname boxed herobox"><span class="htext"></span></div>';
 const hint   = document.getElementById('hint');
 const deckImgs = [...deck.querySelectorAll('img')];
 const deckDots = document.getElementById('deckDots');
@@ -790,7 +935,8 @@ const dots=[...deckDots.children];
 /* порядок сцен показа */
 const SCENES=[
   {id:'splash',   label:'Заставка'},
-  {id:'hero',     label:'Знакомство — Боб'},
+  {id:'hero',     label:'Знакомство с героем'},
+  {id:'rules',    label:'Правила игры (3 слайда)'},
   {id:'map',      label:'Сцена 3 — карта: объекты + маршруты → разведка → Правительство'},
   {id:'deck',     label:'Сцена 4 — вводная презентация'},
   {id:'binoc',    label:'Сцена 5 — разведка → выбор кафе'},
@@ -1083,6 +1229,10 @@ function applyScene(){
   // знакомство с героем
   heroIntro.classList.toggle('show', sid==='hero');
   if(sid==='hero') heroReveal(); else resetHeroText();
+  // правила игры (3 слайда)
+  rules.classList.toggle('show', sid==='rules');
+  if(sid==='rules'){ showRules(); }
+  else { rulesTimers.splice(0).forEach(clearTimeout); rules.classList.remove('intro'); rulesTitle.classList.remove('show','out'); }
   // дека
   deck.classList.toggle('show', sid==='deck');
   if(sid==='deck'){ showDeck(); }
@@ -1155,9 +1305,24 @@ function podGo(prevId, dir){ TRANSITION==='slide' ? podSlide(prevId,dir) : podBr
 /* ── ШАБЛОН перехода: раскрытие из фокуса (вход) / сворачивание в фокус (выход) ── */
 const hveil=document.getElementById('hveil');
 let heroLeaving=false, heroTimers=[];
-const heroCallL=document.getElementById('heroCallL');
-const heroCallR=document.getElementById('heroCallR');
-const heroHook =document.getElementById('heroHook');
+const heroQs   =document.getElementById('heroQs');
+const heroLead =document.getElementById('heroLead');
+const heroOutline=document.getElementById('heroOutline');
+/* Вопросы, которые мучают предпринимателя (ВРЕМЕННЫЕ — финальные тексты дадут завтра).
+   Порядок показа — слева направо (по возрастанию left). x/y — позиция на картинке (в %). */
+const HERO_QUESTIONS=[
+  {t:'С чего вообще\nначать?',           x:2,  y:40},
+  {t:'Где взять деньги\nна старт?',       x:3,  y:8},
+  {t:'Как выбрать нишу?',                x:4,  y:70},
+  {t:'А вдруг ничего\nне получится?',     x:63, y:8},
+  {t:'Какие нужны\nдокументы?',           x:70, y:42},
+  {t:'Кто вообще мне\nпоможет?',          x:63, y:72}
+];
+/* отрисовать пустые короба-«речь» (позиции), текст печатается по очереди в heroReveal */
+heroQs.innerHTML=HERO_QUESTIONS
+  .map((q,i)=>'<div class="hthink" data-qi="'+i+'" style="left:'+q.x+'%;top:'+q.y+'%"></div>')
+  .join('');
+const heroQEls=[...heroQs.querySelectorAll('.hthink')];
 /* ── печать выноски по частям [data-tw] с кареткой; done — по завершении всех частей ── */
 function typeSeq(container, speed, guard, done){
   const parts=[...container.querySelectorAll('[data-tw]')];
@@ -1194,37 +1359,37 @@ function resetHeroText(){
   heroTimers.splice(0).forEach(clearTimeout);
   heroChipEl.classList.remove('show');
   const h=heroChipEl.querySelector('.htext'); if(h){ h.textContent=''; h.classList.remove('typed'); }
-  [heroCallL,heroCallR].forEach(c=>{ c.classList.remove('show');
-    c.querySelectorAll('[data-tw]').forEach(p=>{ if(p.dataset.full!==undefined) p.textContent=''; p.classList.remove('tw-caret'); }); });
-  heroHook.classList.remove('show'); heroHook.innerHTML='';   // реплика (.hero-say) — сброс
-  heroIntro.querySelectorAll('.harrow,.hring').forEach(e=>e.classList.remove('draw'));  // стрелки/кольцо
+  heroLead.classList.remove('show');                         // выноска (линия+точка) — сброс
+  heroOutline.classList.remove('show');                      // светящаяся обводка героя — сброс
+  heroQEls.forEach(q=>{ q.classList.remove('show'); q.innerHTML=''; });   // вопросы — сброс
 }
-/* раскрытие слайда 2 из точки-фокуса (бинокль) + печать выносок/реплики */
+/* раскрытие слайда 2 из точки-фокуса + печать имени + вопросы по очереди (слева направо) */
 function heroReveal(){
   heroLeaving=false;
   heroIntro.classList.remove('collapsing');
   resetHeroText();
-  hveil.style.setProperty('--fx','46%'); hveil.style.setProperty('--fy','38%');   // фокус раскрытия — бинокль
+  hveil.style.setProperty('--fx','46%'); hveil.style.setProperty('--fy','38%');   // фокус раскрытия
   hveil.style.transition='none'; hveil.style.setProperty('--r','6%');
   void hveil.offsetWidth;
   hveil.style.transition='';                                                       // вернуть CSS-переход 3.4с
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ hveil.style.setProperty('--r','175%'); }));
-  // СТРОГАЯ очередность: каждый блок печатается ПОЛНОСТЬЮ, потом следующий
   const alive=()=>id()==='hero';
   heroTimers.push(setTimeout(()=>{ if(!alive())return;
-    typeChipName('Боб', alive, ()=>{                        // 1) имя героя
-      heroIntro.querySelector('.a-hero').classList.add('draw');    // стрелка к герою
-      typeSeq(heroCallL, 30, alive, ()=>{                   // 2) «Это Боб…»
-        heroIntro.querySelector('.a-binoc').classList.add('draw'); // стрелка к биноклю
-        heroIntro.querySelector('.hring').classList.add('draw');   // подсветка бинокля
-        typeSeq(heroCallR, 30, alive, ()=>{                 // 3) «Бинокль…»
-          typeSay(heroHook, HERO_HOOK_TXT, alive, heroTimers);     // 4) реплика героя
-        });
-      });
+    typeChipName('Новый игрок', alive, ()=>{                 // 1) имя героя (без звёзд)
+      heroOutline.classList.add('show');                     // светящаяся пульсирующая обводка героя
+      heroLead.classList.add('show');                        // выноска: линия+точка на герое
+      // 2) вопросы «пишутся от руки» по очереди (слева направо)
+      let qi=0;
+      (function nextQ(){
+        if(!alive() || qi>=heroQEls.length) return;
+        const txt=HERO_QUESTIONS[qi].t;
+        handWrite(heroQEls[qi], txt, alive, heroTimers);     // рукописный вывод
+        qi++;
+        heroTimers.push(setTimeout(nextQ, txt.length*60+1000)); // следующий — после написания + пауза
+      })();
     });
   }, 3400));                                                // старт после раскрытия
 }
-const HERO_HOOK_TXT='Как же хочется открыть свой бизнес! Но чем же заняться? Какие есть варианты?';
 /* сворачивание слайда 2 в точку-фокус (Москва-Сити) → затем переход к карте */
 function heroLeave(){
   if(heroLeaving) return; heroLeaving=true;
@@ -1232,7 +1397,7 @@ function heroLeave(){
   heroIntro.classList.add('collapsing');                                           // спрятать подписи/стрелки/имя
   hveil.style.setProperty('--fx','92%'); hveil.style.setProperty('--fy','24%');    // фокус сворачивания — Москва-Сити
   hveil.style.setProperty('--r','0%');
-  setTimeout(()=>{ heroLeaving=false; cur++; startMapAuto(0); }, 3400);            // hero → карта (её раскрытие продолжит цепочку)
+  setTimeout(()=>{ heroLeaving=false; cur++; rulesStep=0; applyScene(); rulesReveal(RULES_OPEN); rulesIntro(); }, 3400);  // hero → правила: раскрытие + вступит. титул
 }
 /* прервать разведку/сворачивание на карте (для пропуска механики стрелкой) */
 function abortRecon(){
@@ -1244,6 +1409,14 @@ function abortRecon(){
 function next(skip){
   if(id()==='splash'){ if((skip||loadDone) && cur<SCENES.length-1){ cur++; applyScene(); } return; }  // стрелка пропускает загрузку; клик — только после 100%
   if(id()==='hero'){ heroLeave(); return; }   // слайд 2 уходит сворачиванием
+  if(id()==='rules'){                          // правила: разворачивание ТОЛЬКО на входе, сворачивание ТОЛЬКО на выходе
+    if(rulesAnim) return;                       // идёт анимация — игнор клика
+    if(rulesStep<rSlides.length-1){ rulesStep++; showRules(); return; }   // между подслайдами — обычная смена
+    // последний слайд → сворачивание в «Правительство Москвы» → карта
+    rulesAnim=true;
+    rulesCollapse(RULES_GOV, 1.6, ()=>{ rulesAnim=false; if(cur<SCENES.length-1){ cur++; startMapAuto(0); } });
+    return;
+  }
   if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
   if(id()==='map'){                            // сцена 3 — внутренние шаги
     if(mapStep<MAP_STEPS-1){ startMapAuto(mapStep+1); return; }   // доиграть авто-шаги карты
@@ -1263,8 +1436,10 @@ function next(skip){
 }
 function prev(){
   if(id()==='deck' && deckSub>0){ deckSub--; showDeck(); return; }
+  if(id()==='rules' && rulesStep>0){ if(rulesAnim) return; rulesStep--; showRules(); return; }   // правила — назад: обычная смена
   if(cur>0){ const fromId=id(); cur--;
     if(id()==='deck'){ deckSub=deckImgs.length-1; applyScene(); showDeck(); }
+    else if(id()==='rules'){ rulesStep=rSlides.length-1; applyScene(); rulesReveal(RULES_GOV); }   // возврат на правила — последний слайд, разворачивание из «Правительства»
     else if(id()==='map'){ mapStep=MAP_STEPS-1; applyScene(); }       // возврат на Карту — финал (4 опоры)
     else if(isPod(id()) && isPod(fromId)){ podGo(fromId, -1); }   // подвед→подвед назад
     else applyScene();
@@ -1402,6 +1577,19 @@ function typeSay(el, text, guard, timers){
     if(guard && !guard()) return;                        // ушли со сцены — стоп
     t.textContent=text.slice(0,i++);
     if(i<=text.length) timers.push(setTimeout(step,32));
+  })();
+}
+/* ── ИМИТАЦИЯ ПИСЬМА ОТ РУКИ: буквы «вытекают» чернилами, вместо каретки — перо ── */
+function handWrite(el, text, guard, timers){
+  el.classList.add('show');
+  el.innerHTML=''; let i=0;
+  (function step(){
+    if(guard && !guard()) return;                          // ушли со сцены — стоп
+    if(i>=text.length) return;
+    if(text[i]==='\n'){ el.appendChild(document.createElement('br')); i++; step(); return; }  // перенос строки
+    const s=document.createElement('span'); s.className='hw-ch'; s.textContent=text[i];
+    el.appendChild(s); i++;
+    timers.push(setTimeout(step, 55));                     // темп «руки» — медленнее печати
   })();
 }
 /* реплика героя на карте (сцена 3) — через общий шаблон */
@@ -1679,34 +1867,58 @@ applyScene();
 /* ===== загрузка на сплеше: плавный бар/процент; 5 текстов сменяются по времени; после 100% — титул; уход по клику ===== */
 const loadFill  =document.getElementById('loadFill');
 const loadPct   =document.getElementById('loadPct');
+const loadLog   =document.getElementById('loadLog');
 const loadCap   =document.getElementById('loadCap');
-const loadDots  =document.getElementById('loadDots');
 const questTitle=document.getElementById('questTitle');
-const LOAD_SEQ=['Гружу','Гружу-гружу','Подбираю субсидии','Определяю локацию','Нахожу консультанта'];
-const STEP_MS=1800;                       // время показа каждого текста (медленнее)
-const LOAD_DUR=STEP_MS*LOAD_SEQ.length;   // общая длительность плавной загрузки
+/* подпись под процентом — циклится */
+const LOAD_SEQ=['Гружу','Гружу-гружу','Гружу, ещё чуть-чуть'];
+const CAP_MS=1500;                        // как часто меняется подпись
+/* накопительный лог — строки появляются по очереди и остаются */
+const LOG_SEQ=['Ищу идею','Нахожу консультанта','Определяю локации','Подбираю субсидии'];
+const LOAD_DUR=13600;                     // общая длительность плавной загрузки (×2 — дольше)
 let loadDone=false;                       // загрузка завершена → сплеш уходит по клику
 function runLoading(){
   loadDone=false;                                    // сброс на случай повторного запуска
-  let t0=null, shown=-1;
+  loadLog.innerHTML='';                              // очистить лог при новом старте
+  // каждая строка: галка (скрыта) + текст + мигающие «…»
+  const logEls=LOG_SEQ.map(t=>{
+    const d=document.createElement('div'); d.className='ll';
+    d.innerHTML='<span class="chk">✓</span><span class="lt">'+t+'</span><span class="dots">…</span>';
+    loadLog.appendChild(d); return d;
+  });
+  const N=LOG_SEQ.length, slot=LOAD_DUR/N;            // слот времени на одну строку
+  let t0=null, capShown=-1;
   function frame(now){
     if(splash.classList.contains('hidden')) return;  // стоп только если сплеш реально скрыт (ушли со сцены)
     if(t0===null) t0=now;
     const el=now-t0, p=Math.min(100, el/LOAD_DUR*100);
     loadFill.style.width=p+'%'; loadPct.textContent=Math.round(p)+'%';     // ПЛАВНО, без дискретных скачков
-    const idx=Math.min(LOAD_SEQ.length-1, Math.floor(el/STEP_MS));         // текущий текст по времени
-    if(idx!==shown){ shown=idx; loadCap.textContent=LOAD_SEQ[idx]; }
+    const cap=Math.floor(el/CAP_MS)%LOAD_SEQ.length;                       // подпись циклится
+    if(cap!==capShown){ capShown=cap; loadCap.textContent=LOAD_SEQ[cap]; }
+    // логика по каждой строке: появилась (on) → пульсирует с «…» → через ~0.7 слота галка+стоп (done)
+    for(let i=0;i<N;i++){
+      const appearAt=i*slot, doneAt=i*slot+slot*0.7;
+      const el2=logEls[i];
+      if(el>=appearAt) el2.classList.add('on');
+      if(el>=doneAt){ el2.classList.remove('pulsing'); el2.classList.add('done'); }
+      else if(el>=appearAt){ el2.classList.add('pulsing'); }
+    }
     if(p<100) requestAnimationFrame(frame);
-    else finishLoading();
+    else { logEls.forEach(e=>{ e.classList.remove('pulsing'); e.classList.add('on','done'); }); finishLoading(); }
   }
   requestAnimationFrame(frame);
 }
-function finishLoading(){                  // 5 стадий прошли → убираем бар/процент, титул по центру; сплеш остаётся, ждём клик
+function finishLoading(){                  // загрузка прошла → убираем бар/лог, показываем заставку из 3 строк
   if(splash.classList.contains('hidden') || loadDone) return;
   loadDone=true;
   loadFill.style.width='100%'; loadPct.textContent='100%';
-  splash.classList.add('loaded');          // плавно скрыть бар, процент, подпись
-  setTimeout(()=>{ if(id()==='splash') questTitle.classList.add('show'); }, 450);   // затем титул вырастает из центра
+  splash.classList.add('loaded');          // плавно скрыть бар, процент, подпись, лог
+  setTimeout(()=>{
+    if(id()!=='splash') return;
+    questTitle.classList.add('show');
+    const lines=questTitle.querySelectorAll('.qt-line');   // 3 строки — по очереди, друг под другом, остаются
+    lines.forEach((ln,i)=> setTimeout(()=>ln.classList.add('on'), i*1900));
+  }, 450);
 }
 /* загрузка запускается по кнопке «Начать игру» (см. startGame) — авто-старта нет */
 </script>
