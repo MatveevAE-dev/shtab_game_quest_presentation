@@ -127,6 +127,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .demolish.show{filter:drop-shadow(0 0 8px #ff2a2a);animation:redpulse 2.4s ease-in-out infinite}
 @keyframes redpulse{0%,100%{opacity:.5}50%{opacity:1}}
 .spark2{fill:#ffd24a;filter:drop-shadow(0 0 4px #ff8a00)}
+/* аларм-тревога: красно-чёрный по краям, прозрачный к центру; --alarm-depth — как далеко прозрачность заходит к центру (больше → меньше красного) */
+.alarm{position:absolute;inset:0;z-index:15;pointer-events:none;--alarm-depth:34%;
+  background:radial-gradient(ellipse 78% 78% at 50% 50%,
+     transparent var(--alarm-depth),
+     rgba(150,0,0,.18) calc(var(--alarm-depth) + 18%),
+     rgba(95,0,0,.55) 82%,
+     rgba(45,0,0,.92) 100%);
+  opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s linear .5s}
+.alarm.on{visibility:visible;animation:alarmpulse 1s ease-in-out infinite}
+@keyframes alarmpulse{0%,100%{opacity:.35}50%{opacity:1}}
 #troika{opacity:0;filter:drop-shadow(0 .4vw .8vw rgba(0,0,0,.45))}
 .star{fill:#fff3b0;filter:drop-shadow(0 0 5px #ffd24a)}
 .burst{fill:#ffffff;filter:drop-shadow(0 0 6px #ffe08a)}
@@ -170,6 +180,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .podcard[data-pod="mbm3"]::after,
 .podcard[data-pod="finale"]::after{
   background:linear-gradient(90deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%)}
+/* Штаб (слайд 11): БЕЗ фона-карты — под карточкой видна живая карта со сносом (эскаватор); остаётся затемнение ::after + текст */
+.podcard[data-pod="shtab"]{background:none;-webkit-mask:none;mask:none}
 .podcard.sl-r{transform:translateX(100%)}
 .podcard.sl-l{transform:translateX(-100%)}
 
@@ -238,6 +250,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   opacity:0;animation:fadeUp .9s .2s forwards}
 .splash .kicker{font-family:var(--title-font);font-weight:700;font-size:1.6vw;letter-spacing:.32em;color:var(--cyan);
   text-transform:uppercase;text-shadow:0 0 16px rgba(63,208,255,.4);opacity:0;animation:fadeUp .8s .45s forwards}
+/* титул квеста — БЕЛЫЙ, в стиле «На одной волне»; ПОД kicker'ом, по центру; появляется вырастая из точки */
+.splash .quest-title{display:none;margin-top:1.4vw;text-align:center;
+  font-family:var(--title-font);font-weight:900;color:#fff;font-size:2.9vw;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1.16;text-shadow:0 2px 20px rgba(0,0,0,.55),0 0 34px rgba(63,208,255,.35);
+  transform-origin:center}
+.splash .quest-title.show{display:block;animation:titlePop 1.8s cubic-bezier(.2,.7,.25,1) forwards}
+@keyframes titlePop{
+  0%{opacity:0;transform:scale(.18)}
+  60%{opacity:1;transform:scale(1.06)}
+  100%{opacity:1;transform:scale(1)}}
+/* после загрузки — плавно схлопываем бар, процент и подпись (чтобы титул встал под «На одной волне») */
+.splash.loaded .intro-bar,.splash.loaded .intro-pct,.splash.loaded .intro-load{
+  max-height:0;min-height:0;opacity:0;margin:0;padding:0;border-width:0;overflow:hidden;pointer-events:none;
+  transition:opacity .45s ease,max-height .45s ease,margin .45s ease,padding .45s ease}
 .splash .intro-title{font-family:var(--title-font);font-weight:900;color:var(--text);
   letter-spacing:.14em;font-size:clamp(28px,3.6vw,58px);line-height:1;
   text-shadow:0 0 18px rgba(63,208,255,.35);opacity:0;animation:fadeUp .9s .6s forwards}
@@ -258,6 +284,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   opacity:0;animation:fadeUp .8s .8s forwards}
 .splash .intro-load{font-size:1.15vw;color:#fff;letter-spacing:1px;margin-top:.4vw;min-height:1.4em;
   opacity:0;animation:fadeUp .8s .9s forwards}
+/* пульсация подписи загрузки + мигающие точки «...» в конце каждого текста */
+.splash #loadCap{animation:capbreath 1.5s ease-in-out infinite}
+.splash .load-dots{margin-left:1px;animation:dotpulse 1s ease-in-out infinite}
+@keyframes capbreath{0%,100%{opacity:.7}50%{opacity:1;text-shadow:0 0 12px rgba(63,208,255,.55)}}
+@keyframes dotpulse{0%,100%{opacity:.2}50%{opacity:1}}
 .splash .intro-logo{position:absolute;left:50%;bottom:6%;z-index:2;
   width:min(22%,300px);height:auto;opacity:0;filter:drop-shadow(0 0 7px var(--cyan-soft));
   animation:logoUp 1s .85s forwards}
@@ -266,6 +297,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 @keyframes logoUp{from{opacity:0;transform:translate(-50%,26px)}to{opacity:1;transform:translateX(-50%)}}
 @keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
 .splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+/* анимации сплеша НЕ играют, пока не нажата «Начать игру» (класс .go добавляется в startGame) */
+.splash:not(.go) *{animation-play-state:paused}
 
 /* ── ДЕКА (сцена 1): полноэкранные слайды вводной презы ── */
 .deck{position:absolute;inset:0;z-index:18;background:#000;display:none}
@@ -424,6 +457,74 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .tw-caret::after{content:"▌";color:var(--cyan);margin-left:1px;
   animation:qcaret .7s step-end infinite}
 
+/* ── ТИТУЛЬНЫЙ СЛАЙД (обложка мероприятия) ── */
+.cover{position:absolute;inset:0;z-index:40;background:#050b18;opacity:1;transition:opacity .8s ease}
+.cover.gone{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility 0s linear .8s}
+.cover-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
+  width:100vw;height:calc(100vw*9/16);max-height:100vh;max-width:calc(100vh*16/9);
+  background:#050b18 url("cover.png") center/cover no-repeat;container-type:size;container-name:cstage}
+/* импульс: ядро + расходящиеся кольца (центр вспышки на листе) */
+.cimp{position:absolute;left:74.5%;top:56.5%;transform:translate(-50%,-50%);pointer-events:none}
+.cimp .core{position:absolute;left:50%;top:50%;width:4cqh;height:4cqh;margin:-2cqh 0 0 -2cqh;border-radius:50%;
+  background:radial-gradient(circle,#eaf6ff 0%,rgba(130,200,255,.35) 55%,transparent 72%);
+  filter:blur(1px);animation:cCore 2.6s ease-in-out infinite}
+@keyframes cCore{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.55);opacity:1}}
+/* кольца — горизонтальные ЭЛЛИПСЫ: толще, медленнее, пульс + дисперсия (расплывание) */
+.cimp .ring{position:absolute;left:50%;top:50%;width:15cqh;height:5.6cqh;margin:-2.8cqh 0 0 -7.5cqh;border-radius:50%;
+  border:3px solid rgba(150,210,255,.85);opacity:0;
+  animation:cRing 7s ease-out infinite, cRingGlow 1.6s ease-in-out infinite}
+/* дисперсия: по мере расширения кольцо расплывается (blur растёт) и истончается */
+@keyframes cRing{
+  0%{transform:scale(.16);opacity:0;filter:blur(0);border-width:3.5px}
+  12%{opacity:.95}
+  65%{opacity:.32;filter:blur(2.5px)}
+  100%{transform:scale(5.6);opacity:0;filter:blur(7px);border-width:1px}}
+/* пульсация свечения кольца */
+@keyframes cRingGlow{0%,100%{box-shadow:0 0 12px rgba(110,185,255,.5)}
+  50%{box-shadow:0 0 30px rgba(140,205,255,.9)}}
+/* частицы-искры: крупные, ЗАМЕТНЫЙ пульс (размер+глоу) + цвет тёмно-синий→белый по мере подъёма */
+.cpar{position:absolute;width:1.1cqh;height:1.1cqh;border-radius:50%;background:#173a6e;
+  box-shadow:0 0 8px #3a7fd0;opacity:0;
+  animation:cFloat linear infinite, cParPulse 1.4s ease-in-out infinite}
+/* вверх: старт БОЛЬШОЙ → к верху уменьшается; цвет синий → белый; в конце гаснет */
+@keyframes cFloat{
+  0%{opacity:0;transform:translateY(0);scale:1.45;background:#173a6e}
+  14%{opacity:.9}
+  55%{background:#5aa0f5}
+  85%{opacity:.75;background:#e8f4ff}
+  100%{opacity:0;transform:translateY(-9cqh);scale:.45;background:#ffffff}}
+/* небольшой пульс — мерцание на месте (яркость+свечение), размер не трогаем */
+@keyframes cParPulse{
+  0%,100%{filter:brightness(.9);box-shadow:0 0 5px #3a7fd0}
+  50%{filter:brightness(1.35);box-shadow:0 0 12px #bfe3ff}}
+/* скрим нижне-левого угла — прячет плейсхолдер листа под наш заголовок */
+.cscrim{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(125% 95% at 0% 100%, rgba(5,11,24,.95) 0%, rgba(5,11,24,.82) 28%, rgba(5,11,24,0) 58%)}
+/* заголовок мероприятия */
+.ctitle{position:absolute;left:4.5%;bottom:12%;z-index:3;color:#fff;pointer-events:none}
+.ct-kicker{font-family:var(--title-font);font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--cyan);font-size:2.2cqh;margin-bottom:1.4cqh;text-shadow:0 0 14px rgba(63,208,255,.5)}
+.ct-name{font-family:var(--title-font);font-weight:900;line-height:1.05;font-size:6.4cqh;letter-spacing:.02em;
+  text-shadow:0 2px 20px rgba(0,0,0,.6),0 0 26px rgba(63,208,255,.25)}
+/* кнопка «Начать игру» */
+.cbtn{position:absolute;left:50%;bottom:9%;transform:translateX(-50%) translateY(14px);z-index:4;
+  font-family:var(--title-font);font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:2.6cqh;
+  color:#eaf6ff;background:linear-gradient(180deg,rgba(30,90,160,.55),rgba(12,40,80,.65));
+  border:1.5px solid var(--cyan);border-radius:12px;padding:1.4cqh 3.4cqh;cursor:pointer;
+  box-shadow:0 0 26px rgba(63,208,255,.45),inset 0 0 18px rgba(63,208,255,.2);
+  opacity:0;visibility:hidden;transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s;
+  animation:cBtnPulse 2s ease-in-out infinite}
+.cbtn.show{opacity:1;visibility:visible;transform:translateX(-50%)}
+.cbtn:hover{background:linear-gradient(180deg,rgba(40,110,190,.7),rgba(16,52,100,.8));
+  box-shadow:0 0 34px rgba(63,208,255,.7)}
+@keyframes cBtnPulse{0%,100%{box-shadow:0 0 22px rgba(63,208,255,.4),inset 0 0 18px rgba(63,208,255,.2)}
+  50%{box-shadow:0 0 38px rgba(63,208,255,.75),inset 0 0 22px rgba(63,208,255,.3)}}
+/* подсказка на обложке */
+.cover-hint{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:4;
+  font-family:var(--hauss);font-size:1.6cqh;color:rgba(220,235,255,.65);letter-spacing:.05em;
+  animation:cHintBlink 1.8s ease-in-out infinite}
+@keyframes cHintBlink{0%,100%{opacity:.4}50%{opacity:.9}}
+
 /* подсказка/навигация */
 .hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
   font-size:.85vw;color:#fff;background:rgba(0,0,0,.45);padding:.4vw .9vw;border-radius:.6vw;opacity:.6}
@@ -495,6 +596,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 
   <!-- тьма для радиального проявления -->
   <div class="darkness"></div>
+
+  <!-- аларм-тревога (сцена Штаб): пульсирующий красный по краям экрана -->
+  <div class="alarm" id="alarm"></div>
+  <!-- звук сирены (сцена Штаб) -->
+  <audio id="siren" src="siren.mp3" preload="auto"></audio>
 
   <!-- ── КАРТОЧКИ подведов: фон-картинка + затемнение + текст (наезжают при переходе) ── -->
 
@@ -594,15 +700,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   </div>
 </div>
 
+<!-- ════════ ТИТУЛЬНЫЙ СЛАЙД (обложка мероприятия, лист 1 PDF) ════════ -->
+<div class="cover" id="cover">
+  <div class="cover-stage">
+    <div class="cimp">
+      <span class="core"></span>
+      <span class="ring"></span>
+      <span class="ring" style="animation-delay:2.3s,0s"></span>
+      <span class="ring" style="animation-delay:4.6s,0s"></span>
+    </div>
+    <div class="cover-hint" id="coverHint">нажмите, чтобы продолжить</div>
+    <button class="cbtn" id="coverBtn">Начать игру</button>
+  </div>
+</div>
+
 <!-- ════════ СПЛЕШ ════════ -->
 <div class="splash" id="splash">
   <div class="intro-bg"></div>
   <div class="intro-inner">
     <img class="skyline" src="skyline.svg" alt="Скайлайн Москвы">
     <div class="kicker">На одной волне · 2026</div>
+    <div class="quest-title" id="questTitle">Московский предпринимательский квест</div>
     <div class="intro-bar"><i id="loadFill"></i></div>
     <div class="intro-pct" id="loadPct">0%</div>
-    <div class="intro-load" id="loadCap">Гружу…</div>
+    <div class="intro-load"><span id="loadCap">Гружу</span><span class="load-dots" id="loadDots">…</span></div>
   </div>
   <img class="intro-logo" src="logo_dep.svg" alt="Департамент предпринимательства и инновационного развития города Москвы">
 </div>
@@ -1113,14 +1234,25 @@ function heroLeave(){
   hveil.style.setProperty('--r','0%');
   setTimeout(()=>{ heroLeaving=false; cur++; startMapAuto(0); }, 3400);            // hero → карта (её раскрытие продолжит цепочку)
 }
-function next(){
+/* прервать разведку/сворачивание на карте (для пропуска механики стрелкой) */
+function abortRecon(){
+  binocTimers.splice(0).forEach(clearTimeout);
+  reconStarted=false; mapFinaleReady=false; mapCollapsing=false;
+  resetBinoc();
+}
+/* skip=true (стрелка/пробел) — ПРОПУСТИТЬ активную механику; skip=false (клик мышью) — не прерывать */
+function next(skip){
+  if(id()==='splash'){ if((skip||loadDone) && cur<SCENES.length-1){ cur++; applyScene(); } return; }  // стрелка пропускает загрузку; клик — только после 100%
   if(id()==='hero'){ heroLeave(); return; }   // слайд 2 уходит сворачиванием
   if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
   if(id()==='map'){                            // сцена 3 — внутренние шаги
     if(mapStep<MAP_STEPS-1){ startMapAuto(mapStep+1); return; }   // доиграть авто-шаги карты
     if(!reconStarted){ startMapRecon(); return; }                // после реплики — клик/→ поднимает бинокль
-    if(!mapFinaleReady) return;                                  // разведка/сворачивание ещё идёт — клик игнорируем
-    // финал показан (чёрный + текст) → клик уводит на деку (общий блок ниже)
+    if(!mapFinaleReady){                                         // разведка/сворачивание ещё идёт
+      if(skip && cur<SCENES.length-1){ abortRecon(); cur++; deckSub=0; applyScene(); }   // стрелка — пропустить разведку → дека
+      return;                                                     // клик — не прерываем
+    }
+    // финал показан (чёрный + текст) → уводит на деку (общий блок ниже)
   }
   if(cur<SCENES.length-1){ const fromId=id(); cur++;
     if(id()==='deck'){ deckSub=0; applyScene(); }
@@ -1138,11 +1270,32 @@ function prev(){
     else applyScene();
   }
 }
+/* ── ТИТУЛЬНЫЙ СЛАЙД (обложка): клик/→ → кнопка «Начать игру» → загрузка ── */
+const cover=document.getElementById('cover');
+const coverBtn=document.getElementById('coverBtn');
+const coverHint=document.getElementById('coverHint');
+let coverActive=true, coverStage=0;
+// искры над волной
+(function(){ const cs=cover.querySelector('.cover-stage');
+  // основное поле + верхняя зона над дугами импульса [минX,ширина, минY,высота, кол-во]
+  const zones=[[6,86,30,52,28],[24,68,4,26,10],[2,40,48,44,10]];
+  zones.forEach(z=>{ for(let i=0;i<z[4];i++){ const p=document.createElement('span'); p.className='cpar';
+    p.style.left=(z[0]+Math.random()*z[1])+'%'; p.style.top=(z[2]+Math.random()*z[3])+'%';
+    p.style.animationDuration=(6+Math.random()*5).toFixed(1)+'s, '+(1.2+Math.random()*1.1).toFixed(1)+'s';  // cFloat, cParPulse
+    p.style.animationDelay=(Math.random()*6).toFixed(1)+'s, '+(Math.random()*1.5).toFixed(1)+'s';
+    cs.appendChild(p); } }); })();
+function coverAdvance(){ if(coverStage===0){ coverStage=1; coverBtn.classList.add('show'); coverHint.style.display='none'; } else startGame(); }
+function startGame(){ if(!coverActive)return; coverActive=false; cover.classList.add('gone');
+  splash.classList.add('go');   // запустить анимации сплеша при показе
+  runLoading(); }
+coverBtn.addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
+
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(); }
+  if(coverActive){ if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){ e.preventDefault(); coverAdvance(); } return; }
+  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(true); }   // стрелка/пробел — ПРОПУСТИТЬ механику
   if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
 });
-document.addEventListener('click',()=>next());   // клик/тап — далее
+document.addEventListener('click',()=>{ if(coverActive){ coverAdvance(); return; } next(false); });   // клик/тап — далее
 
 /* ============ КОМЕТЫ ПО МАРШРУТАМ (все одновременно) ============ */
 const NS='http://www.w3.org/2000/svg';
@@ -1339,14 +1492,21 @@ const buildingDustG=document.getElementById('buildingDust');
 const impactG=document.getElementById('impact');
 const demolishEl=document.getElementById('obj-demolish');
 const troikaEl=document.getElementById('troika');
+const alarmEl=document.getElementById('alarm');
+const sirenEl=document.getElementById('siren');
+let sirenFade=null;   // таймер плавного затухания сирены (был не объявлен → падал весь скрипт)
 const TROIKA={x:1038, y:686};
 const EXC_X=1132, EXC_IN=620, EXC_DUR=1400;
+const SIREN_AT=800;    // через сколько после аларма включить звук сирены
+const EXC_START=1800;  // через сколько после аларма выезжает эскаватор
+// финал сноса (троица) привязан к КОНЦУ воя сирены (~23с), запасной таймер — 24с в runDemolition
 const IMPACT={x:1150, y:520};
 const BLD={x:1039, y:578};
 const easeOut=t=>1-Math.pow(1-t,3);
 const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 let excRAF=null, trailInt=null, excBackRAF=null;
 let impactTimer=null, dustBreath=null, troikaWiggle=null, troikaEnter=null;
+let troikaShown=false;   // финал сноса случился (по концу сирены) — не повторять
 const seqTimers=[];
 
 function mk(tag,attrs,cls){const e=document.createElementNS(SVGNS,tag);
@@ -1437,8 +1597,25 @@ function excBackup(){
     if(p<1) excBackRAF=requestAnimationFrame(fr); else excBackRAF=null; }
   excBackRAF=requestAnimationFrame(fr);
 }
-function runDemolition(){
-  resetDemolition();
+/* стоп тревоги: гасим красный аларм и звук сирены */
+/* плавно погасить громкость сирены за ms, затем стоп */
+function fadeSiren(ms){
+  if(sirenFade){ clearInterval(sirenFade); }
+  const steps=30, v0=sirenEl.volume||1; let k=0;
+  sirenFade=setInterval(()=>{
+    k++; sirenEl.volume=Math.max(0, v0*(1-k/steps));
+    if(k>=steps){ clearInterval(sirenFade); sirenFade=null; try{ sirenEl.pause(); sirenEl.currentTime=0; }catch(e){} sirenEl.volume=1; }
+  }, ms/steps);
+}
+/* мгновенно стоп тревоги (уход со сцены/сброс) */
+function stopAlarm(){
+  alarmEl.classList.remove('on');
+  if(sirenFade){ clearInterval(sirenFade); sirenFade=null; }
+  try{ sirenEl.pause(); sirenEl.currentTime=0; }catch(e){}
+  sirenEl.volume=1;
+}
+/* выезд эскаватора + снос (эскаватор «ездит и сносит» весь вой сирены, ~23с) */
+function startExcavator(){
   let t0=null;
   function frame(ts){
     if(t0===null)t0=ts;
@@ -1454,9 +1631,31 @@ function runDemolition(){
   seqTimers.push(setTimeout(()=>{ if(id()==='shtab') demolishEl.classList.add('show'); }, EXC_DUR+200));
   seqTimers.push(setTimeout(()=>{ if(id()==='shtab') startImpact(); }, EXC_DUR+450));
   seqTimers.push(setTimeout(()=>{ if(id()==='shtab') growBuildingDust(); }, EXC_DUR+1600));
-  seqTimers.push(setTimeout(()=>{ if(id()==='shtab'){ stopImpact(); showTroika(); demolishEl.classList.remove('show'); } }, EXC_DUR+2700));
-  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') excBackup(); }, EXC_DUR+2950));
-  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') hideBuildingDust(); }, EXC_DUR+3100));
+}
+/* ФИНАЛ сноса — по завершению воя сирены (или по запасному таймеру): троица + стоп тревоги */
+function endDemolition(){
+  if(id()!=='shtab' || troikaShown) return;
+  troikaShown=true;
+  stopImpact(); demolishEl.classList.remove('show'); showTroika();
+  alarmEl.classList.remove('on'); fadeSiren(1800);                                // тревога снята, сирена ПЛАВНО затихает
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') excBackup(); }, 250));
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') hideBuildingDust(); }, 450));
+}
+function runDemolition(){
+  resetDemolition();
+  // 1) аларм по краям экрана (красная пульсация)
+  alarmEl.classList.add('on');
+  // 2) через короткое время — звук сирены; финал стартует за ~1.8с ДО конца трека, чтобы вой ПЛАВНО затих (не оборвался)
+  seqTimers.push(setTimeout(()=>{
+    if(id()!=='shtab') return;
+    sirenEl.currentTime=0; sirenEl.volume=1;
+    sirenEl.ontimeupdate=()=>{ if(id()==='shtab' && sirenEl.duration && sirenEl.currentTime>=sirenEl.duration-1.8) endDemolition(); };
+    sirenEl.play().catch(()=>{});
+  }, SIREN_AT));
+  // 3) далее выезжает эскаватор и идёт снос
+  seqTimers.push(setTimeout(()=>{ if(id()==='shtab') startExcavator(); }, EXC_START));
+  // запасной финал, если сирена не проиграла/не короче (24с от старта тревоги)
+  seqTimers.push(setTimeout(endDemolition, 24000));
 }
 function resetDemolition(){
   if(excRAF){cancelAnimationFrame(excRAF);excRAF=null;}
@@ -1471,29 +1670,45 @@ function resetDemolition(){
   if(troikaWiggle){troikaWiggle.cancel();troikaWiggle=null;}
   troikaEl.style.transform='';
   excEl.setAttribute('x',EXC_X); excEl.style.opacity='';
+  troikaShown=false; sirenEl.ontimeupdate=null;  // сброс финала и слежения за концом сирены
+  stopAlarm();                                   // погасить красный аларм и остановить сирену
 }
 
 applyScene();
 
-/* ===== загрузка на сплеше: бар + % + ступенчатая подпись ===== */
-const loadFill=document.getElementById('loadFill');
-const loadPct =document.getElementById('loadPct');
-const loadCap =document.getElementById('loadCap');
-const LOAD_STEPS=[[0,'Гружу…'],[40,'Гружу! Гружу!'],[80,'Московский предпринимательский квест']];
+/* ===== загрузка на сплеше: плавный бар/процент; 5 текстов сменяются по времени; после 100% — титул; уход по клику ===== */
+const loadFill  =document.getElementById('loadFill');
+const loadPct   =document.getElementById('loadPct');
+const loadCap   =document.getElementById('loadCap');
+const loadDots  =document.getElementById('loadDots');
+const questTitle=document.getElementById('questTitle');
+const LOAD_SEQ=['Гружу','Гружу-гружу','Подбираю субсидии','Определяю локацию','Нахожу консультанта'];
+const STEP_MS=1800;                       // время показа каждого текста (медленнее)
+const LOAD_DUR=STEP_MS*LOAD_SEQ.length;   // общая длительность плавной загрузки
+let loadDone=false;                       // загрузка завершена → сплеш уходит по клику
 function runLoading(){
-  const dur=4680; let t0=null;
+  loadDone=false;                                    // сброс на случай повторного запуска
+  let t0=null, shown=-1;
   function frame(now){
-    if(t0===null)t0=now;
-    let p=Math.min(100,(now-t0)/dur*100);
-    loadFill.style.width=p+'%'; loadPct.textContent=Math.round(p)+'%';
-    let cap=LOAD_STEPS[0][1]; for(const s of LOAD_STEPS) if(p>=s[0]) cap=s[1];
-    loadCap.textContent=cap;
+    if(splash.classList.contains('hidden')) return;  // стоп только если сплеш реально скрыт (ушли со сцены)
+    if(t0===null) t0=now;
+    const el=now-t0, p=Math.min(100, el/LOAD_DUR*100);
+    loadFill.style.width=p+'%'; loadPct.textContent=Math.round(p)+'%';     // ПЛАВНО, без дискретных скачков
+    const idx=Math.min(LOAD_SEQ.length-1, Math.floor(el/STEP_MS));         // текущий текст по времени
+    if(idx!==shown){ shown=idx; loadCap.textContent=LOAD_SEQ[idx]; }
     if(p<100) requestAnimationFrame(frame);
-    else setTimeout(()=>{ if(id()==='splash') next(); }, 1000); // после титула → знакомство с героем
+    else finishLoading();
   }
   requestAnimationFrame(frame);
 }
-setTimeout(runLoading, 700);   // запуск после появления бара
+function finishLoading(){                  // 5 стадий прошли → убираем бар/процент, титул по центру; сплеш остаётся, ждём клик
+  if(splash.classList.contains('hidden') || loadDone) return;
+  loadDone=true;
+  loadFill.style.width='100%'; loadPct.textContent='100%';
+  splash.classList.add('loaded');          // плавно скрыть бар, процент, подпись
+  setTimeout(()=>{ if(id()==='splash') questTitle.classList.add('show'); }, 450);   // затем титул вырастает из центра
+}
+/* загрузка запускается по кнопке «Начать игру» (см. startGame) — авто-старта нет */
 </script>
 </body>
 </html>
