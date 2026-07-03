@@ -77,6 +77,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .mapname.boxed::after{color:var(--cyan)}
 /* название СПРАВА от октаэдра (для объектов у верхнего края — сверху не влезает) */
 .mapoct.labelright .mapname{bottom:auto;left:100%;top:50%;transform:translateY(-50%);margin:0 0 0 .5vw}
+.mapoct.labelleft  .mapname{bottom:auto;right:100%;left:auto;top:50%;transform:translateY(-50%);margin:0 .5vw 0 0}
 /* объект без октаэдра (герой): панель названия НАД точкой, привязка левым-нижним углом */
 .mapoct.nooct{width:auto;height:auto;min-width:0;min-height:0;transform:translate(0,-100%)}
 .mapoct.nooct .mapname{position:static;bottom:auto;left:auto;transform:none;margin:0}
@@ -1460,7 +1461,7 @@ const avRow=document.getElementById('avRow');
 const AVA=[
   {org:'МБМ',  name:'Путилин А. Р.', desc:'Нефинансовые услуги: план, консультации, обучение.', img:'assets/img/objects/avatar-putilin.png', out:'assets/img/objects/avatar-putilin-outline.png'},
   {org:'ФСК',  name:'Купринов А. Э.', desc:'Финансирование: поручительство, льготный кредит.', img:'assets/img/objects/avatar-kuprinov.png', out:'assets/img/objects/avatar-kuprinov-outline.png'},
-  {org:'ФПСП', name:'Фамилия И. О.', desc:'Социальное предпринимательство, инклюзия, акселерация.'},
+  {org:'ФПСП', name:'Кремнева Н. С.', desc:'Социальное предпринимательство, инклюзия, акселерация.', img:'assets/img/objects/avatar-kremneva.png', out:'assets/img/objects/avatar-kremneva-outline.png'},
   {org:'ШТАБ', name:'Байков С. Н.', desc:'Обязательные требования, обращения, защита.', img:'assets/img/objects/avatar-baikov.png', out:'assets/img/objects/avatar-baikov-outline.png'},
 ];
 const AV_IMG='assets/img/objects/avatar-deryugin.png';        // плейсхолдер для аватаров без своего фото
@@ -2067,12 +2068,12 @@ const OBJS=[
   {oids:['o-bank'],  mx:833,  my:280, name:'Банк',                  route:4},
   {oids:['o-tech'],  mx:984,  my:96,  name:'Технопарк',             route:5},
   {oids:['o-shop'],  mx:660,  my:128, name:'Магазин',               route:6},
-  {oids:['o-mall'],  mx:1086, my:175, name:'Торговый центр',        route:7},
+  {oids:['o-mall'],  mx:1200, my:175, name:'Торговый центр',        route:7},
   {oids:['o-gov'],   mx:1583, my:236, name:'Правительство Москвы',  route:8},
   {oids:['o-clust'], mx:1248, my:352, name:'Фитнес-клуб',           route:9},
   {oids:['o-park'],               mx:1757, my:394, name:'Креативный кластер',    route:null},
   {oids:['o-cowork'],             mx:640,  my:358, name:'Кафе',                  route:null},
-  {oids:['o-start'],              mx:384,  my:25,  name:'Инновационный кластер', route:null, labelR:true, shortConn:true},
+  {oids:['o-start'],              mx:365,  my:40,  name:'Инновационный кластер', route:null, labelL:true, shortConn:true},
   {oids:['o-incub'],              mx:303,  my:189, name:'Мастерская',            route:null},
   /* герой: только название НАД героем (точка из SVG-маркера 141/407) — без октаэдра и без подсветки контура.
      stars: ряд звёзд над названием. filled — закрашено сейчас (растёт по ходу презентации); total — всего слотов */
@@ -2104,7 +2105,7 @@ const NAME_STYLE=2;
 const NAME_CLS='mapname'+(NAME_STYLE===2?' boxed':'');
 /* строим октаэдр + подпись для каждого объекта (HTML над сценой) */
 OBJS.forEach(o=>{
-  const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'')+(o.labelR?' labelright':'');
+  const el=document.createElement('div'); el.className='mapoct'+(o.nooct?' nooct':'')+(o.labelR?' labelright':'')+(o.labelL?' labelleft':'');
   el.style.left=(o.mx/2172*100)+'%'; el.style.top=(o.my/724*100)+'%';
   const cy = o.shortConn ? 38 : 50;                          // короткий коннектор — точка привязки ближе к октаэдру
   const oct = o.nooct ? '' :                                  // герой — без октаэдра, только название
