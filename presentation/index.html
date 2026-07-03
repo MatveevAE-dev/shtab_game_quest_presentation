@@ -436,7 +436,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* вырез героя (тугой кроп) поверх фона; позиция подгоняется под героя фона переменными --hx/--hy/--hh */
 .hero-outline{position:absolute;--hx:41.85%;--hy:6%;--hh:95.1%;
   left:var(--hx);top:var(--hy);height:var(--hh);width:auto;
-  z-index:2;pointer-events:none;opacity:0.1;transition:opacity .5s ease}
+  z-index:2;pointer-events:none;opacity:0;transition:opacity .5s ease}
 /* появление контура: виден по команде .show */
 .hero-outline.show{opacity:1}
 /* РАЗОВАЯ прорисовка по контуру сверху→вниз (яркая), затем — обычный пульс */
@@ -444,11 +444,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 @keyframes heroDraw{
   0%{clip-path:inset(0 0 100% 0);filter:drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 16px var(--neon)) brightness(1.7)}
   100%{clip-path:inset(0 0 0 0);filter:drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 16px var(--neon)) brightness(1.7)}}
-/* пульс как у границы объектов (слайд 4): цвет --neon, opacity .55→1 + свечение 3/7px */
-.hero-outline.glow{animation:heroGlow 1.6s ease-in-out infinite}
+/* пульс: ПИК = финал прорисовки (яркий, 8/16px, brightness 1.7); стартуем сразу с пика (delay -0.8s) → без скачка */
+.hero-outline.glow{animation:heroGlow 1.6s ease-in-out infinite;animation-delay:-.8s}
 @keyframes heroGlow{
-  0%,100%{opacity:.55;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 7px var(--neon))}
-  50%{opacity:1;filter:drop-shadow(0 0 4px var(--neon)) drop-shadow(0 0 10px var(--neon))}}
+  0%,100%{opacity:.55;filter:drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 7px var(--neon)) brightness(1)}
+  50%{opacity:1;filter:drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 16px var(--neon)) brightness(1.7)}}
 /* выноска: линия от точки на герое к панели имени + пульсирующая точка */
 .hlead{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:2;
   opacity:0;transition:opacity .5s ease}
@@ -1388,15 +1388,17 @@ function heroReveal(){
       heroOutline.classList.add('show','draw');
       heroTimers.push(setTimeout(()=>{ if(!alive())return;
         heroOutline.classList.remove('draw'); heroOutline.classList.add('glow'); }, 3000));
-      // 2) вопросы «пишутся от руки» по очереди (слева направо)
-      let qi=0;
-      (function nextQ(){
-        if(!alive() || qi>=heroQEls.length) return;
-        const txt=HERO_QUESTIONS[qi].t;
-        handWrite(heroQEls[qi], txt, alive, heroTimers);     // рукописный вывод
-        qi++;
-        heroTimers.push(setTimeout(nextQ, txt.length*60+1000)); // следующий — после написания + пауза
-      })();
+      // 2) вопросы стартуют ПОСЛЕ прорисовки контура (3000) + небольшая задержка
+      heroTimers.push(setTimeout(()=>{ if(!alive())return;
+        let qi=0;
+        (function nextQ(){
+          if(!alive() || qi>=heroQEls.length) return;
+          const txt=HERO_QUESTIONS[qi].t;
+          handWrite(heroQEls[qi], txt, alive, heroTimers);   // рукописный вывод
+          qi++;
+          heroTimers.push(setTimeout(nextQ, txt.length*60+1000)); // следующий — после написания + пауза
+        })();
+      }, 3000+500));                                          // конец прорисовки + задержка 0.5с
     });
   }, 3400));                                                // старт после раскрытия
 }
