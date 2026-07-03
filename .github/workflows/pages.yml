@@ -1,0 +1,46 @@
+name: Deploy presentation to Pages
+
+# Публикуем ТОЛЬКО папку presentation/ (лёгкий артефакт ~42 МБ вместо 251 МБ всего репо).
+# URL сохраняется: .../shtab_game_quest_presentation/presentation/
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'presentation/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Собрать сайт (только presentation/ под /presentation/)
+        run: |
+          mkdir -p _site/presentation
+          cp -r presentation/. _site/presentation/
+          touch _site/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
