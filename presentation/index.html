@@ -29,7 +29,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   overflow:hidden;                                 /* не выпускать подписи/октаэдры на чёрные поля вокруг сцены */
   width:100vw; height:calc(100vw*724/2172);
   max-height:100vh; max-width:calc(100vh*2172/724);
-  background:#cfe6dd url("assets/img/bg/map.png") center/cover no-repeat;
+  background:#cfe6dd url("assets/img/bg/Карта Москвы без героя.png") center/cover no-repeat;
   /* контейнер: текст подведа меряется в cqw (% ширины СЦЕНЫ), а не vw (окна) */
   container-type:size; container-name:stage;
 }
@@ -69,8 +69,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .mapname::after{content:"▌";color:var(--neon);margin-left:1px;animation:qcaret .7s step-end infinite}
 .mapname.typed::after{content:""}
 @keyframes qcaret{50%{opacity:0}}
-/* СТИЛЬ 2 названия: как тултип объекта из main (.tip b) — Orbitron 14px, белый, uppercase, циан-короб */
-.mapname.boxed{font-family:var(--title-font);font-size:14px;font-weight:700;color:#fff;
+/* СТИЛЬ 2 названия: Orbitron, белый, uppercase, циан-короб; кегль как реплика героя (.hero-say = 1.9cqh) */
+.mapname.boxed{font-family:var(--title-font);font-size:1.9cqh;font-weight:700;color:#fff;
   text-transform:uppercase;letter-spacing:1px;
   background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);border-radius:4px;
   padding:7px 12px;text-shadow:none;box-shadow:0 0 24px rgba(63,208,255,.25)}
@@ -91,6 +91,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .herobox .htext{display:block;white-space:normal;text-align:left;width:min-content;line-height:1.15}
 .herobox .htext::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
 .herobox .htext.typed::after{content:""}
+/* контур короба имени героя — чёткая циан-рамка + свечение (читается и на светлом фоне) */
+.mapname.boxed.herobox{border:2px solid var(--cyan);box-shadow:0 0 10px rgba(63,208,255,.55),0 0 26px rgba(63,208,255,.30)}
 
 /* маршруты: прозрачность задаём ГРУППЕ, иначе общие участки горят ярче */
 .route{fill:none;stroke:var(--neon);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
@@ -100,6 +102,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* узлы — появляются ТОЛЬКО когда есть маршруты (.routes-on), не раньше */
 .node{fill:var(--neon);stroke:#fff;stroke-width:2;opacity:0;transition:.35s}
 .stage.routes-on .node{opacity:.45}
+.node.start{display:none}      /* стартовую точку не показываем */
 /* стартовая точка — обычный неактивный узел (без постоянной подсветки) */
 .node.active{opacity:1;filter:drop-shadow(0 0 12px var(--neon))}
 /* финиши маршрутов не показываем — маркер объекта = октаэдр */
@@ -149,6 +152,38 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .stage.dark    .darkness{--r:8%;transition:none}     /* мгновенный тёмный старт — виден только предприниматель */
 .stage.reveal  .darkness{--r:175%}   /* карта раскрывается анимированно */
 .stage.open    .darkness{--r:175%;transition:none}  /* дальше держим раскрытой */
+
+/* ── ГЕРОЙ НА КРЫШЕ (сцена Карта): появление как у аватара — искра → фото из размытия в фокус → контур-скан сверху→вниз (остаётся) ── */
+.roofhero,.roofglow{position:absolute;left:3.5%;bottom:2%;height:38%;width:auto;
+  pointer-events:none;opacity:0}
+.roofhero{z-index:3}                 /* базовое фото героя */
+.roofglow{z-index:4;filter:drop-shadow(0 0 1.5px var(--neon)) drop-shadow(0 0 4px var(--neon))}  /* слой-контур поверх фото */
+.roofhero.show,.roofglow.show{opacity:1}
+/* ИСКРЫ: россыпь точек, сходящихся к центру героя (логика аватара avSparks) */
+.roofsparks{position:absolute;z-index:5;left:3.5%;bottom:2%;height:38%;aspect-ratio:127/291;pointer-events:none}
+.roofspark{position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 14px var(--neon);opacity:0;pointer-events:none}
+.roofsparks.play .roofspark{animation:roofSpark .7s ease-out forwards}
+@keyframes roofSpark{
+  0%{opacity:0;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(.3)}
+  30%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(0,0) scale(1)}}
+/* ФОТО: проявление из размытия и лёгкого зума в фокус (логика аватара avFace) */
+.roofhero.reveal{animation:roofFace 2.2s ease .7s both}
+@keyframes roofFace{
+  0%{opacity:0;filter:blur(16px) saturate(.8);transform:scale(1.04)}
+  100%{opacity:1;filter:blur(0) saturate(1);transform:scale(1)}}
+/* КОНТУР: неон-линия по силуэту (как у аватара) — один раз пробегает сверху→вниз (скан), затем — остаётся */
+.roofglow{filter:drop-shadow(0 0 1px var(--neon))}
+.roofglow.draw{animation:roofDraw 2.95s ease 2.9s both}
+@keyframes roofDraw{
+  0%{opacity:1;clip-path:inset(0 0 100% 0);filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 2px var(--neon))}
+  100%{opacity:1;clip-path:inset(0 0 0 0);filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 2px var(--neon))}}
+/* остаётся жить мягким пульсом свечения */
+.roofglow.glow{animation:roofGlow 1.6s ease-in-out infinite;animation-delay:-.8s}
+@keyframes roofGlow{
+  0%,100%{filter:drop-shadow(0 0 .5px var(--neon))}
+  50%{filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 3px var(--neon))}}
 
 /* ── затемнение подведов: РАДИАЛЬНОЕ (вдох-выдох от предпринимателя 7%/70%) ──
    градиент .03 → .7 (темнее справа), круг-маска растёт/схлопывается через --vr */
@@ -479,6 +514,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   font-size:6.8cqh;line-height:1.25;text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 18px rgba(0,0,0,.65);
   opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease}
 .hthink.show{opacity:1;transform:none}
+/* СТИЛЬ «мысли героя — комикс-облако» (hero2): БЕЛОЕ облако, тёмный рукописный текст, хвост-пузырьки */
+.hcloud{position:absolute;z-index:16;max-width:30%;text-align:center;
+  background:#fff;color:#0b1730;
+  font-family:"Segoe Script","Marck Script","Comic Sans MS",cursive;font-weight:700;
+  font-size:4cqh;line-height:1.2;padding:2.8cqh 3.4cqh;
+  border-radius:50%/46%;                                               /* эллипс-облако */
+  box-shadow:0 6px 22px rgba(0,0,0,.35);
+  opacity:0;transition:opacity .45s ease}                     /* размер сразу по полному тексту, только проявление */
+.hcloud.show{opacity:1}
+/* пузырьки-хвост (уменьшаются вниз); направление — к герою */
+.hcloud::before,.hcloud::after{content:"";position:absolute;border-radius:50%;background:#fff}
+.hcloud::before{width:1.9cqh;height:1.9cqh;bottom:-12%;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.hcloud::after{width:1.1cqh;height:1.1cqh;bottom:-24%;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+/* символы облака: присутствуют сразу (фикс. размер), проявляются по очереди чернилами */
+.hc-ch{opacity:0}
+.hc-ch.on{animation:hwink .3s ease forwards}
+/* облако СЛЕВА от героя → хвост СПРАВА (к герою) */
+.hcloud.left::before{right:20%}
+.hcloud.left::after{right:12%}
+/* облако СПРАВА от героя → хвост СЛЕВА (к герою) */
+.hcloud.right::before{left:20%}
+.hcloud.right::after{left:12%}
 /* каждая буква «вытекает» чернилами (проступает из размытия) */
 .hw-ch{opacity:0;animation:hwink .3s ease forwards}
 @keyframes hwink{from{opacity:0;filter:blur(2px)}to{opacity:1;filter:none}}
@@ -493,7 +550,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .cover{position:absolute;inset:0;z-index:40;background:#050b18;opacity:1;transition:opacity .8s ease}
 .cover.gone{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility 0s linear .8s}
 .cover-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
-  width:100vw;height:calc(100vw*9/16);max-height:100vh;max-width:calc(100vh*16/9);
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
   background:#050b18 url("assets/img/bg/cover.png") center/cover no-repeat;container-type:size;container-name:cstage}
 /* импульс: ядро + расходящиеся кольца (центр вспышки на листе) */
 .cimp{position:absolute;left:74.5%;top:56.5%;transform:translate(-50%,-50%);pointer-events:none}
@@ -564,6 +621,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   animation:cHintBlink 1.8s ease-in-out infinite}
 @keyframes cHintBlink{0%,100%{opacity:.4}50%{opacity:.9}}
 
+/* ── ПРОМЕЖУТОЧНЫЙ ТИТУЛ (canvas): волновое поле + импульс, СВЕРХШИРОКИЙ 2172×724 ── */
+.ccanvas{position:absolute;inset:0;z-index:45;background:#02050e;opacity:1;transition:opacity .8s ease}
+.ccanvas.gone{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .8s ease,visibility 0s linear .8s}
+/* бокс-сцена в ЕДИНОМ формате презентации (как .stage) */
+.ccanvas-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  background:#02050e url("assets/img/bg/cover.png") center/cover no-repeat;container-type:size}
+.ccanvas-stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.cc-hint{position:absolute;left:50%;bottom:4.5%;transform:translateX(-50%);z-index:4;
+  font-family:var(--hauss);font-size:1.6cqh;color:rgba(220,235,255,.65);letter-spacing:.05em;
+  animation:cHintBlink 1.8s ease-in-out infinite}
+
 /* ── ПРАВИЛА ИГРЫ: 3 слайда на фоне города, смена по клику БЕЗ анимаций ── */
 .rules{position:absolute;inset:0;z-index:15;display:none;background:#04070c}
 .rules.show{display:block}
@@ -604,6 +673,76 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
   mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
   transition:--r 1.6s cubic-bezier(.4,.1,.2,1)}
+
+/* ════════ ПОМОЩНИКИ / АВАТАРЫ (4 октаэдра на фоне карты) ════════ */
+.avatars{position:absolute;inset:0;z-index:15;display:none;background:#04070c}
+.avatars.show{display:block}
+.av-stage{position:absolute;inset:0;margin:auto;overflow:hidden;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  /* карта + затемнение как на слайде 3 (ровное — 4 аватара по центру) */
+  background:linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.6)),
+             url("assets/img/bg/Карта Москвы без героя.png") center/cover;
+  container-type:size;container-name:avstage}
+.av-row{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4cqw;padding:0 3cqw}
+.av-cell{display:flex;flex-direction:column;align-items:center;gap:1.6cqh;width:15.4cqw}
+/* октаэдр (гекс) + картинка внутри (90%) + контур */
+.avatar{position:relative;width:100%;aspect-ratio:.92;
+  --hex:polygon(50% 1%, 99% 26%, 99% 74%, 50% 99%, 1% 74%, 1% 26%)}
+.ava-bg{position:absolute;inset:0;clip-path:var(--hex);
+  background:radial-gradient(120% 120% at 50% 25%, rgba(20,50,70,.55), rgba(6,16,26,.92));opacity:0}
+.ava-frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.ava-frame polygon{fill:none;stroke:var(--neon);stroke-width:2.2;
+  filter:drop-shadow(0 0 4px var(--neon)) drop-shadow(0 0 9px var(--neon));stroke-linejoin:round;opacity:0}
+.ava-fig{position:absolute;inset:0;z-index:2}
+/* бокс картинки/контура: меньше (11% поля → 78%), чтобы голова влезала в октаэдр у всех */
+.ava-img,.ava-outclip{position:absolute;inset:11%;width:78%;height:78%;pointer-events:none;clip-path:var(--hex)}
+.ava-img{object-fit:contain;object-position:50% 50%;
+  opacity:0;filter:blur(16px) saturate(.8);transform:scale(1.04);z-index:2}
+/* обёртка контура держит ГЕКС-клип всегда; сам контур внутри «рисуется» сверху вниз (clip-path:inset) */
+.ava-outclip{z-index:3;overflow:hidden}
+.ava-outline{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 50%;opacity:0}
+.ava-spark{position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 14px var(--neon);opacity:0;pointer-events:none}
+/* фазы появления одного аватара */
+.avatar.play .ava-spark{animation:avSpark .7s ease-out forwards}
+@keyframes avSpark{0%{opacity:0;transform:translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(.3)}
+  30%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) translate(0,0) scale(1)}}
+.avatar.play .ava-bg{animation:avFade .5s ease .5s forwards}
+.avatar.play .ava-frame polygon{animation:avFade .5s ease .5s forwards}
+@keyframes avFade{to{opacity:1}}
+.avatar.play .ava-img{animation:avFace 2.2s ease .6s forwards}
+@keyframes avFace{0%{opacity:0;filter:blur(16px) saturate(.8);transform:scale(1.04)}
+  100%{opacity:1;filter:blur(0) saturate(1);transform:scale(1)}}
+.avatar.play .ava-outline{animation:avaDraw 2.95s ease 2.9s forwards}
+@keyframes avaDraw{0%{opacity:1;clip-path:inset(0 0 100% 0)}
+  76%,82%{opacity:1;clip-path:inset(0 0 0 0)}
+  100%{opacity:0;clip-path:inset(0 0 0 0)}}
+.avatar.live .ava-fig{animation:avBoomer 2.13s ease-in-out infinite alternate}
+@keyframes avBoomer{from{transform:scale(1) translateY(0)}to{transform:scale(1.03) translateY(-4px)}}
+.avatar.live .ava-frame polygon{animation:avFrameGlow 2.4s ease-in-out infinite}
+@keyframes avFrameGlow{0%,100%{opacity:.7}50%{opacity:1}}
+/* подпись */
+.ava-card{display:flex;flex-direction:column;align-items:center;gap:.6cqh;text-align:center;width:100%}
+.ava-top{margin-bottom:1cqh}
+.ava-bottom{margin-top:1cqh}
+.ava-org,.ava-name,.ava-desc{opacity:0}
+.ava-org{font-family:var(--title-font);font-weight:700;color:var(--cyan);
+  font-size:1.15cqw;letter-spacing:.05em;text-transform:uppercase}
+.ava-name{font-family:var(--title-font);font-weight:700;color:#fff;font-size:1.15cqw;
+  text-transform:uppercase;letter-spacing:.04em;
+  padding:.35cqw .8cqw;border:1px solid var(--cyan-soft);border-radius:.3cqw;
+  background:rgba(8,16,30,.95);box-shadow:0 0 18px rgba(63,208,255,.25)}
+.ava-desc{font-family:var(--hauss);font-weight:600;color:#fff;font-size:1.15cqw;line-height:1.35;max-width:100%}
+.av-caret{color:var(--cyan);margin-left:1px;animation:avBlink .7s step-end infinite}
+@keyframes avBlink{50%{opacity:0}}
+/* кнопка «Начать бизнес» (стиль .cbtn), внизу сцены; появляется после всех аватаров */
+.av-cta{bottom:1.5%;z-index:20}
+/* ШАБЛОННАЯ вуаль перехода (как .hveil/.rules-veil): сворачивание с фокусом в точку --fx/--fy */
+.av-veil{position:absolute;inset:0;z-index:25;background:#04070c;pointer-events:none;
+  --r:175%;--fx:50%;--fy:55%;
+  -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r 1s cubic-bezier(.4,.1,.2,1)}
 
 /* подсказка/навигация */
 .hint{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);z-index:30;
@@ -673,6 +812,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
     <g id="impact"></g>
     <image id="troika" href="assets/img/objects/troika.png" x="918" y="540" width="240" height="145" preserveAspectRatio="xMidYMid meet"/>
   </svg>
+
+  <!-- герой на крыше (сцена Карта): искра → фото из размытия → слой-контур (скан сверху→вниз, остаётся) -->
+  <div class="roofsparks" id="roofSparks"></div>
+  <img class="roofhero" id="roofHero" src="assets/img/objects/hero on roof.png" alt="">
+  <img class="roofglow" id="roofGlow" src="assets/img/objects/hero-roof-outline.png" alt="">
 
   <!-- тьма для радиального проявления -->
   <div class="darkness"></div>
@@ -781,16 +925,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 </div>
 
 <!-- ════════ ТИТУЛЬНЫЙ СЛАЙД (обложка мероприятия, лист 1 PDF) ════════ -->
-<div class="cover" id="cover">
-  <div class="cover-stage">
-    <div class="cimp">
-      <span class="core"></span>
-      <span class="ring"></span>
-      <span class="ring" style="animation-delay:2.3s,0s"></span>
-      <span class="ring" style="animation-delay:4.6s,0s"></span>
-    </div>
-    <div class="cover-hint" id="coverHint">нажмите, чтобы продолжить</div>
-    <button class="cbtn" id="coverBtn"><span class="cbtn-txt">Начать</span></button>
+<!-- ════════ ПРОМЕЖУТОЧНЫЙ ТИТУЛЬНЫЙ СЛАЙД (canvas: волны + частицы, сверхширокий 2172×724) ════════ -->
+<div class="ccanvas" id="ccanvas">
+  <div class="ccanvas-stage">
+    <canvas id="waveCanvas"></canvas>
+    <button class="cbtn" id="ccBtn"><span class="cbtn-txt">Начать</span></button>
+    <div class="cc-hint" id="ccHint">нажмите, чтобы продолжить</div>
   </div>
 </div>
 
@@ -881,6 +1021,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   </div>
 </div>
 
+<!-- ════════ ПОМОЩНИКИ / ПРОВОДНИКИ (4 аватара) ════════ -->
+<div class="avatars" id="avatars">
+  <div class="av-stage"><div class="av-row" id="avRow"></div>
+    <button class="cbtn av-cta" id="avCta"><span class="cbtn-txt">Начать бизнес</span></button>
+    <!-- шаблонная вуаль перехода: сворачивание с фокусом в точку (--fx/--fy) -->
+    <div class="av-veil" id="avVeil"></div>
+  </div>
+</div>
+
 <div class="hint" id="hint"></div>
 
 <script>
@@ -888,6 +1037,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 const stage  = document.querySelector('.stage');
 const splash = document.getElementById('splash');
 const heroIntro = document.getElementById('heroIntro');
+const roofHero = document.getElementById('roofHero');
+const roofGlow = document.getElementById('roofGlow');
+const roofSparks = document.getElementById('roofSparks');
+let roofDrawTimer=null;
+/* россыпь искр, сходящихся к центру героя (как avSparks у аватара) */
+function buildRoofSparks(n){
+  roofSparks.innerHTML='';
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div'); s.className='roofspark';
+    const ang=(i/n)*Math.PI*2, r=70+((i*37)%45);
+    s.style.setProperty('--dx',(Math.cos(ang)*r).toFixed(0)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*r).toFixed(0)+'px');
+    s.style.animationDelay=(i%6)*30+'ms';
+    roofSparks.appendChild(s);
+  }
+}
+/* герой на крыше: появление как у аватара — искры к центру (0.7с) → фото из размытия в фокус → контур-скан сверху→вниз (остаётся + пульс) */
+function playRoofHero(){
+  clearTimeout(roofDrawTimer);
+  roofSparks.classList.remove('play'); roofHero.classList.remove('reveal'); roofGlow.classList.remove('draw','glow');
+  buildRoofSparks(16);
+  void roofHero.offsetWidth; void roofGlow.offsetWidth; void roofSparks.offsetWidth;   // reflow — рестарт анимаций
+  roofSparks.classList.add('play');                            // 1) искры сходятся к центру (0.7с)
+  roofHero.classList.add('show','reveal');                     // 2) фото проявляется из размытия (старт .7с)
+  roofGlow.classList.add('show','draw');                       // 3) контур ждёт (2.9с) → скан сверху→вниз
+  roofDrawTimer=setTimeout(()=>{ roofGlow.classList.add('glow'); }, 5850);  // после скана — остаётся с пульсом
+}
 const rules  = document.getElementById('rules');
 const rSlides= [...rules.querySelectorAll('.rslide')];
 const rulesVeil=document.getElementById('rulesVeil');
@@ -943,9 +1119,10 @@ const dots=[...deckDots.children];
 const SCENES=[
   {id:'splash',   label:'Заставка'},
   {id:'hero',     label:'Знакомство с героем'},
+  {id:'hero2',    label:'Знакомство с героем (копия)'},
   {id:'rules',    label:'Правила игры (3 слайда)'},
+  {id:'avatars',  label:'Помощники — 4 аватара'},
   {id:'map',      label:'Сцена 3 — карта: объекты + маршруты → разведка → Правительство'},
-  {id:'deck',     label:'Сцена 4 — вводная презентация'},
   {id:'binoc',    label:'Сцена 5 — разведка → выбор кафе'},
   {id:'overview', label:'Обзор подведов'},
   {id:'mbm1',     label:'МБМ — миссия'},
@@ -1191,7 +1368,7 @@ let mapStep=0;      // шаг внутри слайда «Карта» (0..2) �
 const MAP_STEPS=3;  // 0 тёмный старт · 1 раскрытие карты · 2 маршруты+объекты
 const MAP_LABELS=['тёмный старт','карта раскрывается','маршруты и объекты'];
 /* пауза ПЕРЕД переходом к следующему шагу (мс), для шагов 0..1; шаг 2 финальный */
-const MAP_HOLD=[600, 4400];   /* шаг «раскрытие» держим дольше, чтобы медленная анимация доиграла */
+const MAP_HOLD=[6000, 4400];  /* шаг 0 держим до конца захода героя (фото из размытия + контур-скан ~5.85с), затем раскрытие карты */
 let mapTimer=null;
 function clearMapTimer(){ if(mapTimer){ clearTimeout(mapTimer); mapTimer=null; } }
 /* авто-проигрыш шагов Карты от заданного шага */
@@ -1222,9 +1399,15 @@ function applyScene(){
   stage.className='stage scene-'+sid;
   // слайд «Карта» — 5 авто-шагов
   if(sid==='map'){
-    if(mapStep===0){ stage.classList.add('dark'); }                 // виден только предприниматель
+    if(mapStep===0){ stage.classList.add('dark'); playRoofHero(); } // виден только предприниматель + прорисовка контура
     else if(mapStep===1){ stage.classList.add('reveal'); }          // анимированное раскрытие
     else { stage.classList.add('open','routes-on'); }               // карта раскрыта + маршруты/объекты
+    roofHero.classList.add('show'); roofGlow.classList.add('show');
+    if(mapStep!==0 && !roofGlow.classList.contains('glow')) roofGlow.classList.add('glow');
+  } else {
+    clearTimeout(roofDrawTimer);
+    roofSparks.classList.remove('play');
+    roofHero.classList.remove('show','reveal'); roofGlow.classList.remove('show','draw','glow');
   }
   // подвед: карточка (фон+затемнение+текст) сама перекрывает карту — доп. классы не нужны
 
@@ -1233,9 +1416,9 @@ function applyScene(){
 
   // сплеш
   splash.classList.toggle('hidden', sid!=='splash');
-  // знакомство с героем
-  heroIntro.classList.toggle('show', sid==='hero');
-  if(sid==='hero') heroReveal(); else resetHeroText();
+  // знакомство с героем (hero и его копия hero2 — одна механика)
+  heroIntro.classList.toggle('show', sid==='hero'||sid==='hero2');
+  if(sid==='hero'||sid==='hero2') heroReveal(); else resetHeroText();
   // правила игры (3 слайда)
   rules.classList.toggle('show', sid==='rules');
   if(sid==='rules'){ showRules(); }
@@ -1243,6 +1426,9 @@ function applyScene(){
   // дека
   deck.classList.toggle('show', sid==='deck');
   if(sid==='deck'){ showDeck(); }
+  // помощники / аватары
+  avatars.classList.toggle('show', sid==='avatars');
+  if(sid==='avatars'){ avEnter(); } else { avReset(); }
 
   // карточки подведов: показать активную, сбросить остальные
   document.querySelectorAll('.podcard').forEach(c=>{ c.classList.remove('active','sl-r','sl-l'); c.style.zIndex=''; c.style.opacity=''; c.style.removeProperty('--cr'); });
@@ -1266,6 +1452,123 @@ function showDeck(){
   deckImgs.forEach((im,i)=>im.classList.toggle('cur',i===deckSub));
   dots.forEach((d,i)=>d.classList.toggle('on',i===deckSub));
 }
+
+/* ===================== ПОМОЩНИКИ / АВАТАРЫ (сцена 'avatars') ===================== */
+const avatars=document.getElementById('avatars');
+const avRow=document.getElementById('avRow');
+/* 4 помощника (пока фото Дерюгина — плейсхолдер для всех; тексты дадут позже) */
+const AVA=[
+  {org:'МБМ',  name:'Путилин А. Р.', desc:'Нефинансовые услуги: план, консультации, обучение.', img:'assets/img/objects/avatar-putilin.png', out:'assets/img/objects/avatar-putilin-outline.png'},
+  {org:'ФСК',  name:'Купринов А. Э.', desc:'Финансирование: поручительство, льготный кредит.', img:'assets/img/objects/avatar-kuprinov.png', out:'assets/img/objects/avatar-kuprinov-outline.png'},
+  {org:'ФПСП', name:'Фамилия И. О.', desc:'Социальное предпринимательство, инклюзия, акселерация.'},
+  {org:'ШТАБ', name:'Байков С. Н.', desc:'Обязательные требования, обращения, защита.', img:'assets/img/objects/avatar-baikov.png', out:'assets/img/objects/avatar-baikov-outline.png'},
+];
+const AV_IMG='assets/img/objects/avatar-deryugin.png';        // плейсхолдер для аватаров без своего фото
+const AV_OUT='assets/img/objects/avatar-deryugin-outline.png';
+AVA.forEach(a=>{
+  const cell=document.createElement('div'); cell.className='av-cell';
+  cell.innerHTML=
+    '<div class="ava-card ava-top"><div class="ava-name">'+a.name+'</div></div>'+
+    '<div class="avatar">'+
+      '<div class="ava-bg"></div>'+
+      '<div class="ava-fig">'+
+        '<img class="ava-img" src="'+(a.img||AV_IMG)+'" alt="'+a.name+'">'+
+        '<div class="ava-outclip"><img class="ava-outline" src="'+(a.out||AV_OUT)+'" alt=""></div>'+
+      '</div>'+
+      '<svg class="ava-frame" viewBox="0 0 100 100" preserveAspectRatio="none">'+
+        '<polygon points="50,1 99,26 99,74 50,99 1,74 1,26"/></svg>'+
+    '</div>'+
+    '<div class="ava-card ava-bottom"><div class="ava-org">'+a.org+'</div>'+
+      '<div class="ava-desc">'+a.desc+'</div></div>';
+  avRow.appendChild(cell);
+});
+const avCells=[...avRow.querySelectorAll('.av-cell')];
+avCells.forEach(cell=>{
+  cell.__els=[...cell.querySelectorAll('.ava-org,.ava-name,.ava-desc')];
+  cell.__els.forEach(el=>el.dataset.full=el.textContent);
+});
+let avTimers=[], avShown=0, avHeightsSet=false;
+/* выровнять высоту подписей по МАКСИМУМУ (верх и низ отдельно) → все ячейки одной высоты,
+   октаэдры на одном уровне; заодно октаэдр не прыгает при печати */
+function avReserveHeights(){
+  if(avHeightsSet) return;
+  const tops=avCells.map(c=>c.querySelector('.ava-top'));
+  const bots=avCells.map(c=>c.querySelector('.ava-bottom'));
+  const maxTop=Math.max(...tops.map(e=>e.offsetHeight));
+  const maxBot=Math.max(...bots.map(e=>e.offsetHeight));
+  tops.forEach(e=>e.style.minHeight=maxTop+'px');
+  bots.forEach(e=>e.style.minHeight=maxBot+'px');
+  avHeightsSet=true;
+}
+function avSparks(av,n){
+  av.querySelectorAll('.ava-spark').forEach(s=>s.remove());
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div'); s.className='ava-spark';
+    const ang=(i/n)*Math.PI*2, r=90+((i*37)%50);
+    s.style.setProperty('--dx',(Math.cos(ang)*r).toFixed(0)+'px');
+    s.style.setProperty('--dy',(Math.sin(ang)*r).toFixed(0)+'px');
+    s.style.animationDelay=(i%6)*30+'ms';
+    av.appendChild(s);
+  }
+}
+function avTypeBlock(el, speed, done){
+  el.style.opacity='1';
+  el.innerHTML='<span class="av-txt"></span><span class="av-caret">▌</span>';
+  const t=el.querySelector('.av-txt'), caret=el.querySelector('.av-caret');
+  const full=el.dataset.full; let i=0;
+  (function ch(){
+    t.textContent=full.slice(0,i++);
+    if(i<=full.length) avTimers.push(setTimeout(ch, speed));
+    else { caret.remove(); done&&done(); }
+  })();
+}
+const AV_PAUSE=600;
+/* печать подписи: ФИО → подразделение → описание (порядок DOM: name, org, desc) */
+function avTypeCard(cell){
+  const e=cell.__els;
+  avTypeBlock(e[0], 42, ()=>
+    avTimers.push(setTimeout(()=> avTypeBlock(e[1], 52, ()=>
+      avTimers.push(setTimeout(()=> avTypeBlock(e[2], 24), AV_PAUSE))
+    ), AV_PAUSE)));
+}
+/* показать ОДИН аватар: искры → рамка → картинка → скан контура → печать подписи */
+function avReveal(cell){
+  const av=cell.querySelector('.avatar');
+  av.classList.remove('play','live');
+  cell.__els.forEach(el=>{ el.style.opacity='0'; el.textContent=el.dataset.full; });
+  avSparks(av,16); void av.offsetWidth;
+  av.classList.add('play');
+  avTimers.push(setTimeout(()=>av.classList.add('live'), 2900));
+  avTimers.push(setTimeout(()=>avTypeCard(cell), 5900));
+}
+const avCta=document.getElementById('avCta');
+const avVeil=document.getElementById('avVeil');
+const AV_FOCUS={fx:'50%',fy:'55%'};                          // точка фокуса сворачивания (подстрой при необходимости)
+let avCollapsing=false;
+function avNext(){ if(avShown<avCells.length) avReveal(avCells[avShown++]); }
+function avReset(){
+  avTimers.splice(0).forEach(clearTimeout); avShown=0; avCollapsing=false;
+  avCta.classList.remove('show');
+  avVeil.style.transition='none'; avVeil.style.setProperty('--r','175%');   // вуаль открыта (сцена видна)
+  void avVeil.offsetWidth; avVeil.style.transition='';
+  avCells.forEach(cell=>{
+    cell.querySelector('.avatar').classList.remove('play','live');
+    cell.__els.forEach(el=>{ el.style.opacity='0'; el.textContent=el.dataset.full; });
+  });
+}
+/* сворачивание сцены помощников (шаблонная вуаль с фокусом) → следующий слайд */
+function avCollapse(){
+  if(avCollapsing) return; avCollapsing=true;
+  avCta.classList.remove('show');
+  avVeil.style.setProperty('--fx',AV_FOCUS.fx); avVeil.style.setProperty('--fy',AV_FOCUS.fy);
+  avVeil.style.setProperty('--r','0%');                       // свернуть в точку-фокус
+  setTimeout(()=>{ avCollapsing=false;
+    if(cur<SCENES.length-1){ cur++; if(id()==='map') startMapAuto(0); else applyScene(); }
+  }, 1000);
+}
+avCta.addEventListener('click', e=>{ e.stopPropagation(); avCollapse(); });
+/* войти в сцену: сброс → зарезервировать высоту → показать первого */
+function avEnter(){ avReset(); avReserveHeights(); avNext(); }
 
 /* === навигация === */
 const isPod=sid=>sid in POD;
@@ -1318,18 +1621,28 @@ const heroOutline=document.getElementById('heroOutline');
 /* Вопросы, которые мучают предпринимателя (ВРЕМЕННЫЕ — финальные тексты дадут завтра).
    Порядок показа — слева направо (по возрастанию left). x/y — позиция на картинке (в %). */
 const HERO_QUESTIONS=[
-  {t:'С чего вообще\nначать?',           x:2,  y:40},
-  {t:'Где взять деньги\nна старт?',       x:3,  y:8},
-  {t:'Как выбрать нишу?',                x:4,  y:70},
+  {t:'С чего вообще\nначать?',           x:10, y:40},
+  {t:'Где взять деньги\nна старт?',       x:11, y:8},
+  {t:'Как выбрать нишу?',                x:12, y:70},
   {t:'А вдруг ничего\nне получится?',     x:63, y:8},
   {t:'Какие нужны\nдокументы?',           x:70, y:42},
   {t:'Кто вообще мне\nпоможет?',          x:63, y:72}
 ];
-/* отрисовать пустые короба-«речь» (позиции), текст печатается по очереди в heroReveal */
-heroQs.innerHTML=HERO_QUESTIONS
-  .map((q,i)=>'<div class="hthink" data-qi="'+i+'" style="left:'+q.x+'%;top:'+q.y+'%"></div>')
-  .join('');
-const heroQEls=[...heroQs.querySelectorAll('.hthink')];
+/* мысли героя: hero — рукопись (.hthink, печать), hero2 — комикс-облака (.hcloud, остаются).
+   Строим под сцену; heroQEls обновляется. */
+let heroQEls=[];
+function buildHeroQuestions(){
+  const cloud=(id()==='hero2');
+  heroQs.innerHTML=HERO_QUESTIONS.map((q,i)=>{
+    const pos='left:'+q.x+'%;top:'+q.y+'%';
+    const side=q.x<50?'left':'right';                                                                // левее героя → хвост вправо (к нему), и наоборот
+    return cloud
+      ? '<div class="hcloud '+side+'" data-qi="'+i+'" style="'+pos+'"></div>'   // облако — текст ПИШЕТСЯ (handWrite) в heroReveal
+      : '<div class="hthink" data-qi="'+i+'" style="'+pos+'"></div>';           // рукопись — печать в heroReveal
+  }).join('');
+  heroQEls=[...heroQs.children];
+  return cloud;
+}
 /* ── печать выноски по частям [data-tw] с кареткой; done — по завершении всех частей ── */
 function typeSeq(container, speed, guard, done){
   const parts=[...container.querySelectorAll('[data-tw]')];
@@ -1375,12 +1688,13 @@ function heroReveal(){
   heroLeaving=false;
   heroIntro.classList.remove('collapsing');
   resetHeroText();
+  const cloudMode=buildHeroQuestions();                                            // hero2 → облака, hero → рукопись
   hveil.style.setProperty('--fx','46%'); hveil.style.setProperty('--fy','38%');   // фокус раскрытия
   hveil.style.transition='none'; hveil.style.setProperty('--r','6%');
   void hveil.offsetWidth;
   hveil.style.transition='';                                                       // вернуть CSS-переход 3.4с
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ hveil.style.setProperty('--r','175%'); }));
-  const alive=()=>id()==='hero';
+  const alive=()=>id()==='hero'||id()==='hero2';
   heroTimers.push(setTimeout(()=>{ if(!alive())return;
     typeChipName('Новый игрок', alive, ()=>{                 // 1) имя героя (без звёзд)
       heroLead.classList.add('show');                        // выноска: линия+точка на герое
@@ -1393,10 +1707,16 @@ function heroReveal(){
         let qi=0;
         (function nextQ(){
           if(!alive() || qi>=heroQEls.length) return;
-          const txt=HERO_QUESTIONS[qi].t;
-          handWrite(heroQEls[qi], txt, alive, heroTimers);   // рукописный вывод
-          qi++;
-          heroTimers.push(setTimeout(nextQ, txt.length*60+1000)); // следующий — после написания + пауза
+          if(cloudMode){                                     // hero2 — облако сразу нужного размера, текст проявляется внутри
+            const el=heroQEls[qi], txt=HERO_QUESTIONS[qi].t;
+            handWriteCloud(el, txt, alive, heroTimers, ()=>{ // след. облако — ПОСЛЕ завершения письма
+              qi++; heroTimers.push(setTimeout(nextQ, 500));
+            });
+          } else {                                           // hero — рукописный вывод (без короба)
+            const txt=HERO_QUESTIONS[qi].t;
+            handWrite(heroQEls[qi], txt, alive, heroTimers); qi++;
+            heroTimers.push(setTimeout(nextQ, txt.length*60+1000));
+          }
         })();
       }, 3000+500));                                          // конец прорисовки + задержка 0.5с
     });
@@ -1409,7 +1729,12 @@ function heroLeave(){
   heroIntro.classList.add('collapsing');                                           // спрятать подписи/стрелки/имя
   hveil.style.setProperty('--fx','92%'); hveil.style.setProperty('--fy','24%');    // фокус сворачивания — Москва-Сити
   hveil.style.setProperty('--r','0%');
-  setTimeout(()=>{ heroLeaving=false; cur++; rulesStep=0; applyScene(); rulesReveal(RULES_OPEN); rulesIntro(); }, 3400);  // hero → правила: раскрытие + вступит. титул
+  setTimeout(()=>{ heroLeaving=false; cur++;
+    const nid=id();
+    if(nid==='hero'||nid==='hero2'){ applyScene(); }                                 // след. — снова знакомство (копия)
+    else if(nid==='rules'){ rulesStep=0; applyScene(); rulesReveal(RULES_OPEN); rulesIntro(); }  // знакомство → правила
+    else applyScene();
+  }, 3400);
 }
 /* прервать разведку/сворачивание на карте (для пропуска механики стрелкой) */
 function abortRecon(){
@@ -1420,14 +1745,19 @@ function abortRecon(){
 /* skip=true (стрелка/пробел) — ПРОПУСТИТЬ активную механику; skip=false (клик мышью) — не прерывать */
 function next(skip){
   if(id()==='splash'){ if((skip||loadDone) && cur<SCENES.length-1){ cur++; applyScene(); } return; }  // стрелка пропускает загрузку; клик — только после 100%
-  if(id()==='hero'){ heroLeave(); return; }   // слайд 2 уходит сворачиванием
+  if(id()==='hero'||id()==='hero2'){ heroLeave(); return; }   // знакомство (и копия) уходит сворачиванием
   if(id()==='rules'){                          // правила: разворачивание ТОЛЬКО на входе, сворачивание ТОЛЬКО на выходе
     if(rulesAnim) return;                       // идёт анимация — игнор клика
     if(rulesStep<rSlides.length-1){ rulesStep++; showRules(); return; }   // между подслайдами — обычная смена
-    // последний слайд → сворачивание в «Правительство Москвы» → карта
+    // последний слайд → сворачивание → следующая сцена (сейчас — помощники)
     rulesAnim=true;
-    rulesCollapse(RULES_GOV, 1.6, ()=>{ rulesAnim=false; if(cur<SCENES.length-1){ cur++; startMapAuto(0); } });
+    rulesCollapse(RULES_GOV, 1.6, ()=>{ rulesAnim=false; if(cur<SCENES.length-1){ cur++; if(id()==='map') startMapAuto(0); else applyScene(); } });
     return;
+  }
+  if(id()==='avatars'){                                    // помощники по одному
+    if(avShown<avCells.length){ avNext(); return; }        // ещё не все показаны → следующий
+    if(!avCta.classList.contains('show')){ avCta.classList.add('show'); return; }  // все показаны → клик показывает кнопку
+    avCollapse(); return;                                  // дальше → сворачивание + след. слайд
   }
   if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
   if(id()==='map'){                            // сцена 3 — внутренние шаги
@@ -1457,32 +1787,255 @@ function prev(){
     else applyScene();
   }
 }
-/* ── ТИТУЛЬНЫЙ СЛАЙД (обложка): клик/→ → кнопка «Начать игру» → загрузка ── */
-const cover=document.getElementById('cover');
-const coverBtn=document.getElementById('coverBtn');
-const coverHint=document.getElementById('coverHint');
-let coverActive=true, coverStage=0;
-// искры над волной
-(function(){ const cs=cover.querySelector('.cover-stage');
-  // основное поле + верхняя зона над дугами импульса [минX,ширина, минY,высота, кол-во]
-  const zones=[[6,86,30,52,28],[24,68,4,26,10],[2,40,48,44,10]];
-  zones.forEach(z=>{ for(let i=0;i<z[4];i++){ const p=document.createElement('span'); p.className='cpar';
-    p.style.left=(z[0]+Math.random()*z[1])+'%'; p.style.top=(z[2]+Math.random()*z[3])+'%';
-    p.style.animationDuration=(6+Math.random()*5).toFixed(1)+'s, '+(1.2+Math.random()*1.1).toFixed(1)+'s';  // cFloat, cParPulse
-    p.style.animationDelay=(Math.random()*6).toFixed(1)+'s, '+(Math.random()*1.5).toFixed(1)+'s';
-    cs.appendChild(p); } }); })();
-function coverAdvance(){ if(coverStage===0){ coverStage=1; coverBtn.classList.add('show'); coverHint.style.display='none'; } else startGame(); }
-function startGame(){ if(!coverActive)return; coverActive=false; cover.classList.add('gone');
-  splash.classList.add('go');   // запустить анимации сплеша при показе
+/* ══ ПРОМЕЖУТОЧНЫЙ ТИТУЛ (canvas): воссоздание рисунка cover.png — волновое поле точек,
+      импульс-вспышка с эллиптическими кольцами и лучами, звёзды, всплывающие частицы.
+      Формат ЕДИНЫЙ со всеми сценами: 2172×724. Волна ДВИЖЕТСЯ (rAF). ══ */
+const ccanvasEl=document.getElementById('ccanvas');
+const waveCv=document.getElementById('waveCanvas');
+let ccActive=true, ccRunning=true;
+(function(){
+  const W=2172,H=724; waveCv.width=W; waveCv.height=H;
+  const ctx=waveCv.getContext('2d');
+  const CX=1749, CY=363, AR=0.42;              // центр звезды (точка из разметки) и наклон вихря
+  /* ═══ КОНФИГ ЧАСТИЦ — размеры/количество/цвет/стиль крутить ЗДЕСЬ ═══ */
+  const CFG={
+    twinkle:{size:[3.3,7.8], alpha:0.8, speed:[0.5,2.3]},        // МЕРЦАНИЕ точек фона
+    orbit:  {size:[2.7,6.6], alpha:0.62, speed:1.0},             // ЧАСТИЦЫ ВОКРУГ ЗВЕЗДЫ
+    circles:{radii:[150,270,400,540], dot:4.6, gap:15, alpha:0.9, speed:0.5, pulse:0.5},  // КРУГИ: пунктир из светящихся бусин + бегущий пульс, по часовой
+    waves:  {size:5.2, tail:10, alpha:0.6, speed:0.5},           // ЛИНИИ ВОЛНЫ (светлячки; размер ÷1.5, скорость ÷2)
+    rays:   {coreW:1.5, alpha:0.7, spread:30, dots:0.6, dotSize:2.2, glowSpeed:1.6, glowAmt:0.85},  // ЛУЧИ: рассеивание + пульс цвета от текущего к неону
+    star:   {base:0.22, amp:0.045},                              // ЦЕНТР ЗВЕЗДЫ (ровный, слабый пульс)
+    sparks: {rate:7, size:5.1}                                   // ИСКРЫ ВВЕРХ от звезды
+  };
+  /* стиль частиц: круглая точка с мягким свечением (спрайты 3 цветов) */
+  function mkSpr(color){ const c=document.createElement('canvas'); c.width=c.height=32;
+    const g=c.getContext('2d'); const gr=g.createRadialGradient(16,16,0,16,16,16);
+    gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.28,color); gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr; g.fillRect(0,0,32,32); return c; }
+  const SPR={ deep:mkSpr('rgba(90,150,245,0.55)'),          // глубокий синий
+              cyan:mkSpr('rgba(140,210,255,0.6)'),          // циан
+              white:mkSpr('rgba(225,242,255,0.72)'),        // почти белый
+              blue:mkSpr('rgba(52,118,255,0.95)'),          // НАСЫЩЕННЫЙ синий
+              bluehead:mkSpr('rgba(120,180,255,0.95)') };   // яркая голова линий
+  /* спрайт-пульс: БЕЛОЕ ядро + неон-синий контур (свет, бегущий по линии) */
+  (function(){ const c=document.createElement('canvas'); c.width=c.height=32;
+    const g=c.getContext('2d'); const gr=g.createRadialGradient(16,16,0,16,16,16);
+    gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.20,'rgba(235,246,255,0.95)');
+    gr.addColorStop(0.42,'rgba(48,120,255,0.9)'); gr.addColorStop(0.75,'rgba(40,110,255,0.35)');
+    gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=gr; g.fillRect(0,0,32,32); SPR.core=c; })();
+  /* спрайт-бусина: белое ядро + ЯРКИЙ неон-синий контур (для кругов) */
+  (function(){ const c=document.createElement('canvas'); c.width=c.height=32;
+    const g=c.getContext('2d'); const gr=g.createRadialGradient(16,16,0,16,16,16);
+    gr.addColorStop(0,'rgba(255,255,255,1)'); gr.addColorStop(0.14,'rgba(240,248,255,0.98)');
+    gr.addColorStop(0.30,'rgba(70,150,255,1)'); gr.addColorStop(0.50,'rgba(40,110,255,0.85)');
+    gr.addColorStop(0.72,'rgba(30,90,255,0.4)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr; g.fillRect(0,0,32,32); SPR.bead=c; })();
+  const NEON='rgba(40,120,255,';                            // неон-синий контур линий
+  function dot(spr,x,y,s,al){ ctx.globalAlpha=Math.min(1,al); ctx.drawImage(spr,x-s,y-s,s*2,s*2); }
+const TW=[[1960,314,163],[515,391,209],[1944,278,143],[252,278,170],[1520,367,190],[1154,285,194],[1301,229,147],[493,386,187],[332,344,145],[2079,254,130],[2019,293,169],[237,381,194],[1426,453,131],[1947,275,194],[1327,646,138],[1899,383,192],[103,316,125],[569,624,122],[579,415,197],[192,414,168],[1936,338,163],[723,543,255],[1650,367,253],[387,511,138],[1937,314,122],[1929,398,236],[1355,467,254],[248,291,174],[446,497,179],[998,603,143],[666,440,141],[784,350,143],[1321,293,193],[1986,392,162],[305,502,175],[942,423,196],[1523,452,176],[843,532,210],[1139,634,134],[961,392,245],[1943,263,168],[1547,325,155],[553,401,253],[1570,337,171],[2024,238,240],[610,444,170],[417,286,186],[1456,351,175],[205,461,253],[551,408,128],[1054,494,163],[645,523,121],[2077,309,234],[1849,340,201],[77,421,162],[1969,361,187],[629,440,197],[591,408,245],[794,504,134],[1977,306,126],[1972,384,125],[605,417,203],[1484,444,121],[2134,181,131],[1886,354,189],[340,335,158],[1343,319,156],[1339,286,164],[2061,297,255],[348,366,216],[850,534,155],[2114,468,204],[171,255,211],[1579,372,139],[426,537,217],[1527,458,188],[1495,295,150],[1197,634,255],[369,318,122],[1540,347,247],[1590,386,196],[1607,404,225],[2044,246,132],[636,428,183],[346,321,174],[1895,394,231],[504,424,255],[259,382,202],[625,441,200],[1958,381,191],[1858,364,254],[95,308,254],[385,350,177],[2054,420,123],[203,263,255],[1559,408,172],[1961,265,162],[615,413,221],[1551,357,155],[1417,444,163],[618,418,192],[2002,241,121],[598,669,130],[568,592,227],[720,420,164],[1989,472,180],[458,396,193],[527,591,134],[1331,268,122],[1402,314,153],[1890,327,228],[496,581,150],[1871,326,150],[1554,378,176],[1234,258,175],[998,589,138],[1483,261,137],[1852,349,255],[1624,344,209],[1515,352,134],[1449,250,128],[715,530,185],[414,375,226],[1033,403,246],[1978,394,121],[503,591,142],[1560,341,210],[2057,286,134],[413,367,204],[914,137,238],[1936,376,158],[968,636,190],[1403,325,214],[209,270,166],[2017,451,207],[1065,267,127],[655,414,158],[1533,452,250],[984,583,143],[582,416,200],[1979,233,183],[2031,399,125],[1402,297,135],[957,301,150],[319,310,255],[1889,340,164],[1925,373,163],[91,295,136],[1549,345,210],[1376,349,247],[200,326,172],[1598,365,175],[1643,368,253],[280,395,175],[1526,384,223],[223,371,208],[1212,380,128],[790,529,149],[2160,290,148],[2090,413,135],[285,402,242],[1594,367,149],[42,312,154],[369,352,247],[1985,263,132],[1929,393,208],[1407,286,134],[563,421,138],[1330,409,131],[395,521,254],[1588,386,199],[1414,323,148],[2029,446,254],[637,440,255],[1633,355,198],[394,476,153],[510,564,171],[1324,441,151],[361,514,255],[1127,374,173],[936,328,189],[1369,279,129],[1639,374,250],[1261,222,129],[17,322,163],[1367,244,149],[1039,489,192],[1927,291,140],[772,508,243],[374,320,152],[588,626,181],[1859,336,251],[1555,363,157],[767,490,183],[1764,118,159],[339,433,193],[820,386,152],[735,491,235],[2030,278,141],[610,602,249],[1059,400,151],[1537,310,132],[1927,275,138],[1546,361,172],[1602,334,162],[1370,253,182],[541,593,131],[2142,386,193],[667,640,161],[2081,320,122],[47,210,132],[1856,349,249],[288,399,136],[1649,385,244],[1983,453,232],[864,356,129],[960,274,130],[220,370,226],[1610,349,181],[1212,585,134],[1278,540,129],[485,546,169],[1443,319,160],[1549,324,167],[889,541,129],[54,307,255],[672,429,126],[732,225,142],[58,297,250],[1481,304,169],[751,485,211],[231,468,173],[1530,354,248],[2028,438,128],[15,287,186],[971,375,156],[558,406,234],[1579,432,178],[367,519,128],[1560,328,243],[1572,342,154],[1075,372,155],[306,492,255],[1426,407,159],[1282,537,192],[1494,273,122],[333,534,161],[1992,363,178],[851,595,138],[1880,331,166],[766,395,188],[775,508,210],[1469,255,178],[1181,551,202],[274,375,137],[867,541,151],[1889,359,250],[1983,282,181],[528,382,129],[204,378,255],[320,306,132],[1577,330,212],[281,319,143],[1531,357,254],[755,450,170],[294,313,161],[1326,294,141],[1884,343,146],[1348,289,125],[82,303,211],[2045,461,122],[202,479,242],[1615,350,179],[1590,422,197],[2056,429,238],[1360,310,192],[190,345,156],[676,454,124],[463,387,172],[2159,416,242],[352,316,210],[397,368,202],[243,400,194],[1562,324,249],[269,376,255],[2160,493,192],[1918,359,233],[2096,524,255],[859,344,154],[1579,320,224],[721,487,139],[847,510,133],[1940,392,207],[545,588,124],[761,419,180],[2005,241,206],[1592,387,163],[2050,311,157],[1450,295,164],[917,401,143],[1409,326,171],[215,285,171],[620,410,166],[1449,305,241],[1956,316,125],[1060,589,132],[1545,318,238],[283,290,181],[1900,337,170],[797,355,168],[854,546,187],[167,382,177],[1010,405,222],[798,342,128],[385,446,188],[1556,348,140],[1770,47,135],[53,269,217],[635,631,178],[1655,378,253],[262,291,243],[1872,353,194],[1561,363,163],[359,414,191],[712,654,184],[977,508,152],[301,386,226],[1470,423,182],[1567,546,124],[807,419,230],[1920,333,193],[36,255,128],[635,437,210],[1927,331,216],[424,532,217],[661,337,123],[564,604,123],[486,384,132],[371,328,121],[153,333,139],[338,309,121],[559,394,143],[1962,435,204],[1959,355,199],[246,484,242],[1576,363,174],[363,499,128],[1614,390,190],[1531,293,129],[1449,423,223],[2084,420,130],[1535,343,184],[270,411,130],[386,361,149],[533,393,168],[412,390,148],[412,513,141],[2013,237,254],[264,398,161],[1983,381,140],[1905,313,150],[1564,313,143],[1283,631,168],[2080,397,255],[172,330,137],[1318,274,126],[521,330,138],[1354,313,255],[889,377,141],[1553,398,163],[1468,452,157],[1347,680,122],[519,582,251],[1480,260,183],[625,477,160],[592,496,154],[594,411,207],[1455,277,208],[112,435,243],[1590,421,220],[19,447,153],[1515,336,240],[1448,295,161],[252,373,163],[866,355,147],[2159,377,206],[1565,399,176],[1423,417,132],[1492,297,127],[249,385,193],[650,420,242],[364,452,138],[386,352,145],[1954,312,187],[933,415,160],[2024,273,189],[1375,248,127],[2060,445,209],[1766,105,193],[81,436,164],[967,417,182],[303,301,133],[386,518,251],[1444,239,132],[1363,283,148],[1602,414,217],[382,505,255],[1999,302,122],[1094,444,146],[873,543,132],[438,330,157],[1357,336,122],[1850,168,150],[2033,299,233],[1319,296,199],[548,398,213],[481,611,233],[341,305,162],[1951,346,175],[2014,450,123],[96,304,244],[1941,420,198],[227,373,253],[1950,279,129],[1943,360,246],[22,223,148],[1640,365,241],[501,386,140],[1928,302,123],[1532,351,249],[2007,324,206],[411,327,175],[567,456,222],[360,345,255],[1969,446,139],[782,502,132],[2040,240,169],[2017,254,160],[1550,388,171],[1510,364,131],[250,294,128],[1556,339,228],[474,561,249],[1251,524,239],[2011,291,179],[1889,379,200],[2038,297,161],[1605,394,184],[660,338,163],[1987,281,154],[669,642,159],[1625,343,196],[84,407,197],[601,352,148],[109,225,176],[1287,208,124],[384,412,134],[14,293,138],[271,414,154],[1436,316,188],[584,617,136],[508,388,142],[1882,342,160],[492,390,169],[1873,359,255],[1371,215,148],[1355,239,121],[1015,331,124],[559,401,255],[2059,283,160],[1362,397,135],[1082,151,141],[1411,237,127],[439,515,252],[341,506,255],[351,321,193],[1929,360,246],[1894,124,126],[2006,284,249],[2064,320,158],[1471,328,160],[233,276,183],[1230,292,198],[359,512,133],[1948,379,236],[2028,225,137],[1493,291,148],[2107,237,208],[885,348,234],[764,502,183],[1942,367,185],[1571,401,217],[553,520,192],[637,618,255],[496,575,212],[395,397,139],[736,438,123],[1556,339,228],[464,548,131],[1636,391,231],[1843,181,250],[2146,354,235],[1515,374,245],[165,301,139],[1589,390,167],[4,200,228],[1772,71,201],[365,330,142],[624,426,193],[1932,366,233],[1044,372,178],[1950,380,207],[416,337,130],[803,601,139],[294,544,153],[1217,278,135],[238,368,139],[529,594,125],[781,355,128],[1951,281,150],[2080,397,255],[408,536,132],[288,289,164],[1341,295,157],[565,345,157],[1934,389,247],[1102,281,139],[228,280,234],[1038,506,175],[1475,319,136],[347,325,236],[763,600,134],[1559,349,169],[2034,450,127],[99,313,209],[346,334,157],[364,326,184],[574,305,255],[1372,479,237],[2072,410,164],[634,428,175],[1531,349,192],[577,544,166],[1897,392,204],[1084,602,170],[1770,75,251],[1085,396,218],[1566,377,125],[293,398,211],[275,398,223],[632,327,144],[406,532,177],[1442,421,153],[1197,403,163],[1332,650,130],[80,217,210],[1629,376,196],[727,340,170],[478,417,122],[794,517,252],[687,387,161],[624,425,179],[992,304,122],[2037,216,130],[2029,233,123],[1457,268,126],[1144,498,169],[172,464,139],[2038,293,244],[605,627,146],[1277,291,255],[1944,391,217],[1177,287,255],[824,534,159],[1613,377,196],[782,514,186],[1086,382,144],[1600,391,173],[1578,411,170],[1588,332,188],[217,362,184],[1459,435,142],[2102,421,208],[1865,360,254],[1931,408,216],[800,516,188],[91,302,247],[633,429,134],[1933,273,163],[219,269,185],[513,389,164],[1335,287,178],[1927,320,139],[1949,262,201],[735,554,230],[1427,318,142],[1243,218,152],[1536,329,254],[1425,299,130],[269,300,123],[356,583,135],[1956,298,180]];
+const ORB=[[455,-70,132],[120,310,243],[320,292,102],[354,-42,145],[240,37,103],[333,232,255],[275,-281,113],[387,266,131],[326,281,107],[286,-68,191],[263,303,156],[174,-276,135],[267,-295,113],[172,-64,227],[539,307,128],[405,-41,128],[425,285,105],[365,-93,106],[189,-273,213],[416,-64,172],[224,248,167],[137,-288,181],[159,26,174],[571,314,119],[131,37,199],[234,-292,110],[289,232,141],[174,-22,241],[298,-44,128],[389,298,166],[300,-58,211],[344,267,101],[349,58,126],[513,-139,111],[303,-67,128],[225,-283,144],[144,-46,155],[361,-282,116],[375,-290,111],[215,-7,220],[268,12,131],[171,-24,154],[455,-240,113],[456,-278,205],[326,-71,134],[393,68,127],[299,-85,255],[400,-36,160],[336,290,156],[431,-241,125],[193,-282,217],[316,-63,171],[464,225,161],[433,80,189],[413,22,117],[590,-132,103],[353,48,115],[450,-134,105],[271,-56,106],[345,-67,147],[298,-250,112],[139,-5,252],[251,261,150],[319,230,106],[385,250,105],[410,-255,185],[195,52,253],[351,-277,138],[422,-48,110],[286,-21,180],[338,-45,196],[468,234,118],[170,-17,172],[430,247,132],[145,309,177],[555,-251,101],[286,-245,135],[358,-286,131],[244,248,159],[171,-18,198],[295,-67,143],[406,-238,127],[380,-61,105],[517,71,114],[290,-270,125],[188,20,169],[222,-278,253],[432,-63,197],[230,296,209],[478,-268,121],[342,-59,132],[193,312,221],[365,72,173],[419,-73,191],[318,-75,185],[241,313,200],[407,78,106],[139,33,218],[250,302,149],[366,64,117],[460,-48,202],[177,-281,159],[193,243,235],[321,-76,127],[325,273,130],[211,-33,126],[448,-277,156],[264,-66,108],[190,-47,228],[231,-67,141],[311,72,101],[325,39,120],[141,-307,180],[550,-245,173],[469,-247,105],[336,281,185],[331,262,142],[395,1,114],[182,269,241],[235,33,133],[452,-243,124],[353,256,242],[140,-29,162],[420,-70,255],[445,-91,141],[142,304,191],[149,21,178],[171,-306,164],[277,-273,102],[146,-304,185],[131,-43,214],[270,-38,102],[211,24,211],[345,-243,128],[106,9,252],[425,20,105],[335,-67,133],[542,-188,109],[432,-242,123],[408,-275,129],[323,36,129],[325,287,190],[461,-265,106],[213,40,177],[231,-82,136],[258,52,101],[372,-246,122],[217,-47,148],[372,-294,103],[378,-300,106],[426,-238,103],[402,-246,121],[640,-270,182],[450,298,114],[149,-290,168],[326,-247,150],[184,-5,254],[445,61,127],[486,222,179],[331,68,155],[228,301,190],[337,-75,249],[115,302,226],[191,61,236],[215,260,211],[189,258,253],[337,250,152],[245,0,184],[230,22,126],[349,-52,110],[218,2,193],[324,-290,105],[234,247,131],[166,-282,136],[537,-87,255],[231,29,182],[376,236,126],[224,-12,141],[250,-4,145],[254,-77,116],[213,268,233],[433,-243,108],[420,-283,104],[209,-26,165],[189,-1,233],[177,262,218],[385,-297,148],[122,-38,200],[470,-282,102],[387,-12,252],[182,-274,155],[494,-266,205],[352,-21,132],[337,83,102],[551,-296,105],[452,-312,124],[361,301,242],[173,254,215],[424,-274,101],[304,239,136],[518,-276,128],[408,263,162],[374,-24,181],[300,-80,228],[323,308,109],[325,-56,220],[431,-37,166],[389,-11,217],[351,-276,148],[321,-76,151],[93,304,253],[173,38,170],[182,-58,227],[148,-278,189],[499,-234,110],[102,283,250],[501,-238,110],[454,-242,145],[210,302,139],[139,-33,172],[198,-77,162],[206,-304,180],[235,37,102],[268,286,112],[281,44,125],[307,-263,178],[485,-245,103],[256,302,118],[486,275,111],[233,-279,137],[322,261,131],[233,313,221],[324,57,133],[239,-250,104],[381,52,138],[360,238,138],[328,235,118],[278,-61,101],[368,-242,161],[172,-283,145],[219,277,191],[196,269,186],[386,-12,215],[320,61,168],[335,-272,254],[472,241,163],[235,44,105],[284,-25,149],[238,28,126],[148,26,182],[197,252,211],[236,-29,112],[132,24,201],[207,-301,220],[577,-269,124],[242,268,117],[204,-299,145],[257,-308,119],[389,300,118],[285,11,133],[382,239,255],[318,-60,164],[344,291,113],[600,-286,133],[285,-71,113],[369,-258,142],[244,28,102],[174,-3,244],[197,278,169],[236,255,101],[380,287,188],[335,235,214],[448,-268,155],[433,-64,255],[280,24,138],[331,262,142],[171,-309,172],[215,-291,248],[118,-31,215],[253,-250,154],[168,300,205],[204,252,163],[413,299,101],[214,-19,137],[366,82,200],[230,5,147],[297,-270,195],[520,-282,187],[332,67,223],[234,42,115],[427,23,127],[467,-271,109],[236,-80,106],[315,-49,162],[230,304,190],[199,-53,158],[151,27,200],[476,-250,141],[245,-10,116],[430,-50,103],[233,-62,137],[147,45,201],[216,48,145],[446,-313,177],[389,269,219],[399,-274,144],[143,-10,216],[515,-250,193],[394,44,201],[490,-274,182],[459,279,149],[269,-300,109],[208,298,207],[476,-277,238],[466,-274,184],[345,71,178],[374,311,110],[252,262,115],[539,-279,116],[399,-91,240],[242,-39,109],[393,-11,135],[303,233,142],[355,-37,188],[431,-259,139],[179,258,224],[492,-281,141],[493,-250,108],[232,-284,127],[520,-240,128],[515,232,152],[346,290,103],[181,-72,255],[266,-310,165],[385,247,208],[392,-261,146],[219,285,162],[266,2,106],[350,249,104],[304,-250,236],[222,-284,144],[180,266,252],[329,273,137],[176,-66,221],[396,-275,233],[368,-33,135],[140,306,218],[206,17,219],[417,14,161],[189,303,140],[277,-83,210],[401,-241,141],[185,300,129],[183,-280,153],[245,313,111],[189,22,165],[318,-265,200],[193,39,214],[340,78,177],[279,-71,122],[342,-50,148],[151,-29,137],[206,301,121],[380,-274,106],[216,238,143],[304,-15,125],[273,-272,147],[382,-81,117],[149,268,237],[392,55,117],[240,-255,104],[165,-271,155],[232,-61,113],[427,-257,114],[525,-254,101],[391,-245,161],[537,-251,199],[186,-296,171],[128,-48,228],[212,275,182],[131,292,207],[426,-65,165],[439,-84,126],[437,-135,101],[241,-281,140],[487,-278,196],[320,248,129],[161,293,175],[279,-278,137],[203,276,174],[322,-256,161],[280,74,165],[491,-250,107],[300,-257,146],[186,4,192],[172,41,182],[337,79,143],[422,-243,133],[588,-255,138],[185,-272,148],[262,-313,129],[214,298,198],[200,241,191],[309,239,160],[218,-313,255],[214,251,216],[181,259,221],[391,-74,115],[230,294,143],[340,231,174],[211,-45,108],[152,-37,145],[379,62,126],[197,10,202],[212,-289,253],[347,60,151],[465,-248,227],[443,-44,234],[535,-307,181],[312,-254,255],[556,-281,172],[318,294,107],[298,-60,128],[323,-88,137],[294,-248,103],[395,-262,111],[141,-42,165],[474,-247,138],[392,-15,115],[384,-246,207],[237,258,126],[163,-22,133],[265,-12,110],[223,-305,228],[389,281,122],[346,-292,146],[285,239,191],[179,-303,128],[223,288,170],[304,233,122],[381,262,122],[372,-294,103],[444,-54,147],[233,-71,105],[337,262,219],[369,-304,105],[187,305,118],[408,5,226],[166,276,163],[109,-18,242],[312,277,171],[228,28,117],[331,-241,109],[110,308,243],[136,257,189],[389,-11,217],[534,-281,212],[308,-70,183],[314,229,117],[394,-270,118],[397,-51,107],[190,-304,138],[211,293,182],[188,60,227],[161,-289,151],[179,-311,190],[106,-34,237],[154,-67,206],[350,-38,238],[446,-282,133],[241,265,113],[254,-82,113],[347,258,146],[132,-312,194],[161,258,169],[239,305,110],[386,-16,110],[179,9,213],[374,-248,117],[523,-295,101],[342,273,102],[145,30,213],[174,42,188],[516,91,112],[205,273,151],[350,33,136],[333,-57,161],[502,-292,204],[473,-282,102],[326,-60,206],[447,233,118],[161,-43,188],[170,-40,179],[353,-48,106],[203,63,201],[113,-8,245],[201,-29,255],[559,297,122],[153,-9,220],[131,-33,230],[374,-275,119],[132,279,230],[219,19,148],[197,264,214],[230,250,236],[398,-3,244],[327,21,118],[241,48,108],[119,264,209],[213,280,185],[104,-7,250],[217,26,195],[164,42,185],[460,-77,107],[187,-284,189],[511,-247,104],[294,47,147],[288,-270,209],[448,302,104],[137,-21,209],[418,-77,110],[342,38,123],[199,289,184],[291,-65,255],[262,-280,101],[352,50,132],[318,42,104],[475,-265,122],[234,250,239],[459,-56,136],[269,-6,112],[287,-1,128],[185,312,150],[142,299,238],[208,16,214],[162,267,184],[336,267,160],[563,298,144],[279,-294,107],[308,-11,119],[609,-287,102],[277,-3,143],[359,-272,255],[221,-72,112],[448,311,255],[313,-257,219],[359,-242,135],[527,-281,164],[438,-305,194],[239,-255,102],[348,-60,112],[451,-279,144],[163,302,160],[429,-270,131],[408,-73,155],[204,264,188],[510,-279,255],[191,-273,204],[441,-235,128],[455,-246,159],[294,-256,160],[231,11,138],[495,196,101],[185,18,189],[374,-253,144],[378,302,155],[199,-60,165],[372,-303,251],[460,-280,222],[211,-51,156],[234,235,194],[134,-307,192],[356,-55,137],[124,260,182],[202,309,130],[461,-275,123],[353,256,242],[201,59,246],[328,292,148],[162,1,207],[178,-52,203],[248,-289,108],[463,257,114],[306,-12,124],[188,-285,231],[576,-280,226],[136,-38,199],[588,-255,138],[335,292,134],[280,-260,114],[434,-72,108],[280,-293,129],[148,-293,178],[307,-243,193],[332,-77,143],[209,-38,124],[540,-260,118],[136,298,174],[255,304,110],[298,231,113],[263,-57,120],[198,43,236],[180,257,240],[402,-92,153],[483,-80,113],[352,51,131],[137,-2,251],[155,-281,196],[383,-251,103],[340,-36,135],[340,-69,169],[481,-291,123],[280,41,161],[264,-307,142],[326,230,118],[218,271,204],[268,311,160],[264,-48,170],[173,-44,186],[237,-48,124],[516,75,105],[497,271,255],[390,-84,113],[354,-286,255],[450,-68,110],[374,-244,158],[168,6,181],[452,165,125],[348,250,146],[297,-245,227],[348,238,106],[377,-24,118],[231,-61,101],[466,274,109],[168,16,175],[292,-286,102],[550,-245,173],[204,-5,251],[360,-293,136],[333,73,151],[184,38,185],[271,-41,134],[318,-268,180],[229,236,152],[316,293,111],[179,293,132],[423,-302,136],[147,-20,170],[261,-248,113],[306,273,110],[430,-92,216],[225,276,169],[439,-271,129],[346,-275,157],[534,-244,112],[208,5,247],[388,264,155],[321,-68,152],[145,-20,176],[240,-280,142],[301,-85,218],[305,270,125],[580,285,107],[224,-27,102],[257,-253,143],[292,-26,106],[378,-268,145],[334,-50,213],[163,16,164],[328,308,180],[363,280,133],[578,306,120],[198,260,209],[137,-45,206],[372,-247,115],[445,-313,224],[201,314,147],[360,-45,128],[421,-263,150],[213,38,175],[306,-257,191],[489,-234,135],[118,270,255],[118,-48,202],[256,303,109],[288,-66,177],[223,300,239],[241,269,121],[280,279,170],[210,-267,240],[223,254,104],[329,-241,102],[241,253,113],[213,286,176],[476,-264,140],[506,-88,143],[157,28,180],[274,-38,116],[471,243,252],[570,-288,101],[562,-277,187],[321,30,110],[224,237,233],[335,280,124],[114,-304,255],[302,-263,110],[470,237,116],[320,23,173],[360,238,126],[489,-290,116],[421,-240,190],[361,229,158],[602,-250,170],[379,283,111],[554,311,156],[368,-295,118],[297,264,129],[169,-307,185],[366,-91,223],[280,66,144],[216,292,216],[290,-66,143],[212,23,190],[296,262,132],[356,-274,130],[169,52,228],[317,276,103],[249,-310,110],[421,-301,110],[229,257,129],[184,-50,238],[415,-254,132],[192,272,180],[237,35,113],[388,-238,128],[470,246,219],[254,268,106],[444,70,191],[258,51,163],[349,-39,209],[229,286,133],[222,-269,169],[268,-63,103],[332,-249,129],[175,-33,150],[317,-35,119],[135,305,195],[329,251,156],[196,25,181],[390,-76,113],[225,-298,129],[424,-266,155],[515,-249,167],[375,-256,121],[229,-75,121],[480,-277,182],[490,166,116],[232,308,137],[125,4,235],[528,-264,119],[563,-263,133],[333,60,168],[155,-291,171],[307,-60,171],[281,-82,183],[129,284,189],[200,-52,138],[396,-242,162],[322,-81,115],[215,-52,104],[451,-55,165],[331,-280,221],[340,291,136],[336,291,139],[462,-276,190],[289,6,109],[228,34,115],[195,310,130],[176,-22,164],[237,310,113],[438,-67,167],[396,-134,110],[185,36,182],[402,-136,199],[228,311,247],[456,-89,226],[309,41,128],[280,-277,124],[455,-278,225],[162,47,249],[162,-49,240],[305,-308,141],[129,32,209],[339,313,135],[158,274,166],[515,-243,188],[178,-13,189],[285,-256,175],[335,251,205],[185,-276,163]];
+const TRK=[[[197,258],[205,264],[213,268],[221,272],[229,276],[237,280],[245,284],[253,287],[261,292],[269,295],[277,298],[285,301],[293,305],[301,308],[309,313],[317,309],[325,312],[333,313],[341,315],[349,317],[357,319],[365,320],[373,322],[381,326],[389,327],[397,324],[405,324],[413,325],[421,324],[429,324],[437,325],[445,325],[453,324],[461,327],[469,326],[477,324],[485,325],[493,325],[501,326],[509,326],[517,328],[525,329],[533,330],[541,331],[549,333],[557,334],[565,337],[573,342],[581,338],[589,340],[597,341],[605,342],[613,343],[621,343],[629,344]],[[107,225],[115,225],[123,227],[131,231],[139,234],[147,237],[155,240],[163,244],[171,247],[179,251],[187,255],[195,260],[203,263],[211,267],[219,270],[227,275],[235,279],[243,283],[251,287],[259,290],[267,294],[275,297],[283,300],[291,304],[299,306],[307,307],[315,309],[323,311],[331,314],[339,315],[347,316],[355,318],[363,319],[371,322],[379,325],[387,327],[395,327],[403,326],[411,325],[419,324],[427,324],[435,324],[443,324],[451,324],[459,324],[467,324],[475,324],[483,324],[491,324],[499,325],[507,326],[515,327]],[[755,498],[763,503],[771,507],[779,511],[787,514],[795,517],[803,520],[811,523],[819,526],[827,529],[835,532],[843,534],[851,537],[859,540],[867,542],[875,545],[883,548],[891,550],[899,554],[907,556],[915,559],[923,562],[931,564],[939,566],[947,569],[955,571],[963,573],[971,575],[979,576],[987,578],[995,580],[1003,581],[1011,582],[1019,583],[1027,584],[1035,585],[1043,585],[1051,586]],[[393,389],[401,388],[409,387],[417,386],[425,386],[433,385],[441,385],[449,381],[457,385],[465,385],[473,385],[481,387],[489,388],[497,389],[505,391],[513,392],[521,394],[529,396],[537,398],[545,401],[553,400],[561,402],[569,403],[577,404],[585,405],[593,407],[601,408],[609,410],[617,411],[625,413],[633,415],[641,417],[649,419],[657,422],[665,424]],[[423,321],[431,324],[439,324],[447,324],[455,324],[463,324],[471,324],[479,327],[487,324],[495,325],[503,326],[511,327],[519,330],[527,329],[535,331],[543,332],[551,333],[559,335],[567,338],[575,338],[583,338],[591,340],[599,341],[607,345],[615,342],[623,344],[631,344],[639,344],[647,347],[655,345],[663,344],[671,344],[679,343],[687,343],[695,342],[703,342],[711,342],[719,341],[727,341],[735,342],[743,342],[751,343]],[[495,390],[503,390],[511,392],[519,394],[527,396],[535,398],[543,400],[551,400],[559,401],[567,403],[575,404],[583,405],[591,406],[599,408],[607,409],[615,409],[623,413],[631,415],[639,416],[647,418],[655,421],[663,423],[671,425],[679,427],[687,430],[695,432]],[[64,293],[72,298],[80,300],[88,302],[96,305],[104,307],[112,310],[120,313],[128,316],[136,319],[144,320],[152,326],[160,331],[168,335],[176,339],[184,344],[192,348],[200,353],[208,358],[216,363],[224,368],[232,372],[240,373],[248,376],[256,378],[264,380],[272,381]],[[50,296],[58,294],[66,296],[74,298],[82,300],[90,303],[98,305],[106,308],[114,308],[122,313],[130,317],[138,320],[146,324],[154,327],[162,332],[170,336],[178,341],[186,345],[194,350],[202,354],[210,359],[218,364],[226,369],[234,370],[242,374],[250,376],[258,378],[266,380],[274,382],[282,384],[290,386],[298,387],[306,388],[314,389],[322,390],[330,391],[338,391],[346,391],[354,391],[362,391],[370,391],[378,390],[386,389],[394,392],[402,387],[410,387]],[[503,326],[511,327],[519,330],[527,329],[535,331],[543,332],[551,333],[559,335],[567,338],[575,338],[583,338],[591,340],[599,341],[607,345],[615,342],[623,344],[631,344],[639,344],[647,347],[655,345],[663,344],[671,344],[679,343],[687,343],[695,342],[703,342],[711,342],[719,341],[727,341],[735,342],[743,342],[751,343],[759,344],[767,345],[775,347],[783,348],[791,350],[799,352],[807,354],[815,356],[823,358],[831,360],[839,362],[847,365],[855,367],[863,369],[871,371],[879,374],[887,375],[895,377],[903,378],[911,376],[919,376],[927,373],[935,371]],[[74,312],[82,314],[90,312],[98,306],[106,308],[114,308],[122,313],[130,317],[138,320],[146,324],[154,327],[162,332],[170,336],[178,341],[186,345],[194,350],[202,354],[210,359],[218,364],[226,369],[234,370],[242,374],[250,376],[258,378],[266,380],[274,382],[282,384],[290,386],[298,387],[306,388],[314,389],[322,390],[330,391],[338,391]],[[563,414],[571,410],[579,413],[587,416],[595,420],[603,419],[611,424],[619,424],[627,430],[635,429],[643,428],[651,434],[659,431],[667,433],[675,430],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437],[739,434],[747,432],[755,434]],[[702,472],[710,478],[718,482],[726,486],[734,490],[742,494],[750,497],[758,501],[766,505],[774,508],[782,512],[790,515],[798,518],[806,522],[814,524],[822,527],[830,530],[838,533],[846,535],[854,538],[862,541],[870,543],[878,546],[886,549],[894,552],[902,555],[910,557],[918,560],[926,558]],[[302,406],[310,400],[318,404],[326,401],[334,400],[342,400],[350,395],[358,391],[366,394],[374,390],[382,389],[390,389],[398,389],[406,387],[414,390],[422,386],[430,385],[438,385],[446,384],[454,384],[462,385],[470,385],[478,386],[486,387],[494,388],[502,390],[510,392],[518,393],[526,395],[534,397],[542,400],[550,400],[558,401],[566,403],[574,404],[582,405],[590,406],[598,408],[606,409],[614,411],[622,413],[630,414],[638,416],[646,418],[654,421],[662,423],[670,425]],[[573,610],[581,612],[589,617],[597,620],[605,619],[613,625],[621,629],[629,632],[637,634],[645,636],[653,637],[661,642],[669,641],[677,645],[685,647],[693,649]],[[13,284],[21,287],[29,287],[37,289],[45,291],[53,292],[61,296],[69,297],[77,299],[85,301],[93,304],[101,306],[109,309],[117,312],[125,315],[133,318],[141,322],[149,325],[157,329],[165,334],[173,338],[181,342],[189,347],[197,352],[205,356],[213,361],[221,360],[229,365],[237,367],[245,371],[253,377],[261,379],[269,381],[277,383],[285,384],[293,386],[301,387],[309,388],[317,389],[325,390],[333,391],[341,391],[349,391],[357,391],[365,391],[373,390],[381,390],[389,389],[397,388],[405,388],[413,387],[421,386],[429,385],[437,385],[445,384],[453,384],[461,385],[469,385],[477,386],[485,387],[493,388],[501,390],[509,391],[517,393],[525,395]],[[316,387],[324,390],[332,391],[340,391],[348,391],[356,391],[364,391],[372,390],[380,390],[388,389],[396,388],[404,387],[412,387],[420,386],[428,385],[436,385],[444,385],[452,384],[460,384],[468,385],[476,386],[484,387],[492,388],[500,390],[508,391],[516,393],[524,395],[532,397],[540,399],[548,402],[556,401],[564,402],[572,403],[580,407],[588,406],[596,407],[604,409],[612,410],[620,412],[628,414],[636,416],[644,418],[652,420],[660,422],[668,424],[676,427],[684,429],[692,431],[700,429],[708,429],[716,427]],[[332,503],[340,500],[348,504],[356,507],[364,509],[372,512],[380,516],[388,517],[396,520],[404,524],[412,527],[420,532],[428,536],[436,540],[444,545],[452,548],[460,552],[468,557],[476,561],[484,566],[492,570],[500,574],[508,578],[516,582],[524,585],[532,590],[540,592],[548,589],[556,587],[564,592],[572,592]],[[178,340],[186,345],[194,350],[202,354],[210,359],[218,364],[226,369],[234,370],[242,374],[250,376],[258,378],[266,380],[274,382],[282,384],[290,386],[298,387],[306,388],[314,389],[322,390],[330,391],[338,391],[346,391],[354,391],[362,391],[370,391],[378,390],[386,389],[394,392],[402,387],[410,387],[418,387],[426,386],[434,385],[442,385],[450,384],[458,384],[466,385],[474,386],[482,387],[490,388],[498,389],[506,391],[514,392],[522,394],[530,396],[538,398],[546,399],[554,401],[562,402],[570,403],[578,404],[586,406],[594,407],[602,408],[610,410],[618,412],[626,413]],[[433,376],[441,379],[449,381],[457,385],[465,385],[473,385],[481,387],[489,388],[497,389],[505,391],[513,392],[521,394],[529,396],[537,398],[545,401],[553,400],[561,402],[569,403],[577,404],[585,405],[593,407],[601,408],[609,410],[617,411],[625,413],[633,415],[641,417],[649,419],[657,422],[665,424],[673,424],[681,425],[689,430],[697,432],[705,434],[713,436],[721,438],[729,434],[737,434],[745,433]],[[628,449],[636,445],[644,444],[652,448],[660,452],[668,456],[676,460],[684,464],[692,468],[700,473],[708,477],[716,481],[724,485],[732,489],[740,492],[748,497],[756,500],[764,504],[772,507],[780,511],[788,514],[796,517],[804,521],[812,523],[820,526],[828,529],[836,532],[844,535],[852,538],[860,540],[868,543],[876,545],[884,548],[892,550],[900,553],[908,557],[916,559]],[[568,401],[576,404],[584,405],[592,407],[600,408],[608,410],[616,411],[624,413],[632,415],[640,417],[648,419],[656,421],[664,423],[672,425],[680,428],[688,430],[696,428],[704,428],[712,429]],[[762,505],[770,507],[778,510],[786,513],[794,517],[802,520],[810,523],[818,526],[826,529],[834,532],[842,534],[850,537],[858,539],[866,542],[874,545],[882,548],[890,550],[898,553],[906,556],[914,558],[922,561]],[[30,292],[38,290],[46,291],[54,293],[62,294],[70,297],[78,300],[86,302],[94,304],[102,307],[110,305],[118,311],[126,315],[134,318],[142,322],[150,325],[158,330],[166,334],[174,338],[182,343],[190,347],[198,352],[206,357],[214,361],[222,366],[230,371],[238,373],[246,375],[254,377],[262,379],[270,381],[278,383],[286,384],[294,386],[302,387],[310,389],[318,389],[326,391]],[[927,563],[935,565],[943,568],[951,570],[959,572],[967,574],[975,576],[983,577],[991,579],[999,580],[1007,582],[1015,583],[1023,584],[1031,585],[1039,585],[1047,586]],[[177,260],[185,259],[193,262],[201,262],[209,266],[217,270],[225,274],[233,279],[241,282],[249,285],[257,289],[265,293],[273,296],[281,299],[289,303],[297,306],[305,311],[313,310],[321,311],[329,312],[337,314],[345,317],[353,319],[361,319],[369,321],[377,324],[385,327],[393,324],[401,325],[409,325],[417,325],[425,324],[433,324]],[[786,352],[794,351],[802,353],[810,355],[818,357],[826,359],[834,361],[842,363],[850,366],[858,368],[866,370],[874,372],[882,374],[890,376],[898,378],[906,379],[914,376],[922,374],[930,376],[938,373]],[[1203,290],[1211,289],[1219,291],[1227,289],[1235,288],[1243,288],[1251,287],[1259,289],[1267,289],[1275,290],[1283,292],[1291,292],[1299,293],[1307,294],[1315,294],[1323,296],[1331,296],[1339,294],[1347,295],[1355,296],[1363,296],[1371,297],[1379,297],[1387,298],[1395,295],[1403,292],[1411,290],[1419,287],[1427,285],[1435,283],[1443,281],[1451,278],[1459,276],[1467,274],[1475,272],[1483,270],[1491,269],[1499,267],[1507,265],[1515,264],[1523,259],[1531,261],[1539,260],[1547,258],[1555,257],[1563,256],[1571,254],[1579,252],[1587,252],[1595,251],[1603,250]],[[392,521],[400,523],[408,526],[416,530],[424,533],[432,539],[440,543],[448,547],[456,550],[464,555],[472,559],[480,563],[488,567],[496,573],[504,576],[512,581],[520,583],[528,587],[536,589],[544,592],[552,590],[560,590],[568,592],[576,593]],[[396,389],[404,387],[412,387],[420,386],[428,385],[436,385],[444,385],[452,384],[460,384],[468,385],[476,386],[484,387],[492,388],[500,390],[508,391],[516,393],[524,395],[532,397],[540,399],[548,402],[556,401],[564,402],[572,403],[580,407],[588,406],[596,407],[604,409],[612,410],[620,412],[628,414],[636,416],[644,418],[652,420],[660,422],[668,424],[676,427],[684,429],[692,431],[700,429],[708,429],[716,427]],[[380,329],[388,327],[396,324],[404,326],[412,324],[420,324],[428,324],[436,324],[444,324],[452,327],[460,324],[468,326],[476,324],[484,327],[492,325],[500,325],[508,326],[516,327],[524,328],[532,330],[540,331],[548,333],[556,334],[564,336],[572,337],[580,339],[588,340],[596,341],[604,342],[612,346],[620,343],[628,344],[636,344],[644,344],[652,345],[660,345],[668,344],[676,344],[684,343],[692,343],[700,342],[708,342],[716,341],[724,341],[732,341],[740,342],[748,343],[756,344],[764,345],[772,346],[780,347],[788,349],[796,351],[804,353],[812,355],[820,357],[828,359],[836,362]],[[302,386],[310,389],[318,389],[326,391],[334,391],[342,391],[350,391],[358,391],[366,394],[374,390],[382,389],[390,389],[398,389],[406,387],[414,390],[422,386],[430,385],[438,385],[446,384],[454,384],[462,385],[470,385],[478,386],[486,387],[494,388],[502,390],[510,392],[518,393],[526,395],[534,397],[542,400],[550,400],[558,401],[566,403],[574,404],[582,405],[590,406],[598,408],[606,409],[614,411],[622,413],[630,414],[638,416],[646,418],[654,421],[662,423],[670,425],[678,427],[686,429],[694,425],[702,421],[710,425]],[[485,390],[493,388],[501,390],[509,391],[517,393],[525,395],[533,397],[541,399],[549,400],[557,401],[565,402],[573,403],[581,405],[589,406],[597,408],[605,409],[613,411],[621,412],[629,414],[637,416],[645,418],[653,420],[661,422],[669,421],[677,423],[685,428],[693,432],[701,434]],[[598,421],[606,425],[614,428],[622,429],[630,435],[638,441],[646,445],[654,446],[662,450],[670,455],[678,461],[686,465],[694,469],[702,473],[710,478],[718,482],[726,486],[734,490],[742,494],[750,497],[758,501],[766,505],[774,508],[782,512],[790,515],[798,518],[806,522],[814,524],[822,527],[830,530],[838,533],[846,535],[854,538],[862,541]],[[674,460],[682,463],[690,467],[698,471],[706,476],[714,480],[722,484],[730,488],[738,492],[746,496],[754,499],[762,503],[770,507],[778,510],[786,513],[794,517],[802,520],[810,523],[818,526],[826,529],[834,532],[842,534],[850,537],[858,539],[866,542],[874,545],[882,548],[890,550],[898,553],[906,556],[914,558],[922,561]],[[766,512],[774,508],[782,512],[790,515],[798,518],[806,522],[814,524],[822,527],[830,530],[838,533],[846,535],[854,538],[862,541],[870,543],[878,546],[886,549],[894,552],[902,555],[910,557],[918,560],[926,558]],[[307,308],[315,309],[323,311],[331,314],[339,315],[347,316],[355,318],[363,319],[371,322],[379,325],[387,327],[395,327],[403,326],[411,325],[419,324],[427,324],[435,324],[443,324],[451,324],[459,324],[467,324],[475,324],[483,324],[491,324],[499,325],[507,326],[515,327],[523,328],[531,329],[539,331],[547,332],[555,334],[563,336],[571,337],[579,339],[587,339],[595,341],[603,342],[611,342],[619,343],[627,343]],[[134,265],[142,265],[150,271],[158,270],[166,272],[174,275],[182,276],[190,278],[198,275],[206,269],[214,268],[222,273],[230,277],[238,280],[246,285],[254,288],[262,293],[270,295],[278,298],[286,301],[294,305],[302,309],[310,308],[318,311],[326,312],[334,314],[342,315],[350,318],[358,320],[366,320],[374,323],[382,326]],[[136,319],[144,320],[152,326],[160,331],[168,335],[176,339],[184,344],[192,348],[200,353],[208,358],[216,363],[224,368],[232,372],[240,373],[248,376],[256,378],[264,380],[272,381],[280,383],[288,385],[296,387],[304,388],[312,389],[320,390],[328,391],[336,391],[344,391],[352,391],[360,391],[368,391],[376,390],[384,389],[392,389],[400,388],[408,387]],[[301,491],[309,493],[317,495],[325,497],[333,499],[341,502],[349,503],[357,507],[365,509],[373,512],[381,515],[389,518],[397,521],[405,525],[413,528],[421,532],[429,536],[437,540],[445,545],[453,549],[461,553],[469,557],[477,562],[485,566],[493,570],[501,575],[509,579],[517,582],[525,586],[533,586],[541,588],[549,589],[557,587]],[[634,349],[642,348],[650,344],[658,345],[666,344],[674,343],[682,343],[690,343],[698,342],[706,341],[714,341],[722,341],[730,341],[738,342],[746,343],[754,343],[762,345],[770,346],[778,347],[786,349],[794,351],[802,353],[810,355],[818,357],[826,359],[834,361],[842,363],[850,366],[858,368],[866,370],[874,372],[882,374],[890,376],[898,378],[906,379],[914,376],[922,374],[930,376]],[[496,398],[504,396],[512,392],[520,394],[528,396],[536,398],[544,400],[552,400],[560,401],[568,403],[576,404],[584,405],[592,407],[600,408],[608,410],[616,411],[624,413],[632,415],[640,417],[648,419],[656,421],[664,423],[672,425],[680,428],[688,430],[696,428],[704,428],[712,429]],[[49,292],[57,294],[65,296],[73,298],[81,300],[89,302],[97,305],[105,307],[113,310],[121,313],[129,316],[137,320],[145,323],[153,327],[161,331],[169,336],[177,340],[185,344],[193,349],[201,354],[209,358],[217,363],[225,362],[233,368],[241,369],[249,374],[257,378],[265,380],[273,382],[281,383],[289,385],[297,387],[305,388],[313,389]],[[165,272],[173,274],[181,276],[189,278],[197,275],[205,276],[213,282],[221,283],[229,285],[237,286],[245,288],[253,287],[261,292],[269,295],[277,298],[285,301],[293,305],[301,308],[309,313],[317,309],[325,312],[333,313],[341,315],[349,317],[357,319],[365,320],[373,322],[381,326],[389,327],[397,324],[405,324],[413,325],[421,324],[429,324]],[[507,391],[515,393],[523,395],[531,396],[539,399],[547,402],[555,401],[563,402],[571,403],[579,404],[587,406],[595,407],[603,409],[611,406],[619,412],[627,413],[635,415],[643,418],[651,420],[659,422],[667,424],[675,427],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437],[739,434],[747,432]],[[604,431],[612,427],[620,432],[628,437],[636,440],[644,444],[652,448],[660,452],[668,456],[676,460],[684,464],[692,468],[700,473],[708,477],[716,481],[724,485],[732,489],[740,492],[748,497],[756,500],[764,504],[772,507],[780,511],[788,514],[796,517],[804,521],[812,523],[820,526],[828,529],[836,532],[844,535],[852,538],[860,540],[868,543],[876,545],[884,548],[892,550],[900,553],[908,557],[916,559],[924,562]],[[636,442],[644,444],[652,448],[660,452],[668,456],[676,460],[684,464],[692,468],[700,473],[708,477],[716,481],[724,485],[732,489],[740,492],[748,497],[756,500],[764,504],[772,507],[780,511],[788,514],[796,517],[804,521],[812,523],[820,526],[828,529],[836,532],[844,535]],[[634,444],[642,443],[650,447],[658,448],[666,452],[674,458],[682,463],[690,467],[698,471],[706,476],[714,480],[722,484],[730,488],[738,492],[746,496],[754,499],[762,503],[770,507],[778,510],[786,513],[794,517],[802,520],[810,523],[818,526],[826,529],[834,532],[842,534],[850,537],[858,539],[866,542],[874,545],[882,548],[890,550],[898,553],[906,556],[914,558],[922,561]],[[589,404],[597,408],[605,409],[613,411],[621,412],[629,414],[637,416],[645,418],[653,420],[661,422],[669,421],[677,423],[685,428],[693,432],[701,434],[709,435],[717,437],[725,435],[733,431],[741,436],[749,436]],[[26,298],[34,293],[42,290],[50,292],[58,294],[66,296],[74,298],[82,300],[90,303],[98,305],[106,308],[114,308],[122,313],[130,317],[138,320],[146,324],[154,327],[162,332],[170,336],[178,341],[186,345],[194,350],[202,354],[210,359],[218,364],[226,369],[234,370],[242,374],[250,376],[258,378],[266,380],[274,382],[282,384],[290,386],[298,387],[306,388],[314,389],[322,390],[330,391],[338,391],[346,391],[354,391],[362,391],[370,391],[378,390],[386,389],[394,392],[402,387]],[[168,332],[176,337],[184,340],[192,343],[200,349],[208,354],[216,360],[224,362],[232,367],[240,369],[248,375],[256,378],[264,380],[272,381],[280,383],[288,385],[296,387],[304,388],[312,389],[320,390],[328,391],[336,391],[344,391],[352,391],[360,391],[368,391],[376,390],[384,389],[392,389],[400,388],[408,387],[416,386],[424,386],[432,385],[440,385],[448,384],[456,385],[464,385],[472,385],[480,386],[488,388],[496,389],[504,390],[512,392],[520,394],[528,396],[536,398],[544,400],[552,400],[560,401],[568,403],[576,404],[584,405],[592,407],[600,408],[608,410],[616,411],[624,413]],[[283,387],[291,386],[299,387],[307,388],[315,389],[323,390],[331,391],[339,391],[347,391],[355,391],[363,391],[371,390],[379,390],[387,389],[395,388],[403,387],[411,387],[419,386],[427,386],[435,385],[443,385],[451,384],[459,384],[467,385],[475,386],[483,387],[491,388],[499,390],[507,391],[515,393],[523,395],[531,396],[539,399],[547,402],[555,401],[563,402],[571,403],[579,404],[587,406],[595,407],[603,409],[611,406],[619,412],[627,413],[635,415],[643,418],[651,420],[659,422],[667,424],[675,427],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437],[739,434],[747,432]],[[342,392],[350,391],[358,391],[366,394],[374,390],[382,389],[390,389],[398,389],[406,387],[414,390],[422,386],[430,385],[438,385],[446,384],[454,384],[462,385],[470,385],[478,386],[486,387],[494,388],[502,390],[510,392],[518,393],[526,395],[534,397],[542,400],[550,400],[558,401],[566,403],[574,404],[582,405],[590,406],[598,408],[606,409],[614,411],[622,413],[630,414],[638,416],[646,418],[654,421],[662,423],[670,425],[678,427],[686,429],[694,425],[702,421],[710,425]],[[438,323],[446,327],[454,324],[462,327],[470,324],[478,324],[486,325],[494,325],[502,326],[510,326],[518,328],[526,329],[534,331],[542,331],[550,333],[558,334],[566,338]],[[690,464],[698,469],[706,471],[714,475],[722,480],[730,486],[738,492],[746,496],[754,499],[762,503],[770,507],[778,510],[786,513],[794,517],[802,520],[810,523],[818,526],[826,529],[834,532],[842,534],[850,537],[858,539],[866,542],[874,545],[882,548],[890,550],[898,553],[906,556],[914,558],[922,561]],[[321,494],[329,499],[337,500],[345,502],[353,504],[361,508],[369,511],[377,514],[385,517],[393,521],[401,523],[409,526],[417,530],[425,534],[433,539],[441,543],[449,548],[457,551],[465,555],[473,559],[481,564],[489,568],[497,572],[505,576],[513,580],[521,584],[529,589],[537,588],[545,589],[553,590]],[[291,489],[299,492],[307,492],[315,494],[323,497],[331,499],[339,500],[347,502],[355,506],[363,508],[371,511],[379,514],[387,517],[395,521],[403,523],[411,528],[419,532],[427,536],[435,540],[443,543],[451,548],[459,552],[467,556],[475,561],[483,566],[491,569],[499,574],[507,578],[515,577],[523,575],[531,581]],[[79,302],[87,302],[95,304],[103,307],[111,310],[119,312],[127,316],[135,319],[143,322],[151,326],[159,330],[167,334],[175,339],[183,343],[191,348],[199,353],[207,357],[215,362],[223,367],[231,372],[239,373],[247,375],[255,377],[263,380],[271,381],[279,383],[287,385],[295,386],[303,388],[311,389],[319,390],[327,391],[335,391],[343,391],[351,391],[359,391],[367,390],[375,390],[383,389],[391,389],[399,388],[407,387],[415,386],[423,386],[431,385],[439,385],[447,384],[455,385],[463,385],[471,385]],[[627,440],[635,434],[643,436],[651,435],[659,431],[667,433],[675,430],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437],[739,434],[747,432],[755,434]],[[582,433],[590,438],[598,434],[606,433],[614,433],[622,432],[630,436],[638,441],[646,445],[654,446],[662,450],[670,455],[678,461],[686,465],[694,469],[702,473],[710,478],[718,482],[726,486],[734,490],[742,494],[750,497],[758,501],[766,505],[774,508],[782,512],[790,515],[798,518],[806,522],[814,524],[822,527],[830,530],[838,533],[846,535],[854,538],[862,541],[870,543],[878,546],[886,549],[894,552],[902,555],[910,557],[918,560],[926,558]],[[126,320],[134,318],[142,322],[150,325],[158,330],[166,334],[174,338],[182,343],[190,347],[198,352],[206,357],[214,361],[222,366],[230,371],[238,373],[246,375],[254,377],[262,379],[270,381],[278,383],[286,384],[294,386],[302,387],[310,389],[318,389],[326,391],[334,391],[342,391],[350,391],[358,391],[366,394],[374,390],[382,389],[390,389],[398,389],[406,387],[414,390],[422,386],[430,385],[438,385],[446,384],[454,384],[462,385],[470,385],[478,386],[486,387],[494,388],[502,390],[510,392],[518,393],[526,395],[534,397],[542,400],[550,400]],[[819,531],[827,529],[835,532],[843,534],[851,537],[859,540],[867,542],[875,545],[883,548],[891,550],[899,554],[907,556],[915,559],[923,562],[931,564],[939,566],[947,569],[955,571],[963,573],[971,575],[979,576],[987,578],[995,580],[1003,581],[1011,582],[1019,583],[1027,584],[1035,585],[1043,585],[1051,586]],[[451,382],[459,384],[467,385],[475,386],[483,387],[491,388],[499,390],[507,391],[515,393],[523,395],[531,396],[539,399],[547,402],[555,401],[563,402],[571,403],[579,404],[587,406],[595,407],[603,409],[611,406],[619,412],[627,413],[635,415],[643,418],[651,420],[659,422],[667,424],[675,427],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437]],[[623,447],[631,448],[639,450],[647,445],[655,446],[663,451],[671,457],[679,462],[687,466],[695,470],[703,474],[711,478],[719,482],[727,487],[735,490],[743,494],[751,498],[759,502],[767,505],[775,509],[783,512],[791,515],[799,519],[807,522],[815,525],[823,527],[831,531],[839,533],[847,536],[855,538],[863,541],[871,544],[879,547],[887,549],[895,552],[903,555]],[[590,428],[598,423],[606,425],[614,428],[622,429],[630,435],[638,441],[646,445],[654,446],[662,450],[670,455],[678,461],[686,465],[694,469],[702,473],[710,478],[718,482],[726,486],[734,490],[742,494],[750,497],[758,501],[766,505],[774,508],[782,512],[790,515],[798,518],[806,522],[814,524],[822,527],[830,530],[838,533],[846,535],[854,538],[862,541],[870,543],[878,546],[886,549],[894,552],[902,555],[910,557],[918,560]],[[315,389],[323,390],[331,391],[339,391],[347,391],[355,391],[363,391],[371,390],[379,390],[387,389],[395,388],[403,387],[411,387],[419,386],[427,386],[435,385],[443,385],[451,384],[459,384],[467,385],[475,386],[483,387],[491,388],[499,390],[507,391],[515,393],[523,395],[531,396],[539,399],[547,402],[555,401],[563,402],[571,403],[579,404],[587,406],[595,407],[603,409],[611,406],[619,412],[627,413],[635,415],[643,418],[651,420],[659,422],[667,424],[675,427],[683,429],[691,431],[699,433],[707,435],[715,433],[723,431],[731,437],[739,434],[747,432],[755,434]],[[240,381],[248,382],[256,388],[264,392],[272,398],[280,399],[288,404],[296,404],[304,406],[312,401],[320,401],[328,404],[336,398],[344,392],[352,391],[360,391],[368,391],[376,390],[384,389],[392,389],[400,388],[408,387],[416,386],[424,386],[432,385],[440,385],[448,384],[456,385],[464,385],[472,385],[480,386],[488,388],[496,389],[504,390],[512,392],[520,394]],[[353,392],[361,391],[369,391],[377,390],[385,389],[393,388],[401,388],[409,387],[417,386],[425,386],[433,385],[441,385],[449,381],[457,385],[465,385],[473,385],[481,387],[489,388],[497,389],[505,391],[513,392],[521,394],[529,396],[537,398],[545,401],[553,400],[561,402],[569,403],[577,404],[585,405],[593,407],[601,408],[609,410]],[[438,540],[446,545],[454,549],[462,554],[470,558],[478,563],[486,566],[494,570],[502,575],[510,579],[518,582],[526,586],[534,590],[542,595],[550,600],[558,604],[566,607],[574,611],[582,613],[590,617],[598,621],[606,618]],[[29,289],[37,289],[45,291],[53,292],[61,296],[69,297],[77,299],[85,301],[93,304],[101,306],[109,309],[117,312],[125,315],[133,318],[141,322],[149,325],[157,329],[165,334],[173,338],[181,342],[189,347],[197,352],[205,356],[213,361],[221,360],[229,365],[237,367],[245,371],[253,377],[261,379],[269,381],[277,383],[285,384],[293,386],[301,387],[309,388],[317,389],[325,390],[333,391],[341,391],[349,391],[357,391],[365,391],[373,390],[381,390],[389,389],[397,388],[405,388],[413,387],[421,386],[429,385],[437,385]],[[149,328],[157,329],[165,334],[173,338],[181,342],[189,347],[197,352],[205,356],[213,361],[221,360],[229,365],[237,367],[245,371],[253,377],[261,379],[269,381],[277,383],[285,384],[293,386],[301,387],[309,388],[317,389],[325,390],[333,391],[341,391],[349,391],[357,391],[365,391],[373,390],[381,390],[389,389],[397,388],[405,388],[413,387],[421,386],[429,385],[437,385],[445,384],[453,384],[461,385],[469,385],[477,386],[485,387],[493,388],[501,390],[509,391],[517,393],[525,395],[533,397],[541,399],[549,400],[557,401],[565,402],[573,403],[581,405]],[[751.0,438.0],[759,436],[766,433],[774,431],[781,428],[789,426],[797,423],[804,421],[812,419],[820,417],[827,414],[835,412],[843,411],[851,410],[859,409],[867,409],[875,408],[883,408],[891,409],[899,410],[907,411],[915,412],[922,413],[930,415],[938,418],[945,420],[953,422],[961,424],[968,427],[976,429],[984,431],[991,434],[999,437],[1006,440],[1013,443],[1021,446],[1028,449],[1036,452],[1043,456],[1050,459],[1058,461],[1065,464],[1073,467],[1081,469],[1088,472],[1096,475],[1103,477]],[[1054.5,585.0],[1062,586],[1070,587],[1078,588],[1086,589],[1094,590],[1102,591],[1110,592],[1118,592],[1126,593],[1134,594],[1142,595],[1150,596],[1158,598],[1165,600],[1173,602],[1181,604],[1189,606],[1196,608],[1204,610],[1212,612],[1220,614],[1227,616],[1235,618],[1243,620],[1250,622],[1258,625],[1266,627],[1273,629],[1281,632],[1289,634],[1296,636],[1304,639],[1312,641],[1319,643],[1327,645],[1335,647],[1343,649],[1350,652],[1358,654],[1366,656],[1373,658],[1381,660],[1389,662],[1397,664],[1404,666],[1412,668]],[[557.0,604.5],[565,607],[572,609],[580,612],[587,614],[595,617],[603,619],[610,622],[618,624],[625,627],[633,629],[640,633],[646,638],[653,641],[661,643],[669,645],[677,646],[685,648],[692,650],[700,652],[708,653],[716,655],[724,657],[731,658],[739,660],[747,662],[755,664],[763,666],[770,668],[778,670],[786,672],[794,674],[801,676],[809,678],[817,680],[825,682],[832,684],[840,687],[847,690],[854,694],[861,697],[869,700],[876,704],[883,707],[891,710],[898,714],[905,717],[912,720]],[[908.5,340.0],[916,337],[923,334],[931,331],[938,328],[945,325],[953,322],[960,319],[968,315],[975,313],[983,311],[990,308],[998,306],[1006,303],[1013,301],[1021,298],[1029,296],[1036,294],[1044,291],[1051,289],[1059,286],[1067,284],[1075,283],[1083,283],[1091,282],[1099,281],[1107,281],[1115,280],[1123,280],[1131,279],[1138,278],[1146,278],[1154,277],[1162,277],[1170,276],[1178,277],[1186,278],[1194,279],[1202,280],[1210,280],[1218,281],[1226,282],[1234,283],[1242,284]]];
+const RAYS=[[1731,360,1386,152],[1765,358,2018,144],[1748,347,1691,43],[1765,327,1822,34],[1733,378,1415,602],[1746,377,1767,697],[1796,376,2124,633],[1739,383,1607,682],[1745,349,1580,34],[1775,388,2056,670],[1767,393,1916,677],[1778,331,1981,114],[1729,344,1496,128],[1706,417,1546,652]];
+const BEADS=[[626,85,2],[735,226,2],[805,313,2],[978,294,2],[1084,151,2],[916,138,2],[1083,397,3],[1124,481,4],[1195,405,3],[1225,389,3],[1110,396,4],[1317,38,4],[1391,72,4],[1528,111,4],[1430,401,4],[1532,546,4],[1677,493,4],[1768,75,4],[353,218,2],[1673,147,4],[1520,195,4],[1620,248,4],[1903,168,4],[2059,54,4],[2023,136,4],[1959,362,4],[1356,466,4],[1424,508,4],[1328,443,4],[1963,46,3],[2058,204,3]];
+  /* twinkle: параметры мерцания каждой точки */
+  const tws=TW.map(p=>({x:p[0],y:p[1],v:p[2]/255, ph:Math.random()*6.28, sp:CFG.twinkle.speed[0]+Math.random()*(CFG.twinkle.speed[1]-CFG.twinkle.speed[0]), s:CFG.twinkle.size[0]+Math.random()*(CFG.twinkle.size[1]-CFG.twinkle.size[0])}));
+  /* орбитеры вихря: вращение вокруг звезды (ближе к центру — быстрее) */
+  const orbs=ORB.map(p=>({r:p[0], a:p[1]/100, v:p[2]/255, w:(0.04+0.22*(1-p[0]/640))*CFG.orbit.speed, ph:Math.random()*6.28, s:CFG.orbit.size[0]+Math.random()*(CFG.orbit.size[1]-CFG.orbit.size[0])}));
+  /* светлячки по гребням и доп. линиям волн */
+  const RUNNERS=84;
+  const runners=[];
+  function respawn(r){ r.tr=TRK[(Math.random()*TRK.length)|0]; r.pos=Math.random()*3; r.sp=(14+Math.random()*26); }
+  for(let i=0;i<RUNNERS;i++){ const r={}; respawn(r); r.pos=Math.random()*r.tr.length; runners.push(r); }
+  /* ЛУЧИ звезды: мягкое ядро без контура + ОБЛАКО рассеивания (точки с разбросом,
+     растущим к концу луча) */
+  const rayruns=RAYS.map(rr=>{
+    const L=Math.hypot(rr[2]-rr[0], rr[3]-rr[1]);
+    const M=Math.max(10, Math.round(L*CFG.rays.dots/10));       // сколько точек рассеивания
+    const scat=[]; for(let i=0;i<M;i++) scat.push({
+      q:Math.random(), off:(Math.random()*2-1)*Math.sign(Math.random()-0.5||1),
+      s:0.7+Math.random()*1.4, tw:Math.random()*6.283, sp:0.8+Math.random()*1.6});
+    return {x1:rr[0],y1:rr[1],x2:rr[2],y2:rr[3],L, scat, ph:Math.random()*6.283};
+  });
+  /* КРУГИ: бусины с РАЗНЫМ шагом/размером/яркостью; пульс бежит ПО ЧАСОВОЙ */
+  const cMaxR=CFG.circles.radii[CFG.circles.radii.length-1];
+  const circruns=CFG.circles.radii.map((r,i)=>{
+    const perim=6.283*r*(1+AR)/2;
+    const n=Math.max(24,Math.round(perim/CFG.circles.gap));
+    const beads=[]; let ang=0;
+    for(let j=0;j<n*2 && ang<6.283;j++){
+      beads.push({an:ang, sz:0.55+Math.random()*1.0, br:0.45+Math.random()*0.95, tw:Math.random()*6.28});
+      ang += (6.283/n)*(0.55+Math.random()*1.1);   // РАЗНЫЙ шаг между бусинами
+    }
+    return {r, a:Math.random()*6.283, w:CFG.circles.speed*(1+(i%2? .15 : -.1)), beads};
+  });
+
+  /* ОДНА бусина-звезда: белый центр + неон-контур + лучики-крест; k = общий множитель прозрачности */
+  function drawStar(x,y,r,pulse,k){
+    ctx.globalAlpha=1;
+    const L=r*(4.0+4.0*pulse);
+    for(const [ux,uy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const g=ctx.createLinearGradient(x,y,x+ux*L,y+uy*L);
+      g.addColorStop(0,'rgba(225,242,255,'+((0.7*pulse+0.15)*k).toFixed(3)+')');
+      g.addColorStop(1,'rgba(40,120,255,0)');
+      ctx.strokeStyle=g; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+ux*L,y+uy*L); ctx.stroke();
+    }
+    const L2=L*0.5;
+    for(const [ux,uy] of [[.71,.71],[-.71,.71],[.71,-.71],[-.71,-.71]]){
+      const g=ctx.createLinearGradient(x,y,x+ux*L2,y+uy*L2);
+      g.addColorStop(0,'rgba(120,190,255,'+((0.4*pulse)*k).toFixed(3)+')'); g.addColorStop(1,'rgba(40,120,255,0)');
+      ctx.strokeStyle=g; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+ux*L2,y+uy*L2); ctx.stroke();
+    }
+    dot(SPR.bead, x, y, r*(1.5+0.8*pulse), (0.55+0.45*pulse)*k);
+  }
+  /* СТАТИЧНЫЕ бусины-звёзды (по разметке) */
+  const sbeads=BEADS.map(p=>({x:p[0],y:p[1],r:Math.max(2,p[2]), ph:Math.random()*6.283, sp:1.0+Math.random()*2.0}));
+  /* ВСПЛЫВАЮЩИЕ бусины-звёзды: рождаются, плывут вверх, исчезают */
+  const FLO_MAX=16;
+  const floaters=[];
+  function spawnFloater(){
+    return {x:60+Math.random()*(W-120), y:H*(0.55+Math.random()*0.5),
+      r:2+Math.random()*2.5, ph:Math.random()*6.283, sp:1.0+Math.random()*2.0,
+      vy:14+Math.random()*22, life:0, max:3.0+Math.random()*3.0};
+  }
+  function drawBeads(t,dt){
+    ctx.lineCap='round';
+    // статичные
+    for(const b of sbeads) drawStar(b.x,b.y,b.r,0.5+0.5*Math.sin(t*b.sp+b.ph),1);
+    // всплывающие: пополнять пул
+    if(floaters.length<FLO_MAX && Math.random()<dt*4) floaters.push(spawnFloater());
+    for(let i=floaters.length-1;i>=0;i--){
+      const f=floaters[i]; f.life+=dt; f.y-=f.vy*dt;
+      if(f.life>=f.max || f.y<-20){ floaters.splice(i,1); continue; }
+      const p=f.life/f.max;
+      const env=Math.min(1,p/0.15)*(1-Math.max(0,(p-0.7)/0.3));   // плавное появление → затухание
+      drawStar(f.x,f.y,f.r,0.5+0.5*Math.sin(t*f.sp+f.ph),env);
+    }
+  }
+  function render(t,dt){
+    ctx.clearRect(0,0,W,H);                     // фон-картинка в CSS — canvas прозрачный
+    ctx.globalCompositeOperation='lighter';
+    /* ── мерцание частиц картинки: цвет по яркости (синий→циан→белый) ── */
+    for(const p of tws){
+      const a=Math.max(0,Math.sin(t*p.sp+p.ph));
+      const al=CFG.twinkle.alpha*p.v*a*a;
+      if(al<0.03) continue;
+      const spr=p.v>0.8?SPR.white:(p.v>0.5?SPR.cyan:SPR.deep);
+      dot(spr,p.x,p.y,p.s,al);
+    }
+    /* ── вращение вихря: орбитеры ── */
+    for(const o of orbs){
+      o.a+=o.w*dt;
+      const x=CX+Math.cos(o.a)*o.r, y=CY+Math.sin(o.a)*o.r*AR;
+      if(x<0||x>W||y<0||y>H) continue;
+      const al=CFG.orbit.alpha*(0.3+0.7*o.v)*(0.55+0.45*Math.sin(t*1.3+o.ph));
+      dot(o.v>0.7?SPR.cyan:SPR.deep,x,y,o.s,al);
+    }
+    /* ── КРУГИ ОТ ЗВЕЗДЫ: бусины с разным шагом/размером/яркостью (белое ядро +
+          неон-контур), по кольцу ПО ЧАСОВОЙ бежит пульс. Дальше — бледнее/светлее ── */
+    const pulseSpan=CFG.circles.pulse*6.283;
+    for(const c of circruns){
+      c.a+=c.w*dt;                                  // угол пульса растёт = по часовой
+      const near=1-c.r/cMaxR;                       // 0 дальний … 1 ближний к звезде
+      const bri=0.32+0.85*near;                     // ближе — ярче; дальше — тусклее/светлее
+      for(const b of c.beads){
+        const x=CX+Math.cos(b.an)*c.r, y=CY+Math.sin(b.an)*c.r*AR;
+        if(x<-6||x>W+6||y<-6||y>H+6) continue;
+        let g=0.42;                                 // базовое свечение бусины
+        let d=(c.a-b.an)%6.283; if(d<0)d+=6.283;    // насколько бусина ПОЗАДИ головы пульса
+        if(d<pulseSpan) g=1-(d/pulseSpan)*0.62;     // возле головы — ярче (пульс)
+        const tw=0.82+0.18*Math.sin(t*2+b.tw);      // лёгкое мерцание
+        const al=CFG.circles.alpha*bri*b.br*(0.30+0.70*g)*tw;
+        if(al<0.03) continue;
+        const sz=CFG.circles.dot*b.sz*(0.7+0.5*near)*(0.82+0.4*g);
+        dot(SPR.bead,x,y,sz,al);
+      }
+    }
+    /* ── светлячки по гребням волн и доп. линиям (голова + хвост) ── */
+    for(const r of runners){
+      r.pos+=r.sp*dt/2*CFG.waves.speed;
+      if(r.pos>=r.tr.length-1){ respawn(r); continue; }
+      for(let k=0;k<CFG.waves.tail;k++){
+        const i=Math.floor(r.pos)-k;
+        if(i<0) break;
+        const p=r.tr[i], al=CFG.waves.alpha*(1-k/CFG.waves.tail);
+        dot(k===0?SPR.white:SPR.cyan,p[0],p[1],k===0?CFG.waves.size:CFG.waves.size*0.62,al);
+      }
+    }
+    /* ── ЛУЧИ ЗВЕЗДЫ: неоновый луч света, СВЕТИТ ВСЕГДА; по нему проходит
+          МЯГКАЯ плавная волна яркости (как солнечный луч, без «выстрелов») ── */
+    ctx.lineCap='round';
+    for(const r of rayruns){
+      const dx=r.x2-r.x1, dy=r.y2-r.y1;
+      const nx=-dy/r.L, ny=dx/r.L;                            // нормаль (перпендикуляр) к лучу
+      // 1) мягкое ядро линии БЕЗ контура; ПУЛЬС свечения: цвет дышит от текущего к неону
+      ctx.globalAlpha=1; ctx.shadowBlur=0;                    // сброс — иначе stroke берёт alpha от dot()
+      const glow=(0.5+0.5*Math.sin(t*CFG.rays.glowSpeed+r.ph))*CFG.rays.glowAmt;  // 0..glowAmt
+      const SEGC=20;
+      for(let s=0;s<SEGC;s++){
+        const a0=s/SEGC, a1=(s+1)/SEGC, m=(a0+a1)/2;
+        const fade=1-m*0.7;                                   // к концу тускнеет
+        const al=CFG.rays.alpha*fade;
+        if(al<0.02) continue;
+        const k=1-m*0.35;                                     // у центра светлее, к концу насыщеннее
+        // базовый цвет — уже неоново-синий; по фазе glow уходит в ЧИСТЫЙ неон (30,110,255)
+        const bR=70+70*k, bG=140+70*k;                        // база: сине-неоновая
+        const R=bR+(30-bR)*glow, G=bG+(110-bG)*glow;
+        ctx.strokeStyle='rgba('+(R|0)+','+(G|0)+',255,'+al.toFixed(3)+')';
+        ctx.lineWidth=CFG.rays.coreW;
+        ctx.beginPath(); ctx.moveTo(r.x1+dx*a0,r.y1+dy*a0); ctx.lineTo(r.x1+dx*a1,r.y1+dy*a1); ctx.stroke();
+      }
+      // 2) РАССЕИВАНИЕ: точки с разбросом по нормали, разброс РАСТЁТ к концу луча
+      for(const p of r.scat){
+        const q=p.q;
+        const off=p.off*CFG.rays.spread*q;                    // к концу — шире разброс
+        const x=r.x1+dx*q+nx*off, y=r.y1+dy*q+ny*off;
+        const tw=0.55+0.45*Math.sin(t*p.sp+p.tw);             // мягкое мерцание точки
+        const al=CFG.rays.alpha*(1-q*0.35)*(1-Math.abs(p.off)*0.5)*tw*0.7;
+        if(al<0.03) continue;
+        dot(SPR.deep,x,y,CFG.rays.dotSize*p.s,al);
+      }
+    }
+    ctx.globalAlpha=1;
+    drawBeads(t,dt);                             // бусины-звёзды: статичные + всплывающие
+    /* ── пульс звезды ── */
+    const pu=CFG.star.base+CFG.star.amp*Math.sin(t*1.8)+CFG.star.amp*0.5*Math.sin(t*4.7);
+    const g=ctx.createRadialGradient(CX,CY,0,CX,CY,H*0.30);
+    g.addColorStop(0,'rgba(235,248,255,'+(pu*1.15).toFixed(3)+')');   // мягче — не засвечивает лучи
+    g.addColorStop(.28,'rgba(120,185,250,'+(pu*0.5).toFixed(3)+')');
+    g.addColorStop(1,'rgba(40,90,180,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(CX,CY,H*0.34,0,6.283); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.globalCompositeOperation='source-over';
+  }
+  let last=null,tt=0;
+  function frame(ts){
+    if(!ccRunning) return;
+    if(last===null)last=ts; const dt=Math.min(.05,(ts-last)/1000); last=ts; tt+=dt;
+    render(tt,dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+/* ── ТИТУЛЬНЫЙ СЛАЙД (canvas): клик → кнопка «Начать» → клик/кнопка → загрузка ── */
+const ccBtn=document.getElementById('ccBtn');
+const ccHint=document.getElementById('ccHint');
+let ccStage=0;
+function ccAdvance(){ if(ccStage===0){ ccStage=1; ccBtn.classList.add('show'); ccHint.style.display='none'; } else startGame(); }
+function startGame(){ if(!ccActive)return; ccActive=false;
+  ccanvasEl.classList.add('gone');
+  setTimeout(()=>{ ccRunning=false; }, 900);   // остановить rAF после фейда
+  splash.classList.add('go');                  // запустить анимации сплеша при показе
   runLoading(); }
-coverBtn.addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
+ccBtn.addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
 
 document.addEventListener('keydown',e=>{
-  if(coverActive){ if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){ e.preventDefault(); coverAdvance(); } return; }
+  if(ccActive){ if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){ e.preventDefault(); ccAdvance(); } return; }   // canvas-титул — первый экран
   if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(true); }   // стрелка/пробел — ПРОПУСТИТЬ механику
   if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
 });
-document.addEventListener('click',()=>{ if(coverActive){ coverAdvance(); return; } next(false); });   // клик/тап — далее
+document.addEventListener('click',()=>{ if(ccActive){ ccAdvance(); return; } next(false); });   // клик/тап — далее
 
 /* ============ КОМЕТЫ ПО МАРШРУТАМ (все одновременно) ============ */
 const NS='http://www.w3.org/2000/svg';
@@ -1509,7 +2062,7 @@ const comets=routes.map(path=>{
 const OBJS=[
   {oids:['o-delc'],  mx:1896, my:128, name:'Деловой центр',         route:0},
   {oids:['o-bizc'],  mx:485,  my:199, name:'Бизнес-центр',          route:1},
-  {oids:['o-rest'],  mx:252,  my:362, name:'Ресторан',              route:2},
+  {oids:['o-rest'],  mx:375,  my:362, name:'Ресторан',              route:2},
   {oids:['o-cafe'],  mx:530,  my:583, name:'Салон красоты',         route:3},
   {oids:['o-bank'],  mx:833,  my:280, name:'Банк',                  route:4},
   {oids:['o-tech'],  mx:984,  my:96,  name:'Технопарк',             route:5},
@@ -1519,7 +2072,7 @@ const OBJS=[
   {oids:['o-clust'], mx:1248, my:352, name:'Фитнес-клуб',           route:9},
   {oids:['o-park'],               mx:1757, my:394, name:'Креативный кластер',    route:null},
   {oids:['o-cowork'],             mx:640,  my:358, name:'Кафе',                  route:null},
-  {oids:['o-start'],              mx:384,  my:44,  name:'Инновационный кластер', route:null, labelR:true, shortConn:true},
+  {oids:['o-start'],              mx:384,  my:25,  name:'Инновационный кластер', route:null, labelR:true, shortConn:true},
   {oids:['o-incub'],              mx:303,  my:189, name:'Мастерская',            route:null},
   /* герой: только название НАД героем (точка из SVG-маркера 141/407) — без октаэдра и без подсветки контура.
      stars: ряд звёзд над названием. filled — закрашено сейчас (растёт по ходу презентации); total — всего слотов */
@@ -1592,16 +2145,35 @@ function typeSay(el, text, guard, timers){
   })();
 }
 /* ── ИМИТАЦИЯ ПИСЬМА ОТ РУКИ: буквы «вытекают» чернилами, вместо каретки — перо ── */
-function handWrite(el, text, guard, timers){
+function handWrite(el, text, guard, timers, done){
   el.classList.add('show');
   el.innerHTML=''; let i=0;
   (function step(){
     if(guard && !guard()) return;                          // ушли со сцены — стоп
-    if(i>=text.length) return;
+    if(i>=text.length){ done&&done(); return; }            // дописали — колбэк (для «след. облако после завершения»)
     if(text[i]==='\n'){ el.appendChild(document.createElement('br')); i++; step(); return; }  // перенос строки
     const s=document.createElement('span'); s.className='hw-ch'; s.textContent=text[i];
     el.appendChild(s); i++;
     timers.push(setTimeout(step, 55));                     // темп «руки» — медленнее печати
+  })();
+}
+/* письмо в ОБЛАКЕ: все буквы присутствуют сразу (размер фиксирован по полному тексту),
+   проявляются по очереди чернилами — облако не растягивается */
+function handWriteCloud(el, text, guard, timers, done){
+  el.classList.add('show');
+  el.innerHTML='';
+  const spans=[];
+  for(const ch of text){
+    if(ch==='\n'){ el.appendChild(document.createElement('br')); continue; }
+    const s=document.createElement('span'); s.className='hc-ch'; s.textContent=ch;
+    el.appendChild(s); spans.push(s);
+  }
+  let i=0;
+  (function step(){
+    if(guard && !guard()) return;
+    if(i>=spans.length){ done&&done(); return; }
+    spans[i].classList.add('on'); i++;
+    timers.push(setTimeout(step, 55));
   })();
 }
 /* реплика героя на карте (сцена 3) — через общий шаблон */
@@ -1675,10 +2247,7 @@ function startRoutes(){
     if(!allDone) requestAnimationFrame(frame);          // дошли все — стоп (без цикла)
     else {                                              // все кометы прошли
       routesG.style.opacity='0';                        // убрать маршруты из сцены
-      if(id()==='map' && !mapReplyShown && !reconStarted){   // шаг 2 — реплика героя, ждём клик/→
-        mapReplyShown=true;
-        setTimeout(()=>{ if(id()==='map' && !reconStarted) typeReply(); }, 3000);   // задержка появления реплики 3 сек
-      }
+      // реплика героя убрана — клик/→ сразу поднимает бинокль (startMapRecon)
     }
   }
   requestAnimationFrame(frame);
