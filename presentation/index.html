@@ -2596,10 +2596,10 @@ function resetDanger(){
   dgEndDone=false;                                                    // концовка (Байков + титул)
   dgAva.classList.remove('show'); dgAvatar.classList.remove('play','live'); dgAvatar.querySelectorAll('.ava-spark').forEach(s=>s.remove());
   dgSay.classList.remove('show'); dgSay.innerHTML=''; dgFio.classList.remove('show'); dgFio.innerHTML=''; dgTitle.classList.remove('pop');
-  clearTimeout(roofDrawTimer);                                        // герой-наблюдатель
-  roofSparks.classList.remove('play'); roofHero.classList.remove('show','reveal'); roofGlow.classList.remove('show','draw','glow');
   if(!dangerActive) return;                                          // не были в danger — чужие сцены (карта/Штаб) не трогаем
   dangerActive=false;
+  clearTimeout(roofDrawTimer);                                        // герой-наблюдатель — гасим ТОЛЬКО при выходе из danger
+  roofSparks.classList.remove('play'); roofHero.classList.remove('show','reveal'); roofGlow.classList.remove('show','draw','glow');
   const hp=heroPanel(); if(hp){ hp.shown=false; hp.el.classList.remove('show'); hp.nameEl.textContent=''; hp.nameEl.classList.remove('typed'); }   // спрятать панель героя (ранг 3★ сохраняем)
   setCafeRed(false);
   OBJS.forEach(o=>{ if(o.levelUp) return; o.shown=false; o.el.classList.remove('show');   // спрятать объекты (герой не трогаем — сквозной ранг)
