@@ -125,95 +125,121 @@ low detail, changing color palette.
   НЕ рисуем** — вопросы героя показываем тултипами в HTML.
 
 ## Содержание кадра
-- **Участок реальной улицы центра Москвы**, лето, день. Дома **вплотную**, ряд **3-этажных**
-  классических зданий, на первом этаже — витрины/входы.
-- **Ракурс как на референсе (Яндекс, Б. Никитская):** камера на тротуаре смотрит **ВДОЛЬ улицы**,
-  ряд домов идёт **по правой стороне под углом и уходит вглубь** (перспектива убегает в даль),
-  тротуар на переднем плане. НЕ фронтальный вид «в лоб».
-- **В центре** — здание, у которого помещение на 1-м этаже **без ремонта и не эксплуатируется**:
-  пыльные окна, закрытая дверь, немного бытового мусора, **вывески нет**, за стеклом — пустое
-  помещение (будущее кафе).
-- **Слева, через одно обычное здание** — дом, похожий на **БАНК** (колонны, тёмный фасад),
-  пустая табличка-вывеска над входом (под «БАНК», добавим в HTML).
-- **Справа, через одно обычное здание** — хороший современный **офис** (ЦУБ), пустая
-  табличка-вывеска (под «ЦУБ», в HTML).
-- На улице **небольшие деревья**, **машин нет**. Вдалеке мелко — намёк на Москва-Сити.
-- **Герой** под **45°** к зрителю (3/4 спереди): предприниматель 30–35 лет, современный
-  городской стиль, стоит перед входом в пустое помещение, **слегка чешет затылок**, в одной руке
-  **планшет/папка с документами**; лицо — смесь мотивации, интереса и лёгкой растерянности.
-  **Без мыслей-бубблов над головой** — вопросы показываем тултипами в HTML.
+- **Участок реальной улицы центра Москвы**, лето, день. Стиль/материалы — как `cafe-1.png` и карта
+  **`Карта Москвы без героя.png`**. Кадр **воссоздаёт последовательность объектов с карты**.
+- **ОЧЕРЁДНОСТЬ ОБЪЕКТОВ слева-направо (как на карте):**
+  1. **Часть здания** у левого края (обрезана рамкой, ряд продолжается влево);
+  2. действующий офис **«ЦУБ»** (тёмная вывеска-плашка; за стеклом ресепшен: сотрудник + клиент);
+  3. **КАФЕ** — большое, пустое, совсем «ДО» (главный объект, левая часть кадра);
+  4. **ПЕРЕУЛОК** — сквозной, выходит на шоссе (разделяет кафе и банк);
+  5. **БАНК (ФСК)** — светлый неоклассический: колонны, портик, фронтон, зелёная крыша (как на карте);
+  6. **ПАРКОВАЯ ЗОНА** — зелёный сквер с деревьями, газонами и дорожками;
+  7. **ШОССЕ** — широкая главная дорога поперёк сцены;
+  8. **ТОРГОВЫЙ ЦЕНТР в стиле ЦУМ/ГУМ** — за шоссе: длинный богатый исторический фасад со
+     стеклянной сводчатой крышей-аркадой;
+  9. справа на горизонте — **МОСКВА-СИТИ** (небоскрёбы в дымке, как на карте).
+- **Кафе = пустое «до»:** пыльные окна, закрытая дверь, вывески НЕТ, внутри пусто, никаких работ.
+  (Отличие от слайда 2 — там ремонт.)
+- **Пропорции ~55/45:** левые ~55% — блок кафе (часть дома + ЦУБ + большое кафе);
+  правые ~45% — переулок → банк → парк → шоссе → ЦУМ → Moscow-City, всё уходит в перспективу.
+- **Перспектива обязательна:** камера вдоль улицы, объекты уходят вправо-вглубь; НЕ плоский фронт.
+- **Moscow-City — справа** (как `Карта Москвы без героя.png`), не слева.
+- **Героя в кадре НЕТ** — накладываем в HTML. Без мыслей-бубблов.
+- Текст вывесок в картинке НЕ рисуем (ЦУБ — пустая плашка, текст в HTML); банк/ЦУМ — без текста.
 
 ## Полный промпт (вариант B)
 
 ```
 Photoreal cinematic key art, top-tier rendering quality, bright clean realistic look (a calm
-everyday business scene — NO weapons, NO violence). A REAL stretch of a central Moscow street on a
-sunny summer day. EYE-LEVEL street-view perspective looking DOWN ALONG the street: the row of
-buildings runs along the RIGHT side at an ANGLE and RECEDES into the distance with strong vanishing
-perspective, wide pavement in the foreground (exactly like a Yandex/Google street-view panorama).
-NOT a flat head-on facade view. Warm natural daylight, soft blue sky with light clouds, gentle haze,
-ultra-detailed. Ultra-wide cinematic panorama, target output 7680 x 2592 px (~2.96:1 aspect ratio),
-professional look for a corporate government presentation.
+everyday business scene — NO weapons, NO violence). A REAL sunny summer daytime stretch of central
+Moscow, same visual style, materials, lens and warm color grade as the reference image (cafe-1.png)
+and our aerial map (Карта Москвы без героя.png). This image RECREATES the sequence of landmarks from
+that map. EYE-LEVEL street-view with STRONG VANISHING PERSPECTIVE, wide pavement in the foreground.
+Warm natural daylight, soft blue sky with light clouds, gentle haze, ultra-detailed. Ultra-wide
+cinematic panorama, target output 7680 x 2592 px (~2.96:1), professional look for a corporate
+government presentation.
 
-SCENE: a continuous ROW of 3-STOREY classic central-Moscow buildings standing FLUSH against each
-other, wall to wall, ornate plastered historic facades with ground-floor shopfronts, the row angled
-along the RIGHT side and receding into the distance. Going along the row from NEAR to FAR:
-  - nearest in front: a BANK-like building — a stately facade with COLUMNS and a darker
-    stone front, with a BLANK rectangular sign plate above its entrance (leave it empty, no text);
-  - (the focus, mid-frame) a building whose GROUND-FLOOR unit is EMPTY and NOT in use: DUSTY windows,
-    a CLOSED door, a little bit of street litter, NO sign (blank fascia), and through the glass an
-    empty bare interior — a vacant retail space (the future cafe, before any works);
-  - further down the row: a nice clean modern OFFICE on the ground floor, with a BLANK
-    sign plate (leave it empty, no text).
-Between these are ordinary residential buildings, all flush in one row. Small young trees along the
-pavement, NO cars and NO traffic on the street. Far in the distance, small and hazy, a faint hint of
-the Moscow-City towers. Keep the scene realistic and the sky clean for later UI overlay.
+COMPOSITION: proportions ~55/45. The LEFT ~55% is the CAFE BLOCK — a partial building at the frame
+edge, the ЦУБ office, and a LARGE EMPTY CAFE (the cafe is the MAIN subject and must be big, since it
+will be edited later). The RIGHT ~45% opens into DEPTH with the rest of the landmarks receding
+toward the right with strong perspective (do NOT flatten into a frontal facade view). Keep the upper
+sky open for later text overlay.
 
-CHARACTER: the SAME hero — a young entrepreneur about 30-35, modern urban casual clothes — standing
-on the pavement in front of the empty unit's entrance, turned about 45 degrees toward the viewer
-(three-quarter front, face visible), lightly scratching the back of his head with one hand and
-holding a tablet / a folder of documents in the other; his expression is a mix of motivation,
-curiosity and slight confusion. NO thought bubbles, NO speech balloons anywhere — nothing floating
-around his head.
+LANDMARK SEQUENCE, left to right (recreating the map):
+  1) LEFT EDGE — a PARTIAL classic building, cut off by the frame; the row continues further LEFT;
+  2) the "ЦУБ" OFFICE — a classic light facade with a dark modern SIGNBOARD panel over the shopfront
+     (leave the panel blank if Cyrillic distorts, text added later). An ACTIVE, working office —
+     through the glass entrance door a lit RECEPTION desk with a receptionist and a client inside;
+  3) the CAFE — LARGE and WIDE, its long storefront extending toward the center (the MAIN subject),
+     in its raw "BEFORE" state: dusty windows, a closed door, NO signboard at all, an empty bare
+     interior. NO renovation, NO works, NO ladder/paint/cement — just a big vacant space;
+  4) a NARROW single-lane COURTYARD side lane (visibly small and modest) that SEPARATES the cafe from
+     the bank; it runs from the foreground straight back and simply ENDS at a T-JUNCTION with the main
+     avenue — see the ROADS block below;
+  5) the BANK (ФСК) — a grand NEOCLASSICAL building matching the map: LIGHT sandy-grey stone (NOT
+     dark), a full-width PORTICO with TALL CORINTHIAN COLUMNS, a triangular PEDIMENT, a low GREEN
+     (copper) roof, grand entrance steps. Its signboard panel is BLANK — no text;
+  6) a green PARK ZONE — a landscaped square / park with trees, lawns and walking paths;
+  7) the MAIN AVENUE (see the ROADS block) — the big wide multi-lane road on the RIGHT leading toward
+     Moscow-City, with the ЦУМ department store across it;
+  8) beyond the highway, a large ЦУМ/ГУМ-STYLE DEPARTMENT STORE — a long ornate late-19th-century
+     facade with rich decorative stonework and a GLASS-VAULTED arcade roof (like Moscow's ГУМ/ЦУМ);
+  9) far away on the RIGHT horizon, CLEARLY VISIBLE, the MOSCOW-CITY glass skyscraper cluster in soft
+     haze (readable, not washed out), matching the map where Moscow-City is on the RIGHT.
 
-COMPOSITION: ultra-wide street-view, the row of flush 3-storey buildings angled along the RIGHT and
-receding into the distance, the empty ground-floor unit as the focal point, the bank nearer in
-front, the office further down the row; hero in the lower-center foreground at 45 degrees, wide
-pavement, small trees, clean pavement and sky.
+ROADS — there are EXACTLY TWO roads, clearly DIFFERENT in size; do NOT add any others:
+  • THE MAIN ROAD (the only big road): a WIDE multi-lane AVENUE with painted lane markings and curbs,
+    on the RIGHT of the frame, running into the distance TOWARD THE MOSCOW-CITY towers, with the ЦУМ
+    department store across it. This is unmistakably the main through-road — it is CONTINUOUS and
+    unbroken along its whole length, nothing covers or interrupts it.
+  • THE SIDE LANE (clearly secondary): a SMALL, NARROW, single-lane COURTYARD lane, visibly narrower
+    and more modest than the avenue, tucked BETWEEN the cafe and the bank. It runs from the foreground
+    straight back and simply ENDS where it reaches the main avenue, forming a T-JUNCTION. It NEVER
+    crosses, covers, replaces or merges with the main avenue.
+The wide tiled PEDESTRIAN PAVEMENT in the foreground (along the cafe/ЦУБ/bank fronts) is NOT a road —
+no cars on it. Keep the main avenue as the one obvious "big road"; the side lane stays small and
+secondary; the two must never blend into one asphalt area.
 
-MOOD: bright optimistic real summer day in central Moscow, an honest "day one, lots of questions"
-feeling.
+Small young trees along the pavement, NO cars and NO traffic. NO hero, NO main character, NO crowd —
+the ONLY people are the receptionist + client inside the ЦУБ office. The scene stays ready for
+characters to be composited in later. NO thought bubbles, NO speech balloons anywhere.
+
+MOOD: bright optimistic real summer day in central Moscow.
 
 OUTPUT: ultra-wide 7680 x 2592 px, ~2.96:1. --ar 296:100  (если генератор не примет — --ar 3:1,
 затем апскейл до 7680x2592 и обрезать боковины).
 
-keep the SAME character face and clothes and the SAME summer daylight mood as the previous slides;
-do NOT switch to night or a dark palette.
+keep the SAME summer daylight mood and the SAME style as the reference; do NOT switch to night or a
+dark palette.
 
-avoid: ANY text, letters, words, numbers inside the image (signs must be BLANK); thought bubbles,
-speech balloons, any floating clouds around the head; flat head-on facade view; UI, HUD, watermarks,
-logos; weapons, violence; cars, traffic; night or dark palette; different character face; flat
-cartoon; low detail.
+avoid: ANY text, letters, words, numbers inside the image (signs must be BLANK); any hero / main
+character; a crowd of people (only the receptionist + client inside the ЦУБ office are allowed);
+cars, traffic; night or dark palette; flat cartoon; low detail; Moscow-City on the left; a dark /
+heavy / modern bank building (the bank must be a LIGHT-stone classical colonnaded building with a
+pediment and a green roof, as on our map); a flat frontal facade view (keep strong perspective and
+depth); the side / courtyard lane crossing over or covering the main road (it must only meet it at a
+T-junction; the main road stays continuous and unbroken); making the side lane as wide as the main
+avenue (it must be clearly NARROWER); adding more than TWO roads (exactly two: one wide main avenue +
+one narrow side lane); confusing the pedestrian tiled pavement for a road.
 ```
 
 ## Текст — накладываем в HTML (не в картинку)
-- **Вывески (точный текст, рисуем в HTML поверх пустых табличек):**
-  - над входом «банка» (ближнее здание, = ФСК) — **«Московский гарантийный фонд»**;
-  - над входом «офиса» (дальше по ряду, = Мой бизнес/МБМ) — **«Мой бизнес»** (можно подпись
-    «центр оказания услуг» + фирменный знак-локация);
-  - центральное помещение (будущее кафе) — **без вывески**.
-- ⚠️ Кириллицу в самой картинке НЕ генерим (буквы плывут) — таблички в изображении пустые,
-  текст вывесок ставим оверлеем в HTML.
-- **Мысли героя — НЕ рисуем бубблы в картинке.** Вопросы показываем тултипами в HTML
-  (например, иконка «?» у героя, по наведению — всплывающие подсказки):
+- **Только вывеска ЦУБ** несёт текст: «ЦУБ / центр услуг для бизнеса» — в картинке пустая плашка,
+  текст ставим оверлеем в HTML.
+- **У кафе вывески нет** (пустое помещение). **У банка вывеска пустая, без текста.**
+- ⚠️ Кириллицу в самой картинке НЕ генерим (буквы плывут) — таблички пустые, текст в HTML.
+- **Мысли/вопросы героя — НЕ в картинке.** Показываем тултипами в HTML:
   «ИП или ООО?» · «Где взять деньги?» · «Какой налоговый режим выбрать?» · «Где лучше открыться?»
 
 ## Заметки (вариант B)
-- **3 интерактивных объекта:** пустое помещение (будущее кафе) · БАНК (ФСК) · ЦУБ (Мой бизнес/МБМ).
-  Контуры/гексы наложим в HTML по новому layout-SVG.
-- **Дома вплотную, 3 этажа, классика**, ракурс уличный 3/4 — как на референсе (Большая Никитская).
-- **Без машин**, небольшие деревья. Москва-Сити — мелким намёком вдали.
-- Герой теперь виден **в 3/4 спереди** (лицо), с планшетом — одно и то же лицо во всех слайдах.
+- **Очерёдность (как на карте `Карта Москвы без героя.png`):** часть дома → ЦУБ → кафе → переулок →
+  банк (ФСК) → парк → шоссе → ТЦ в стиле ЦУМ/ГУМ → **Moscow-City справа**.
+- **Кафе — главный объект слева** (~55%), пустое «до». Правые ~45% — банк/парк/шоссе/ЦУМ/Moscow-City в перспективу.
+- **Кафе совсем «до»** — пустое помещение, никаких работ (в отличие от слайда 2 «ремонт»).
+- **Текст несёт только ЦУБ** (плашка → HTML). Банк/ЦУМ — без текста.
+- **Героя в кадре нет** — генерим отдельно, накладываем в HTML.
+- **Слайды 2 и 3 = edit этого кадра** (меняем только кафе) — их описание базы обновлено под новую раскладку.
+- **Интерактивные объекты** (контуры/гексы в HTML по layout-SVG): кафе · ЦУБ · банк(ФСК) · ЦУМ.
 - Сверхширокий `--ar 3:1`, апскейл до 7680×2592.
 
 ---

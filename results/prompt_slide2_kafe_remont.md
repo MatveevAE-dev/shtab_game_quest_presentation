@@ -1,58 +1,54 @@
-# Промпт картинки — Слайд 2 «Ремонт кафе» (edit / inpaint поверх слайда 1)
+# Промпт картинки — Слайд 2 «Ремонт кафе» (edit финального кадра слайда 1)
 
-**Идея:** та же улица и тот же кадр, что на слайде 1, но кафе **в процессе ремонта**:
-внутри идут работы, появилась барная стойка и шкафы, фасад кафе стал **свежим** (новые
-материалы), вешается вывеска **«Ваш любимый КОФЕ»**. Герой с планом в руках общается
-с бригадиром. У входа — стремянка для монтажа вывески, рядом на тротуаре ведро краски
-и 2 мешка с цементом.
+**База:** финальный кадр слайда 1 — **`presentation/assets/img/bg/cafe-1.png`** («кафе ДО»).
+Слайд 2 = **та же картинка**, меняем **ТОЛЬКО кафе**: из пустого/заброшенного → **в РЕМОНТЕ**.
+Всё остальное (ЦУБ, банк, площадь, перспектива, деревья, Moscow-City, свет) — **1-в-1**.
 
-## ⚙️ Как запускать (edit с маской — иначе перерисует весь кадр и уронит качество)
-- Грузишь **картинку слайда 1** в ChatGPT/DALL-E edit (или Midjourney Vary Region / inpaint).
-- **Выделяешь маской ТОЛЬКО зону кафе** (центральная витрина + фасад над ней + кусок тротуара
-  перед входом). Всё вне маски ИИ не трогает → композиция, свет, левые здания, перспектива
-  и качество сохраняются.
-- Размер/разрешение остаются как у исходника (edit не меняет размер).
-- ⚠️ Кириллица на вывеске «Ваш любимый КОФЕ» у ИИ может поплыть. Самый надёжный путь —
-  оставить место под вывеску, а **текст наложить в HTML / фоторедакторе**.
+## Что есть на базовом кадре (cafe-1.png) — НЕ менять
+- Слева: обрезок дома у края → офис **«ЦУБ»** (тёмная вывеска «ЦУБ / Центр услуг для бизнеса»,
+  за стеклом — ресепшен, сотрудник + клиент) → **кафе** (большая тёмная грязная витрина, пусто внутри).
+- Передний план: широкая **плитка-площадь**.
+- Правее: открытая мощёная площадь, на углу — **светлый неоклассический банк** (колонны, портик,
+  фронтон, зелёная крыша), в глубину уходит **главная аллея** с рядом деревьев.
+- Справа на горизонте — **Moscow-City**. Солнечный летний день, тёплый свет.
 
-## Полный промпт (edit зоны кафе)
+## ⚙️ Как запускать
+- **Лучший путь — EDIT `cafe-1.png`:** приложить картинку и попросить изменить **только зону кафе**
+  (витрина + фасад над ней + кусок тротуара перед входом), сохранив весь остальной кадр без
+  изменений. Так сцена гарантированно совпадёт со слайдом 1.
+- **Если тул без масок (точечные комментарии):** поставить точку на кафе и дать текст ниже.
+- **Размер:** 7680 × 2592 px (≈ 2,96:1) — как слайд 1. Edit размер не меняет.
+- ⚠️ Кириллица: вывеску ЦУБ **не трогаем** (она уже есть). У кафе вывески НЕТ.
+
+## Промпт EDIT (менять только кафе)
 ```
-Edit ONLY the masked area (the central cafe storefront, its facade strip above it, and the
-pavement right in front of its entrance). Keep the ENTIRE rest of the image 100% unchanged —
-same composition, same street, same buildings on the left, same perspective, same daylight,
-same colors, same resolution and sharpness. Do NOT re-render or restyle anything outside the mask.
+Edit ONLY the cafe unit (its storefront glass, the facade strip above it, and the pavement right in
+front of its entrance). Keep the ENTIRE rest of the image 100% unchanged — same ЦУБ office, same
+neoclassical columned bank, same paved plaza, same trees, same street, same vanishing perspective,
+same Moscow-City on the right, same daylight, same colors, same resolution and sharpness. Do NOT
+re-render or restyle anything outside the cafe.
 
-Inside the masked cafe area, change the state from "empty / before works" to "RENOVATION IN
-PROGRESS, almost a cafe": the FACADE around the storefront is now FRESH and renewed — clean new
-cladding, repaired plaster, fresh paint, new window frames (no more dust, peeling or grime). The
-big storefront glass is clean; through it you can see the INTERIOR being fitted out: a new BAR
-COUNTER, wooden CABINETS / shelving along the wall, some tools, a step-stool, work lights — clearly
-a place mid-renovation turning into a cafe.
-
-PEOPLE — exactly TWO: (1) the SAME hero entrepreneur — KEEP HIM IDENTICAL to the previous slide:
-same FACE and facial features, same hairstyle and hair colour, same body build / physique, same
-height, same skin tone, same age, same casual clothes (light shirt over white t-shirt, blue jeans,
-white sneakers). Do NOT redraw, restyle, slim down, age or change his appearance in any way — it
-must read as the exact same person. He stands on the pavement holding a rolled-out PLAN / blueprint
-in his hands. (2) a FOREMAN / construction supervisor in a work jacket and hard hat standing next
-to him, the two talking and pointing at the work. Keep both photoreal and naturally lit by the same
-warm daylight.
-
-DETAILS: a step LADDER leaning by the storefront where a new SIGNBOARD is being mounted above the
-entrance — the sign reads "Ваш любимый КОФЕ" in clean modern white Cyrillic letters. On the
-pavement nearby place a bucket of paint and TWO bags of cement. Keep everything photoreal, subtle
-and consistent with the existing scene. No other changes outside the mask.
+Change the cafe from its empty / derelict "before" state to "RENOVATION IN PROGRESS": the FACADE
+around the storefront becomes FRESH and renewed — clean new cladding, repaired plaster, fresh paint,
+new window frames (no more grime, dust or peeling). The big storefront GLASS is now clean; through
+it the INTERIOR is being fitted out — a new BAR COUNTER, wooden CABINETS / shelving along the wall,
+tools, a step-stool, work lights — clearly a place mid-renovation turning into a cafe. A step LADDER
+leans by the entrance; on the pavement in front, a bucket of paint and TWO bags of cement.
+Optionally ONE worker in a work jacket and hard hat doing repair work. The cafe still has NO
+signboard (no text, no logo above the entrance). Keep everything photoreal, subtly lit by the same
+warm daylight, consistent with the rest of the scene. No other changes.
 ```
 
-## Текст — надёжнее в HTML (не в картинку)
-- **Вывеска кафе:** «Ваш любимый КОФЕ» — если ИИ исказит кириллицу, оставить пустую табличку
-  и наложить текст/логотип в HTML.
-- Вывески соседей («Мой бизнес», «Московский гарантийный фонд») — НЕ трогаем (вне маски).
+## Если тул только точечные комментарии (без масок)
+Точку — на витрину кафе, текст:
+> Преврати это кафе из пустого/заброшенного в состояние ремонта: свежий фасад, чистое стекло,
+> внутри идёт отделка — барная стойка, деревянные шкафы, инструменты, рабочий свет; у входа
+> стремянка, на тротуаре ведро краски и 2 мешка цемента. Вывески у кафе нет. Всё остальное на
+> картинке не меняй.
 
 ## Заметки (слайд 2)
-- **Состояние кафе: «ремонт»** — переход между слайдом 1 («до») и будущим слайдом («готовое кафе»).
-  Важен контраст состояний одного и того же помещения.
-- **2 человека:** герой (с планом) + бригадир (каска/спецовка). Лицо/одежда героя — как везде.
-- **Реквизит ремонта:** стремянка у вывески, ведро краски, 2 мешка цемента, барная стойка и
-  шкафы за стеклом.
-- Всё вне зоны кафе (левые дома, ФСК справа, небо, тротуар вдали) — **без изменений**.
+- Отличие от слайда 1 — **только кафе** (ремонт вместо пустоты). Улица/банк/ЦУБ/площадь/перспектива/
+  Moscow-City — идентичны `cafe-1.png`.
+- **У кафе вывески нет** (только ремонт). ЦУБ — уже с вывеской, не трогаем.
+- **Героя в кадре нет** — накладываем в HTML. Можно 1 рабочего у стремянки.
+- Реквизит ремонта: стремянка, ведро краски, 2 мешка цемента, барная стойка и шкафы за стеклом.
