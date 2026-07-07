@@ -634,6 +634,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* контур кафе → неон-ОРАНЖЕВЫЙ сигнал опасности (перед аватаром Байкова) — быстрый тревожный пульс */
 .co-outline.danger path{stroke:#ff7b1c;stroke-dashoffset:0;animation:coDanger 1s ease-in-out infinite}
 @keyframes coDanger{0%,100%{filter:drop-shadow(0 0 6px #ff7b1c)}50%{filter:drop-shadow(0 0 17px #ff7b1c) drop-shadow(0 0 7px #ff3d00)}}
+/* эскаватор ОПАСНОСТИ (слайд 12): приезд кадрами (точки из «Движение эскаватора.svg») + оранжевый неон */
+.co-exc{position:absolute;z-index:4;left:89.55%;top:52.49%;width:5.34%;height:auto;opacity:0;
+  transform:scaleX(var(--flip,1));transform-origin:center;
+  transition:left .6s ease,top .6s ease,width .6s ease}   /* переезды между точками */
+.co-exc.reveal{animation:coExcReveal 2.2s ease .7s both}
+@keyframes coExcReveal{
+  0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px #ff7a00)}
+  100%{opacity:1;filter:blur(0) drop-shadow(0 0 5px #ff7a00)}}
+.co-exc.glow{filter:drop-shadow(0 0 1px #ffb45e) drop-shadow(0 0 3px #ff7a00);animation:excGlow 1.2s ease-in-out infinite}
+#cafeopen .co-exc-sparks{position:absolute;left:89.55%;top:52.49%;width:5.34%;height:15%;pointer-events:none;z-index:5}
+#cafeopen .co-exc-sparks.play .roofspark{animation:roofSpark .7s ease-out forwards}
+#cafeopen .co-exc-sparks .roofspark{background:#ffd24a;box-shadow:0 0 8px #ff9a2e,0 0 14px #ff7a00}   /* оранжевые */
 /* облако пыли — мультяшные белые клубы */
 .co-dust{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0}
 .co-dust .puff{position:absolute;transform:scale(0);opacity:0;background-repeat:no-repeat;
@@ -647,6 +659,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .co-dust.play .puff{animation:puff var(--pd,1.5s) ease-out forwards;animation-delay:var(--del,0s)}
 @keyframes puff{0%{transform:scale(0);opacity:0}18%{opacity:.95}55%{transform:scale(1);opacity:1}100%{transform:scale(1.3);opacity:0}}
 /* ── МИССИЯ 3 (слайд 15): готовое кафе (cafe-3) + вывеска «Ваше любимое кофе» (подсветка как на слайде 13) ── */
+/* ── «Больше чем бизнес» (слайд 13): интерьер кафе + градиент как на слайде 4 (тёмное справа под текст) ── */
+.morebiz{position:absolute;inset:0;z-index:16;background:#04070c;display:none}
+.morebiz.show{display:block}
+.mb-stage{position:absolute;inset:0;margin:auto;overflow:hidden;z-index:1;
+  width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
+  background:linear-gradient(90deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%),
+             url("assets/img/bg/cafe - interior.png") center/cover;
+  container-type:size}
+.mb-title{position:absolute;right:5cqw;top:50%;z-index:6;margin:0;
+  font-family:var(--hauss-wide);font-weight:700;color:#fff;text-transform:uppercase;
+  font-size:4.6cqw;line-height:1.05;letter-spacing:.02em;max-width:50cqw;text-align:left;
+  text-shadow:0 2px 20px rgba(0,0,0,.55);opacity:0;transform:translateY(-50%) scale(.9);transform-origin:right center}
+.mb-title.pop{animation:mbPop 1s cubic-bezier(.2,.7,.25,1) forwards}
+@keyframes mbPop{to{opacity:1;transform:translateY(-50%) scale(1)}}
 .mission3{position:absolute;inset:0;z-index:16;background:#04070c;display:none}
 .mission3.show{display:block}
 .m3-stage{position:absolute;inset:0;margin:auto;overflow:hidden;z-index:1;
@@ -660,8 +686,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 #mission3 .cafe-name{left:36.7%;top:49%}
 /* эскаватор (rect2 ~1026,279) — reveal (blur→скан) + ОРАНЖЕВЫЙ неон (как слайд 14) */
 .m3-exc{position:absolute;z-index:3;left:47.24%;top:38.5%;width:24.1%;height:auto;opacity:0;
-  transform:rotate(-2deg);transform-origin:center;
-  transition:left .6s ease,top .6s ease,width .6s ease}   /* 3-кадровое движение (как скорая) */
+  transform:rotate(-2deg);transform-origin:center}   /* статично припаркован */
 .m3-exc.reveal{animation:m3ExcReveal 2.2s ease .7s both}   /* как герой: искры .7с → фото из размытия (без скана) */
 @keyframes m3ExcReveal{
   0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px #ff7a00)}          /* фото из размытия */
@@ -1575,11 +1600,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
         <div class="mission-name" id="coFio"></div>
       </div>
       <div class="co-dust" id="coDust"></div>                              <!-- мультяшное белое облако пыли -->
+      <!-- эскаватор ОПАСНОСТИ: приезжает справа→влево (кадры/картинки из «Движение эскаватора.svg») -->
+      <div class="co-exc-sparks" id="coExcSparks"></div>
+      <img class="co-exc" id="coExc" src="assets/img/objects/excavator_bucket_mid_alpha_tight.png" alt="">
+      <div class="co-dust" id="coExcDust"></div>                            <!-- пыль от ковша -->
+      <svg class="danger-stars" id="coStars" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid slice"><g id="coStarsG"></g></svg>
+      <div class="alarm" id="coAlarm"></div>                               <!-- тревога (красный пульс) при движении -->
     </div>
     <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от fsk через landing; используется только для сворачивания) -->
     <div class="mission1-veil" id="coVeil"></div>
     <!-- exit-титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» — z9, над вуалью, переживает сворачивание -->
     <div class="mission-title cafe-quiz-title" id="coDangerTitle"><div class="mt-kicker">МИССИЯ 3</div><div class="mt-name">ЗАЩИТА БИЗНЕСА</div></div>
+  </div>
+
+  <!-- ════ «БОЛЬШЕ ЧЕМ БИЗНЕС» (слайд 13): интерьер кафе + градиент как на слайде 4 ════ -->
+  <div class="morebiz" id="morebiz">
+    <div class="mb-stage">
+      <h1 class="mb-title" id="morebizTitle">Больше чем бизнес</h1>
+    </div>
+    <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от cafeopen через landing) -->
+    <div class="mission1-veil" id="morebizVeil"></div>
   </div>
 
   <!-- ════ МИССИЯ 3 — ЗАЩИТА БИЗНЕСА (слайд 15): cafe-3 (готово) + вывеска «Ваше любимое кофе» ════ -->
@@ -1608,13 +1648,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
         <span class="m3-blink b1"></span>
         <span class="m3-blink b2"></span>
       </div>
-      <!-- эскаватор: облако пыли + звёздочки при работе ковшом (реюз стилей слайда 13) -->
-      <div class="danger-dust" id="m3Dust"></div>
-      <svg class="danger-stars" id="m3Stars" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid slice"><g id="m3StarsG"></g></svg>
-      <!-- тревога (красный пульс) при движении эскаватора -->
-      <div class="alarm" id="m3Alarm"></div>
     </div>
-    <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от danger через landing; для будущего перехода) -->
+    <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от landing; для будущего перехода) -->
     <div class="mission1-veil" id="m3Veil"></div>
   </div>
 </div>
@@ -2452,10 +2487,115 @@ const coSay=document.getElementById('coSay');
 const coFio=document.getElementById('coFio');
 const coVeil=document.getElementById('coVeil');
 const coDangerTitle=document.getElementById('coDangerTitle');
+const coExc=document.getElementById('coExc');
+const coExcSparks=document.getElementById('coExcSparks');
+const coExcDust=document.getElementById('coExcDust');
+const coStarsG=document.getElementById('coStarsG');
+const coAlarm=document.getElementById('coAlarm');
 const CO_FIO='Байков С. Н.';
 const CO_SAY='Теперь самое время мне вмешаться?';
 let coTimers=[], coNameTimers=[], coHeroTimer=null, coFromLanding=false, coDustBuilt=false;
-let coHeroStarted=false, coHeroDone=false, coStoryStarted=false, coStoryDone=false, coDangerShown=false, coGo=false;
+let coHeroStarted=false, coHeroDone=false, coStoryStarted=false, coStoryDone=false, coDangerShown=false, coGo=false, coExcDone=false;
+/* ── ЭСКАВАТОР ОПАСНОСТИ (слайд 12): приезд по точкам из «Движение эскаватора.svg» + аларм/сирена → работа ковшом → паркинг ── */
+const CO_EXC_BUCKET='assets/img/objects/excavator_bucket_mid_alpha_tight.png';   // ковш опущен (bucket)
+const CO_EXC_UP='assets/img/objects/excavator-arm-up.png';                       // ковш поднят (едет/замах)
+/* 4 точки (rect из SVG, viewBox 2172×724): дальняя → средняя → ближняя(bucket) → паркинг */
+const CO_EXC_FRAMES=[
+  {left:89.55, top:52.49, w:5.34,  src:CO_EXC_BUCKET, flip:false},   // дальняя (справа, маленький)
+  {left:80.11, top:40.75, w:13.58, src:CO_EXC_UP,     flip:false},   // средняя (ковш поднят)
+  {left:67.05, top:40.75, w:20.47, src:CO_EXC_BUCKET, flip:false},   // 3-я точка — ковш опущен (bucket)
+  {left:55.94, top:34.94, w:19.38, src:CO_EXC_BUCKET, flip:false},   // ближняя = паркинг
+];
+function setCoExcFrame(i){
+  const f=CO_EXC_FRAMES[i];
+  coExc.style.left=f.left+'%'; coExc.style.top=f.top+'%'; coExc.style.width=f.w+'%';
+  coExc.setAttribute('src', f.src); coExc.style.setProperty('--flip', f.flip?'-1':'1');
+}
+/* пыль от ковша (реюз .co-dust .puff; % co-stage) */
+function coExcPuffBurst(xPct, yPct){
+  coExcDust.classList.remove('play'); coExcDust.innerHTML='';
+  for(let k=0;k<5;k++){
+    const sz=9+Math.random()*7, d=document.createElement('div'); d.className='puff';
+    const ox=(Math.random()*10-5), oy=(Math.random()*5-2);
+    d.style.width=sz.toFixed(1)+'cqw'; d.style.height=(sz*0.66).toFixed(1)+'cqw';
+    d.style.left=(xPct+ox-sz/2).toFixed(1)+'%'; d.style.top=(yPct+oy-sz*0.66).toFixed(1)+'%';
+    d.style.setProperty('--del',(k*40)+'ms'); d.style.setProperty('--pd','900ms');
+    coExcDust.appendChild(d);
+  }
+  coExcDust.style.opacity='1'; void coExcDust.offsetWidth; coExcDust.classList.add('play');
+}
+/* звёздочки у ковша (реюз mk/starPts/.star; viewBox 2172×724) */
+function coExcStars(vx, vy){
+  for(let i=0;i<9;i++){
+    const ox=Math.random()*180-90, oy=Math.random()*100-55;
+    const st=mk('polygon',{points:starPts(vx+ox, vy+oy, 5, 11, 4.4)}, 'star');
+    st.style.fill='#ffe08a'; st.style.filter='drop-shadow(0 0 3px #ffd24a)';
+    coStarsG.appendChild(st);
+    st.animate([{opacity:1,transform:'scale(.2) rotate(0deg)'},{opacity:0,transform:'scale(1.3) rotate(40deg)'}],
+      {duration:600+Math.random()*350, delay:i*45, easing:'ease-out', fill:'forwards'}).onfinish=()=>st.remove();
+  }
+}
+function coAlarmOn(){
+  coAlarm.classList.add('on');
+  coTimers.push(setTimeout(()=>{ try{ sirenEl.currentTime=0; sirenEl.volume=1; sirenEl.play().catch(()=>{}); }catch(e){} }, 400));
+}
+function coAlarmOff(){
+  coAlarm.classList.remove('on');
+  try{ sirenEl.pause(); sirenEl.currentTime=0; }catch(e){}
+}
+/* эскаватор ПРИЕЗЖАЕТ: дальняя→средняя→dig→ближняя + аларм/сирена → работа ковшом → паркинг → done() */
+function coExcArrive(done){
+  const guard=()=>id()==='cafeopen';
+  coExc.style.transition='none'; setCoExcFrame(0); void coExc.offsetWidth; coExc.style.transition='';   // старт в дальней (без переезда)
+  buildCoSparks2(16); coExcSparks.classList.add('play');
+  coExc.style.opacity='1'; void coExc.offsetWidth; coExc.classList.add('reveal');
+  coAlarmOn();                                                    // тревога + сирена (движение)
+  coTimers.push(setTimeout(()=>{ if(!guard())return;
+    coExc.classList.remove('reveal'); coExc.classList.add('glow');   // оранжевый неон
+    coTimers.push(setTimeout(()=>{ if(guard()) setCoExcFrame(1); }, 150));    // средняя
+    coTimers.push(setTimeout(()=>{ if(guard()) setCoExcFrame(2); }, 900));    // копает (flip)
+    coTimers.push(setTimeout(()=>{ if(guard()) setCoExcFrame(3); }, 1650));   // ближняя
+    coTimers.push(setTimeout(()=>{ if(guard()) coExcWork(done); }, 2400));    // работа ковшом
+  }, 2200));
+}
+/* россыпь искр к центру эскаватора (в контейнере coExcSparks) */
+function buildCoSparks2(n){
+  coExcSparks.innerHTML='';
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div'); s.className='roofspark';
+    const ang=(i/n)*Math.PI*2, r=70+((i*37)%45);
+    s.style.setProperty('--dx',(Math.cos(ang)*r).toFixed(0)+'px'); s.style.setProperty('--dy',(Math.sin(ang)*r).toFixed(0)+'px');
+    s.style.animationDelay=(i%6)*30+'ms'; coExcSparks.appendChild(s);
+  }
+}
+/* работа ковшом в ближней точке: 3 смены bucket↔up + пыль + звёзды → паркинг → стоп тревоги → done() */
+function coExcWork(done){
+  const guard=()=>id()==='cafeopen';
+  const N=3, STEP=280;
+  const PX=59, PY=64, VX=1265, VY=470;                            // позиция пыли/звёзд у ковша (ПОДСТРОИТЬ)
+  for(let k=0;k<N;k++){
+    coTimers.push(setTimeout(()=>{ if(!guard())return;
+      coExc.setAttribute('src', CO_EXC_BUCKET);                   // ковш ВНИЗ (удар)
+      coExcPuffBurst(PX, PY); coExcStars(VX, VY);
+    }, k*STEP*2));
+    coTimers.push(setTimeout(()=>{ if(guard()) coExc.setAttribute('src', CO_EXC_UP); }, k*STEP*2 + STEP));   // ковш ВВЕРХ (замах)
+  }
+  const T=N*STEP*2;
+  coTimers.push(setTimeout(()=>{ if(!guard())return;
+    coExc.setAttribute('src', CO_EXC_BUCKET);                     // паркинг (ковш опущен, ближняя)
+    coAlarmOff();                                                 // стоп тревоги/сирены
+    coExcDone=true;
+    if(done) done();                                             // → аватар Байкова
+  }, T+400));
+}
+function skipCoExc(done){                                         // мгновенно: паркинг + стоп тревоги
+  coExc.style.transition='none'; setCoExcFrame(3); void coExc.offsetWidth; coExc.style.transition='';
+  coExcSparks.classList.remove('play');
+  coExc.style.opacity='1'; coExc.classList.remove('reveal'); coExc.classList.add('glow');
+  coExc.setAttribute('src', CO_EXC_BUCKET);
+  coAlarmOff(); coExcDust.classList.remove('play'); coExcDust.innerHTML=''; coStarsG.innerHTML='';
+  coExcDone=true; if(done) done();
+}
 /* искры героя (сходятся к центру) */
 function buildCoSparks(n){
   coSparks.innerHTML='';
@@ -2509,37 +2649,43 @@ function skipCoIntro(){
   coCub.classList.add('show','glow');                             // вывеска ЦУБ
   skipCoHero();                                                    // герой за столиком — мгновенно (искры/скан пропущены)
 }
-/* Байков (ШТАБ) по клику: искры → фото → скан контура → ФИО → реплика (как Купринов на fsk) */
+/* СЮЖЕТ ОПАСНОСТИ по клику: оранжевое выделение кафе → ЭСКАВАТОР приезжает (аларм+сирена+ковш→паркинг) → аватар Байкова */
 function coStory(){
   if(coStoryStarted) return; coStoryStarted=true;
   const guard=()=>id()==='cafeopen';
-  coOutline.classList.remove('glow'); coOutline.classList.add('danger');    // 1) контур кафе → оранжевый сигнал опасности (перед аватаром)
-  coCoffee.classList.remove('lit'); coCoffee.classList.add('danger');       //    + вывеска «Ваш любимый кофе» → оранжевый одновременно
-  coTimers.push(setTimeout(()=>{ if(!guard())return;                        // 2) через паузу — аватар Байкова
-    coAva.classList.add('show');
-    avSparks(coAvatar,16); void coAvatar.offsetWidth; coAvatar.classList.add('play');
-    coTimers.push(setTimeout(()=>coAvatar.classList.add('live'), 1933));
+  coOutline.classList.remove('glow'); coOutline.classList.add('danger');    // 1) контур кафе → оранжевый сигнал опасности
+  coCoffee.classList.remove('lit'); coCoffee.classList.add('danger');       //    + вывеска «Ваш любимый кофе» → оранжевый
+  coTimers.push(setTimeout(()=>{ if(!guard())return;
+    coExcArrive(coBaikov);                                                  // 2) эскаватор приезжает → паркинг → 3) аватар Байкова
+  }, 1200));                                                                 // ← пауза: оранжевый успевает вспыхнуть до эскаватора
+}
+/* аватар Байкова (ШТАБ) — ПОСЛЕ парковки эскаватора: искры → фото → ФИО → реплика */
+function coBaikov(){
+  const guard=()=>id()==='cafeopen';
+  coAva.classList.add('show');
+  avSparks(coAvatar,16); void coAvatar.offsetWidth; coAvatar.classList.add('play');
+  coTimers.push(setTimeout(()=>coAvatar.classList.add('live'), 1933));
+  coTimers.push(setTimeout(()=>{ if(!guard())return;
+    typeSay(coFio, CO_FIO, guard, coTimers);                   // ФИО
     coTimers.push(setTimeout(()=>{ if(!guard())return;
-      typeSay(coFio, CO_FIO, guard, coTimers);                   // ФИО
-      coTimers.push(setTimeout(()=>{ if(!guard())return;
-        typeSay(coSay, CO_SAY, guard, coTimers);                 // реплика
-        coTimers.push(setTimeout(()=>{ if(!guard())return; coStoryDone=true; }, CO_SAY.length*32 + 900));
-      }, 1200));
-    }, 2500));
-  }, 1200));                                                                 // ← пауза: оранжевый контур успевает вспыхнуть до аватара
+      typeSay(coSay, CO_SAY, guard, coTimers);                 // реплика
+      coTimers.push(setTimeout(()=>{ if(!guard())return; coStoryDone=true; }, CO_SAY.length*32 + 900));
+    }, 1200));
+  }, 2500));
 }
 function skipCoStory(){
   coStoryStarted=true;
   coTimers.splice(0).forEach(clearTimeout);
-  coOutline.classList.remove('glow'); coOutline.classList.add('danger');    // оранжевый сигнал опасности (мгновенный клик)
-  coCoffee.classList.remove('lit'); coCoffee.classList.add('danger');       // + вывеска оранжевая
+  coOutline.classList.remove('glow'); coOutline.classList.add('danger');    // оранжевое выделение (мгновенно)
+  coCoffee.classList.remove('lit'); coCoffee.classList.add('danger');
+  skipCoExc();                                                              // эскаватор — сразу паркинг, тревога off
   coAva.classList.add('show'); coAvatar.classList.remove('play'); coAvatar.classList.add('play','live');
   coFio.classList.add('show'); coFio.innerHTML='<span class="say-txt">'+CO_FIO+'</span>';
   document.querySelectorAll('.say-caret').forEach(c=>c.remove());
   coSay.classList.add('show'); coSay.innerHTML='<span class="say-txt">'+CO_SAY+'</span>';
   coStoryDone=true;
 }
-/* выход: cafeopen сворачивается (титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» z9 остаётся) → перенос титула на след. слайд */
+/* выход: cafeopen сворачивается (титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» z9 остаётся) → перенос титула на mission3 */
 function coToNext(){
   if(coGo) return; coGo=true;
   coTimers.splice(0).forEach(clearTimeout); coNameTimers.forEach(clearTimeout);
@@ -2549,11 +2695,41 @@ function coToNext(){
     landingTitle.innerHTML='<div class="mt-kicker">МИССИЯ 3</div><div class="mt-name">ЗАЩИТА БИЗНЕСА</div>'; landingTitle.classList.remove('faded');
     landing.classList.add('show');
     landingVeil.style.transition='none'; landingVeil.style.setProperty('--r','0%'); void landingVeil.offsetWidth; landingVeil.style.transition='';
-    dangerFromLanding=true;                                          // сцена «Опасность»: эскаватор поедет ПОСЛЕ раскрытия landing
-    if(cur<SCENES.length-1){ cur++; applyScene(); }                  // след. слайд под чёрным
+    mission3FromLanding=true;                                        // cafeopen ведёт прямо на mission3
+    if(cur<SCENES.length-1){ cur++; applyScene(); }                  // mission3 под чёрным
     landTimers.push(setTimeout(()=>{ landingVeil.style.setProperty('--r','160%'); landingTitle.classList.add('faded'); }, 900));
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 900+2600+400));
   }, 2700));
+}
+/* ═══ «БОЛЬШЕ ЧЕМ БИЗНЕС» (слайд 14): интерьер кафе + титул; вход — своё раскрытие из чёрного (после Миссии 3), выход — сворачивание → ФПСП ═══ */
+const morebiz=document.getElementById('morebiz');
+const morebizTitle=document.getElementById('morebizTitle');
+const morebizVeil=document.getElementById('morebizVeil');
+let mbTimers=[], mbGo=false;
+function resetMoreBiz(){
+  mbTimers.splice(0).forEach(clearTimeout);
+  mbGo=false;
+  morebizTitle.classList.remove('pop');
+  // вуаль ЗАКРЫТА (чёрное), фокус в центр — раскрываем сами на входе
+  morebizVeil.style.transition='none'; morebizVeil.style.setProperty('--fx','50%'); morebizVeil.style.setProperty('--fy','50%'); morebizVeil.style.setProperty('--r','0%');
+  void morebizVeil.offsetWidth; morebizVeil.style.transition='';
+}
+function runMoreBiz(){
+  resetMoreBiz();
+  const guard=()=>id()==='morebiz';
+  // 1) раскрытие интерьера из чёрного (радиальная вуаль)
+  mbTimers.push(setTimeout(()=>{ if(!guard())return;
+    morebizVeil.style.transition='--r 1.6s cubic-bezier(.4,.1,.2,1)'; morebizVeil.style.setProperty('--r','175%'); }, 60));
+  // 2) титул «Больше чем бизнес» после раскрытия
+  mbTimers.push(setTimeout(()=>{ if(!guard())return; morebizTitle.classList.add('pop'); }, 1500));
+}
+/* выход: morebiz сворачивается в чёрное → следующий слайд (ФПСП) */
+function moreBizToNext(){
+  if(mbGo) return; mbGo=true;
+  mbTimers.splice(0).forEach(clearTimeout);
+  morebizTitle.classList.remove('pop');
+  morebizVeil.style.transition='--r 1.2s cubic-bezier(.4,.1,.2,1)'; morebizVeil.style.setProperty('--r','0%');   // сворачивание в чёрное
+  mbTimers.push(setTimeout(()=>{ if(cur<SCENES.length-1){ cur++; applyScene(); } }, 1250));                      // → ФПСП
 }
 /* ═══ МИССИЯ 3 — ЗАЩИТА БИЗНЕСА (слайд 15): готовое кафе (cafe-3) + вывеска «Ваше любимое кофе» (подсветка как на 13) ═══ */
 const mission3El=document.getElementById('mission3');
@@ -2568,11 +2744,8 @@ const m3NamePanel=document.getElementById('m3NamePanel');
 const m3Htext=document.getElementById('m3Htext');
 const m3Spp=document.getElementById('m3Spp');
 const m3SppSparks=document.getElementById('m3SppSparks');
-const m3Dust=document.getElementById('m3Dust');
-const m3StarsG=document.getElementById('m3StarsG');
-const m3Alarm=document.getElementById('m3Alarm');
 let m3Timers=[], mission3FromLanding=false;
-let m3F1Started=false, m3Frame1Done=false, m3SppStarted=false, m3SppDone=false, m3ExcDone=false;
+let m3F1Started=false, m3Frame1Done=false, m3SppStarted=false, m3SppDone=false;
 /* искры, сходящиеся к центру (переиспользуемая, как buildRoofSparks) */
 function buildSparks(el,n){
   el.innerHTML='';
@@ -2593,101 +2766,12 @@ const SPP_FRAMES=[
   {left:77.90, top:55.52, w:16.76},  // поз.3 — финал (rect 1692,402 · 364×289)
 ];
 function setSppFrame(i){ const f=SPP_FRAMES[i]; m3Spp.style.left=f.left+'%'; m3Spp.style.top=f.top+'%'; m3Spp.style.width=f.w+'%'; }
-/* ── ЭСКАВАТОР слайда 14: движение 3 кадрами (как скорая) + работа ковшом (пыль/звёзды/аларм/сирена, как слайд 13) → паркинг ── */
-const M3_EXC_BUCKET='assets/img/objects/excavator_bucket_mid_alpha_tight.png';   // ковш опущен
-const M3_EXC_MOVE='assets/img/objects/excavator moving.png';                     // едет (ковш поднят)
-const M3_EXC_PARK='assets/img/objects/excavator-mission3.png';                   // паркинг (как было)
-/* 3 позиции: дальняя (справа, маленький) → средняя → ближняя = парковка (совпадает с CSS .m3-exc) */
-const EXC3_FRAMES=[
-  {left:66, top:47, w:6},          // дальняя (справа) — ПОДСТРОИТЬ по факту
-  {left:57, top:43, w:13},         // средняя
-  {left:47.24, top:38.5, w:24.1},  // ближняя = паркинг
-];
-function setExcM3Frame(i, src){
-  const f=EXC3_FRAMES[i];
-  m3Exc.style.left=f.left+'%'; m3Exc.style.top=f.top+'%'; m3Exc.style.width=f.w+'%';
-  if(src) m3Exc.setAttribute('src', src);
-}
-/* облако пыли у ковша (в % m3-stage; реюз стиля .danger-dust .cloudpuff) */
-function m3Puff(xPct, yPct, szCqw, pd){
-  const d=document.createElement('div'); d.className='cloudpuff';
-  d.style.width=szCqw.toFixed(1)+'cqw'; d.style.height=(szCqw*0.66).toFixed(1)+'cqw';
-  d.style.left=xPct.toFixed(1)+'%'; d.style.top=yPct.toFixed(1)+'%';
-  d.style.marginLeft=(-szCqw/2).toFixed(1)+'cqw'; d.style.marginTop=(-szCqw*0.4).toFixed(1)+'cqw';
-  if(pd) d.style.setProperty('--pd', pd+'ms');
-  m3Dust.appendChild(d);
-  d.addEventListener('animationend', ()=>d.remove());
-}
-/* звёздочки-вспышки у ковша (viewBox 2172×724; реюз mk/starPts/.star) */
-function m3StarsBurst(vx, vy){
-  for(let i=0;i<9;i++){
-    const ox=Math.random()*180-90, oy=Math.random()*100-55;
-    const st=mk('polygon',{points:starPts(vx+ox, vy+oy, 5, 11, 4.4)}, 'star');
-    st.style.fill='#ffe08a'; st.style.filter='drop-shadow(0 0 3px #ffd24a)';
-    m3StarsG.appendChild(st);
-    st.animate([{opacity:1,transform:'scale(.2) rotate(0deg)'},{opacity:0,transform:'scale(1.3) rotate(40deg)'}],
-      {duration:600+Math.random()*350, delay:i*45, easing:'ease-out', fill:'forwards'}).onfinish=()=>st.remove();
-  }
-}
-/* тревога (свой слой в mission3) + сирена */
-function m3AlarmOn(){
-  m3Alarm.classList.add('on');
-  m3Timers.push(setTimeout(()=>{ try{ sirenEl.currentTime=0; sirenEl.volume=1; sirenEl.play().catch(()=>{}); }catch(e){} }, 400));
-}
-function m3AlarmOff(){
-  m3Alarm.classList.remove('on');
-  try{ sirenEl.pause(); sirenEl.currentTime=0; }catch(e){}
-}
-/* эскаватор ПРИЕЗЖАЕТ: дальняя(bucket)→средняя(moving)→ближняя(bucket) + аларм/сирена → работа ковшом → паркинг */
-function m3ExcArrive(){
-  const guard=()=>id()==='mission3';
-  // старт в ДАЛЬНЕЙ точке — без переезда (мгновенно), появление искры→из размытия
-  m3Exc.style.transition='none'; setExcM3Frame(0, M3_EXC_BUCKET); void m3Exc.offsetWidth; m3Exc.style.transition='';
-  buildSparks(m3ExcSparks,16); m3ExcSparks.classList.add('play');
-  m3Exc.style.opacity='1'; void m3Exc.offsetWidth; m3Exc.classList.add('reveal');
-  m3AlarmOn();                                                   // тревога + сирена (эскаватор в движении)
-  m3Timers.push(setTimeout(()=>{ if(!guard())return;
-    m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');   // оранжевый неон
-    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(1, M3_EXC_MOVE); }, 150));    // средняя (moving)
-    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(2, M3_EXC_BUCKET); }, 900));   // ближняя (bucket)
-    m3Timers.push(setTimeout(()=>{ if(guard()) m3ExcWork(); }, 1650));                       // работа ковшом
-  }, 2200));   // после reveal (появление из размытия)
-}
-/* работа ковшом в ближней точке: 3 смены bucket↔moving + пыль + звёзды → паркинг → стоп тревоги */
-function m3ExcWork(){
-  const guard=()=>id()==='mission3';
-  const N=3, STEP=280;                       // 3 смены картинки (удара)
-  const PX=52, PY=60, VX=1130, VY=445;       // позиция пыли/звёзд у ковша (ПОДСТРОИТЬ по факту)
-  for(let k=0;k<N;k++){
-    m3Timers.push(setTimeout(()=>{ if(!guard())return;
-      setExcM3Frame(2, M3_EXC_BUCKET);                          // ковш ВНИЗ (удар)
-      m3Puff(PX+(Math.random()*6-3), PY, 5+Math.random()*2, 900); m3StarsBurst(VX, VY);
-    }, k*STEP*2));
-    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(2, M3_EXC_MOVE); }, k*STEP*2 + STEP));   // ковш ВВЕРХ (замах)
-  }
-  const T=N*STEP*2;
-  m3Timers.push(setTimeout(()=>{ if(!guard())return;
-    setExcM3Frame(2, M3_EXC_PARK);                              // паркинг (как было)
-    m3AlarmOff();                                              // стоп тревоги/сирены
-    m3ExcDone=true;
-  }, T+300));
-}
-function skipM3Exc(){                                           // мгновенно: паркинг + стоп тревоги
-  m3Exc.style.transition='none'; setExcM3Frame(2, M3_EXC_PARK); void m3Exc.offsetWidth; m3Exc.style.transition='';   // без переезда
-  m3ExcSparks.classList.remove('play');
-  m3Exc.style.opacity='1'; m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
-  m3AlarmOff(); m3Dust.innerHTML=''; m3StarsG.innerHTML='';
-  m3ExcDone=true;
-}
 function resetMission3(){
   m3Timers.splice(0).forEach(clearTimeout);
   m3F1Started=false; m3Frame1Done=false; m3SppStarted=false; m3SppDone=false;
-  m3ExcDone=false;
   m3Coffee.classList.remove('show','lit','danger');                          // вывеска потушена
-  m3Exc.classList.remove('reveal','glow'); m3Exc.style.opacity='0';          // эскаватор скрыт
-  m3Exc.style.transition='none'; setExcM3Frame(0, M3_EXC_BUCKET); void m3Exc.offsetWidth; m3Exc.style.transition='';   // сброс в дальний кадр (bucket)
+  m3Exc.classList.remove('reveal','glow'); m3Exc.style.opacity='0';          // эскаватор скрыт (статично припаркован)
   m3ExcSparks.classList.remove('play'); m3ExcSparks.innerHTML='';
-  m3AlarmOff(); m3Dust.innerHTML=''; m3StarsG.innerHTML='';                   // тревога/пыль/звёзды — сброс
   m3Hero.classList.remove('show','reveal'); m3HeroGlow.classList.remove('show','draw','glow');   // герой скрыт
   m3Sparks.classList.remove('play'); m3Sparks.innerHTML='';
   m3NamePanel.classList.remove('show'); m3Htext.textContent=''; m3Htext.classList.remove('typed');
@@ -2704,7 +2788,7 @@ function runMission3(){
   m3Timers.push(setTimeout(()=>{ if(!guard())return; m3Frame1(); }, mission3FromLanding?1500:300));
   mission3FromLanding=false;
 }
-/* КАДР 1: вывеска + герой (искры→фото→скан→имя) + эскаватор ПРИЕЗЖАЕТ (движение+аларм+сирена+ковш→паркинг) — одновременно */
+/* КАДР 1: вывеска + герой (искры→фото→скан→имя) + эскаватор (reveal+оранжевый неон, статично припаркован) — одновременно */
 function m3Frame1(){
   if(m3F1Started) return; m3F1Started=true;
   const guard=()=>id()==='mission3';
@@ -2714,10 +2798,12 @@ function m3Frame1(){
   void m3Hero.offsetWidth; void m3HeroGlow.offsetWidth;
   m3Sparks.classList.add('play');
   m3Hero.classList.add('show','reveal');
-  // эскаватор ПРИЕЗЖАЕТ (3 кадра + аларм/сирена + работа ковшом → паркинг) — параллельно с героем
-  m3ExcArrive();
-  // контур героя + имя — сразу после фото (~2.9с)
+  // эскаватор одновременно — фото из размытия (без скана) → оранжевый неон (припаркован; опасность-приезд теперь на слайде 12)
+  buildSparks(m3ExcSparks,16); m3ExcSparks.classList.add('play');
+  m3Exc.style.opacity='1'; void m3Exc.offsetWidth; m3Exc.classList.add('reveal');
+  // контуры + имя — сразу после фото (~2.9с): герой и эскаватор синхронно
   m3Timers.push(setTimeout(()=>{ if(!guard())return;
+    m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
     m3HeroGlow.classList.add('show','glow'); m3NamePanel.classList.add('show');
     const nm=LEVEL_NAMES[3];                                                 // сквозной ранг 3★
     for(let i=1;i<=nm.length;i++) m3Timers.push(setTimeout(()=>{ m3Htext.textContent=nm.slice(0,i); if(i===nm.length) m3Htext.classList.add('typed'); }, i*45));
@@ -2731,7 +2817,7 @@ function skipM3Frame1(){
   m3Sparks.classList.remove('play'); m3Hero.classList.remove('reveal'); m3Hero.classList.add('show');
   m3HeroGlow.classList.remove('draw'); m3HeroGlow.classList.add('show','glow');
   m3NamePanel.classList.add('show'); m3Htext.textContent=LEVEL_NAMES[3]; m3Htext.classList.add('typed');
-  skipM3Exc();                                                              // эскаватор — сразу паркинг, тревога off
+  m3ExcSparks.classList.remove('play'); m3Exc.style.opacity='1'; m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
   m3Frame1Done=true;
 }
 /* КАДР 2 (по клику): скорая появляется у Москва-сити (reveal+синий) → 3 кадра к финалу → мигают мигалки */
@@ -3017,11 +3103,16 @@ function buildDust(){
 function resetCafeOpen(){
   coTimers.splice(0).forEach(clearTimeout);
   clearTimeout(coHeroTimer); coNameTimers.forEach(clearTimeout); coNameTimers=[];
-  coHeroStarted=false; coHeroDone=false; coStoryStarted=false; coStoryDone=false; coDangerShown=false; coGo=false;
+  coHeroStarted=false; coHeroDone=false; coStoryStarted=false; coStoryDone=false; coDangerShown=false; coGo=false; coExcDone=false;
   coBg2.classList.remove('show');
   coCoffee.classList.remove('show','lit','danger');
   coOutline.classList.remove('show','draw','glow','danger');
   coCub.classList.remove('show','draw','glow');
+  // эскаватор опасности + тревога/пыль/звёзды — сброс
+  coExc.classList.remove('reveal','glow'); coExc.style.opacity='0';
+  coExc.style.transition='none'; setCoExcFrame(0); void coExc.offsetWidth; coExc.style.transition='';
+  coExcSparks.classList.remove('play'); coExcSparks.innerHTML='';
+  coAlarmOff(); coExcDust.classList.remove('play'); coExcDust.innerHTML=''; coStarsG.innerHTML='';
   coSparks.classList.remove('play');
   coHero.classList.remove('show','reveal'); coHeroGlow.classList.remove('show','draw','glow');
   coName.classList.remove('show'); coHtext.textContent=''; coHtext.classList.remove('typed');
@@ -3195,9 +3286,9 @@ const SCENES=[
   {id:'mission1b',label:'Миссия 1 — начать бизнес — часть 2'},
   {id:'binoc',    label:'Миссия 2 — найти деньги (ФСК, разведка → Банк, Купринов)'},
   {id:'fsk',      label:'ФСК — финансирование'},
-  {id:'cafeopen', label:'Открытие кафе — cafe-2 → облако пыли → cafe-3'},
-  {id:'danger',   label:'Опасность — эскаватор по траектории к кафе (аларм+сирена)'},
+  {id:'cafeopen', label:'Открытие кафе — cafe-2 → пыль → cafe-3 → опасность (эскаватор) → Байков'},
   {id:'mission3', label:'Миссия 3 — защита бизнеса (cafe-3 + вывеска)'},
+  {id:'morebiz',  label:'Больше чем бизнес (интерьер кафе)'},
   {id:'fpsp',     label:'ФПСП — соц. предпринимательство'},
   {id:'shtab',    label:'Штаб — защита бизнеса'},
   {id:'finale',   label:'Финал — бизнес работает'},
@@ -3626,6 +3717,8 @@ function applyScene(){
   if(sid==='fsk') runFsk(); else resetFsk();
   cafeopen.classList.toggle('show', sid==='cafeopen');
   if(sid==='cafeopen') runCafeOpen(); else resetCafeOpen();
+  morebiz.classList.toggle('show', sid==='morebiz');
+  if(sid==='morebiz') runMoreBiz(); else resetMoreBiz();
   mission3El.classList.toggle('show', sid==='mission3');
   if(sid==='mission3') runMission3(); else resetMission3();
 
@@ -3691,8 +3784,8 @@ function applyScene(){
 
   // снос (Штаб)
   if(sid==='shtab') runDemolition(); else resetDemolition();
-  // опасность (эскаватор по траектории к кафе)
-  if(sid==='danger') runDanger(); else resetDanger();
+  // слайд «Опасность» (danger) удалён — опасность-эскаватор теперь на cafeopen; resetDanger чистит danger-DOM/аларм/сирену при переходах
+  resetDanger();
 
   let label=SCENES[cur].label;
   if(sid==='map') label='Карта · шаг '+(mapStep+1)+'/'+MAP_STEPS+' — '+MAP_LABELS[mapStep];
@@ -4173,15 +4266,15 @@ function next(skip){
       coTimers.push(setTimeout(()=>{ if(id()==='cafeopen') coToNext(); }, 1600)); return; }   // держим титул → авто-сворачивание
     coToNext(); return;                                    // клик во время задержки — ускорить переход
   }
-  if(id()==='danger'){                            // опасность — клик уводит на «Миссия 3» с переносом титула
+  if(false && id()==='danger'){                   // слайд danger удалён (опасность перенесена на cafeopen) — ветка отключена
     dangerToNext(); return;
   }
+  if(id()==='morebiz'){ moreBizToNext(); return; }  // «Больше чем бизнес» — клик → сворачивание вуалью → mission3
   if(id()==='mission3'){                          // защита бизнеса — FSM по клику
-    if(!m3Frame1Done){ skipM3Frame1(); return; }          // кадр 1 (герой+вывеска) идёт → доиграть (эскаватор → паркинг)
-    if(!m3ExcDone){ skipM3Exc(); return; }                // эскаватор ещё едет/работает ковшом → доиграть мгновенно (паркинг)
+    if(!m3Frame1Done){ skipM3Frame1(); return; }          // кадр 1 (герой+эскаватор+вывеска) идёт → доиграть
     if(!m3SppStarted){ m3PlaySpp(); return; }             // клик → скорая правовой помощи (кадр 2)
     if(!m3SppDone){ skipM3Spp(); return; }                // скорая едет → доиграть мгновенно
-    if(cur<SCENES.length-1){ cur++; applyScene(); } return;   // дальше → след. слайд (ФПСП)
+    if(cur<SCENES.length-1){ cur++; applyScene(); } return;   // дальше → «Больше чем бизнес» (самораскрытие)
   }
   if(id()==='quiz'){                              // КВИЗ — FSM по клику
     if(!quizPanelShown) return;                            // идёт раскрытие/до 1-го вопроса
