@@ -101,22 +101,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 
 /* ── МЕХАНИКА «УРОВЕНЬ ПОВЫШЕН» (переиспользуемая): баннер вверх → звезда летит в панель → смена имени ── */
 .levelup-banner{position:absolute;z-index:9;transform:translate(-50%,-50%);
-  font-family:var(--title-font);font-weight:700;font-size:2.1cqh;letter-spacing:.06em;
+  font-family:var(--title-font);font-weight:700;font-size:6cqh;letter-spacing:.06em;   /* крупно — как титул */
   color:#fff;text-shadow:0 0 10px rgba(255,255,255,.6),0 2px 8px rgba(0,0,0,.9);
   white-space:nowrap;pointer-events:none;opacity:0}
-/* белый текст (читается на светлой карте) + пульсирующее неон-циан свечение */
+/* белый текст (читается на светлой карте) + пульсирующее неон-циан свечение; в ЦЕНТРЕ экрана: pop → держится → растворяется (без подъёма) */
 .levelup-banner.play{animation:lvlBanner 2.86s ease forwards, lvlPulse .7s ease-in-out infinite}   /* дольше ×1.3 */
 @keyframes lvlBanner{
-  0%{opacity:0;transform:translate(-50%,-50%) translateY(18px) scale(.85)}
-  16%{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1)}
-  60%{opacity:1;transform:translate(-50%,-50%) translateY(-55px) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-50%) translateY(-120px) scale(1)}}   /* выше */
+  0%{opacity:0;transform:translate(-50%,-50%) translateY(3cqh) scale(.55)}
+  14%{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1.14)}
+  26%{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1)}
+  60%{opacity:1;transform:translate(-50%,-50%) translateY(-7cqh) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) translateY(-16cqh) scale(1)}}   /* из центра вверх */
 @keyframes lvlPulse{
   0%,100%{text-shadow:0 0 8px rgba(255,255,255,.5),0 0 14px rgba(39,227,255,.5),0 2px 8px rgba(0,0,0,.9)}
   50%{text-shadow:0 0 14px rgba(255,255,255,.95),0 0 26px rgba(39,227,255,.95),0 0 42px rgba(39,227,255,.6),0 2px 8px rgba(0,0,0,.9)}}
 /* САЛЮТ в зоне баннера «Уровень повышен» — залпы искр разлетаются и гаснут */
 .levelup-fw{position:absolute;z-index:8;width:0;height:0;pointer-events:none;transform:translate(-50%,-50%)}
-.levelup-fw i{position:absolute;left:0;top:0;width:.85cqh;height:.85cqh;border-radius:50%;
+.levelup-fw i{position:absolute;left:0;top:0;width:1.7cqh;height:1.7cqh;border-radius:50%;   /* крупнее — виден на 60% экрана */
   transform:translate(-50%,-50%) scale(1);opacity:0}
 .levelup-fw.boom i{animation:fwSpark 1.15s cubic-bezier(.15,.6,.3,1) forwards}
 @keyframes fwSpark{
@@ -125,13 +126,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   100%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.35)}}
 /* летящая звезда — от баннера к пустому слоту панели */
 .levelup-star{position:absolute;z-index:10;transform:translate(-50%,-50%);
-  color:#ffd24a;font-size:26px;line-height:1;text-shadow:0 0 12px #ffd24a,0 0 24px #ff9800;
+  color:#ffd24a;font-size:7cqh;line-height:1;text-shadow:0 0 18px #ffd24a,0 0 36px #ff9800;   /* крупная — как титул */
   pointer-events:none;opacity:0}
-.levelup-star.fly{animation:lvlStarFly 1s cubic-bezier(.5,0,.3,1) forwards}
+.levelup-star.fly{animation:lvlStarFly 1.15s cubic-bezier(.5,0,.3,1) forwards}
 @keyframes lvlStarFly{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(0deg)}
-  15%{opacity:1;transform:translate(-50%,-50%) scale(1.35) rotate(70deg)}
-  100%{opacity:1;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.8) rotate(360deg)}}
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}
+  14%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(70deg)}
+  100%{opacity:1;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.14) rotate(360deg)}}   /* крупная в центре → ужимается в слот панели */
 /* слот звезды при заполнении — вспышка + поп */
 .herobox .hstars .star.justfill{animation:starFill .6s ease}
 @keyframes starFill{0%{transform:scale(1)}35%{transform:scale(1.9);text-shadow:0 0 16px #ffd24a,0 0 30px #ff9800}100%{transform:scale(1)}}
@@ -238,9 +239,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .darkness{position:absolute;inset:0;z-index:4;background:#04090a;--r:135%;   /* по умолчанию ОТКРЫТО — город виден (без «перелёта» за край) */
   -webkit-mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
   mask-image:radial-gradient(circle at 7% 70%, transparent calc(var(--r) - 2%), #000 var(--r));
-  transition:--r 1.3s cubic-bezier(.4,.1,.2,1); pointer-events:none}   /* раскрытие карты ×2 быстрее (было 2.6с) */
+  transition:--r 3.4s cubic-bezier(.4,.1,.2,1); pointer-events:none}   /* раскрытие карты = шаблон .hveil (3.4с) */
 .stage.dark    .darkness{--r:8%;transition:none}     /* мгновенный тёмный старт — виден только предприниматель */
-.stage.reveal  .darkness{--r:135%}   /* карта раскрывается анимированно (до полного раскрытия, без невидимого хвоста) */
+.stage.reveal  .darkness{--r:104%}   /* раскрытие впритык к экрану (100%=дальний угол): конец анимации ≈ полное раскрытие → кометы стартуют сразу (не ждём невидимый хвост до 135%) */
 .stage.open    .darkness{--r:135%;transition:none}  /* дальше держим раскрытой */
 .stage.blackout .darkness{--r:0%;transition:none}   /* сцена НЕ карта → стейдж полностью тёмный (голый фон карты не проглядывает при переходах) */
 
@@ -645,20 +646,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
     radial-gradient(30% 48% at 88% 74%, #fff 0%, rgba(255,255,255,.95) 55%, rgba(255,255,255,0) 82%)}
 .co-dust.play .puff{animation:puff var(--pd,1.5s) ease-out forwards;animation-delay:var(--del,0s)}
 @keyframes puff{0%{transform:scale(0);opacity:0}18%{opacity:.95}55%{transform:scale(1);opacity:1}100%{transform:scale(1.3);opacity:0}}
-/* мультяшные инструменты «идёт ремонт» — выскакивают среди пыли и пропадают вместе с ней */
-.co-tools{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0}
-.co-tools .tool{position:absolute;transform:scale(0);opacity:0;
-  filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
-.co-tools .tool svg{display:block;width:100%;height:100%}
-.co-tools.play .tool{animation:toolPop var(--pd,1.4s) cubic-bezier(.2,.8,.3,1.2) var(--del,0s) both}
-@keyframes toolPop{
-  0%{transform:translateY(10px) scale(.15) rotate(var(--rot,0deg));opacity:0}
-  16%{transform:translateY(0) scale(1.18) rotate(var(--rot,0deg));opacity:1}
-  28%{transform:scale(.94) rotate(calc(var(--rot,0deg) * -1))}
-  42%{transform:scale(1.06) rotate(var(--rot,0deg))}
-  60%{transform:scale(1) rotate(calc(var(--rot,0deg) * -1))}
-  74%{transform:scale(1) rotate(var(--rot,0deg));opacity:1}
-  100%{transform:translateY(-12px) scale(.65) rotate(var(--rot,0deg));opacity:0}}
 /* ── МИССИЯ 3 (слайд 15): готовое кафе (cafe-3) + вывеска «Ваше любимое кофе» (подсветка как на слайде 13) ── */
 .mission3{position:absolute;inset:0;z-index:16;background:#04070c;display:none}
 .mission3.show{display:block}
@@ -673,7 +660,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 #mission3 .cafe-name{left:36.7%;top:49%}
 /* эскаватор (rect2 ~1026,279) — reveal (blur→скан) + ОРАНЖЕВЫЙ неон (как слайд 14) */
 .m3-exc{position:absolute;z-index:3;left:47.24%;top:38.5%;width:24.1%;height:auto;opacity:0;
-  transform:rotate(-2deg);transform-origin:center}
+  transform:rotate(-2deg);transform-origin:center;
+  transition:left .6s ease,top .6s ease,width .6s ease}   /* 3-кадровое движение (как скорая) */
 .m3-exc.reveal{animation:m3ExcReveal 2.2s ease .7s both}   /* как герой: искры .7с → фото из размытия (без скана) */
 @keyframes m3ExcReveal{
   0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px #ff7a00)}          /* фото из размытия */
@@ -682,23 +670,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 #m3ExcSparks{position:absolute;z-index:5;left:47.24%;top:38.5%;width:24.1%;height:48.7%;pointer-events:none}
 #m3ExcSparks.play .roofspark{animation:roofSpark .7s ease-out forwards}                              /* искры эскаватора */
 #m3ExcSparks .roofspark{background:#ffd24a;box-shadow:0 0 8px #ff9a2e,0 0 14px #ff7a00}              /* — оранжевые */
-/* скорая правовой помощи (СПП): контейнер img+мигалки едет/растёт (3 кадра); reveal + СИНИЙ неон */
+/* скорая правовой помощи (СПП): контейнер img+мигалки едет/растёт (3 кадра); reveal + КРАСНЫЙ неон */
 .m3-spp{position:absolute;z-index:4;left:90.88%;top:59.53%;width:3.45%;opacity:0;
   transition:left .6s ease,top .6s ease,width .6s ease}
 .m3-spp-img{display:block;width:100%;height:auto}
 .m3-spp.reveal{animation:sppReveal 2.2s ease .7s both}   /* как эскаватор: искры .7с → фото из размытия (без скана) */
 .m3-spp.glow .m3-spp-img{animation:sppGlow 1.2s ease-in-out infinite}
 @keyframes sppReveal{
-  0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px #1f7bff)}          /* фото из размытия */
-  100%{opacity:1;filter:blur(0) drop-shadow(0 0 5px #1f7bff)}}
-@keyframes sppGlow{0%,100%{filter:drop-shadow(0 0 1px #7fd0ff) drop-shadow(0 0 2.5px #1f7bff)}
-  50%{filter:drop-shadow(0 0 1.5px #7fd0ff) drop-shadow(0 0 5px #1f7bff)}}
-/* мигалки СПП (синие) — балка на крыше (b0) + 2 огонька (b1,b2); % от контейнера → масштабируются с машиной */
+  0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px #ff2020)}          /* фото из размытия */
+  100%{opacity:1;filter:blur(0) drop-shadow(0 0 5px #ff2020)}}
+@keyframes sppGlow{0%,100%{filter:drop-shadow(0 0 1px #ff8080) drop-shadow(0 0 2.5px #ff2020)}
+  50%{filter:drop-shadow(0 0 1.5px #ff8080) drop-shadow(0 0 5px #ff2020)}}
+/* мигалки СПП (ОРАНЖЕВЫЕ) — балка на крыше (b0) + 2 огонька (b1,b2); % от контейнера → масштабируются с машиной */
 .m3-blink{position:absolute;transform:translate(-50%,-50%);opacity:0;pointer-events:none;
-  background:radial-gradient(circle,#eaf6ff 0%,#4aa8ff 38%,rgba(31,123,255,.55) 62%,rgba(31,123,255,0) 80%);
-  filter:drop-shadow(0 0 5px #1f7bff)}
+  background:radial-gradient(circle,#fff6e6 0%,#ffab2e 38%,rgba(255,140,0,.55) 62%,rgba(255,140,0,0) 80%);
+  filter:drop-shadow(0 0 5px #ff8a00)}
 .m3-blink.b0{left:49.8%;top:5%;width:34%;height:7.5%;border-radius:46%/50%;   /* мигалка-балка на крыше (rect line14) */
-  background:radial-gradient(ellipse at 50% 50%,#eaf6ff 0%,#66b8ff 42%,rgba(31,123,255,.5) 68%,rgba(31,123,255,0) 85%)}
+  background:radial-gradient(ellipse at 50% 50%,#fff2dc 0%,#ffb84d 42%,rgba(255,140,0,.5) 68%,rgba(255,140,0,0) 85%)}
 .m3-blink.b1{left:80.8%;top:11.8%;width:3.6%;height:4.6%;border-radius:50%}    /* огонёк (rect line15) */
 .m3-blink.b2{left:95%;top:11.8%;width:3.6%;height:4.6%;border-radius:50%}      /* огонёк (rect line16) */
 .m3-spp.live .m3-blink{animation:sppBlink .8s ease-in-out infinite}
@@ -707,7 +695,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 @keyframes sppBlink{0%,100%{opacity:.06}22%{opacity:1}46%{opacity:.06}}
 #m3SppSparks{position:absolute;z-index:5;left:90.88%;top:59.53%;width:3.45%;height:8.2%;pointer-events:none}
 #m3SppSparks.play .roofspark{animation:roofSpark .7s ease-out forwards}                              /* искры скорой */
-#m3SppSparks .roofspark{background:#dff2ff;box-shadow:0 0 8px #4aa8ff,0 0 14px #1f7bff}              /* — синие */
+#m3SppSparks .roofspark{background:#ffd9d9;box-shadow:0 0 8px #ff5a5a,0 0 14px #ff2020}              /* — красные (под обводку) */
 /* герой ФСК — позиция из SVG «Миссия 2 объекты» (rect 592,397 158×287 в системе 2172×724) */
 #fskScene .cafehero,#fskScene .cafeglow{left:27.26%;top:54.83%;width:7.27%;height:39.64%}
 #fskScene .cafesparks{left:27.26%;top:54.83%;width:7.27%;height:39.64%;aspect-ratio:auto}
@@ -862,7 +850,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* вопросы предпринимателя — единый стиль реплик героя (.hero-say), печатаются по очереди */
 .hqs{position:absolute;inset:0;z-index:3;pointer-events:none}
 /* СТИЛЬ «мысли героя»: Hauss, белый текст + пульсирующее ЗОЛОТОЕ свечение (как подсветка объектов, но золото); прилетает целиком — без печати */
-.hthink{position:absolute;z-index:16;max-width:42%;color:#fff;
+.hthink{position:absolute;z-index:16;max-width:46%;color:#fff;
   font-family:var(--hauss);font-weight:700;
   font-size:5.6cqh;line-height:1.26;letter-spacing:.004em;
   opacity:0;transform:translateY(16px) scale(.95);
@@ -1016,15 +1004,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 /* бокс-сцена в едином формате 2172×724 (контент квиза — под вуалью) */
 .quiz-stage{position:absolute;inset:0;margin:auto;overflow:hidden;z-index:1;
   width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
-  background:linear-gradient(90deg, rgba(0,0,0,.80) 0 42%, rgba(0,0,0,.55) 72%, rgba(0,0,0,.48) 100%),
-             url("assets/img/bg/Карта Москвы без героя.png") center/cover;   /* затемнённая карта Москвы (как слайд 4), темнее слева под вопросом */
+  background:linear-gradient(270deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%),
+             url("assets/img/bg/Карта Москвы без героя.png") center/cover;   /* ТОТ ЖЕ слой затемнения, что слайд 4 (rules-stage), зеркально: тёмное слева под вопросом */
   container-type:size;container-name:quizstage}
 /* вуаль квиза: чёрное поверх контента+волн → раскрывается/сворачивается из центра */
-.quiz-veil{position:absolute;inset:0;z-index:3;background:#02050e;pointer-events:none;
+.quiz-veil{position:absolute;inset:0;z-index:3;background:#04070c;pointer-events:none;   /* затемнение как на слайде 4 (rules-veil): фон/скорость/раскрытие */
   --r:0%;--fx:50%;--fy:50%;
   -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
   mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent calc(var(--r) - 2%), #000 var(--r));
-  transition:--r 2.6s cubic-bezier(.4,.1,.2,1)}
+  transition:--r 1.6s cubic-bezier(.4,.1,.2,1)}
 /* титулы квиза (вход и «Тем временем…») — НАД вуалью (z4) */
 .quiz-title,.quiz-outro-title{z-index:4}
 .quiz-title{opacity:1;transform:translate(-50%,-50%) scale(1);transition:opacity 1.1s ease}
@@ -1150,9 +1138,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .rules-carry.avttl.show{display:block;inset:0;margin:auto;
   width:100vw;height:calc(100vw*724/2172);max-height:100vh;max-width:calc(100vh*2172/724);
   container-type:size}
-.rules-carry.avttl .rules-carry-title{position:absolute;top:4%;left:3%;text-align:left;
-  font-size:3.6vw;letter-spacing:.02em;white-space:nowrap;opacity:1;transform:none;animation:none;
-  text-shadow:0 .2vw 1.4vw rgba(0,0,0,.7)}
+.rules-carry.avttl .rules-carry-title{position:absolute;top:4%;left:3%;text-align:left;transform-origin:left top;
+  font-size:3.1cqw;letter-spacing:.02em;white-space:nowrap;opacity:0;transform:none;animation:none;   /* = титул слайда 4 (3.1cqw) */
+  text-shadow:0 .2vw 1.4vw rgba(0,0,0,.7);
+  transition:top .9s cubic-bezier(.4,.1,.2,1),left .9s cubic-bezier(.4,.1,.2,1),transform .9s cubic-bezier(.4,.1,.2,1),font-size .9s cubic-bezier(.4,.1,.2,1),opacity .5s ease}
+.rules-carry.avttl.show .rules-carry-title{opacity:1}
+/* слайд 5: состояние ЦЕНТР — титул по центру картинки, крупнее; потом ЕДЕТ в левый верхний угол (как слайд 4) */
+.rules-carry.avttl.tcenter .rules-carry-title{top:50%;left:50%;transform:translate(-50%,-50%);font-size:3.6cqw}   /* центр = центр титула слайда 4 (3.6cqw) */
 /* шаблонная вуаль перехода правил (как .hveil): раскрытие/сворачивание из фокуса --fx/--fy */
 .rules-veil{position:absolute;inset:0;z-index:5;background:#04070c;pointer-events:none;
   --r:175%;--fx:10%;--fy:50%;
@@ -1212,9 +1204,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 .ava-card{display:flex;flex-direction:column;align-items:center;gap:.6cqh;text-align:center;width:100%}
 .ava-top{margin-bottom:1cqh}
 .ava-bottom{margin-top:1cqh}
-.ava-org,.ava-name,.ava-desc{opacity:0}
-.ava-org{font-family:var(--title-font);font-weight:700;color:var(--cyan);
-  font-size:1.15cqw;letter-spacing:.05em;text-transform:uppercase}
+/* подписи аватара НЕ печатаются — ПРОЯВЛЯЮТСЯ (fade+подъём), привязка к фазам аватара в avReveal */
+.ava-org,.ava-name,.ava-desc{opacity:0;transform:translateY(8px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.25,1)}
+.ava-org.show,.ava-name.show,.ava-desc.show{opacity:1;transform:none}
+.ava-org{font-family:var(--title-font);font-weight:700;color:#fff;
+  font-size:1.15cqw;letter-spacing:.05em;text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.95);animation:thinkGlowNeon 1.6s ease-in-out infinite}   /* подсветка как «Москва» (СТИЛЬ 2, thinkGlowNeon) */
 .ava-name{font-family:var(--title-font);font-weight:700;color:#fff;font-size:1.15cqw;
   text-transform:uppercase;letter-spacing:.04em;
   padding:.35cqw .8cqw;border:1px solid var(--cyan-soft);border-radius:.3cqw;
@@ -1561,7 +1556,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
       <img class="cafeglow co-hero" id="coHeroGlow" src="assets/img/objects/hero-cafeopen-outline.png" alt="">
       <div class="cafe-name co-name" id="coName">
         <div class="mapname boxed herobox">
-          <span class="hstars"><span class="star on">★</span><span class="star on">★</span><span class="star off">★</span><span class="star off">★</span><span class="star off">★</span></span>
+          <span class="hstars"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span><span class="star off">★</span><span class="star off">★</span></span>
           <span class="htext" id="coHtext"></span>
         </div>
       </div>
@@ -1580,12 +1575,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
         <div class="mission-name" id="coFio"></div>
       </div>
       <div class="co-dust" id="coDust"></div>                              <!-- мультяшное белое облако пыли -->
-      <div class="co-tools" id="coTools"></div>                            <!-- мультяшные инструменты «идёт ремонт» (в облаке пыли) -->
     </div>
     <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от fsk через landing; используется только для сворачивания) -->
     <div class="mission1-veil" id="coVeil"></div>
-    <!-- титул «ВНИМАНИЕ, ОПАСНОСТЬ!» — z9, над вуалью, переживает сворачивание -->
-    <div class="mission-title cafe-quiz-title" id="coDangerTitle"><div class="mt-name">ВНИМАНИЕ, ОПАСНОСТЬ!</div></div>
+    <!-- exit-титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» — z9, над вуалью, переживает сворачивание -->
+    <div class="mission-title cafe-quiz-title" id="coDangerTitle"><div class="mt-kicker">МИССИЯ 3</div><div class="mt-name">ЗАЩИТА БИЗНЕСА</div></div>
   </div>
 
   <!-- ════ МИССИЯ 3 — ЗАЩИТА БИЗНЕСА (слайд 15): cafe-3 (готово) + вывеска «Ваше любимое кофе» ════ -->
@@ -1602,7 +1596,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
       <img class="cafeglow m3-hero" id="m3HeroGlow" src="assets/img/objects/hero-mission3-outline.png" alt="">
       <div class="cafe-name" id="m3NamePanel">
         <div class="mapname boxed herobox">
-          <span class="hstars"><span class="star on">★</span><span class="star on">★</span><span class="star off">★</span><span class="star off">★</span><span class="star off">★</span></span>
+          <span class="hstars"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span><span class="star off">★</span><span class="star off">★</span></span>
           <span class="htext" id="m3Htext"></span>
         </div>
       </div>
@@ -1614,6 +1608,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
         <span class="m3-blink b1"></span>
         <span class="m3-blink b2"></span>
       </div>
+      <!-- эскаватор: облако пыли + звёздочки при работе ковшом (реюз стилей слайда 13) -->
+      <div class="danger-dust" id="m3Dust"></div>
+      <svg class="danger-stars" id="m3Stars" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid slice"><g id="m3StarsG"></g></svg>
+      <!-- тревога (красный пульс) при движении эскаватора -->
+      <div class="alarm" id="m3Alarm"></div>
     </div>
     <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от danger через landing; для будущего перехода) -->
     <div class="mission1-veil" id="m3Veil"></div>
@@ -1867,9 +1866,9 @@ function runQuiz(){
   void quizVeil.offsetWidth; quizVeil.style.transition='';
   qTimers.push(setTimeout(()=>{
     if(id()!=='quiz') return;
-    quizVeil.style.setProperty('--r','160%');                       // раскрытие → волны
+    quizVeil.style.setProperty('--r','175%');                       // раскрытие как rules-veil
     quizTitle.classList.add('faded');                              // титул гаснет
-    qTimers.push(setTimeout(()=>{ if(id()==='quiz'){ quizStep=0; showQuizItem(); } }, 2400));  // после раскрытия — 1-й вопрос
+    qTimers.push(setTimeout(()=>{ if(id()==='quiz'){ quizStep=0; showQuizItem(); } }, 1700));  // после раскрытия (1.6s) — 1-й вопрос
   }, 900));
 }
 /* концовка квиза: БЕЗ титула «Тем временем…» — сразу сворачивание вуали (переход только вуалями) */
@@ -1889,11 +1888,11 @@ function skipQuizEnding(){
 function quizToNext(){
   if(quizNextGo) return; quizNextGo=true;                                 // защита от двойного вызова (авто + клик)
   qTimers.splice(0).forEach(clearTimeout);
-  quizVeil.style.transition=''; quizVeil.style.setProperty('--r','0%');   // свернуть в чёрное
+  quizVeil.style.transition=''; quizVeil.style.setProperty('--r','0%');   // свернуть в чёрное (1.6s)
   qTimers.push(setTimeout(()=>{
     if(cur<SCENES.length-1){ cur++; applyScene(); }                       // → след. слайд (под landing)
     runLanding('');                                                        // раскрытие вуали landing БЕЗ титула
-  }, 2700));
+  }, 1700));
 }
 function resetQuizContent(){
   quizStep=0; quizPanelShown=false; quizEndStarted=false; quizEndDone=false; quizNextGo=false;
@@ -2025,44 +2024,26 @@ function cafeLevelFinal(){
   [...cafeName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<1); s.classList.toggle('off',i>=1); });
   cafeName.classList.add('show'); cafeHtext.textContent=CAFE_HERO_NAME2; cafeHtext.classList.remove('name-in','name-out'); cafeHtext.classList.add('typed');
 }
-/* СЮЖЕТ КАФЕ (по клику после интро): убрать текст → Путилин (механика слайда 7) → реплика1 → уровень → реплика2 (стереть1) → титул КВИЗ */
+/* СЮЖЕТ КАФЕ (по клику после интро): убрать текст → уровень героя ↑ → титул КВИЗ (аватар Путилина убран) */
 function cafeStory(){
   if(cafeStoryStarted) return; cafeStoryStarted=true;
   const guard=()=>id()==='mission1';
   m1Text.classList.remove('show');                                   // 1) текст исчезает (fade)
-  storyT.push(setTimeout(()=>{ if(!guard())return;                   // 2) ПОСЛЕ исчезновения текста — аватар Путилина
-    cafeAva.classList.add('show');
-    avSparks(cafeAvatar,16); void cafeAvatar.offsetWidth;
-    cafeAvatar.classList.add('play');
-    storyT.push(setTimeout(()=>cafeAvatar.classList.add('live'), 1933));
-    storyT.push(setTimeout(()=>{ if(!guard())return;                 // 3) ФИО (после проявления лица)
-      typeSay(cafeFio, CAFE_FIO, guard, storyT);
-      storyT.push(setTimeout(()=>{ if(!guard())return;               // 4) реплика 1
-        typeSay(cafeSay, CAFE_SAY1, guard, storyT);
-        storyT.push(setTimeout(()=>{ if(!guard())return;             // 5) механика уровня
-          runCafeLevelUp();
-          storyT.push(setTimeout(()=>{ if(!guard())return;           // 6) реплика 2 — стереть реплику1, напечатать
-            typeErase(cafeSay, CAFE_SAY2, guard, storyT, ()=>{
-              storyT.push(setTimeout(()=>{ if(!guard())return;       // 7) титул КВИЗ (pop) → АВТО-переход без клика
-                cafeQuizTitle.classList.add('pop'); cafeStoryDone=true;
-                storyT.push(setTimeout(()=>{ if(guard()) cafeToQuiz(); }, 1600)); }, 700));
-            });
-          }, 4200));                                                 // ждём завершения механики уровня
-        }, CAFE_SAY1.length*32 + 1200));
-      }, 1200));                                                     // после ФИО → реплика1
-    }, 2500));                                                       // после проявления лица → ФИО
-  }, 800));                                                          // ждём исчезновения текста
+  storyT.push(setTimeout(()=>{ if(!guard())return;                   // 2) уровень героя повышается
+    runCafeLevelUp();
+    storyT.push(setTimeout(()=>{ if(!guard())return;                 // 3) титул КВИЗ (pop) → АВТО-переход без клика
+      cafeQuizTitle.classList.add('pop'); cafeStoryDone=true;
+      storyT.push(setTimeout(()=>{ if(guard()) cafeToQuiz(); }, 1600));
+    }, 4200));                                                       // ждём завершения механики уровня
+  }, 1000));                                                         // пауза 1с — текст успевает уйти
 }
-/* скип сюжета кафе: мгновенно к финалу (аватар, уровень, реплика2, титул КВИЗ) */
+/* скип сюжета кафе: мгновенно к финалу (уровень героя + титул КВИЗ; аватар убран) */
 function skipCafeStory(){
   cafeStoryStarted=true;
   storyT.splice(0).forEach(clearTimeout); cafeNameTimers.forEach(clearTimeout); cafeNameTimers=[];
   m1Text.classList.remove('show');
-  cafeAva.classList.add('show'); cafeAvatar.classList.remove('play'); cafeAvatar.classList.add('play','live');
-  cafeFio.classList.add('show'); cafeFio.innerHTML='<span class="say-txt">'+CAFE_FIO+'</span>';
   cafeLevelFinal();
   document.querySelectorAll('.say-caret').forEach(c=>c.remove());
-  cafeSay.classList.add('show'); cafeSay.innerHTML='<span class="say-txt">'+CAFE_SAY2+'</span>';
   cafeQuizTitle.classList.add('pop'); cafeStoryDone=true;
   storyT.push(setTimeout(()=>{ if(id()==='mission1') cafeToQuiz(); }, 1600));   // АВТО-переход без клика
 }
@@ -2204,49 +2185,35 @@ function cafe2Story(){
   if(cafe2StoryStarted) return; cafe2StoryStarted=true;
   const guard=()=>id()==='mission1b';
   m1bText.classList.remove('show');
+  // Клик → пауза 1с (текст успевает уйти) → повышение уровня героя 1★→2★. Аватар Купринова и титул «ФСК» убраны.
   story2T.push(setTimeout(()=>{ if(!guard())return;
-    cafeAva2.classList.add('show');
-    avSparks(cafeAvatar2,16); void cafeAvatar2.offsetWidth;
-    cafeAvatar2.classList.add('play');
-    story2T.push(setTimeout(()=>cafeAvatar2.classList.add('live'), 1933));
-    story2T.push(setTimeout(()=>{ if(!guard())return;
-      typeSay(cafeFio2, CAFE2_FIO, guard, story2T);
-      story2T.push(setTimeout(()=>{ if(!guard())return;   // одна реплика → титул (без level-up, без 2-й реплики)
-        typeSay(cafeSay2, CAFE2_SAY1, guard, story2T);
-        story2T.push(setTimeout(()=>{ if(!guard())return;
-          cafeQuizTitle2.classList.add('pop'); cafe2StoryDone=true; }, CAFE2_SAY1.length*32 + 1500));
-      }, 1200));
-    }, 2500));
-  }, 800));
+    runCafe2LevelUp();
+    story2T.push(setTimeout(()=>{ cafe2StoryDone=true; }, 3000));   // ждём завершения анимации level-up
+  }, 1000));
 }
 function skipCafe2Story(){
   cafe2StoryStarted=true;
   story2T.splice(0).forEach(clearTimeout); cafe2NameTimers.forEach(clearTimeout); cafe2NameTimers=[];
   m1bText.classList.remove('show');
-  cafeAva2.classList.add('show'); cafeAvatar2.classList.remove('play'); cafeAvatar2.classList.add('play','live');
-  cafeFio2.classList.add('show'); cafeFio2.innerHTML='<span class="say-txt">'+CAFE2_FIO+'</span>';
-  document.querySelectorAll('.say-caret').forEach(c=>c.remove());
-  cafeSay2.classList.add('show'); cafeSay2.innerHTML='<span class="say-txt">'+CAFE2_SAY1+'</span>';
-  cafeQuizTitle2.classList.add('pop'); cafe2StoryDone=true;
+  cafe2LevelFinal();          // мгновенно: 2★ + имя «Действующий предприниматель»
+  cafe2StoryDone=true;
 }
-/* mission1b → binoc: титул «ФСК» (уже показан cafeQuizTitle2) переносим через landing:
-   1) landing-титул «ФСК» поверх (вуаль прозрачна) → 2) кафе сворачивается своей вуалью (титул остаётся)
-   → 3) landing→чёрное, переход на binoc под чёрным → 4) landing раскрывается, титул «ФСК» гаснет,
-   разведка binoc играет под раскрытие (как 6→7 «Начнём бизнес» / квиз→mission1b) */
+/* mission1b → binoc: титул «ФСК» УБРАН — переход БЕЗ титула (только вуали):
+   1) кафе сворачивается своей вуалью в чёрное → 2) переход на binoc под чёрным
+   → 3) карту раскроет своя .darkness (как на слайде 7) */
 function cafe2ToNext(){
   story2T.splice(0).forEach(clearTimeout);
   landTimers.splice(0).forEach(clearTimeout);
-  // 1) сворачиваем кафе СВОЕЙ вуалью в чёрное; титул «ФСК» (cafeQuizTitle2 z9) остаётся поверх
+  // 1) сворачиваем кафе СВОЕЙ вуалью в чёрное
   mission1bVeil.style.transition=''; mission1bVeil.style.setProperty('--r','0%');
   story2T.push(setTimeout(()=>{
-    // 2) титул «ФСК» подхватывает landing (ПРОЗРАЧНАЯ вуаль — сцена под ней видна), переход на binoc
-    landingTitle.innerHTML='<div class="mt-name">ФСК</div>'; landingTitle.classList.remove('faded');
+    // 2) landing БЕЗ титула (ФСК убран), переход на binoc под чёрным
+    landingTitle.innerHTML=''; landingTitle.classList.add('faded');
     landing.classList.add('show');
     landingVeil.style.transition='none'; landingVeil.style.setProperty('--r','175%'); void landingVeil.offsetWidth; landingVeil.style.transition='';
     binocFromLanding=true;
     if(cur<SCENES.length-1){ cur++; applyScene(); }                        // binoc → runBinocMapIntro (тёмная сцена + крышный герой)
-    // 3) титул «ФСК» ИСЧЕЗАЕТ (landing НЕ раскрываем — карту раскроет своя .darkness, как на слайде 7)
-    landTimers.push(setTimeout(()=>landingTitle.classList.add('faded'), 300));
+    // 3) карту раскроет своя .darkness (как на слайде 7); landing просто уходит
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 1600));
   }, 2700));
 }
@@ -2340,8 +2307,8 @@ const fskVeil=document.getElementById('fskVeil');
 const fskTitle=document.getElementById('fskTitle');
 const fskOpenTitle=document.getElementById('fskOpenTitle');
 const FSK_FIO='Купринов А. Э.';
-const FSK_HERO_NAME=LEVEL_NAMES[1];    // старт 1★ «Начинающий предприниматель»
-const FSK_HERO_NAME2=LEVEL_NAMES[2];   // после уровня 2★ «Действующий предприниматель»
+const FSK_HERO_NAME=LEVEL_NAMES[2];    // старт 2★ «Действующий предприниматель»
+const FSK_HERO_NAME2=LEVEL_NAMES[3];   // после уровня 3★ «Продвинутый предприниматель»
 const FSK_SAY='Поздравляю! Теперь кафе можно открывать!';
 let fskDrawTimer=null, fskNameTimers=[], fskLevelDone=false, fskIntroDone=false;
 let fskStoryStarted=false, fskStoryDone=false, fskT=[], fskMTimers=[];
@@ -2384,62 +2351,51 @@ function skipFskIntro(){
   if(fskText) fskText.classList.add('show');
   fskIntroDone=true;
 }
-/* уровень героя 1★ → 2★, имя «Действующий предприниматель» */
+/* уровень героя 2★ → 3★, имя «Продвинутый предприниматель» */
 function runFskLevelUp(){
   if(fskLevelDone) return; fskLevelDone=true;
   runLevelUp(
-    {el:fskName, nameEl:fskHtext, name:FSK_HERO_NAME, stars:{total:5, filled:1}},
+    {el:fskName, nameEl:fskHtext, name:FSK_HERO_NAME, stars:{total:5, filled:2}},
     {name:FSK_HERO_NAME2, banner:'УРОВЕНЬ ПОВЫШЕН', bannerLeft:'25%', bannerTop:'30%', container:fskStage, timers:fskNameTimers}
   );
 }
 function fskLevelFinal(){
   fskLevelDone=true;
   fskStage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());
-  [...fskName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<2); s.classList.toggle('off',i>=2); });
+  [...fskName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<3); s.classList.toggle('off',i>=3); });
   fskName.classList.add('show'); fskHtext.textContent=FSK_HERO_NAME2; fskHtext.classList.remove('name-in','name-out'); fskHtext.classList.add('typed');
 }
-/* сюжет: скрыть текст → аватар Купринова → ФИО → реплика «Поздравляю…» → уровень 1★→2★ */
+/* сюжет: скрыть текст → пауза 1с → уровень 2★→3★ → титул «ОТКРЫТИЕ КАФЕ» (аватар Купринова убран) */
 function fskStory(){
   if(fskStoryStarted) return; fskStoryStarted=true;
   const guard=()=>id()==='fsk';
-  fskText.classList.remove('show');
+  fskText.classList.remove('show');                                  // 1) текст исчезает (fade)
+  // Клик → пауза 1с (текст успевает уйти) → повышение уровня 2★→3★. Аватар Купринова убран.
   fskT.push(setTimeout(()=>{ if(!guard())return;
-    fskAva.classList.add('show');
-    avSparks(fskAvatar,16); void fskAvatar.offsetWidth; fskAvatar.classList.add('play');
-    fskT.push(setTimeout(()=>fskAvatar.classList.add('live'), 1933));
-    fskT.push(setTimeout(()=>{ if(!guard())return;
-      typeSay(fskFio, FSK_FIO, guard, fskT);
-      fskT.push(setTimeout(()=>{ if(!guard())return;
-        typeSay(fskSay, FSK_SAY, guard, fskT);
-        fskT.push(setTimeout(()=>{ if(!guard())return; runFskLevelUp();
-          fskT.push(setTimeout(()=>{ if(!guard())return; fskOpenTitle.classList.add('pop'); fskStoryDone=true; }, 1600));   // после уровня — титул «ОТКРЫТИЕ КАФЕ» на слайде
-        }, FSK_SAY.length*32 + 1500));
-      }, 1200));
-    }, 2500));
-  }, 800));
+    runFskLevelUp();
+    fskT.push(setTimeout(()=>{ if(!guard())return; fskStoryDone=true; }, 4200));   // ждём завершения механики уровня (титул «ОТКРЫТИЕ КАФЕ» убран)
+  }, 1000));
 }
 function skipFskStory(){
   fskStoryStarted=true;
   fskT.splice(0).forEach(clearTimeout); fskNameTimers.forEach(clearTimeout); fskNameTimers=[];
   fskText.classList.remove('show');
-  fskAva.classList.add('show'); fskAvatar.classList.remove('play'); fskAvatar.classList.add('play','live');
-  fskFio.classList.add('show'); fskFio.innerHTML='<span class="say-txt">'+FSK_FIO+'</span>';
+  fskLevelFinal();                                                   // мгновенно: 3★ + имя «Продвинутый предприниматель»
   document.querySelectorAll('.say-caret').forEach(c=>c.remove());
-  fskSay.classList.add('show'); fskSay.innerHTML='<span class="say-txt">'+FSK_SAY+'</span>';
-  fskLevelFinal(); fskOpenTitle.classList.add('pop'); fskStoryDone=true;
+  fskStoryDone=true;                                                 // титул «ОТКРЫТИЕ КАФЕ» убран
 }
 function fskToNext(){
   fskT.splice(0).forEach(clearTimeout);
   fskVeil.style.transition=''; fskVeil.style.setProperty('--r','0%');   // fsk сворачивается в чёрное
   fskT.push(setTimeout(()=>{
-    // ПЕРЕНОС ТИТУЛА «ОТКРЫТИЕ КАФЕ» на новый слайд (механика как везде): на чёрном титул на landing → раскрытие → гаснет
+    // переход на cafeopen БЕЗ титула: на чёрном landing → раскрытие (титул «ОТКРЫТИЕ КАФЕ» убран)
     landTimers.splice(0).forEach(clearTimeout);
-    landingTitle.innerHTML='<div class="mt-name">ОТКРЫТИЕ КАФЕ</div>'; landingTitle.classList.remove('faded');
+    landingTitle.innerHTML=''; landingTitle.classList.add('faded');
     landing.classList.add('show');
     landingVeil.style.transition='none'; landingVeil.style.setProperty('--r','0%'); void landingVeil.offsetWidth; landingVeil.style.transition='';
     coFromLanding=true;                                                    // dust-последовательность запустится ПОСЛЕ раскрытия landing
     if(cur<SCENES.length-1){ cur++; applyScene(); }                        // cafeopen (cafe-2, ремонт) под чёрным
-    landTimers.push(setTimeout(()=>{ landingVeil.style.setProperty('--r','160%'); landingTitle.classList.add('faded'); }, 1100));   // держим титул → раскрытие + титул гаснет
+    landTimers.push(setTimeout(()=>{ landingVeil.style.setProperty('--r','160%'); }, 1100));   // раскрытие landing (без титула)
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 1100+2600+400));
   }, 2700));
 }
@@ -2451,7 +2407,7 @@ function resetFskHero(){
   fskHero.classList.remove('show','reveal'); fskGlow.classList.remove('show','draw','glow');
   fskSignSvg.classList.remove('show');
   fskName.classList.remove('show'); fskHtext.textContent=''; fskHtext.classList.remove('typed','name-in','name-out');
-  [...fskName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<1); s.classList.toggle('off',i>=1); });
+  [...fskName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<2); s.classList.toggle('off',i>=2); });   // старт 2★
   fskText.classList.remove('show');
   fskAva.classList.remove('show'); fskAvatar.classList.remove('play','live');
   fskAvatar.querySelectorAll('.ava-spark').forEach(s=>s.remove());
@@ -2485,7 +2441,6 @@ const coCoffee=document.getElementById('coCoffee');
 const coOutline=document.getElementById('coOutline');
 const coCub=document.getElementById('coCub');
 const coDust=document.getElementById('coDust');
-const coTools=document.getElementById('coTools');
 const coHero=document.getElementById('coHero');
 const coHeroGlow=document.getElementById('coHeroGlow');
 const coSparks=document.getElementById('coSparks');
@@ -2499,7 +2454,7 @@ const coVeil=document.getElementById('coVeil');
 const coDangerTitle=document.getElementById('coDangerTitle');
 const CO_FIO='Байков С. Н.';
 const CO_SAY='Теперь самое время мне вмешаться?';
-let coTimers=[], coNameTimers=[], coHeroTimer=null, coFromLanding=false, coDustBuilt=false, coToolsBuilt=false;
+let coTimers=[], coNameTimers=[], coHeroTimer=null, coFromLanding=false, coDustBuilt=false;
 let coHeroStarted=false, coHeroDone=false, coStoryStarted=false, coStoryDone=false, coDangerShown=false, coGo=false;
 /* искры героя (сходятся к центру) */
 function buildCoSparks(n){
@@ -2527,7 +2482,7 @@ function playCoHero(){
     if(id()!=='cafeopen') return;
     coHeroGlow.classList.add('show','glow');
     coName.classList.add('show');
-    const nm=LEVEL_NAMES[2];                                     // сквозной ранг: 2★ «Действующий предприниматель»
+    const nm=LEVEL_NAMES[3];                                     // сквозной ранг: 3★ «Продвинутый предприниматель»
     for(let i=1;i<=nm.length;i++){
       coNameTimers.push(setTimeout(()=>{ coHtext.textContent=nm.slice(0,i); if(i===nm.length) coHtext.classList.add('typed'); }, i*45));
     }
@@ -2541,14 +2496,13 @@ function skipCoHero(){
   coSparks.classList.remove('play');
   coHero.classList.remove('reveal'); coHero.classList.add('show');
   coHeroGlow.classList.remove('draw'); coHeroGlow.classList.add('show','glow');
-  coName.classList.add('show'); coHtext.textContent=LEVEL_NAMES[2]; coHtext.classList.add('typed');
+  coName.classList.add('show'); coHtext.textContent=LEVEL_NAMES[3]; coHtext.classList.add('typed');
   coHeroDone=true;
 }
 /* пропуск всего интро (облако пыли + готовое кафе + контур/вывески + герой) по клику — сразу конечное состояние */
 function skipCoIntro(){
   coTimers.splice(0).forEach(clearTimeout);                        // рвём авто-последовательность
   coDust.classList.remove('play'); coDust.style.opacity='0';       // пыль убрать
-  coTools.classList.remove('play'); coTools.style.opacity='0';     // инструменты убрать
   coBg2.classList.add('show');                                     // cafe-3 (готово)
   coCoffee.classList.add('show','lit');                           // вывеска «Ваш любимый кофе»
   coOutline.classList.remove('draw','danger'); coOutline.classList.add('show','glow');   // контур кафе — сразу нарисован + циан-пульс
@@ -2585,14 +2539,14 @@ function skipCoStory(){
   coSay.classList.add('show'); coSay.innerHTML='<span class="say-txt">'+CO_SAY+'</span>';
   coStoryDone=true;
 }
-/* выход: cafeopen сворачивается (титул «ВНИМАНИЕ, ОПАСНОСТЬ!» z9 остаётся) → перенос титула на след. слайд */
+/* выход: cafeopen сворачивается (титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» z9 остаётся) → перенос титула на след. слайд */
 function coToNext(){
   if(coGo) return; coGo=true;
   coTimers.splice(0).forEach(clearTimeout); coNameTimers.forEach(clearTimeout);
   landTimers.splice(0).forEach(clearTimeout);
   coVeil.style.transition=''; coVeil.style.setProperty('--r','0%');   // cafeopen сворачивается в чёрное (титул z9 остаётся)
   coTimers.push(setTimeout(()=>{
-    landingTitle.innerHTML='<div class="mt-name">ВНИМАНИЕ, ОПАСНОСТЬ!</div>'; landingTitle.classList.remove('faded');
+    landingTitle.innerHTML='<div class="mt-kicker">МИССИЯ 3</div><div class="mt-name">ЗАЩИТА БИЗНЕСА</div>'; landingTitle.classList.remove('faded');
     landing.classList.add('show');
     landingVeil.style.transition='none'; landingVeil.style.setProperty('--r','0%'); void landingVeil.offsetWidth; landingVeil.style.transition='';
     dangerFromLanding=true;                                          // сцена «Опасность»: эскаватор поедет ПОСЛЕ раскрытия landing
@@ -2614,8 +2568,11 @@ const m3NamePanel=document.getElementById('m3NamePanel');
 const m3Htext=document.getElementById('m3Htext');
 const m3Spp=document.getElementById('m3Spp');
 const m3SppSparks=document.getElementById('m3SppSparks');
+const m3Dust=document.getElementById('m3Dust');
+const m3StarsG=document.getElementById('m3StarsG');
+const m3Alarm=document.getElementById('m3Alarm');
 let m3Timers=[], mission3FromLanding=false;
-let m3F1Started=false, m3Frame1Done=false, m3SppStarted=false, m3SppDone=false;
+let m3F1Started=false, m3Frame1Done=false, m3SppStarted=false, m3SppDone=false, m3ExcDone=false;
 /* искры, сходящиеся к центру (переиспользуемая, как buildRoofSparks) */
 function buildSparks(el,n){
   el.innerHTML='';
@@ -2636,12 +2593,101 @@ const SPP_FRAMES=[
   {left:77.90, top:55.52, w:16.76},  // поз.3 — финал (rect 1692,402 · 364×289)
 ];
 function setSppFrame(i){ const f=SPP_FRAMES[i]; m3Spp.style.left=f.left+'%'; m3Spp.style.top=f.top+'%'; m3Spp.style.width=f.w+'%'; }
+/* ── ЭСКАВАТОР слайда 14: движение 3 кадрами (как скорая) + работа ковшом (пыль/звёзды/аларм/сирена, как слайд 13) → паркинг ── */
+const M3_EXC_BUCKET='assets/img/objects/excavator_bucket_mid_alpha_tight.png';   // ковш опущен
+const M3_EXC_MOVE='assets/img/objects/excavator moving.png';                     // едет (ковш поднят)
+const M3_EXC_PARK='assets/img/objects/excavator-mission3.png';                   // паркинг (как было)
+/* 3 позиции: дальняя (справа, маленький) → средняя → ближняя = парковка (совпадает с CSS .m3-exc) */
+const EXC3_FRAMES=[
+  {left:66, top:47, w:6},          // дальняя (справа) — ПОДСТРОИТЬ по факту
+  {left:57, top:43, w:13},         // средняя
+  {left:47.24, top:38.5, w:24.1},  // ближняя = паркинг
+];
+function setExcM3Frame(i, src){
+  const f=EXC3_FRAMES[i];
+  m3Exc.style.left=f.left+'%'; m3Exc.style.top=f.top+'%'; m3Exc.style.width=f.w+'%';
+  if(src) m3Exc.setAttribute('src', src);
+}
+/* облако пыли у ковша (в % m3-stage; реюз стиля .danger-dust .cloudpuff) */
+function m3Puff(xPct, yPct, szCqw, pd){
+  const d=document.createElement('div'); d.className='cloudpuff';
+  d.style.width=szCqw.toFixed(1)+'cqw'; d.style.height=(szCqw*0.66).toFixed(1)+'cqw';
+  d.style.left=xPct.toFixed(1)+'%'; d.style.top=yPct.toFixed(1)+'%';
+  d.style.marginLeft=(-szCqw/2).toFixed(1)+'cqw'; d.style.marginTop=(-szCqw*0.4).toFixed(1)+'cqw';
+  if(pd) d.style.setProperty('--pd', pd+'ms');
+  m3Dust.appendChild(d);
+  d.addEventListener('animationend', ()=>d.remove());
+}
+/* звёздочки-вспышки у ковша (viewBox 2172×724; реюз mk/starPts/.star) */
+function m3StarsBurst(vx, vy){
+  for(let i=0;i<9;i++){
+    const ox=Math.random()*180-90, oy=Math.random()*100-55;
+    const st=mk('polygon',{points:starPts(vx+ox, vy+oy, 5, 11, 4.4)}, 'star');
+    st.style.fill='#ffe08a'; st.style.filter='drop-shadow(0 0 3px #ffd24a)';
+    m3StarsG.appendChild(st);
+    st.animate([{opacity:1,transform:'scale(.2) rotate(0deg)'},{opacity:0,transform:'scale(1.3) rotate(40deg)'}],
+      {duration:600+Math.random()*350, delay:i*45, easing:'ease-out', fill:'forwards'}).onfinish=()=>st.remove();
+  }
+}
+/* тревога (свой слой в mission3) + сирена */
+function m3AlarmOn(){
+  m3Alarm.classList.add('on');
+  m3Timers.push(setTimeout(()=>{ try{ sirenEl.currentTime=0; sirenEl.volume=1; sirenEl.play().catch(()=>{}); }catch(e){} }, 400));
+}
+function m3AlarmOff(){
+  m3Alarm.classList.remove('on');
+  try{ sirenEl.pause(); sirenEl.currentTime=0; }catch(e){}
+}
+/* эскаватор ПРИЕЗЖАЕТ: дальняя(bucket)→средняя(moving)→ближняя(bucket) + аларм/сирена → работа ковшом → паркинг */
+function m3ExcArrive(){
+  const guard=()=>id()==='mission3';
+  // старт в ДАЛЬНЕЙ точке — без переезда (мгновенно), появление искры→из размытия
+  m3Exc.style.transition='none'; setExcM3Frame(0, M3_EXC_BUCKET); void m3Exc.offsetWidth; m3Exc.style.transition='';
+  buildSparks(m3ExcSparks,16); m3ExcSparks.classList.add('play');
+  m3Exc.style.opacity='1'; void m3Exc.offsetWidth; m3Exc.classList.add('reveal');
+  m3AlarmOn();                                                   // тревога + сирена (эскаватор в движении)
+  m3Timers.push(setTimeout(()=>{ if(!guard())return;
+    m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');   // оранжевый неон
+    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(1, M3_EXC_MOVE); }, 150));    // средняя (moving)
+    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(2, M3_EXC_BUCKET); }, 900));   // ближняя (bucket)
+    m3Timers.push(setTimeout(()=>{ if(guard()) m3ExcWork(); }, 1650));                       // работа ковшом
+  }, 2200));   // после reveal (появление из размытия)
+}
+/* работа ковшом в ближней точке: 3 смены bucket↔moving + пыль + звёзды → паркинг → стоп тревоги */
+function m3ExcWork(){
+  const guard=()=>id()==='mission3';
+  const N=3, STEP=280;                       // 3 смены картинки (удара)
+  const PX=52, PY=60, VX=1130, VY=445;       // позиция пыли/звёзд у ковша (ПОДСТРОИТЬ по факту)
+  for(let k=0;k<N;k++){
+    m3Timers.push(setTimeout(()=>{ if(!guard())return;
+      setExcM3Frame(2, M3_EXC_BUCKET);                          // ковш ВНИЗ (удар)
+      m3Puff(PX+(Math.random()*6-3), PY, 5+Math.random()*2, 900); m3StarsBurst(VX, VY);
+    }, k*STEP*2));
+    m3Timers.push(setTimeout(()=>{ if(guard()) setExcM3Frame(2, M3_EXC_MOVE); }, k*STEP*2 + STEP));   // ковш ВВЕРХ (замах)
+  }
+  const T=N*STEP*2;
+  m3Timers.push(setTimeout(()=>{ if(!guard())return;
+    setExcM3Frame(2, M3_EXC_PARK);                              // паркинг (как было)
+    m3AlarmOff();                                              // стоп тревоги/сирены
+    m3ExcDone=true;
+  }, T+300));
+}
+function skipM3Exc(){                                           // мгновенно: паркинг + стоп тревоги
+  m3Exc.style.transition='none'; setExcM3Frame(2, M3_EXC_PARK); void m3Exc.offsetWidth; m3Exc.style.transition='';   // без переезда
+  m3ExcSparks.classList.remove('play');
+  m3Exc.style.opacity='1'; m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
+  m3AlarmOff(); m3Dust.innerHTML=''; m3StarsG.innerHTML='';
+  m3ExcDone=true;
+}
 function resetMission3(){
   m3Timers.splice(0).forEach(clearTimeout);
   m3F1Started=false; m3Frame1Done=false; m3SppStarted=false; m3SppDone=false;
+  m3ExcDone=false;
   m3Coffee.classList.remove('show','lit','danger');                          // вывеска потушена
   m3Exc.classList.remove('reveal','glow'); m3Exc.style.opacity='0';          // эскаватор скрыт
+  m3Exc.style.transition='none'; setExcM3Frame(0, M3_EXC_BUCKET); void m3Exc.offsetWidth; m3Exc.style.transition='';   // сброс в дальний кадр (bucket)
   m3ExcSparks.classList.remove('play'); m3ExcSparks.innerHTML='';
+  m3AlarmOff(); m3Dust.innerHTML=''; m3StarsG.innerHTML='';                   // тревога/пыль/звёзды — сброс
   m3Hero.classList.remove('show','reveal'); m3HeroGlow.classList.remove('show','draw','glow');   // герой скрыт
   m3Sparks.classList.remove('play'); m3Sparks.innerHTML='';
   m3NamePanel.classList.remove('show'); m3Htext.textContent=''; m3Htext.classList.remove('typed');
@@ -2658,7 +2704,7 @@ function runMission3(){
   m3Timers.push(setTimeout(()=>{ if(!guard())return; m3Frame1(); }, mission3FromLanding?1500:300));
   mission3FromLanding=false;
 }
-/* КАДР 1: вывеска + герой (искры→фото→скан→имя) + эскаватор (reveal+оранжевый неон) — одновременно */
+/* КАДР 1: вывеска + герой (искры→фото→скан→имя) + эскаватор ПРИЕЗЖАЕТ (движение+аларм+сирена+ковш→паркинг) — одновременно */
 function m3Frame1(){
   if(m3F1Started) return; m3F1Started=true;
   const guard=()=>id()==='mission3';
@@ -2668,14 +2714,12 @@ function m3Frame1(){
   void m3Hero.offsetWidth; void m3HeroGlow.offsetWidth;
   m3Sparks.classList.add('play');
   m3Hero.classList.add('show','reveal');
-  // эскаватор одновременно — фото из размытия (без скана) → оранжевый неон
-  buildSparks(m3ExcSparks,16); m3ExcSparks.classList.add('play');
-  m3Exc.style.opacity='1'; void m3Exc.offsetWidth; m3Exc.classList.add('reveal');
-  // контуры + имя — сразу после фото (~2.9с): герой и эскаватор синхронно, без скана
+  // эскаватор ПРИЕЗЖАЕТ (3 кадра + аларм/сирена + работа ковшом → паркинг) — параллельно с героем
+  m3ExcArrive();
+  // контур героя + имя — сразу после фото (~2.9с)
   m3Timers.push(setTimeout(()=>{ if(!guard())return;
-    m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
     m3HeroGlow.classList.add('show','glow'); m3NamePanel.classList.add('show');
-    const nm=LEVEL_NAMES[2];                                                 // сквозной ранг 2★
+    const nm=LEVEL_NAMES[3];                                                 // сквозной ранг 3★
     for(let i=1;i<=nm.length;i++) m3Timers.push(setTimeout(()=>{ m3Htext.textContent=nm.slice(0,i); if(i===nm.length) m3Htext.classList.add('typed'); }, i*45));
     m3Frame1Done=true;
   }, 2900));
@@ -2686,8 +2730,8 @@ function skipM3Frame1(){
   m3Coffee.classList.add('show','lit');
   m3Sparks.classList.remove('play'); m3Hero.classList.remove('reveal'); m3Hero.classList.add('show');
   m3HeroGlow.classList.remove('draw'); m3HeroGlow.classList.add('show','glow');
-  m3NamePanel.classList.add('show'); m3Htext.textContent=LEVEL_NAMES[2]; m3Htext.classList.add('typed');
-  m3ExcSparks.classList.remove('play'); m3Exc.style.opacity='1'; m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
+  m3NamePanel.classList.add('show'); m3Htext.textContent=LEVEL_NAMES[3]; m3Htext.classList.add('typed');
+  skipM3Exc();                                                              // эскаватор — сразу паркинг, тревога off
   m3Frame1Done=true;
 }
 /* КАДР 2 (по клику): скорая появляется у Москва-сити (reveal+синий) → 3 кадра к финалу → мигают мигалки */
@@ -2879,14 +2923,14 @@ function excavatorDrive(dur){
   }
   dangerRAF=requestAnimationFrame(fr);
 }
-/* появление героя 2★ «Действующий» на карте danger (стандартный roof-reveal: искры→фото из размытия→скан контура→имя) */
+/* появление героя 3★ «Продвинутый» на карте danger (стандартный roof-reveal: искры→фото из размытия→скан контура→имя) */
 function playDangerHero(){
   clearTimeout(roofDrawTimer);
   roofSparks.classList.remove('play'); roofHero.classList.remove('reveal'); roofGlow.classList.remove('show','draw','glow');
   buildRoofSparks(16);
   const h=heroPanel();
-  if(h){ h.shown=false; h.stars.filled=2; h.name=LEVEL_NAMES[2];    // сквозной ранг: 2★ «Действующий предприниматель»
-    [...h.el.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<2); s.classList.toggle('off',i>=2); });
+  if(h){ h.shown=false; h.stars.filled=3; h.name=LEVEL_NAMES[3];    // сквозной ранг: 3★ «Продвинутый предприниматель»
+    [...h.el.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<3); s.classList.toggle('off',i>=3); });
   }
   void roofHero.offsetWidth; void roofGlow.offsetWidth; void roofSparks.offsetWidth;
   roofSparks.classList.add('play');
@@ -2970,30 +3014,6 @@ function buildDust(){
     coDust.appendChild(d);
   });
 }
-/* мультяшные инструменты «идёт ремонт» (viewBox 48×48): молоток, ключ, пила, отвёртка, малярный валик */
-const TOOLS=[
-  '<svg viewBox="0 0 48 48"><g stroke="#26221d" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="21" y="17" width="6" height="25" rx="2.6" fill="#c98a3c"/><path d="M11 12h20a2.4 2.4 0 0 1 2.4 2.4v3.2a2.4 2.4 0 0 1-2.4 2.4h-4l-1.3 3.2h-6L20 20h-9a2.4 2.4 0 0 1-2.4-2.4v-3.2A2.4 2.4 0 0 1 11 12Z" fill="#cdd3db"/></g></svg>',
-  '<svg viewBox="0 0 48 48"><g stroke="#26221d" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M34 7.5a8.4 8.4 0 0 0-10.2 10.8L8.6 33.5a4 4 0 1 0 5.7 5.7l15.2-15.2A8.4 8.4 0 0 0 41 10.4l-5.5 5.5-4-1-1-4Z" fill="#cdd3db"/></g></svg>',
-  '<svg viewBox="0 0 48 48"><g stroke="#26221d" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><path d="M30 14q8-2.5 10 3 1.6 5.4-4.4 6.4l-6-2Z" fill="#c98a3c"/><path d="M5 31 30 16l1.7 3.2L8 34Z" fill="#cdd3db"/><path d="M7.5 32.2l2.6-1.5.9 2 2.7-1.6.9 2 2.7-1.6.9 2 2.7-1.6.9 2 2.7-1.6" fill="none" stroke-width="1.8"/></g></svg>',
-  '<svg viewBox="0 0 48 48"><g stroke="#26221d" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="17" y="6" width="14" height="15" rx="5" fill="#d94f4f"/><rect x="21" y="20" width="6" height="15" fill="#cdd3db"/><path d="M21 35h6v4l-3 4-3-4Z" fill="#9aa0a8"/></g></svg>',
-  '<svg viewBox="0 0 48 48"><g stroke="#26221d" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="9" y="9" width="22" height="9.5" rx="2.6" fill="#5ab0f0"/><path d="M31 11.5h5.5v5.5H27" fill="none"/><path d="M27 18.5v5h-3.5V40" fill="none"/><rect x="20.5" y="38" width="6" height="7" rx="2.6" fill="#c98a3c"/></g></svg>'
-];
-function buildTools(){
-  if(coToolsBuilt) return; coToolsBuilt=true;
-  coTools.innerHTML='';
-  const spots=[[10,42,-14],[18,30,12],[26,48,-8],[34,34,16],[42,52,-12],[14,60,10],[30,64,-16],[46,40,8]];
-  spots.forEach((p,i)=>{
-    const t=document.createElement('div'); t.className='tool';
-    t.innerHTML=TOOLS[i%TOOLS.length];
-    const sz=4.2+(i%3)*1.1;                                // размер иконки 4.2..6.4 cqw
-    t.style.width=sz+'cqw'; t.style.height=sz+'cqw';
-    t.style.left=(p[0]-sz/2)+'%'; t.style.top=(p[1]-sz/2)+'%';
-    t.style.setProperty('--rot',p[2]+'deg');               // наклон
-    t.style.setProperty('--del',(120+(i%5)*110)+'ms');     // разброс появления
-    t.style.setProperty('--pd',(1250+(i%4)*160)+'ms');     // длительность (в такт пыли)
-    coTools.appendChild(t);
-  });
-}
 function resetCafeOpen(){
   coTimers.splice(0).forEach(clearTimeout);
   clearTimeout(coHeroTimer); coNameTimers.forEach(clearTimeout); coNameTimers=[];
@@ -3014,11 +3034,9 @@ function resetCafeOpen(){
   coDangerTitle.classList.remove('pop');
   coVeil.style.transition='none'; coVeil.style.setProperty('--r','175%'); void coVeil.offsetWidth; coVeil.style.transition='';
   coDust.classList.remove('play'); coDust.style.opacity='0';
-  coTools.classList.remove('play'); coTools.style.opacity='0';
 }
 function runCafeOpen(){
   buildDust();
-  buildTools();
   resetCafeOpen();
   // длины контуров для прорисовки (stroke-dashoffset)
   [coOutline,coCub].forEach(svg=>{ const p=svg.querySelector('path'); try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} });
@@ -3027,9 +3045,8 @@ function runCafeOpen(){
   coFromLanding=false;
   coTimers.push(setTimeout(()=>{ if(!guard())return;
     coDust.style.opacity='1'; coDust.classList.add('play');                                // 1) облако пыли поднимается
-    void coTools.offsetWidth; coTools.style.opacity='1'; coTools.classList.add('play');    //    + мультяшные инструменты «идёт ремонт» выскакивают среди пыли
     coTimers.push(setTimeout(()=>{ if(!guard())return; coBg2.classList.add('show'); coCoffee.classList.add('show'); }, 720));   // 2) под пиком пыли — cafe-2 → cafe-3 + вывеска кофе
-    coTimers.push(setTimeout(()=>{ if(!guard())return; coDust.classList.remove('play'); coDust.style.opacity='0'; coTools.classList.remove('play'); coTools.style.opacity='0'; }, 1800));    // 3) пыль+инструменты растворяются → готовое кафе
+    coTimers.push(setTimeout(()=>{ if(!guard())return; coDust.classList.remove('play'); coDust.style.opacity='0'; }, 1800));    // 3) пыль растворяется → готовое кафе
     coTimers.push(setTimeout(()=>{ if(!guard())return; coOutline.classList.add('show','draw');                                  // 4) контур обновлённого кафе — прорисовка → пульс
       coTimers.push(setTimeout(()=>{ if(guard()) coOutline.classList.add('glow'); }, 2400)); }, 2100));
     coTimers.push(setTimeout(()=>{ if(!guard())return; coCub.classList.add('show','glow'); coCoffee.classList.add('lit'); }, 4800));   // 5) одновременно: вывеска ЦУБ + «Ваш любимый кофе»
@@ -3333,7 +3350,7 @@ function refreshBinocHero(level){
   if(!binocHero) return;
   const h=OBJS.find(o=>o.stars && o.levelUp);
   if(!h) return;
-  // уровень героя задаёт СЦЕНА (RECON.heroLevel): карта — 0★, бинокль — 1★.
+  // уровень героя задаёт СЦЕНА (RECON.heroLevel): карта — 0★, бинокль — 2★.
   // имя берём из единого реестра LEVEL_NAMES по числу звёзд (0 «Новый игрок» … 5 «Московский»)
   const filled=(level!=null) ? level : Math.max(h.stars.filled, 1);
   const total=h.stars.total;
@@ -3389,12 +3406,13 @@ function runBinoc(cfg){
     bTimer(()=>typeSay(askBubble, cfg.hook, ()=>id()===binocScene, binocTimers), hookAt+867);   // крючок героя — печать
   }
 }
-/* панель крышного героя на слайде 11: 1★ «Начинающий предприниматель» (после прорисовки контура) */
+/* панель крышного героя на слайде 10: ранг сцены (2★ «Действующий предприниматель») из RECON.binoc.heroLevel */
 function showBinocHeroPanel(){
   const h=heroPanel(); if(!h) return;
+  const lvl=RECON.binoc.heroLevel;                 // ранг задаёт сцена (2★)
   h.el.classList.add('show');
-  [...h.el.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<1); s.classList.toggle('off',i>=1); });
-  const el=h.nameEl, txt=LEVEL_NAMES[1];
+  [...h.el.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<lvl); s.classList.toggle('off',i>=lvl); });
+  const el=h.nameEl, txt=LEVEL_NAMES[lvl];
   heroNameTimers.forEach(clearTimeout); heroNameTimers=[];
   el.classList.remove('typed','name-in','name-out'); el.textContent='';
   for(let i=1;i<=txt.length;i++){ heroNameTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*45)); }
@@ -3413,16 +3431,16 @@ function runBinocMapIntro(){
   stage.classList.remove('reveal','open','routes-on'); stage.classList.add('dark');
   roofHero.classList.add('show'); roofGlow.classList.add('show');
   playRoofHero();
-  // 2) панель героя (1★ «Начинающий») сразу после прорисовки контура
-  binocPanelT=setTimeout(()=>{ if(id()==='binoc') showBinocHeroPanel(); }, 5850);
-  // 3) карта раскрывается своей .darkness + ВСЕ объекты уже на карте (разом, без маршрутов)
+  // 2) панель героя (2★ «Действующий») сразу после прорисовки контура — тайминг как на слайде 6 (@2900)
+  binocPanelT=setTimeout(()=>{ if(id()==='binoc') showBinocHeroPanel(); }, 2900);
+  // 3) карта раскрывается своей .darkness + ВСЕ объекты уже на карте (разом, без маршрутов) — @4200 как MAP_HOLD[0] на слайде 6
   binocStartT=setTimeout(()=>{
     if(id()!=='binoc') return;
     stage.classList.remove('dark'); stage.classList.add('reveal');
     OBJS.forEach(o=>{ if(!o.levelUp) revealObject(o); });          // объекты показаны, но ПОД вуалью — раскрываются её проходом
-    // 4) после раскрытия — карта открыта (октаэдры на z7) + авто-старт разведки
-    binocStartT=setTimeout(()=>{ if(id()==='binoc'){ stage.classList.remove('reveal'); stage.classList.add('open'); runBinoc(RECON.binoc); } }, 1867);
-  }, 6000);
+    // 4) после раскрытия (3.4с = .darkness) — карта открыта (октаэдры на z7) + авто-старт разведки
+    binocStartT=setTimeout(()=>{ if(id()==='binoc'){ stage.classList.remove('reveal'); stage.classList.add('open'); runBinoc(RECON.binoc); } }, 3400);
+  }, 4200);
 }
 /* КОНФИГИ РАЗВЕДКИ (шаблонная механика бинокля): маршрут поиска (stops) + крючок героя.
    panel:true — на объекте печатается панель параметров (сейчас только у кафе). */
@@ -3443,8 +3461,8 @@ const RECON={
   },
   binoc:{                                             // Слайд 11 — Миссия 2: логика как на слайде 7 (finale + аватар-помощник)
     scene:'binoc',
-    heroLevel:1,                                          // герой 1 уровня (1★ «Начинающий предприниматель»)
-    focus:{lift:0, zoomDiv:1, cover:0.7, clamp:true},   // кадр не выходит за края, объект по центру круга
+    heroLevel:2,                                          // герой 2 уровня (2★ «Действующий предприниматель»)
+    focus:{lift:60, zoomDiv:1, cover:0.7, clamp:true},   // Банк по центру круга — прицел поднят (октаэдр+контур в кадре)
     stops:[{oid:'o-bank'}],                            // тур только по Банку
     finale:true,                                          // после Банка — сворачивание с фокусом → чёрный
     mission:{                                             // на чёрном: титул миссии + аватар Купринова (ФСК)
@@ -3539,7 +3557,7 @@ let mapStep=0;      // шаг внутри слайда «Карта» (0..2) �
 const MAP_STEPS=3;  // 0 тёмный старт · 1 раскрытие карты · 2 маршруты+объекты
 const MAP_LABELS=['тёмный старт','карта раскрывается','маршруты и объекты'];
 /* пауза ПЕРЕД переходом к следующему шагу (мс), для шагов 0..1; шаг 2 финальный */
-const MAP_HOLD=[4200, 1400];  /* шаг 0 — заход героя (искра→фото→контур→имя, ~4с, без паузы); шаг 1 — раскрытие карты ×2 быстрее (1.3с), затем кометы */
+const MAP_HOLD=[4200, 3400];  /* шаг 0 — заход героя (искра→фото→контур→имя, ~4с); шаг 1 — раскрытие карты = шаблон .hveil (3.4с), затем кометы (страховка MAP_HOLD[1]+400 > 3.4с) */
 let mapTimer=null;
 let mapHeroHold=false;   // true — герой на карте ждёт (пока не исчезнет титул перехода 6→7)
 function clearMapTimer(){ if(mapTimer){ clearTimeout(mapTimer); mapTimer=null; } }
@@ -3619,9 +3637,9 @@ function applyScene(){
   ccTitleArt.classList.toggle('on', onTitle);                               // лого-строка + титул — только на титульном слайде
   if(ccScene){                                                     // анимация волн идёт на титуле и квизе
     if(!ccRunning){ ccRunning=true; if(ccResume) ccResume(); }
+    ccVeil.style.transition='none'; ccVeil.style.setProperty('--r','175%'); void ccVeil.offsetWidth; ccVeil.style.transition='';   // вуаль титула РАСКРЫТА на титуле И на квизе (иначе на квизе паразитное чёрное поверх волн)
   } else { ccRunning=false; }                                      // вне этих слайдов — пауза rAF
-  if(onTitle){ ccStage=0; ccHint.style.display=''; splashStarted=false; loadDone=false;
-    ccVeil.style.transition='none'; ccVeil.style.setProperty('--r','175%'); void ccVeil.offsetWidth; ccVeil.style.transition=''; }  // вуаль открыта ТОЛЬКО на входе титула (иначе флеш обложки при уходе на загрузку)
+  if(onTitle){ ccStage=0; ccHint.style.display=''; splashStarted=false; loadDone=false; }
   else { ccHint.style.display='none'; }                            // квиз и остальные — без кнопки «Начать» и подсказки
   quiz.classList.toggle('show', sid==='quiz');
   if(sid==='quiz') runQuiz(); else resetQuiz();
@@ -3745,42 +3763,27 @@ function avSparks(av,n){
     av.appendChild(s);
   }
 }
-function avTypeBlock(el, speed, done){
-  el.style.opacity='1';
-  el.innerHTML='<span class="av-txt"></span><span class="av-caret">▌</span>';
-  const t=el.querySelector('.av-txt'), caret=el.querySelector('.av-caret');
-  const full=el.dataset.full; let i=0;
-  (function ch(){
-    t.textContent=full.slice(0,i++);
-    if(i<=full.length) avTimers.push(setTimeout(ch, speed));
-    else { caret.remove(); done&&done(); }
-  })();
-}
-const AV_PAUSE=400;
-/* печать подписи: подразделение → ФИО → описание (порядок DOM: org, name, desc) */
-function avTypeCard(cell){
-  const e=cell.__els;
-  avTypeBlock(e[0], 28, ()=>
-    avTimers.push(setTimeout(()=> avTypeBlock(e[1], 35, ()=>
-      avTimers.push(setTimeout(()=> avTypeBlock(e[2], 16), AV_PAUSE))
-    ), AV_PAUSE)));
-}
-/* показать ОДИН аватар: искры → рамка → картинка → скан контура → печать подписи */
+/* привязка блоков подписи к фазам аватара (проявление, БЕЗ печати) */
+const AV_ORG_AT=1900, AV_NAME_AT=AV_ORG_AT+200, AV_DESC_AT=AV_NAME_AT+200;   // между блоками 200мс (старт org — с лицом)
+/* показать ОДИН аватар: искры → рамка → лицо → скан контура → ПОДПИСИ ПРОЯВЛЯЮТСЯ по фазам */
 function avReveal(cell){
   const av=cell.querySelector('.avatar');
   av.classList.remove('play','live');
-  cell.__els.forEach(el=>{ el.style.opacity='0'; el.textContent=el.dataset.full; });
+  cell.__els.forEach(el=>{ el.classList.remove('show'); el.style.opacity=''; el.textContent=el.dataset.full; });   // блоки скрыты (CSS), текст готов
   avSparks(av,16); void av.offsetWidth;
   av.classList.add('play');
   avTimers.push(setTimeout(()=>av.classList.add('live'), 1933));
-  avTimers.push(setTimeout(()=>avTypeCard(cell), 2500));
+  avTimers.push(setTimeout(()=>cell.__els[0].classList.add('show'), AV_ORG_AT));    // подразделение — с лицом/рамкой
+  avTimers.push(setTimeout(()=>cell.__els[1].classList.add('show'), AV_NAME_AT));   // ФИО — когда прорисован контур
+  avTimers.push(setTimeout(()=>cell.__els[2].classList.add('show'), AV_DESC_AT));   // описание — сразу после
 }
 const avCta=document.getElementById('avCta');
 const avVeil=document.getElementById('avVeil');
 const AV_FOCUS={fx:'50%',fy:'55%'};                          // точка фокуса сворачивания (подстрой при необходимости)
 let avCollapsing=false;
 function avNext(){ if(avShown<avCells.length) avReveal(avCells[avShown++]); }
-const AV_STAGGER=1600;                                    // каскад: следующий аватар через 1.6с
+/* след. аватар — ПОСЛЕ проявления ВСЕХ блоков предыдущего (последний блок desc + его fade) + короткая пауза */
+const AV_STAGGER = AV_DESC_AT + 550 + 350;                // ≈3950мс (550 — fade блока .55s, 350 — пауза)
 function avRunAll(){                                       // авто-показ ВСЕХ аватаров по очереди (без клика)
   for(let i=0;i<avCells.length;i++)
     avTimers.push(setTimeout(()=>{ if(id()==='avatars') avNext(); }, i*AV_STAGGER));
@@ -3788,7 +3791,7 @@ function avRunAll(){                                       // авто-пока�
 function avReset(){
   avTimers.splice(0).forEach(clearTimeout); avShown=0; avCollapsing=false;
   avCta.classList.remove('show');
-  helpersCarry.classList.remove('avttl');                    // титул снова центрируется для след. входа (док ставим в avEnter)
+  helpersCarry.classList.remove('avttl','tcenter');          // титул снова центрируется для след. входа (центр→угол ставим в avEnter)
   helpersCarry.style.transition='';                          // сбросить инлайновый темп фейда (ставим только на выходе)
   avRow.style.transition='none'; avRow.style.opacity='1';                   // вернуть аватары (после растворения на переходе)
   landingTitle.classList.remove('pop');
@@ -3796,7 +3799,7 @@ function avReset(){
   void avVeil.offsetWidth; avVeil.style.transition='';
   avCells.forEach(cell=>{
     cell.querySelector('.avatar').classList.remove('play','live');
-    cell.__els.forEach(el=>{ el.style.opacity='0'; el.textContent=el.dataset.full; });
+    cell.__els.forEach(el=>{ el.classList.remove('show'); el.style.opacity=''; el.textContent=el.dataset.full; });   // блоки скрыты (CSS opacity:0)
   });
 }
 /* сворачивание сцены помощников (шаблонная вуаль с фокусом) → следующий слайд */
@@ -3845,8 +3848,9 @@ avCta.addEventListener('click', e=>{ e.stopPropagation(); avCollapse(); });
 function avEnter(){
   avReset(); avReserveHeights();
   const fromRules=helpersCarry.classList.contains('show');   // пришли ли с переносимым титулом (обычный поток — да)
-  carryShow(helpersCarry);                                   // титул «Проводники» виден
-  helpersCarry.classList.add('avttl');                       // ДОК в левый верхний угол картинки (переезд center→угол скрыт под чёрной вуалью входа)
+  helpersCarry.classList.add('avttl','tcenter');             // титул «Проводники» — в ЦЕНТРЕ картинки (потом ЕДЕТ в угол, как слайд 4)
+  carryShow(helpersCarry);                                   // проявить
+  const TITLE_HOLD5=1000, TITLE_MOVE5=900;                   // держим центр, затем перенос в угол (.9с)
   if(fromRules){
     avVeil.style.transition='none';
     avVeil.style.setProperty('--fx',AV_FOCUS.fx); avVeil.style.setProperty('--fy',AV_FOCUS.fy);
@@ -3854,8 +3858,10 @@ function avEnter(){
     void avVeil.offsetWidth;
     avVeil.style.transition='--r 1.6s cubic-bezier(.4,.1,.2,1)';
     requestAnimationFrame(()=>requestAnimationFrame(()=>avVeil.style.setProperty('--r','175%')));   // раскрытие
-    avTimers.push(setTimeout(()=>{ if(id()==='avatars') avRunAll(); }, 1300));   // авто-каскад всех аватаров после раскрытия
+    avTimers.push(setTimeout(()=>{ if(id()==='avatars') helpersCarry.classList.remove('tcenter'); }, TITLE_HOLD5));      // титул ЕДЕТ в левый верхний угол
+    avTimers.push(setTimeout(()=>{ if(id()==='avatars') avRunAll(); }, TITLE_HOLD5+TITLE_MOVE5));                        // аватары — после переноса титула
   } else {
+    helpersCarry.classList.remove('tcenter');
     avRunAll();
   }
 }
@@ -3911,12 +3917,17 @@ const heroOutline=document.getElementById('heroOutline');
 /* Вопросы, которые мучают предпринимателя (ВРЕМЕННЫЕ — финальные тексты дадут завтра).
    Порядок показа — слева направо (по возрастанию left). x/y — позиция на картинке (в %). */
 const HERO_QUESTIONS=[
-  {t:'С чего вообще\nначать?',           x:10, y:40},
-  {t:'Где взять деньги\nна старт?',       x:11, y:8},
-  {t:'Как выбрать нишу?',                x:12, y:70},
-  {t:'А вдруг ничего\nне получится?',     x:63, y:8},
-  {t:'Какие нужны\nдокументы?',           x:70, y:42},
-  {t:'Кто вообще мне\nпоможет?',          x:63, y:72}
+  // ЛЕВАЯ группа (x<50 → СТИЛЬ 1, золото): «мысли» вразброс по x (не в одну линию), ближе к герою
+  {t:'Где найти идею для\nоткрытия бизнеса?',            x:7,  y:3},
+  {t:'Как зарегистрировать\nбизнес?',                    x:16, y:23},
+  {t:'Как подобрать локацию?',                           x:10, y:42},
+  {t:'Где взять деньги для\nразвития бизнеса?',           x:17, y:60},
+  {t:'Как повысить\nэффективность бизнеса?',              x:11, y:79},
+  // ПРАВАЯ группа (x>=50 → СТИЛЬ 2, неон): тоже вразброс по x
+  {t:'Как защитить свой\nбизнес?',                       x:57, y:9},
+  {t:'Что делать, если я уже взял кредит,\nно не могу его платить?', x:52, y:31},
+  {t:'Как сделать бизнес\nболее технологичным?',          x:60, y:53},
+  {t:'Что дает статус «социальное\nпредприятие» и как его получить?', x:53, y:75}
 ];
 /* мысли героя: hero — рукопись (.hthink, печать), hero2 — комикс-облака (.hcloud, остаются).
    Строим под сцену; heroQEls обновляется. */
@@ -3993,17 +4004,21 @@ function heroReveal(){
       heroLead.classList.add('show');                        // выноска: линия+точка на герое (контур уже подсвечен со старта)
       // 2) вопросы стартуют после появления имени + небольшая задержка
       heroTimers.push(setTimeout(()=>{ if(!alive())return;
-        let qi=0;
+        // РАНДОМНЫЙ порядок появления мыслей (лево/право вперемешку) — позиции не меняем (Fisher-Yates)
+        const order=[...heroQEls.keys()];
+        for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+        let k=0;
         (function nextQ(){
-          if(!alive() || qi>=heroQEls.length) return;
+          if(!alive() || k>=order.length) return;
+          const qi=order[k];
           if(cloudMode){                                     // hero2 — облако сразу нужного размера, текст проявляется внутри
             const el=heroQEls[qi], txt=HERO_QUESTIONS[qi].t;
             handWriteCloud(el, txt, alive, heroTimers, ()=>{ // след. облако — ПОСЛЕ завершения письма
-              qi++; heroTimers.push(setTimeout(nextQ, 500));
+              k++; heroTimers.push(setTimeout(nextQ, 500));
             });
           } else {                                           // hero — мысль ПЕЧАТАЕТСЯ (Hauss, скорость как имя героя)
             const el=heroQEls[qi], txt=HERO_QUESTIONS[qi].t;
-            typeThought(el, txt, alive, heroTimers, ()=>{ qi++; heroTimers.push(setTimeout(nextQ, 400)); });   // след. мысль — после завершения печати
+            typeThought(el, txt, alive, heroTimers, ()=>{ k++; heroTimers.push(setTimeout(nextQ, 400)); });   // след. мысль — после завершения печати
           }
         })();
       }, 400));                                               // мысли героя — сразу после печати имени
@@ -4154,7 +4169,7 @@ function next(skip){
     if(!coHeroDone){ skipCoHero(); return; }               // герой ещё проявляется → доиграть мгновенно
     if(!coStoryStarted){ coStory(); return; }              // клик → Байков + ФИО + реплика
     if(!coStoryDone){ skipCoStory(); return; }             // реплика идёт → доиграть мгновенно
-    if(!coDangerShown){ coDangerShown=true; coDangerTitle.classList.add('pop');   // клик → титул «ВНИМАНИЕ, ОПАСНОСТЬ!»
+    if(!coDangerShown){ coDangerShown=true; coDangerTitle.classList.add('pop');   // клик → титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА»
       coTimers.push(setTimeout(()=>{ if(id()==='cafeopen') coToNext(); }, 1600)); return; }   // держим титул → авто-сворачивание
     coToNext(); return;                                    // клик во время задержки — ускорить переход
   }
@@ -4162,7 +4177,8 @@ function next(skip){
     dangerToNext(); return;
   }
   if(id()==='mission3'){                          // защита бизнеса — FSM по клику
-    if(!m3Frame1Done){ skipM3Frame1(); return; }          // кадр 1 (герой+эскаватор+вывеска) идёт → доиграть
+    if(!m3Frame1Done){ skipM3Frame1(); return; }          // кадр 1 (герой+вывеска) идёт → доиграть (эскаватор → паркинг)
+    if(!m3ExcDone){ skipM3Exc(); return; }                // эскаватор ещё едет/работает ковшом → доиграть мгновенно (паркинг)
     if(!m3SppStarted){ m3PlaySpp(); return; }             // клик → скорая правовой помощи (кадр 2)
     if(!m3SppDone){ skipM3Spp(); return; }                // скорая едет → доиграть мгновенно
     if(cur<SCENES.length-1){ cur++; applyScene(); } return;   // дальше → след. слайд (ФПСП)
@@ -4637,60 +4653,57 @@ function typeName(o){
   }
 }
 /* ── МЕХАНИКА «УРОВЕНЬ ПОВЫШЕН» (переиспользуемая) ──
-   баннер над панелью летит вверх → звезда летит к первому пустому слоту и заливает его → имя меняется золотой вспышкой.
+   баннер «УРОВЕНЬ ПОВЫШЕН» + фейерверк в ЦЕНТРЕ экрана (крупно, как титул) → звезда появляется в центре и летит в панель героя (первый пустой слот) → имя меняется золотой вспышкой.
    Вызов: runLevelUp(героеподобный_объект_с_stars, {name:'новое имя', banner:'УРОВЕНЬ ПОВЫШЕН'}) */
 /* салют: несколько залпов разлетающихся искр в точке (leftCss/topCss — CSS-координаты центра в контейнере) */
 function levelSalute(cont, leftCss, topCss, timers){
   const colors=['#ffd24a','#27e3ff','#ff5db1','#7CFF6B','#ffffff','#ff8a3d'];
-  const bursts=3;
+  const contW=cont.getBoundingClientRect().width;            // дальность искр = доля ширины (охват ~60% экрана)
+  const bursts=5;
   for(let b=0;b<bursts;b++){
     timers.push(setTimeout(()=>{
-      const jx=(b-1)*7, jy=(b%2? -6:5);                       // лёгкий разброс центра залпов
+      const jx=(b-1)*10, jy=(b%2? -9:7);                      // лёгкий разброс центра залпов
       const fw=document.createElement('div'); fw.className='levelup-fw';
       fw.style.left='calc('+leftCss+(jx<0?' - ':' + ')+Math.abs(jx)+'px)';
       fw.style.top ='calc('+topCss +(jy<0?' - ':' + ')+Math.abs(jy)+'px)';
-      const n=20;
+      const n=28;
       for(let i=0;i<n;i++){
         const a=(i/n)*Math.PI*2 + b*0.35;                     // угол разлёта
-        const d=32+Math.random()*42;                          // дальность искры
+        const d=(0.16+Math.random()*0.14)*contW;             // радиус до ~30% ширины → диаметр ~60% экрана
         const col=colors[(i+b)%colors.length];
         const sp=document.createElement('i');
         sp.style.setProperty('--sx',(Math.cos(a)*d).toFixed(0)+'px');
         sp.style.setProperty('--sy',(Math.sin(a)*d).toFixed(0)+'px');
-        sp.style.background=col; sp.style.boxShadow='0 0 6px '+col+',0 0 12px '+col;
+        sp.style.background=col; sp.style.boxShadow='0 0 9px '+col+',0 0 18px '+col;
         fw.appendChild(sp);
       }
       cont.appendChild(fw); void fw.offsetWidth; fw.classList.add('boom');
-      timers.push(setTimeout(()=>fw.remove(), 1300));
-    }, b*260));
+      timers.push(setTimeout(()=>fw.remove(), 1500));
+    }, b*220));
   }
 }
 function runLevelUp(o, cfg){
   if(!o||!o.el||!o.stars) return;
   const cont=(cfg&&cfg.container)||stage;                   // контейнер для баннера/звезды (по умолч. карта); для кафе — .m1-stage
   const timers=(cfg&&cfg.timers)||revealTimers;             // массив таймеров (по умолч. карта)
-  const panel=o.el.querySelector('.herobox');
   const stars=[...o.el.querySelectorAll('.hstars .star')];
   const idx=o.stars.filled;                                 // первый пустой слот
-  const left=parseFloat(o.el.style.left), top=parseFloat(o.el.style.top);
   const newName=cfg&&cfg.name;
-  // 1) баннер над панелью → летит вверх и гаснет (позицию можно переопределить в cfg.bannerLeft/bannerTop, чтобы не уходил за кадр)
+  // 1) баннер + салют — В ЦЕНТРЕ ЭКРАНА, текст движется вверх (cfg.bannerLeft/Top больше не влияют)
   const ban=document.createElement('div'); ban.className='levelup-banner'; ban.textContent=(cfg&&cfg.banner)||'УРОВЕНЬ ПОВЫШЕН';
-  ban.style.left=(cfg&&cfg.bannerLeft!=null)?cfg.bannerLeft:left+'%';
-  ban.style.top =(cfg&&cfg.bannerTop !=null)?cfg.bannerTop :(top-7)+'%';
+  ban.style.left='50%'; ban.style.top='50%';
   cont.appendChild(ban);
   void ban.offsetWidth; ban.classList.add('play');
-  levelSalute(cont, ban.style.left, ban.style.top, timers);   // салют в зоне баннера
+  levelSalute(cont, '50%', '50%', timers);                   // фейерверк из центра экрана
   timers.push(setTimeout(()=>ban.remove(), 3000));
-  // 2) звезда летит от панели к пустому слоту
+  // 2) звезда появляется В ЦЕНТРЕ → летит в панель героя (к пустому слоту)
   timers.push(setTimeout(()=>{
     if(idx<stars.length){
       const target=stars[idx];
-      const sB=cont.getBoundingClientRect(), pB=panel.getBoundingClientRect(), tB=target.getBoundingClientRect();
-      const startX=pB.left+pB.width/2, startY=pB.top-24;
+      const sB=cont.getBoundingClientRect(), tB=target.getBoundingClientRect();
+      const startX=sB.left+sB.width*0.5, startY=sB.top+sB.height*0.52;   // центр экрана (чуть ниже текста)
       const st=document.createElement('div'); st.className='levelup-star'; st.textContent='★';
-      st.style.left=((startX-sB.left)/sB.width*100)+'%';
-      st.style.top=((startY-sB.top)/sB.height*100)+'%';
+      st.style.left='50%'; st.style.top='52%';
       st.style.setProperty('--dx',((tB.left+tB.width/2)-startX).toFixed(0)+'px');
       st.style.setProperty('--dy',((tB.top+tB.height/2)-startY).toFixed(0)+'px');
       cont.appendChild(st); void st.offsetWidth; st.classList.add('fly');
@@ -4699,7 +4712,7 @@ function runLevelUp(o, cfg){
         st.remove();
         target.classList.remove('off'); target.classList.add('on','justfill');
         o.stars.filled=idx+1;
-      }, 1000));
+      }, 1150));
     }
   }, 1400));
   // 4) смена имени = достижение: старое гаснет → новое печатается золотой вспышкой
