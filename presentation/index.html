@@ -1888,6 +1888,8 @@ const CFG = {
   type: { name:45, say:32, erase:26, hand:55 },   // скорость печати, мс/символ (имя/реплика/стирание/рукопись)
   veil: { toBlack:2700 },                          // задержка «чёрное держится» перед сменой слайда (×4 *ToNext). Скорости вуалей — в CSS (--veil-*).
   hero: { contour:2900, live:1933, fio:2500, textGap:500 },   // появление: контур/панель @2900 · аватар .live @1933 · ФИО @2500 · пауза текста после имени +500
+  level: { banner:3000, star:1400, fill:1150, rename:2600, nameOut:350, nameIn:900,   // level-up: баннер @3000 · звезда @1400 → заливка +1150 · смена имени @2600 (гашение +350, снять +900)
+           salute:{ bursts:5, n:28, step:220, life:1500 } },   // фейерверк: залпов 5 × 28 искр, шаг залпа 220мс, жизнь 1500мс
 };
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
@@ -4788,16 +4790,16 @@ function typeName(o){
    Вызов: runLevelUp(героеподобный_объект_с_stars, {name:'новое имя', banner:'УРОВЕНЬ ПОВЫШЕН'}) */
 /* салют: несколько залпов разлетающихся искр в точке (leftCss/topCss — CSS-координаты центра в контейнере) */
 function levelSalute(cont, leftCss, topCss, timers){
-  const colors=['#ffd24a','#27e3ff','#ff5db1','#7CFF6B','#ffffff','#ff8a3d'];
+  const colors=['var(--gold)'];   // однотонный жёлтый — в цвет звезды (--gold)
   const contW=cont.getBoundingClientRect().width;            // дальность искр = доля ширины (охват ~60% экрана)
-  const bursts=5;
+  const bursts=CFG.level.salute.bursts;
   for(let b=0;b<bursts;b++){
     timers.push(setTimeout(()=>{
       const jx=(b-1)*10, jy=(b%2? -9:7);                      // лёгкий разброс центра залпов
       const fw=document.createElement('div'); fw.className='levelup-fw';
       fw.style.left='calc('+leftCss+(jx<0?' - ':' + ')+Math.abs(jx)+'px)';
       fw.style.top ='calc('+topCss +(jy<0?' - ':' + ')+Math.abs(jy)+'px)';
-      const n=28;
+      const n=CFG.level.salute.n;
       for(let i=0;i<n;i++){
         const a=(i/n)*Math.PI*2 + b*0.35;                     // угол разлёта
         const d=(0.16+Math.random()*0.14)*contW;             // радиус до ~30% ширины → диаметр ~60% экрана
@@ -4809,8 +4811,8 @@ function levelSalute(cont, leftCss, topCss, timers){
         fw.appendChild(sp);
       }
       cont.appendChild(fw); void fw.offsetWidth; fw.classList.add('boom');
-      timers.push(setTimeout(()=>fw.remove(), 1500));
-    }, b*220));
+      timers.push(setTimeout(()=>fw.remove(), CFG.level.salute.life));
+    }, b*CFG.level.salute.step));
   }
 }
 function runLevelUp(o, cfg){
@@ -4826,7 +4828,7 @@ function runLevelUp(o, cfg){
   cont.appendChild(ban);
   void ban.offsetWidth; ban.classList.add('play');
   levelSalute(cont, '50%', '50%', timers);                   // фейерверк из центра экрана
-  timers.push(setTimeout(()=>ban.remove(), 3000));
+  timers.push(setTimeout(()=>ban.remove(), CFG.level.banner));
   // 2) звезда появляется В ЦЕНТРЕ → летит в панель героя (к пустому слоту)
   timers.push(setTimeout(()=>{
     if(idx<stars.length){
@@ -4843,9 +4845,9 @@ function runLevelUp(o, cfg){
         st.remove();
         target.classList.remove('off'); target.classList.add('on','justfill');
         o.stars.filled=idx+1;
-      }, 1150));
+      }, CFG.level.fill));
     }
-  }, 1400));
+  }, CFG.level.star));
   // 4) смена имени = достижение: старое гаснет → новое печатается золотой вспышкой
   if(newName){
     timers.push(setTimeout(()=>{
@@ -4856,9 +4858,9 @@ function runLevelUp(o, cfg){
         for(let i=1;i<=newName.length;i++){
           timers.push(setTimeout(()=>{ el.textContent=newName.slice(0,i); if(i===newName.length) el.classList.add('typed'); }, i*CFG.type.name));
         }
-        timers.push(setTimeout(()=>el.classList.remove('name-in'), 900));
-      }, 350));
-    }, 2600));
+        timers.push(setTimeout(()=>el.classList.remove('name-in'), CFG.level.nameIn));
+      }, CFG.level.nameOut));
+    }, CFG.level.rename));
   }
 }
 /* раскрыть объект: контур загорается+пульсирует → октаэдр (вращается) → печать названия */
