@@ -1886,6 +1886,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
    Значения = текущие (поведение не меняется). Группы дополняются по мере переноса. */
 const CFG = {
   type: { name:45, say:32, erase:26, hand:55 },   // скорость печати, мс/символ (имя/реплика/стирание/рукопись)
+  veil: { toBlack:2700 },                          // задержка «чёрное держится» перед сменой слайда (×4 *ToNext). Скорости вуалей — в CSS (--veil-*).
 };
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
@@ -2122,7 +2123,7 @@ function cafeToQuiz(){
   if(cafeQuizGo) return; cafeQuizGo=true;                                         // защита от двойного вызова (авто + клик)
   storyT.splice(0).forEach(clearTimeout);
   mission1Veil.style.transition=''; mission1Veil.style.setProperty('--r','0%');   // закрыть вуаль (чёрное наплывает), титул z9 остаётся
-  storyT.push(setTimeout(()=>{ if(cur<SCENES.length-1){ cur++; applyScene(); } }, 2700));
+  storyT.push(setTimeout(()=>{ if(cur<SCENES.length-1){ cur++; applyScene(); } }, CFG.veil.toBlack));
 }
 /* россыпь искр к центру героя (как buildRoofSparks, но в контейнере кафе) */
 function buildCafeSparks(n){
@@ -2284,7 +2285,7 @@ function cafe2ToNext(){
     if(cur<SCENES.length-1){ cur++; applyScene(); }                        // binoc → runBinocMapIntro (тёмная сцена + крышный герой)
     // 3) карту раскроет своя .darkness (как на слайде 7); landing просто уходит
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 1600));
-  }, 2700));
+  }, CFG.veil.toBlack));
 }
 function buildCafe2Sparks(n){
   cafeSparks2.innerHTML='';
@@ -2466,7 +2467,7 @@ function fskToNext(){
     if(cur<SCENES.length-1){ cur++; applyScene(); }                        // cafeopen (cafe-2, ремонт) под чёрным
     landTimers.push(setTimeout(()=>{ landingVeil.style.setProperty('--r','160%'); }, 1100));   // раскрытие landing (без титула)
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 1100+2600+400));
-  }, 2700));
+  }, CFG.veil.toBlack));
 }
 function resetFskHero(){
   clearTimeout(fskDrawTimer); fskNameTimers.forEach(clearTimeout); fskNameTimers=[];
@@ -2733,7 +2734,7 @@ function coToNext(){
     if(cur<SCENES.length-1){ cur++; applyScene(); }                  // mission3 под чёрным
     landTimers.push(setTimeout(()=>{ landingVeil.style.setProperty('--r','160%'); landingTitle.classList.add('faded'); }, 900));
     landTimers.push(setTimeout(()=>landing.classList.remove('show'), 900+2600+400));
-  }, 2700));
+  }, CFG.veil.toBlack));
 }
 /* ═══ «БОЛЬШЕ ЧЕМ БИЗНЕС» (слайд 14): интерьер кафе + титул; вход — своё раскрытие из чёрного (после Миссии 3), выход — сворачивание → ФПСП ═══ */
 const morebiz=document.getElementById('morebiz');
