@@ -1876,6 +1876,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 <div class="hint" id="hint"></div>
 
 <script>
+/* ═══════════════════ ПУЛЬТ МЕХАНИК (CFG) ═══════════════════
+   Тайминги/скорости в одной точке. Меняешь тут → на всех слайдах.
+   Значения = текущие (поведение не меняется). Группы дополняются по мере переноса. */
+const CFG = {
+  type: { name:45, say:32, erase:26, hand:55 },   // скорость печати, мс/символ (имя/реплика/стирание/рукопись)
+};
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
 const splash = document.getElementById('splash');
@@ -2006,7 +2012,7 @@ function revealHeroPanel(h){
   h.el.classList.add('show');
   const el=h.nameEl, txt=h.name; el.classList.remove('typed'); el.textContent='';
   for(let i=1;i<=txt.length;i++){
-    heroNameTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*45));
+    heroNameTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*CFG.type.name));
   }
 }
 /* сброс панели героя к старту (Новый игрок / 0★) и скрыть */
@@ -2071,7 +2077,7 @@ function typeErase(el, newText, guard, timers, done){
   const cur=el.querySelector('.say-txt'); let s=cur?cur.textContent:'';
   (function del(){
     if(guard && !guard()) return;
-    if(s.length>0){ s=s.slice(0,-1); if(cur) cur.textContent=s; timers.push(setTimeout(del,26)); }
+    if(s.length>0){ s=s.slice(0,-1); if(cur) cur.textContent=s; timers.push(setTimeout(del,CFG.type.erase)); }
     else { typeSay(el,newText,guard,timers); if(done) done(); }
   })();
 }
@@ -2138,7 +2144,7 @@ function playCafeHero(){
     cafeSignSvg.classList.add('show');                         // 4) обводка вывески появляется после контура героя
     cafeName.classList.add('show');                            // 5) панель имени героя — печать имени
     for(let i=1;i<=CAFE_HERO_NAME.length;i++){
-      cafeNameTimers.push(setTimeout(()=>{ cafeHtext.textContent=CAFE_HERO_NAME.slice(0,i); if(i===CAFE_HERO_NAME.length) cafeHtext.classList.add('typed'); }, i*45));
+      cafeNameTimers.push(setTimeout(()=>{ cafeHtext.textContent=CAFE_HERO_NAME.slice(0,i); if(i===CAFE_HERO_NAME.length) cafeHtext.classList.add('typed'); }, i*CFG.type.name));
     }
     // 6) текст подведа — ПОСЛЕ появления имени предпринимателя
     cafeNameTimers.push(setTimeout(()=>{ if(m1Text) m1Text.classList.add('show'); cafeIntroDone=true; }, CAFE_HERO_NAME.length*45 + 500));
@@ -2299,7 +2305,7 @@ function playCafe2Hero(){
     cafeSignSvg2.classList.add('show');
     cafeName2.classList.add('show');
     for(let i=1;i<=CAFE2_HERO_NAME.length;i++){
-      cafe2NameTimers.push(setTimeout(()=>{ cafeHtext2.textContent=CAFE2_HERO_NAME.slice(0,i); if(i===CAFE2_HERO_NAME.length) cafeHtext2.classList.add('typed'); }, i*45));
+      cafe2NameTimers.push(setTimeout(()=>{ cafeHtext2.textContent=CAFE2_HERO_NAME.slice(0,i); if(i===CAFE2_HERO_NAME.length) cafeHtext2.classList.add('typed'); }, i*CFG.type.name));
     }
     cafe2NameTimers.push(setTimeout(()=>{ if(m1bText) m1bText.classList.add('show'); cafe2IntroDone=true; }, CAFE2_HERO_NAME.length*45 + 500));
   }, 2900);
@@ -2393,7 +2399,7 @@ function playFskHero(){
     fskSignSvg.classList.add('show');                                       // вывеска ФСК — обводка контура (как ЦУБ/кафе на сл.8)
     fskName.classList.add('show');
     for(let i=1;i<=FSK_HERO_NAME.length;i++){
-      fskNameTimers.push(setTimeout(()=>{ fskHtext.textContent=FSK_HERO_NAME.slice(0,i); if(i===FSK_HERO_NAME.length) fskHtext.classList.add('typed'); }, i*45));
+      fskNameTimers.push(setTimeout(()=>{ fskHtext.textContent=FSK_HERO_NAME.slice(0,i); if(i===FSK_HERO_NAME.length) fskHtext.classList.add('typed'); }, i*CFG.type.name));
     }
     fskNameTimers.push(setTimeout(()=>{ if(fskText) fskText.classList.add('show'); fskIntroDone=true; }, FSK_HERO_NAME.length*45 + 500));
   }, 2900);
@@ -2647,7 +2653,7 @@ function playCoHero(){
     coName.classList.add('show');
     const nm=LEVEL_NAMES[3];                                     // сквозной ранг: 3★ «Продвинутый предприниматель»
     for(let i=1;i<=nm.length;i++){
-      coNameTimers.push(setTimeout(()=>{ coHtext.textContent=nm.slice(0,i); if(i===nm.length) coHtext.classList.add('typed'); }, i*45));
+      coNameTimers.push(setTimeout(()=>{ coHtext.textContent=nm.slice(0,i); if(i===nm.length) coHtext.classList.add('typed'); }, i*CFG.type.name));
     }
     coHeroDone=true;                                             // клик теперь добавляет аватар Байкова
   }, 2900);
@@ -2829,7 +2835,7 @@ function m3Frame1(){
     m3Exc.classList.remove('reveal'); m3Exc.classList.add('glow');
     m3HeroGlow.classList.add('show','glow'); m3NamePanel.classList.add('show');
     const nm=LEVEL_NAMES[3];                                                 // сквозной ранг 3★
-    for(let i=1;i<=nm.length;i++) m3Timers.push(setTimeout(()=>{ m3Htext.textContent=nm.slice(0,i); if(i===nm.length) m3Htext.classList.add('typed'); }, i*45));
+    for(let i=1;i<=nm.length;i++) m3Timers.push(setTimeout(()=>{ m3Htext.textContent=nm.slice(0,i); if(i===nm.length) m3Htext.classList.add('typed'); }, i*CFG.type.name));
     m3Frame1Done=true;
   }, 2900));
 }
@@ -3528,7 +3534,7 @@ function showBinocHeroPanel(){
   const el=h.nameEl, txt=LEVEL_NAMES[lvl];
   heroNameTimers.forEach(clearTimeout); heroNameTimers=[];
   el.classList.remove('typed','name-in','name-out'); el.textContent='';
-  for(let i=1;i<=txt.length;i++){ heroNameTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*45)); }
+  for(let i=1;i<=txt.length;i++){ heroNameTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*CFG.type.name)); }
 }
 /* ВХОД слайда 11 = как слайд 7: тёмная сцена → крышный герой (+панель 2★) → карта раскрывается своей .darkness → авто-разведка.
    Объекты показывает сама разведка (не трогаем). */
@@ -4093,7 +4099,7 @@ function typeChipName(name, guard, done){
   (function ch(){
     if(guard && !guard()) return;
     h.textContent=name.slice(0,i++);
-    if(i<=name.length) heroTimers.push(setTimeout(ch, 45));
+    if(i<=name.length) heroTimers.push(setTimeout(ch, CFG.type.name));
     else { h.classList.add('typed'); done&&done(); }
   })();
 }
@@ -4709,7 +4715,7 @@ function typeSay(el, text, guard, timers){
   (function step(){
     if(guard && !guard()) return;                        // ушли со сцены — стоп
     t.textContent=text.slice(0,i++);
-    if(i<=text.length) timers.push(setTimeout(step,32));
+    if(i<=text.length) timers.push(setTimeout(step,CFG.type.say));
   })();
 }
 /* ── ИМИТАЦИЯ ПИСЬМА ОТ РУКИ: буквы «вытекают» чернилами, вместо каретки — перо ── */
@@ -4721,7 +4727,7 @@ function typeThought(el, text, guard, timers, done){
     if(i>=text.length){ done&&done(); return; }
     if(text[i]==='\n'){ el.appendChild(document.createElement('br')); i++; step(); return; }   // перенос строки
     el.appendChild(document.createTextNode(text[i])); i++;
-    timers.push(setTimeout(step, 45));
+    timers.push(setTimeout(step, CFG.type.name));
   })();
 }
 function handWrite(el, text, guard, timers, done){
@@ -4733,7 +4739,7 @@ function handWrite(el, text, guard, timers, done){
     if(text[i]==='\n'){ el.appendChild(document.createElement('br')); i++; step(); return; }  // перенос строки
     const s=document.createElement('span'); s.className='hw-ch'; s.textContent=text[i];
     el.appendChild(s); i++;
-    timers.push(setTimeout(step, 55));                     // темп «руки» — медленнее печати
+    timers.push(setTimeout(step, CFG.type.hand));                     // темп «руки» — медленнее печати
   })();
 }
 /* письмо в ОБЛАКЕ: все буквы присутствуют сразу (размер фиксирован по полному тексту),
@@ -4752,7 +4758,7 @@ function handWriteCloud(el, text, guard, timers, done){
     if(guard && !guard()) return;
     if(i>=spans.length){ done&&done(); return; }
     spans[i].classList.add('on'); i++;
-    timers.push(setTimeout(step, 55));
+    timers.push(setTimeout(step, CFG.type.hand));
   })();
 }
 /* реплика героя на карте (сцена 3) — через общий шаблон */
@@ -4767,7 +4773,7 @@ let reconStarted=false;   // разведка сцены 3 запускаетс�
 function typeName(o){
   const el=o.nameEl, txt=o.name; el.classList.remove('typed'); el.textContent='';
   for(let i=1;i<=txt.length;i++){
-    typeTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*45));
+    typeTimers.push(setTimeout(()=>{ el.textContent=txt.slice(0,i); if(i===txt.length) el.classList.add('typed'); }, i*CFG.type.name));
   }
 }
 /* ── МЕХАНИКА «УРОВЕНЬ ПОВЫШЕН» (переиспользуемая) ──
@@ -4841,7 +4847,7 @@ function runLevelUp(o, cfg){
         el.classList.remove('name-out','typed'); el.textContent=''; el.classList.add('name-in');
         o.name=newName;
         for(let i=1;i<=newName.length;i++){
-          timers.push(setTimeout(()=>{ el.textContent=newName.slice(0,i); if(i===newName.length) el.classList.add('typed'); }, i*45));
+          timers.push(setTimeout(()=>{ el.textContent=newName.slice(0,i); if(i===newName.length) el.classList.add('typed'); }, i*CFG.type.name));
         }
         timers.push(setTimeout(()=>el.classList.remove('name-in'), 900));
       }, 350));
