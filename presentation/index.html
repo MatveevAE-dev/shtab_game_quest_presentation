@@ -1887,6 +1887,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
 const CFG = {
   type: { name:45, say:32, erase:26, hand:55 },   // скорость печати, мс/символ (имя/реплика/стирание/рукопись)
   veil: { toBlack:2700 },                          // задержка «чёрное держится» перед сменой слайда (×4 *ToNext). Скорости вуалей — в CSS (--veil-*).
+  hero: { contour:2900, live:1933, fio:2500, textGap:500 },   // появление: контур/панель @2900 · аватар .live @1933 · ФИО @2500 · пауза текста после имени +500
 };
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
@@ -2045,7 +2046,7 @@ function playRoofHero(){
   roofDrawTimer=setTimeout(()=>{
     roofGlow.classList.add('show','glow');                     // 3) сразу подсвечиваем контур (без скана сверху→вниз)
     if(id()==='map') revealHeroPanel(heroPanel());             // 4) имя героя
-  }, 2900);
+  }, CFG.hero.contour);
 }
 /* ── ГЕРОЙ НА КАФЕ (слайд 7 «Миссия 1»): тот же стиль появления/контура, что на слайде 6, + обводка вывески ── */
 const cafeHero=document.getElementById('cafeHero');
@@ -2153,8 +2154,8 @@ function playCafeHero(){
       cafeNameTimers.push(setTimeout(()=>{ cafeHtext.textContent=CAFE_HERO_NAME.slice(0,i); if(i===CAFE_HERO_NAME.length) cafeHtext.classList.add('typed'); }, i*CFG.type.name));
     }
     // 6) текст подведа — ПОСЛЕ появления имени предпринимателя
-    cafeNameTimers.push(setTimeout(()=>{ if(m1Text) m1Text.classList.add('show'); cafeIntroDone=true; }, CAFE_HERO_NAME.length*45 + 500));
-  }, 2900);
+    cafeNameTimers.push(setTimeout(()=>{ if(m1Text) m1Text.classList.add('show'); cafeIntroDone=true; }, CAFE_HERO_NAME.length*CFG.type.name + CFG.hero.textGap));
+  }, CFG.hero.contour);
 }
 /* мгновенно доиграть появление героя (скип по клику во время интро): вуаль раскрыта, герой/контур/вывеска/имя/текст — финал */
 function skipCafeIntro(){
@@ -2313,8 +2314,8 @@ function playCafe2Hero(){
     for(let i=1;i<=CAFE2_HERO_NAME.length;i++){
       cafe2NameTimers.push(setTimeout(()=>{ cafeHtext2.textContent=CAFE2_HERO_NAME.slice(0,i); if(i===CAFE2_HERO_NAME.length) cafeHtext2.classList.add('typed'); }, i*CFG.type.name));
     }
-    cafe2NameTimers.push(setTimeout(()=>{ if(m1bText) m1bText.classList.add('show'); cafe2IntroDone=true; }, CAFE2_HERO_NAME.length*45 + 500));
-  }, 2900);
+    cafe2NameTimers.push(setTimeout(()=>{ if(m1bText) m1bText.classList.add('show'); cafe2IntroDone=true; }, CAFE2_HERO_NAME.length*CFG.type.name + CFG.hero.textGap));
+  }, CFG.hero.contour);
 }
 function skipCafe2Intro(){
   m1bTimers.splice(0).forEach(clearTimeout);
@@ -2407,8 +2408,8 @@ function playFskHero(){
     for(let i=1;i<=FSK_HERO_NAME.length;i++){
       fskNameTimers.push(setTimeout(()=>{ fskHtext.textContent=FSK_HERO_NAME.slice(0,i); if(i===FSK_HERO_NAME.length) fskHtext.classList.add('typed'); }, i*CFG.type.name));
     }
-    fskNameTimers.push(setTimeout(()=>{ if(fskText) fskText.classList.add('show'); fskIntroDone=true; }, FSK_HERO_NAME.length*45 + 500));
-  }, 2900);
+    fskNameTimers.push(setTimeout(()=>{ if(fskText) fskText.classList.add('show'); fskIntroDone=true; }, FSK_HERO_NAME.length*CFG.type.name + CFG.hero.textGap));
+  }, CFG.hero.contour);
 }
 function skipFskIntro(){
   clearTimeout(fskDrawTimer); fskNameTimers.forEach(clearTimeout); fskNameTimers=[];
@@ -2662,7 +2663,7 @@ function playCoHero(){
       coNameTimers.push(setTimeout(()=>{ coHtext.textContent=nm.slice(0,i); if(i===nm.length) coHtext.classList.add('typed'); }, i*CFG.type.name));
     }
     coHeroDone=true;                                             // клик теперь добавляет аватар Байкова
-  }, 2900);
+  }, CFG.hero.contour);
 }
 /* доиграть героя мгновенно (клик во время его проявления) */
 function skipCoHero(){
@@ -2699,14 +2700,14 @@ function coBaikov(){
   const guard=()=>id()==='cafeopen';
   coAva.classList.add('show');
   avSparks(coAvatar,16); void coAvatar.offsetWidth; coAvatar.classList.add('play');
-  coTimers.push(setTimeout(()=>coAvatar.classList.add('live'), 1933));
+  coTimers.push(setTimeout(()=>coAvatar.classList.add('live'), CFG.hero.live));
   coTimers.push(setTimeout(()=>{ if(!guard())return;
     typeSay(coFio, CO_FIO, guard, coTimers);                   // ФИО
     coTimers.push(setTimeout(()=>{ if(!guard())return;
       typeSay(coSay, CO_SAY, guard, coTimers);                 // реплика
       coTimers.push(setTimeout(()=>{ if(!guard())return; coStoryDone=true; }, CO_SAY.length*32 + 900));
     }, 1200));
-  }, 2500));
+  }, CFG.hero.fio));
 }
 function skipCoStory(){
   coStoryStarted=true;
@@ -2843,7 +2844,7 @@ function m3Frame1(){
     const nm=LEVEL_NAMES[3];                                                 // сквозной ранг 3★
     for(let i=1;i<=nm.length;i++) m3Timers.push(setTimeout(()=>{ m3Htext.textContent=nm.slice(0,i); if(i===nm.length) m3Htext.classList.add('typed'); }, i*CFG.type.name));
     m3Frame1Done=true;
-  }, 2900));
+  }, CFG.hero.contour));
 }
 function skipM3Frame1(){
   m3Timers.splice(0).forEach(clearTimeout);
@@ -2867,7 +2868,7 @@ function m3PlaySpp(){
     m3Timers.push(setTimeout(()=>{ if(!guard())return; setSppFrame(1); }, 500));    // кадр 2 (средний)
     m3Timers.push(setTimeout(()=>{ if(!guard())return; setSppFrame(2); }, 1300));   // кадр 3 (финал)
     m3Timers.push(setTimeout(()=>{ if(!guard())return; m3SppDone=true; }, 2200));
-  }, 2900));
+  }, CFG.hero.contour));
 }
 function skipM3Spp(){
   m3Timers.splice(0).forEach(clearTimeout);
@@ -2946,7 +2947,7 @@ function dgEndStart(){
   const guard=()=>id()==='danger';
   dgAva.classList.add('show');
   avSparks(dgAvatar,16); void dgAvatar.offsetWidth; dgAvatar.classList.add('play');
-  dangerTimers.push(setTimeout(()=>dgAvatar.classList.add('live'), 1933));
+  dangerTimers.push(setTimeout(()=>dgAvatar.classList.add('live'), CFG.hero.live));
   dangerTimers.push(setTimeout(()=>{ if(!guard())return;
     typeSay(dgFio, DG_FIO, guard, dangerTimers);                              // ФИО
     dangerTimers.push(setTimeout(()=>{ if(!guard())return;
@@ -2956,7 +2957,7 @@ function dgEndStart(){
         dangerTimers.push(setTimeout(()=>{ if(!guard())return; dgTitle.classList.add('pop'); dgEndDone=true; }, 800));   // → титул «МИССИЯ 3»
       }, DG_SAY.length*32 + 1000));
     }, 1200));
-  }, 2500));
+  }, CFG.hero.fio));
 }
 /* искры, сходящиеся к центру эскаватора (как у героя, в координатах карты) */
 function excSparks(cx, cy){
@@ -3056,7 +3057,7 @@ function playDangerHero(){
   void roofHero.offsetWidth; void roofGlow.offsetWidth; void roofSparks.offsetWidth;
   roofSparks.classList.add('play');
   roofHero.classList.add('show','reveal');
-  roofDrawTimer=setTimeout(()=>{ roofGlow.classList.add('show','glow'); if(id()==='danger'&&h) revealHeroPanel(h); }, 2900);   // сразу контур, без скана
+  roofDrawTimer=setTimeout(()=>{ roofGlow.classList.add('show','glow'); if(id()==='danger'&&h) revealHeroPanel(h); }, CFG.hero.contour);   // сразу контур, без скана
 }
 function runDanger(){
   resetDanger();
@@ -3445,7 +3446,7 @@ function runMission(m){
   missionTitle.innerHTML=m.title;                                        // текст титула готов (2 строки), скрыт (opacity 0)
   avSparks(missionAvatar,16); void missionAvatar.offsetWidth;
   missionAvatar.classList.add('play');                                   // искры→рамка→лицо→скан контура
-  binocTimers.push(setTimeout(()=>missionAvatar.classList.add('live'), 1933));   // idle-бумеранг + пульс рамки
+  binocTimers.push(setTimeout(()=>missionAvatar.classList.add('live'), CFG.hero.live));   // idle-бумеранг + пульс рамки
   binocTimers.push(setTimeout(()=>{                                      // после появления — ФИО, затем реплика
     typeSay(missionName, m.name, guard, binocTimers);
     binocTimers.push(setTimeout(()=>{
@@ -3460,7 +3461,7 @@ function runMission(m){
         }, 533));
       }, m.say.length*21 + 667));
     }, 800));
-  }, 2500));
+  }, CFG.hero.fio));
 }
 function resetBinoc(){
   binocTimers.splice(0).forEach(clearTimeout);
@@ -3557,7 +3558,7 @@ function runBinocMapIntro(){
   roofHero.classList.add('show'); roofGlow.classList.add('show');
   playRoofHero();
   // 2) панель героя (2★ «Действующий») сразу после прорисовки контура — тайминг как на слайде 6 (@2900)
-  binocPanelT=setTimeout(()=>{ if(id()==='binoc') showBinocHeroPanel(); }, 2900);
+  binocPanelT=setTimeout(()=>{ if(id()==='binoc') showBinocHeroPanel(); }, CFG.hero.contour);
   // 3) карта раскрывается своей .darkness + ВСЕ объекты уже на карте (разом, без маршрутов) — @4200 как MAP_HOLD[0] на слайде 6
   binocStartT=setTimeout(()=>{
     if(id()!=='binoc') return;
@@ -3899,7 +3900,7 @@ function avReveal(cell){
   cell.__els.forEach(el=>{ el.classList.remove('show'); el.style.opacity=''; el.textContent=el.dataset.full; });   // блоки скрыты (CSS), текст готов
   avSparks(av,16); void av.offsetWidth;
   av.classList.add('play');
-  avTimers.push(setTimeout(()=>av.classList.add('live'), 1933));
+  avTimers.push(setTimeout(()=>av.classList.add('live'), CFG.hero.live));
   avTimers.push(setTimeout(()=>cell.__els[0].classList.add('show'), AV_ORG_AT));    // подразделение — с лицом/рамкой
   avTimers.push(setTimeout(()=>cell.__els[1].classList.add('show'), AV_NAME_AT));   // ФИО — когда прорисован контур
   avTimers.push(setTimeout(()=>cell.__els[2].classList.add('show'), AV_DESC_AT));   // описание — сразу после
