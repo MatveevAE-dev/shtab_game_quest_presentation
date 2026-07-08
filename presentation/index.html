@@ -881,6 +881,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
   opacity:0;transform:translateY(16px) scale(.95);
   transition:opacity .45s ease,transform .5s cubic-bezier(.2,.7,.25,1)}
 .hthink.show{opacity:1;transform:none;text-shadow:0 2px 8px rgba(0,0,0,.95);animation:thinkGlow 1.6s ease-in-out infinite}
+.hthink.aright{text-align:right}   /* мысли слева от героя — выключка ВПРАВО (правый край к эллипсу) */
 @keyframes thinkGlow{   /* = thinkGlowNeon, но цвет ЗОЛОТОЙ (#ffd24a): резкое ядро всегда + пульс широкого зарева */
   0%,100%{filter:drop-shadow(0 0 1px #ffd24a) drop-shadow(0 0 3px #ffd24a) drop-shadow(0 0 9px #ffd24a)}
   50%{filter:drop-shadow(0 0 1px #ffd24a) drop-shadow(0 0 5px #ffd24a) drop-shadow(0 0 16px #ffd24a) brightness(1.25)}}
@@ -1135,15 +1136,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#06100c;font-family:
    раскрытия вуали и виден на ВСЕХ подслайдах (постоянный) */
 /* ШАБЛОН «титул слайда»: на входе проявляется В ЦЕНТРЕ (над вуалью, z6), затем анимированно
    переносится в фиксированный ДОК слева. Между подслайдами — только смена текста (класс .center не трогаем). */
-.rules-title{position:absolute;left:6cqw;top:50%;z-index:6;transform:translateY(-50%);transform-origin:center;
+.rules-title{position:absolute;left:6cqw;top:27%;z-index:6;transform:translateY(-50%);transform-origin:center;   /* ДОК на уровне заголовка «Игровой мир» (одинаково на всех подслайдах) */
   font-family:var(--hauss);font-weight:700;color:#fff;text-transform:uppercase;white-space:normal;max-width:36cqw;text-align:left;
   font-size:3.1cqw;line-height:1.07;letter-spacing:.02em;
   text-shadow:0 2px 8px rgba(0,0,0,.95);pointer-events:none;opacity:0;
   animation:thinkGlow 1.6s ease-in-out infinite;   /* выделение титула — СТИЛЬ 1 мыслей (золотой thinkGlow) */
-  transition:left .9s cubic-bezier(.4,.1,.2,1),transform .9s cubic-bezier(.4,.1,.2,1),font-size .9s cubic-bezier(.4,.1,.2,1),max-width .9s ease,opacity .5s ease}
+  transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1),transform .9s cubic-bezier(.4,.1,.2,1),font-size .9s cubic-bezier(.4,.1,.2,1),max-width .9s ease,opacity .5s ease}
 .rules-title.show{opacity:1}
 /* состояние ВХОДА — титул по центру экрана, крупнее (как титул заставки) */
-.rules-title.center{left:50%;transform:translate(-50%,-50%);font-size:3.6cqw;text-align:center;max-width:82cqw;white-space:nowrap}
+.rules-title.center{left:50%;top:50%;transform:translate(-50%,-50%);font-size:3.6cqw;text-align:center;max-width:82cqw;white-space:nowrap}
 /* пока идёт интро — подслайды спрятаны (титул появляется раньше заголовка/текста) */
 .rules.intro .rslide{display:none !important}
 /* выход из правил: убрать весь текст (подслайды + левый титул) — остаётся только переносимый «Помощники» */
@@ -3177,17 +3178,16 @@ function setRulesTitle(step){
   rulesTitle.style.transition='';                                              // вернуть плавность (.6s)
   requestAnimationFrame(()=>requestAnimationFrame(()=>rulesTitle.classList.add('show')));   // проявление
 }
-const TITLE_HOLD=1300, TITLE_MOVE=900;   // центр держим, затем перенос в док (.9с анимация)
-/* ВХОД слайда (шаблон титула): титул проявляется В ЦЕНТРЕ (над вуалью) → переносится в ДОК */
+const TITLE_APPEAR=800;   // титул проявляется СРАЗУ в доке (~0.5с fade), затем контент
+/* ВХОД слайда: титул ПРОЯВЛЯЕТСЯ СРАЗУ В ДОКЕ (на уровне «Игровой мир»), без центра/переезда */
 function enterRulesTitle(step){
   const txt=RULES_TITLES[step]||'';
   rulesTitleShown=txt; rulesTitle.textContent=txt;
-  rulesTitle.style.transition='none';
-  rulesTitle.classList.add('center'); rulesTitle.classList.remove('show');   // центр, скрыт (мгновенно)
+  rulesTitle.classList.remove('center');                                     // сразу в ДОК (не центр)
+  rulesTitle.style.transition='none'; rulesTitle.classList.remove('show');   // скрыт мгновенно в доке
   void rulesTitle.offsetWidth;
-  rulesTitle.style.transition='';
-  requestAnimationFrame(()=>rulesTitle.classList.add('show'));                // проявление в центре
-  rulesTimers.push(setTimeout(()=>{ if(id()==='rules') rulesTitle.classList.remove('center'); }, TITLE_HOLD));   // перенос в док
+  rulesTitle.style.transition='';                                            // вернуть плавность (opacity .5s)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>rulesTitle.classList.add('show')));   // ПРОЯВЛЕНИЕ на месте
 }
 function showRules(){
   rSlides.forEach((s,i)=>s.classList.toggle('cur', i===rulesStep));
@@ -3247,11 +3247,11 @@ function rulesIntro(){
   rulesTimers.splice(0).forEach(clearTimeout);
   rulesAnim=false; rulesIntroing=true;
   rules.classList.add('intro');                          // спрятать контент подслайда
-  enterRulesTitle(rulesStep);                            // титул: проявление в ЦЕНТРЕ → перенос в ДОК
+  enterRulesTitle(rulesStep);                            // титул: проявление СРАЗУ в доке (без центра/переезда)
   rulesTimers.push(setTimeout(()=>{ if(id()!=='rules') return;
-    rules.classList.remove('intro'); showRules();        // контент — ПОСЛЕ переноса титула в док
+    rules.classList.remove('intro'); showRules();        // контент — ПОСЛЕ проявления титула
     rulesIntroing=false;
-  }, TITLE_HOLD+TITLE_MOVE));                             // ждём: держим центр + перенос
+  }, TITLE_APPEAR));                                      // ждём проявление титула (~0.5с fade + пауза)
 }
 /* пропустить интро по клику — сразу титул в доке + контент */
 function rulesIntroSkip(){
@@ -4009,18 +4009,22 @@ const heroLead =document.getElementById('heroLead');
 const heroOutline=document.getElementById('heroOutline');
 /* Вопросы, которые мучают предпринимателя (ВРЕМЕННЫЕ — финальные тексты дадут завтра).
    Порядок показа — слева направо (по возрастанию left). x/y — позиция на картинке (в %). */
+/* Мысли разложены ПО ЭЛЛИПСУ вокруг героя (assets/img/objects/Мысли героя.svg: cx1048 cy362 rx184 ry353 в viewBox 2172×724).
+   side 'l' — слева от эллипса, якорь по ПРАВОМУ краю (CSS right:edge%) к левой дуге, выключка вправо, СТИЛЬ 1 (золото).
+   side 'r' — справа от эллипса, якорь по ЛЕВОМУ краю (CSS left:edge%) к правой дуге, выключка влево, СТИЛЬ 2 (неон).
+   edge = x дуги эллипса на середине блока (в % ширины стейджа); y = top блока (%). */
 const HERO_QUESTIONS=[
-  // ЛЕВАЯ группа (x<50 → СТИЛЬ 1, золото): «мысли» вразброс по x (не в одну линию), ближе к герою
-  {t:'Где найти идею для\nоткрытия бизнеса?',            x:7,  y:3},
-  {t:'Как зарегистрировать\nбизнес?',                    x:16, y:23},
-  {t:'Как подобрать локацию?',                           x:10, y:42},
-  {t:'Где взять деньги для\nразвития бизнеса?',           x:17, y:60},
-  {t:'Как повысить\nэффективность бизнеса?',              x:11, y:79},
-  // ПРАВАЯ группа (x>=50 → СТИЛЬ 2, неон): тоже вразброс по x
-  {t:'Как защитить свой\nбизнес?',                       x:57, y:9},
-  {t:'Что делать, если я уже взял кредит,\nно не могу его платить?', x:52, y:31},
-  {t:'Как сделать бизнес\nболее технологичным?',          x:60, y:53},
-  {t:'Что дает статус «социальное\nпредприятие» и как его получить?', x:53, y:75}
+  // ЛЕВЫЕ (сверху вниз) — правый край касается левой дуги эллипса
+  {t:'Где найти идею для\nоткрытия бизнеса?',   side:'l', edge:56.3, y:2},
+  {t:'Как зарегистрировать\nбизнес?',           side:'l', edge:59.4, y:22},
+  {t:'Как подобрать локацию?',                  side:'l', edge:60.2, y:42},
+  {t:'Где взять деньги для\nразвития бизнеса?',  side:'l', edge:59.8, y:58},
+  {t:'Как повысить\nэффективность бизнеса?',     side:'l', edge:57.6, y:78},
+  // ПРАВЫЕ (сверху вниз) — левый край касается правой дуги эллипса
+  {t:'Как защитить свой\nбизнес?',              side:'r', edge:54.8, y:12},
+  {t:'Что делать, если я уже взял кредит,\nно не могу его платить?', side:'r', edge:56.5, y:33},
+  {t:'Как сделать бизнес\nболее технологичным?', side:'r', edge:56.5, y:54},
+  {t:'Что дает статус «социальное\nпредприятие» и как его получить?', side:'r', edge:54.8, y:74}
 ];
 /* мысли героя: hero — рукопись (.hthink, печать), hero2 — комикс-облака (.hcloud, остаются).
    Строим под сцену; heroQEls обновляется. */
@@ -4030,11 +4034,11 @@ let THOUGHT_STYLE=1;
 function buildHeroQuestions(){
   const cloud=(id()==='hero2');
   heroQs.innerHTML=HERO_QUESTIONS.map((q,i)=>{
-    const pos='left:'+q.x+'%;top:'+q.y+'%';
-    const side=q.x<50?'left':'right';                                                                // левее героя → хвост вправо (к нему), и наоборот
+    const isL=(q.side==='l');
+    const pos=(isL?'right:':'left:')+q.edge+'%;top:'+q.y+'%';                                        // left-мысли якорим по ПРАВОМУ краю к эллипсу, right-мысли по ЛЕВОМУ
     return cloud
-      ? '<div class="hcloud '+side+'" data-qi="'+i+'" style="'+pos+'"></div>'   // облако — текст ПИШЕТСЯ (handWrite) в heroReveal
-      : '<div class="hthink'+(q.x>=50?' tstyle-neon':'')+'" data-qi="'+i+'" style="'+pos+'"></div>';   // ПОКАЗ: слева стиль 1 (золото), справа стиль 2 (неон)
+      ? '<div class="hcloud '+(isL?'left':'right')+'" data-qi="'+i+'" style="'+pos+'"></div>'   // облако — текст ПИШЕТСЯ (handWrite) в heroReveal
+      : '<div class="hthink'+(isL?' aright':' tstyle-neon')+'" data-qi="'+i+'" style="'+pos+'"></div>';   // left → СТИЛЬ 1 (золото) + выключка вправо; right → СТИЛЬ 2 (неон) + выключка влево
   }).join('');
   heroQEls=[...heroQs.children];
   return cloud;
@@ -4097,9 +4101,8 @@ function heroReveal(){
       heroLead.classList.add('show');                        // выноска: линия+точка на герое (контур уже подсвечен со старта)
       // 2) вопросы стартуют после появления имени + небольшая задержка
       heroTimers.push(setTimeout(()=>{ if(!alive())return;
-        // РАНДОМНЫЙ порядок появления мыслей (лево/право вперемешку) — позиции не меняем (Fisher-Yates)
+        // Порядок как в HERO_QUESTIONS: сначала ЛЕВЫЕ мысли (сверху вниз), затем ПРАВЫЕ (сверху вниз) — без рандома
         const order=[...heroQEls.keys()];
-        for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
         let k=0;
         (function nextQ(){
           if(!alive() || k>=order.length) return;
