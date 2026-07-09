@@ -9,7 +9,7 @@
      Альтернативы для сравнения: Russo One, Jura. Грузятся из интернета при открытии в браузере. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;1,300&family=Caveat:wght@600;700&family=Russo+One&family=Jura:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800&family=Exo+2:ital,wght@0,200;0,300;0,400;0,600;1,300&family=Caveat:wght@600;700&family=Russo+One&family=Jura:wght@400;600&family=Tektur:wght@400..900&family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
 
 <!-- Неоновые шрифты с кириллицей (встроены base64, офлайн): AA Neon · LIBRARY 3 AM · mr Neon Sans -->
 <link rel="stylesheet" href="assets/fonts/neon-fonts.css">
@@ -44,10 +44,18 @@
   --aa:'AA Neon', var(--disp);
   --lib:'LIBRARY 3 AM', var(--disp);
   --mrn:'mr Neon Sans', var(--disp);
+  --tek:'Tektur', var(--disp);      /* TRON-подобный, квадратный техно (кириллица) */
+  --jura:'Jura', var(--disp);       /* тонкий геометрический (кириллица) */
+  --comf:'Comfortaa', var(--disp);  /* моно-линия скруглённая, неон-трубка (кириллица) */
+  --neuro:'Neuropol X', var(--disp);/* техно sci-fi, встроен base64 (кириллица) */
 }
 .f-aa, .nbtn.f-aa, .fx-sample.f-aa {font-family:var(--aa)}
 .f-lib,.nbtn.f-lib,.fx-sample.f-lib{font-family:var(--lib)}
 .f-mrn,.nbtn.f-mrn,.fx-sample.f-mrn{font-family:var(--mrn)}
+.f-tek,.nbtn.f-tek,.fx-sample.f-tek{font-family:var(--tek)}
+.f-jura,.nbtn.f-jura,.fx-sample.f-jura{font-family:var(--jura)}
+.f-comf,.nbtn.f-comf,.fx-sample.f-comf{font-family:var(--comf)}
+.f-neuro,.nbtn.f-neuro,.fx-sample.f-neuro{font-family:var(--neuro)}
 
 *{box-sizing:border-box; margin:0; padding:0}
 html,body{background:var(--ink); color:var(--warm-core)}
@@ -63,6 +71,16 @@ body{
     var(--ink);
   padding:0 0 8vh;
 }
+/* превью «как в презентации»: фоновое изображение + градиентное затемнение СО СЛАЙДА 4 (темнее справа) */
+body.presbg{
+  background-image:
+    linear-gradient(90deg, rgba(0,0,0,.25) 0 14%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.82) 100%),
+    url("assets/img/bg/Карта Москвы без героя.png");
+  background-size:cover, cover;
+  background-position:center, center;
+  background-repeat:no-repeat, no-repeat;
+  background-attachment:fixed, fixed;
+}
 
 /* ============================================================
    НЕОНОВОЕ СВЕЧЕНИЕ (ядро + ореол)
@@ -74,24 +92,145 @@ body{
 .n-orn {color:var(--orn-core)}
 
 /* --- сила «текст» (спокойное, читаемое, лёгкий ореол) --- */
-.glow-text.n-warm{text-shadow:0 0 1px var(--warm-core),0 0 4px var(--warm-1),0 0 9px rgba(255,154,61,.5)}
+.glow-text.n-warm{text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,var(--warm-core)),0 0 calc(4px*var(--gT-gr,1)) var(--warm-1),0 0 calc(9px*var(--gT-gr,1)) rgba(255,154,61,calc(.5*var(--gT-gi,1)))}
 /* СИНИЙ = стиль «Москва»/«937» (СТИЛЬ 2, thinkGlowNeon): белая заливка + тёмная база для читаемости
    + УЗКИЙ циан-неон #27e3ff (без широкого зарева → без плашки-ореола). Пульс даёт neonIdle. */
-.glow-text.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--blue-2),0 0 3px var(--blue-2),0 0 9px var(--blue-2)}
-.glow-text.n-red {text-shadow:0 0 1px var(--red-core), 0 0 4px var(--red-1), 0 0 9px rgba(255,43,78,.5)}
-.glow-text.n-orn {text-shadow:0 0 1px var(--orn-core), 0 0 4px var(--orn-1), 0 0 9px rgba(255,138,31,.5)}
+.glow-text.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,var(--blue-2)),0 0 calc(3px*var(--gT-gr,1)) var(--blue-2),0 0 calc(9px*var(--gT-gr,1)) var(--blue-2)}
+.glow-text.n-red {text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,var(--red-core)), 0 0 calc(4px*var(--gT-gr,1)) var(--red-1), 0 0 calc(9px*var(--gT-gr,1)) rgba(255,43,78,calc(.5*var(--gT-gi,1)))}
+.glow-text.n-orn {text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,var(--orn-core)), 0 0 calc(4px*var(--gT-gr,1)) var(--orn-1), 0 0 calc(9px*var(--gT-gr,1)) rgba(255,138,31,calc(.5*var(--gT-gi,1)))}
 
 /* --- сила «заголовок» (средний ореол) --- */
-.glow-head.n-warm{text-shadow:0 0 1px #fff,0 0 6px var(--warm-1),0 0 16px var(--warm-2),0 0 30px rgba(255,154,61,.55)}
-.glow-head.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--blue-2),0 0 4px var(--blue-2),0 0 11px var(--blue-2)}   /* синий = «Москва» (узкий неон) */
-.glow-head.n-red {text-shadow:0 0 1px #fff,0 0 6px var(--red-1), 0 0 16px var(--red-2), 0 0 30px rgba(255,43,78,.55)}
-.glow-head.n-orn {text-shadow:0 0 1px #fff,0 0 6px var(--orn-1), 0 0 16px var(--orn-2), 0 0 30px rgba(255,138,31,.55)}
+.glow-head.n-warm{text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,#fff),0 0 calc(6px*var(--gT-gr,1)) var(--warm-1),0 0 calc(16px*var(--gT-gr,1)) var(--warm-2),0 0 calc(30px*var(--gT-gr,1)) rgba(255,154,61,calc(.55*var(--gT-gi,1)))}
+.glow-head.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,var(--blue-2)),0 0 calc(4px*var(--gT-gr,1)) var(--blue-2),0 0 calc(11px*var(--gT-gr,1)) var(--blue-2)}   /* синий = «Москва» (узкий неон) */
+.glow-head.n-red {text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,#fff),0 0 calc(6px*var(--gT-gr,1)) var(--red-1), 0 0 calc(16px*var(--gT-gr,1)) var(--red-2), 0 0 calc(30px*var(--gT-gr,1)) rgba(255,43,78,calc(.55*var(--gT-gi,1)))}
+.glow-head.n-orn {text-shadow:0 0 calc(1px*var(--gT-cw,1)) var(--gT-core,#fff),0 0 calc(6px*var(--gT-gr,1)) var(--orn-1), 0 0 calc(16px*var(--gT-gr,1)) var(--orn-2), 0 0 calc(30px*var(--gT-gr,1)) rgba(255,138,31,calc(.55*var(--gT-gi,1)))}
 
 /* --- сила «титул» (крупный ореол, «вывеска») --- */
-.glow-title.n-warm{text-shadow:0 0 2px #fff,0 0 8px var(--warm-1),0 0 22px var(--warm-2),0 0 44px var(--warm-3),0 0 80px rgba(255,138,31,.5)}
-.glow-title.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--blue-2),0 0 5px var(--blue-2),0 0 14px var(--blue-2)}   /* синий = «Москва» (узкий неон, без 30/80px зарева) */
-.glow-title.n-red {text-shadow:0 0 2px #fff,0 0 8px var(--red-1), 0 0 22px var(--red-2), 0 0 44px var(--red-3), 0 0 80px rgba(255,43,78,.5)}
-.glow-title.n-orn {text-shadow:0 0 2px #fff,0 0 8px var(--orn-1), 0 0 22px var(--orn-2), 0 0 44px var(--orn-3), 0 0 80px rgba(255,138,31,.5)}
+.glow-title.n-warm{text-shadow:0 0 calc(2px*var(--gI-cw,1)) var(--gI-core,#fff),0 0 calc(8px*var(--gI-gr,1)) var(--warm-1),0 0 calc(22px*var(--gI-gr,1)) var(--warm-2),0 0 calc(44px*var(--gI-gr,1)) var(--warm-3),0 0 calc(80px*var(--gI-gr,1)) rgba(255,138,31,calc(.5*var(--gI-gi,1)))}
+.glow-title.n-blue{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 calc(1px*var(--gI-cw,1)) var(--gI-core,var(--blue-2)),0 0 calc(5px*var(--gI-gr,1)) var(--blue-2),0 0 calc(14px*var(--gI-gr,1)) var(--blue-2)}   /* синий = «Москва» (узкий неон, без 30/80px зарева) */
+.glow-title.n-red {text-shadow:0 0 calc(2px*var(--gI-cw,1)) var(--gI-core,#fff),0 0 calc(8px*var(--gI-gr,1)) var(--red-1), 0 0 calc(22px*var(--gI-gr,1)) var(--red-2), 0 0 calc(44px*var(--gI-gr,1)) var(--red-3), 0 0 calc(80px*var(--gI-gr,1)) rgba(255,43,78,calc(.5*var(--gI-gi,1)))}
+.glow-title.n-orn {text-shadow:0 0 calc(2px*var(--gI-cw,1)) var(--gI-core,#fff),0 0 calc(8px*var(--gI-gr,1)) var(--orn-1), 0 0 calc(22px*var(--gI-gr,1)) var(--orn-2), 0 0 calc(44px*var(--gI-gr,1)) var(--orn-3), 0 0 calc(80px*var(--gI-gr,1)) rgba(255,138,31,calc(.5*var(--gI-gi,1)))}
+
+/* --- НЕОН-ТРУБКА «как иконка»: яркое ядро (сильное свечение) + видимые ГРАНИ (обводка глифа) --- */
+.glow-tube.n-blue{color:var(--gU-core,#dffaff);-webkit-text-stroke:calc(.6px*var(--gU-cw,1)) rgba(39,227,255,.85);
+  text-shadow:0 0 calc(3px*var(--gU-cw,1)) #fff,0 0 calc(8px*var(--gU-gr,1)) var(--blue-1),0 0 calc(18px*var(--gU-gr,1)) var(--blue-2),0 0 calc(34px*var(--gU-gr,1)) var(--blue-3)}
+.glow-tube.n-warm{color:var(--gU-core,#fff6e8);-webkit-text-stroke:calc(.6px*var(--gU-cw,1)) rgba(255,138,31,.8);
+  text-shadow:0 0 calc(3px*var(--gU-cw,1)) #fff,0 0 calc(8px*var(--gU-gr,1)) var(--warm-1),0 0 calc(18px*var(--gU-gr,1)) var(--warm-2),0 0 calc(34px*var(--gU-gr,1)) var(--warm-3)}
+.glow-tube.n-orn {color:var(--gU-core,#fff1e0);-webkit-text-stroke:calc(.6px*var(--gU-cw,1)) rgba(255,138,31,.85);
+  text-shadow:0 0 calc(3px*var(--gU-cw,1)) #fff,0 0 calc(8px*var(--gU-gr,1)) var(--orn-1),0 0 calc(18px*var(--gU-gr,1)) var(--orn-2),0 0 calc(34px*var(--gU-gr,1)) var(--orn-3)}
+.glow-tube.n-red {color:var(--gU-core,#ffe6ea);-webkit-text-stroke:calc(.6px*var(--gU-cw,1)) rgba(255,43,78,.85);
+  text-shadow:0 0 calc(3px*var(--gU-cw,1)) #fff,0 0 calc(8px*var(--gU-gr,1)) var(--red-1),0 0 calc(18px*var(--gU-gr,1)) var(--red-2),0 0 calc(34px*var(--gU-gr,1)) var(--red-3)}
+
+/* --- GLITCH: RGB-сдвиг каналов (циан/маджента) + рваные срезы --- */
+.glitch{position:relative;display:inline-block;color:#eafcff;
+  text-shadow:0 0 6px var(--blue-2),0 0 16px var(--blue-3)}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;
+  overflow:hidden;pointer-events:none;background:transparent}
+.glitch::before{color:#27e3ff;text-shadow:-2px 0 #27e3ff;animation:glitchA 2.4s infinite steps(2) alternate-reverse}
+.glitch::after {color:#ff2b6e;text-shadow: 2px 0 #ff2b6e;animation:glitchB 3.1s infinite steps(2) alternate-reverse}
+@keyframes glitchA{
+  0%{clip-path:inset(8% 0 84% 0);transform:translate(-2px,0)}
+  20%{clip-path:inset(42% 0 40% 0);transform:translate(3px,0)}
+  40%{clip-path:inset(70% 0 12% 0);transform:translate(-3px,0)}
+  60%{clip-path:inset(20% 0 66% 0);transform:translate(2px,0)}
+  80%{clip-path:inset(55% 0 30% 0);transform:translate(-2px,0)}
+  100%{clip-path:inset(4% 0 88% 0);transform:translate(2px,0)}}
+@keyframes glitchB{
+  0%{clip-path:inset(78% 0 8% 0);transform:translate(2px,0)}
+  25%{clip-path:inset(30% 0 56% 0);transform:translate(-3px,0)}
+  50%{clip-path:inset(58% 0 22% 0);transform:translate(3px,0)}
+  75%{clip-path:inset(12% 0 74% 0);transform:translate(-2px,0)}
+  100%{clip-path:inset(45% 0 40% 0);transform:translate(2px,0)}}
+
+/* --- GLITCH v2: VHS — скан-линии + редкие срывы кадра (синий неон) --- */
+.glx-vhs{position:relative;display:inline-block;color:#eafcff;
+  text-shadow:0 0 6px var(--blue-2),0 0 16px var(--blue-3);
+  animation:vhsJit 3.6s steps(1) infinite}
+.glx-vhs::before{content:attr(data-text);position:absolute;left:0;top:0;width:100%;height:100%;
+  color:#27e3ff;text-shadow:-1.5px 0 #27e3ff;pointer-events:none;
+  animation:vhsShift 2.4s steps(1) infinite}
+.glx-vhs::after{content:'';position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.42) 2px 3px);
+  animation:vhsRoll 5s linear infinite}
+@keyframes vhsJit{0%,90%,100%{transform:translate(0)}
+  91%{transform:translate(-2px,1px)}94%{transform:translate(2px,-1px)}97%{transform:translate(-1px,0)}}
+@keyframes vhsShift{0%,86%,100%{clip-path:inset(0 0 100% 0)}
+  87%{clip-path:inset(28% 0 55% 0);transform:translate(5px,0)}
+  90%{clip-path:inset(62% 0 20% 0);transform:translate(-5px,0)}
+  94%{clip-path:inset(8% 0 82% 0);transform:translate(4px,0)}}
+@keyframes vhsRoll{0%{background-position:0 0}100%{background-position:0 26px}}
+
+/* --- GLITCH v3: тяжёлый разрыв — рваные блоки + сдвиг (тёплый + циан) --- */
+.glx-tear{position:relative;display:inline-block;color:#fff4e6;
+  text-shadow:0 0 6px var(--warm-1),0 0 18px var(--warm-2)}
+.glx-tear::before,.glx-tear::after{content:attr(data-text);position:absolute;left:0;top:0;
+  width:100%;height:100%;pointer-events:none;overflow:hidden}
+.glx-tear::before{color:#27e3ff;text-shadow:0 0 8px #27e3ff;animation:tearA 1.9s steps(1) infinite}
+.glx-tear::after{color:#ff9a3d;text-shadow:0 0 8px #ff6a00;animation:tearB 2.5s steps(1) infinite}
+@keyframes tearA{0%,100%{clip-path:inset(4% 0 82% 0);transform:translate(-6px,0)}
+  20%{clip-path:inset(22% 0 55% 0);transform:translate(7px,0) skewX(-10deg)}
+  40%{clip-path:inset(48% 0 30% 0);transform:translate(-8px,0)}
+  60%{clip-path:inset(70% 0 8% 0);transform:translate(5px,0) skewX(8deg)}
+  80%{clip-path:inset(34% 0 44% 0);transform:translate(-4px,0)}}
+@keyframes tearB{0%,100%{clip-path:inset(76% 0 6% 0);transform:translate(6px,0) skewX(6deg)}
+  20%{clip-path:inset(52% 0 28% 0);transform:translate(-7px,0)}
+  40%{clip-path:inset(14% 0 68% 0);transform:translate(8px,0) skewX(-8deg)}
+  60%{clip-path:inset(38% 0 42% 0);transform:translate(-5px,0)}
+  80%{clip-path:inset(60% 0 20% 0);transform:translate(4px,0)}}
+
+/* --- GLITCH v4: моргание неона / dropout — «умирающая лампа» (тёплый) --- */
+.glx-flick{position:relative;display:inline-block;color:#fff4e6;
+  animation:flickGlow 4.2s steps(1) infinite}
+@keyframes flickGlow{
+  0%,40%,46%,70%,73%,100%{opacity:1;
+    text-shadow:0 0 6px var(--warm-1),0 0 16px var(--warm-2),0 0 30px rgba(255,154,61,.5)}
+  41%{opacity:.32;text-shadow:0 0 2px var(--warm-1)}
+  42%{opacity:1;text-shadow:0 0 6px var(--warm-1),0 0 16px var(--warm-2)}
+  43%{opacity:.5;text-shadow:none}
+  71%{opacity:.18;text-shadow:0 0 2px var(--warm-1)}
+  72%{opacity:.85;text-shadow:0 0 6px var(--warm-1),0 0 14px var(--warm-2)}}
+
+/* --- GLITCH v5: НАСТОЯЩИЙ срез — полосы вырезаются и уезжают, оставляя дырку (моно) ---
+   Строится JS: текст режется на N горизонтальных полос БЕЗ подложки. Полоса уезжает
+   по X → на её месте фон (потеря цвета), как в референсе.
+   Настройки на элементе: --sg-color (цвет), font-family (шрифт), data-strips (кол-во полос),
+   data-amp (амплитуда сдвига, px). ---------------------------------------------------------- */
+.slice-glitch{position:relative;display:inline-block;line-height:1;color:#27e3ff;
+  filter:brightness(var(--sg-bri,1))}
+.slice-glitch.ready{color:transparent}          /* базовый текст = только размер бокса, невидим */
+.slice-glitch .sg-strip{position:absolute;left:0;top:0;width:100%;white-space:pre;pointer-events:none;
+  color:var(--sg-color,#d9fbff);
+  /* неон как в титуле вар.2: белое ядро (--sg-core) + СИНЕЕ зарево (--sg-glowc), сплошная заливка */
+  text-shadow:0 0 calc(1px*var(--sg-core,0)) #eaffff,
+    0 0 var(--sg-glow,8px) var(--sg-glowc,var(--blue-2)),
+    0 0 calc(var(--sg-glow,8px)*2.2) var(--sg-glowc,var(--blue-3));
+  -webkit-text-stroke:var(--sg-sw,0) var(--sg-sc,#000);   /* обводка поверх заливки (paint-order по умолчанию) → видна как контур */
+  animation:sgShift var(--sg-dur,2.4s) steps(1) infinite}
+@keyframes sgShift{                              /* большую часть цикла на месте, изредка рывок вбок */
+  0%,60%,100%{transform:translateX(0)}
+  64%{transform:translateX(var(--a,10px))}
+  70%{transform:translateX(0)}
+  84%{transform:translateX(calc(var(--a,10px)*-.6))}
+  90%{transform:translateX(0)}}
+/* режим «Контур»: полые буквы = неон-трубка (обводка + зарево, без заливки) — как верхний референс */
+.slice-glitch.outline .sg-strip{
+  color:transparent;
+  -webkit-text-stroke:var(--sg-ow,2.5px) var(--sg-color,#d9fbff);   /* трубка бело-голубая как в титуле вар.2 */
+  text-shadow:none;
+  filter:drop-shadow(0 0 calc(1px*var(--sg-core,1)) #eaffff)
+    drop-shadow(0 0 var(--sg-glow,8px) var(--sg-glowc,var(--blue-2)))
+    drop-shadow(0 0 calc(var(--sg-glow,8px)*2.2) var(--sg-glowc,var(--blue-3)));}
+/* контролы среза под демо-картой */
+.sg-ctrls{display:flex;flex-wrap:wrap;gap:12px 20px;justify-content:center;margin-top:1.3em;
+  padding-top:1.1em;border-top:1px solid var(--line)}
+.sg-ctrls label{display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--text);font-size:12px;color:var(--dim);letter-spacing:.02em;cursor:pointer}
+.sg-ctrls input[type=range]{width:96px;accent-color:var(--blue-2)}
+.sg-ctrls input[type=color]{width:26px;height:24px;padding:0;border:1px solid var(--line);
+  border-radius:6px;background:transparent;cursor:pointer}
+.sg-ctrls select{padding:.3em .5em;border-radius:6px;background:#0d1420;color:#dfeaf2;
+  border:1px solid var(--line);font-family:var(--text);font-size:12px;cursor:pointer}
+.sg-ctrls .sg-val{min-width:26px;color:var(--blue-1);font-variant-numeric:tabular-nums}
 
 /* ============================================================
    IDLE-МЕРЦАНИЕ — постоянная СЛАБАЯ пульсация (неон живой, свет не ровный).
@@ -116,7 +255,7 @@ body{
    Определено ДО .play-boot/.play-on (ниже) → включение перебивает idle.
    Для элементов со статичным filter (лого/октаэдр) мерцаем ОБЁРТКУ (.logo-box/.oct),
    иначе brightness сотрёт их drop-shadow. */
-.glow-text, .glow-head, .glow-title, .nbtn, .logo-box, .oct, .swatch .dot{
+.glow-text, .glow-head, .glow-title, .glow-tube, .nbtn, .playbtn, .gbtn, .ttl-line, .ttl-bar, .ttl-logo, .logo-box, .oct, .swatch .dot{
   animation:neonIdle 3.6s ease-in-out infinite;
 }
 /* разные периоды — чтобы не мигали в унисон */
@@ -258,18 +397,107 @@ section{margin-top:min(11vh,96px)}
   display:inline-flex; align-items:center; gap:.6em; cursor:pointer; user-select:none;
   font-family:var(--disp); font-weight:600; text-transform:uppercase; letter-spacing:.06em;
   font-size:clamp(13px,1.5vw,16px); padding:.7em 1.5em; border-radius:12px;
-  background:transparent; color:var(--warm-core);
+  background:transparent; color:var(--gB-core,var(--warm-core));
   border:2px solid var(--warm-2);
   box-shadow:0 0 8px rgba(255,183,101,.5), inset 0 0 10px rgba(255,183,101,.18);
-  text-shadow:0 0 6px var(--warm-1),0 0 14px var(--warm-2);
+  text-shadow:0 0 calc(6px*var(--gB-gr,1)) var(--warm-1),0 0 calc(14px*var(--gB-gr,1)) var(--warm-2);
   transition:transform .15s ease, box-shadow .25s ease;
 }
 .nbtn:hover{transform:translateY(-2px); box-shadow:0 0 16px rgba(255,183,101,.75), inset 0 0 16px rgba(255,183,101,.3)}
 .nbtn:active{transform:translateY(0)}
-.nbtn.blue{color:#fff; border-color:var(--blue-2); box-shadow:0 0 8px rgba(39,227,255,.5),inset 0 0 10px rgba(39,227,255,.18); text-shadow:0 0 1px var(--blue-2),0 0 3px var(--blue-2),0 0 9px var(--blue-2)}   /* текст = «Москва» (узкий неон) */
+.nbtn.blue{color:#fff; border-color:var(--blue-2); box-shadow:0 0 8px rgba(39,227,255,.5),inset 0 0 10px rgba(39,227,255,.18); text-shadow:0 0 calc(1px*var(--gB-cw,1)) var(--gB-core,var(--blue-2)),0 0 calc(3px*var(--gB-gr,1)) var(--blue-2),0 0 calc(9px*var(--gB-gr,1)) var(--blue-2)}   /* текст = «Москва» (узкий неон) */
 .nbtn.blue:hover{box-shadow:0 0 16px rgba(39,227,255,.8),inset 0 0 16px rgba(39,227,255,.3)}
 .nbtn.red{color:var(--red-core); border-color:var(--red-2); box-shadow:0 0 8px rgba(255,43,78,.5),inset 0 0 10px rgba(255,43,78,.18); text-shadow:0 0 6px var(--red-1),0 0 14px var(--red-2)}
 .nbtn.orn{color:var(--orn-core); border-color:var(--orn-2); box-shadow:0 0 8px rgba(255,138,31,.5),inset 0 0 10px rgba(255,138,31,.18); text-shadow:0 0 6px var(--orn-1),0 0 14px var(--orn-2)}
+
+/* ── кнопка «играть»: тёплая рамка с РАЗРЫВОМ у плея + тёплый треугольник + синий неон-текст ── */
+.playbtn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--neuro); font-weight:400; text-transform:uppercase; letter-spacing:.08em;
+  font-size:clamp(16px,2vw,22px); padding:.7em 1.9em 1.05em;
+  background:transparent; border:0; cursor:pointer; user-select:none;
+  color:var(--blue-2);                                                         /* чистый циан без белого ядра → насыщенный неон, шрифт Neuropol X */
+  text-shadow:0 0 4px var(--blue-2),0 0 9px var(--blue-2),0 0 16px var(--blue-3);
+  transition:transform .15s ease;
+}
+.playbtn:hover{transform:translateY(-2px)}
+.playbtn:active{transform:translateY(0)}
+/* рамка — SVG-контур тёпло-белым неоном (как вывеска Good Life), линия НЕ доходит до плея (разрыв в центре нижней грани) */
+.playbtn .pb-frame{
+  position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none;
+  filter:drop-shadow(0 0 3px #ffe3ba) drop-shadow(0 0 11px rgba(255,206,150,.5));
+}
+.playbtn .pb-frame path{fill:none; stroke:#ffeccf; stroke-width:2; stroke-linecap:round; vector-effect:non-scaling-stroke}
+.playbtn:hover .pb-frame{filter:drop-shadow(0 0 5px #fff1dc) drop-shadow(0 0 17px rgba(255,206,150,.78))}
+/* треугольник-плей — тёпло-белый неон, в центре нижней грани (в разрыве линии) */
+.playbtn .pb-play{
+  position:absolute; left:50%; top:100%; transform:translate(-50%,-50%);
+  width:0; height:0; border-style:solid; border-width:10px 0 10px 16px;
+  border-color:transparent transparent transparent #fff2e0;
+  filter:drop-shadow(0 0 3px #ffe3ba) drop-shadow(0 0 9px rgba(255,206,150,.6));
+  pointer-events:none;
+}
+
+/* ── кнопка «неон на стекле» (референс: тёплая вывеска на прозрачном акриле у зелёной стены) ── */
+.gbtn-stage{display:flex; gap:34px; flex-wrap:wrap; justify-content:center; align-items:center; margin-top:1.6em}
+.gbtn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  font-family:var(--neuro); font-weight:400; text-transform:uppercase; letter-spacing:.08em;
+  font-size:clamp(15px,1.8vw,21px); padding:.9em 2em; cursor:pointer; user-select:none;
+  border:0; background:transparent;                                                 /* без рамки и без панели */
+  transition:transform .15s ease;
+}
+.gbtn:hover{transform:translateY(-2px)}
+.gbtn:active{transform:translateY(0)}
+/* ПЛЕЙ-иконка: синий неон-КОНТУР (не сплошной) на своём стекле; примыкает к правому НИЖНЕМУ углу текста, стёкла перекрываются */
+.gp{position:relative; display:inline-flex; align-self:flex-end; z-index:2; pointer-events:none;
+  margin-left:-.42em; transform:translateY(.16em)}                                  /* втянута влево (перекрытие стекла) + опущена в нижний угол */
+.gp-ico{width:.82em; height:.92em; overflow:visible; display:block}
+.gp-ico .gp-glass{fill:#fff8ee; stroke:#fff8ee; stroke-width:11; stroke-linejoin:round; stroke-linecap:round;
+  vector-effect:non-scaling-stroke; opacity:.1}                                     /* стекло иконки (round-join → гладко) */
+.gp-ico .gp-tube{fill:none; stroke:#27e3ff; stroke-width:2.4; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke;
+  filter:drop-shadow(0 0 1px #27e3ff) drop-shadow(0 0 4px #27e3ff) drop-shadow(0 0 10px #0bb6e6)}   /* синий неон-контур */
+/* ТЕКСТ: тёплый белый неон */
+.gt{position:relative; color:var(--gB-core,#fff7ec);
+  text-shadow:0 0 calc(1px*var(--gB-cw,1)) #fff,0 0 calc(2px*var(--gB-cw,1)) #fff,0 0 calc(4px*var(--gB-gr,1)) rgba(255,222,178,calc(.45*var(--gB-gi,1))),0 0 calc(8px*var(--gB-gr,1)) rgba(255,188,124,calc(.26*var(--gB-gi,1)))}   /* резкое ядро, слабое зарево */
+/* стекло ПО КОНТУРУ текста: сплошной силуэт, прозрачность на весь слой (пересечения не ярче) */
+.gt::before{content:attr(data-text); position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:-1;
+  white-space:nowrap; font-family:var(--neuro); font-weight:400; font-size:inherit; letter-spacing:.08em; text-transform:uppercase;
+  color:#fff8ee; -webkit-text-stroke:11px #fff8ee; paint-order:stroke fill; opacity:.1;
+  filter:blur(.8px) drop-shadow(0 2px 3px rgba(0,0,0,.4)); pointer-events:none}
+
+/* ── ПАНЕЛЬ «ПАРАМЕТРЫ» (основная вкладка): живая правка цветов палитры + яркости ── */
+/* фикс-панель СПРАВА — едет со скроллом, сворачивается */
+.tune-bar{position:fixed; top:84px; right:16px; z-index:9999;
+  width:266px; max-height:calc(100vh - 104px); overflow-y:auto;
+  display:flex; flex-direction:column; gap:12px; padding:12px 14px; border-radius:14px;
+  background:rgba(9,13,20,.93); border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); box-shadow:0 12px 40px rgba(0,0,0,.55)}
+.wrap.lab .tune-bar{display:none}                                                 /* только на основной вкладке */
+.tune-head{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.tune-title{font-family:var(--text); font-weight:600; color:var(--warm-1); font-size:14px}
+.tune-toggle{font-family:var(--text); font-size:13px; color:var(--warm-1); background:transparent;
+  border:1px solid var(--line); border-radius:8px; width:30px; height:26px; cursor:pointer; line-height:1}
+.tune-bar.collapsed{width:auto; overflow:visible}
+.tune-bar.collapsed .tune-body{display:none}
+.tune-body{display:flex; flex-direction:column; gap:14px}
+.tune-sec{display:flex; flex-direction:column; gap:9px}
+.tune-lbl{font-family:var(--text); font-weight:600; color:var(--dim); font-size:11px; letter-spacing:.04em; text-transform:uppercase}
+.tune-colors{display:flex; flex-wrap:wrap; gap:8px 12px}
+.tune-c{display:inline-flex; align-items:center; gap:6px; font-family:var(--text); font-size:12px; color:var(--dim); cursor:pointer}
+.tune-c input[type=color]{width:26px; height:22px; border:none; border-radius:5px; background:none; cursor:pointer; padding:0}
+.tune-r{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
+  font-family:var(--text); font-size:12px; color:var(--dim)}
+.tune-r input[type=range]{width:118px; accent-color:var(--blue-2)}
+.tune-r input[type=color]{width:26px; height:22px; border:none; border-radius:5px; background:none; cursor:pointer; padding:0}
+.tune-r select{flex:1; max-width:150px; background:var(--ink-2); color:var(--warm-1); border:1px solid var(--line); border-radius:6px;
+  padding:.3em .5em; font-family:var(--text); font-size:12px; cursor:pointer}
+.tune-actions{display:flex; gap:8px; flex-wrap:wrap}
+.tune-reset{font-family:var(--text); font-weight:600; font-size:12px; color:var(--warm-1);
+  background:transparent; border:1px solid var(--warm-2); border-radius:8px; padding:.4em .7em; cursor:pointer}
+.tune-reset:hover{background:rgba(255,183,101,.12)}
+/* яркость применяется к КОНТЕНТУ (секции/шапка), не к самой панели */
+.wrap > section, .wrap > header{filter:brightness(var(--ui-bright,1))}
 
 /* маленькая кнопка «повторить эффект» */
 .replay{
@@ -293,6 +521,14 @@ section{margin-top:min(11vh,96px)}
 /* АКЦИДЕНЦИЯ = Exo 2 + КАПС + синий неон (акцент цветом, не отдельным шрифтом) */
 .fx-sample{font-family:var(--text); font-weight:600; text-transform:uppercase; letter-spacing:.02em; font-size:clamp(26px,4vw,44px); line-height:1.05}
 .fx-sample.small{font-size:clamp(18px,2.4vw,26px)}
+/* матрица «шрифт × роль» — сравнение гарнитур на всех ролях сразу */
+.fcmp{display:flex;flex-direction:column}
+.fcmp-row{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:baseline;
+  padding:11px 0;border-top:1px solid var(--line)}
+.fcmp .fcmp-row:first-of-type{border-top:0}
+.fcmp-lbl{font-family:var(--text);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--dim);padding-top:.35em}
+.fcmp-samp{min-width:0;overflow-wrap:anywhere}
 .fx-body{font-family:var(--text); font-weight:300; font-size:clamp(15px,1.8vw,18px); line-height:1.6}
 .fx-note{color:var(--dim); font-size:12.5px; margin-top:.2em}
 
@@ -302,24 +538,158 @@ section{margin-top:min(11vh,96px)}
   vertical-align:-.06em; padding:0 .06em;
 }
 
+/* ═══ 5 НОВЫХ КНОПОК (гамма презентации: циан #27e3ff + золото #ffd24a). Все читаются как кнопки. ═══ */
+.nb{position:relative; display:inline-flex; align-items:center; justify-content:center; gap:.55em;
+  font-family:var(--neuro); font-weight:400; text-transform:uppercase; letter-spacing:.09em;
+  font-size:15px; line-height:1; padding:.85em 1.7em; cursor:pointer; background:transparent;
+  border:0; color:#eaf4ff; -webkit-appearance:none;
+  transition:transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease}
+.nb:hover{transform:translateY(-2px)}
+.nb:active{transform:translateY(0)}
+.nb i.play{width:0; height:0; border-style:solid; border-width:.42em 0 .42em .66em;
+  border-color:transparent transparent transparent currentColor; filter:drop-shadow(0 0 4px currentColor)}
+/* 1 — неон-вывеска: скруглённая трубка-рамка */
+.nb-sign{border:2px solid var(--blue-2); border-radius:14px; color:var(--blue-1);
+  text-shadow:0 0 6px var(--blue-2),0 0 14px var(--blue-3);
+  box-shadow:0 0 6px rgba(39,227,255,.55), inset 0 0 12px rgba(39,227,255,.14), 0 0 20px rgba(39,227,255,.3)}
+.nb-sign:hover{box-shadow:0 0 12px var(--blue-2), inset 0 0 18px rgba(39,227,255,.26), 0 0 34px rgba(39,227,255,.5)}
+/* 2 — HUD-уголки: диагональные скобки, полупрозрачный центр */
+.nb-hud{color:var(--blue-1); text-shadow:0 0 6px var(--blue-2); background:rgba(8,18,32,.45)}
+.nb-hud::before,.nb-hud::after{content:''; position:absolute; width:15px; height:15px; pointer-events:none;
+  filter:drop-shadow(0 0 4px var(--blue-2))}
+.nb-hud::before{left:-2px; top:-2px; border-top:2px solid var(--blue-2); border-left:2px solid var(--blue-2)}
+.nb-hud::after{right:-2px; bottom:-2px; border-bottom:2px solid var(--blue-2); border-right:2px solid var(--blue-2)}
+.nb-hud:hover{background:rgba(39,227,255,.1)}
+/* 3 — заливка-пилюля: яркий циан + тёмный текст = сильный CTA */
+.nb-pill{border-radius:999px; color:#04121c; letter-spacing:.06em;
+  background:linear-gradient(180deg,#5eecff,var(--blue-2));
+  box-shadow:0 0 10px var(--blue-2),0 0 26px rgba(39,227,255,.55), inset 0 1px 0 rgba(255,255,255,.5);
+  text-shadow:0 1px 1px rgba(255,255,255,.5)}
+.nb-pill:hover{box-shadow:0 0 16px var(--blue-2),0 0 40px rgba(39,227,255,.7), inset 0 1px 0 rgba(255,255,255,.6)}
+.nb-pill i.play{border-color:transparent transparent transparent #04121c; filter:none}
+/* 4 — скошенные углы: техно-рамка со срезами */
+.nb-cut{border:2px solid var(--blue-2); color:var(--blue-1); text-shadow:0 0 6px var(--blue-2);
+  clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px);
+  box-shadow:0 0 8px rgba(39,227,255,.4), inset 0 0 10px rgba(39,227,255,.12)}
+.nb-cut:hover{background:rgba(39,227,255,.1); box-shadow:0 0 14px rgba(39,227,255,.6), inset 0 0 16px rgba(39,227,255,.2)}
+/* 5 — золото + плей + светящееся подчёркивание (тёплый акцент) */
+.nb-gold{color:#ffd24a; text-shadow:0 0 6px #ffd24a,0 0 14px #ff9800;
+  border:1px solid rgba(255,210,74,.4); border-radius:10px; padding-bottom:1.05em}
+.nb-gold::after{content:''; position:absolute; left:1.1em; right:1.1em; bottom:.5em; height:2px; border-radius:2px;
+  background:#ffd24a; box-shadow:0 0 8px #ffd24a,0 0 16px #ff9800}
+.nb-gold:hover{background:rgba(255,210,74,.08); border-color:rgba(255,210,74,.7)}
+/* золотая рамка-кнопка (для glitch-вариантов) */
+.nb-goldframe{border:2px solid #ffd24a; border-radius:12px; color:#ffd24a;
+  box-shadow:0 0 6px rgba(255,210,74,.5), inset 0 0 12px rgba(255,180,0,.12), 0 0 20px rgba(255,152,0,.28)}
+.nb-goldframe:hover{box-shadow:0 0 12px #ffd24a, inset 0 0 18px rgba(255,180,0,.25), 0 0 34px rgba(255,152,0,.5)}
+/* glitch-текст внутри кнопки: клон не должен ломать раскладку кнопки */
+.nb .glitch,.nb .glx-vhs,.nb .glx-tear,.nb .glx-flick,.nb .slice-glitch{font:inherit; letter-spacing:inherit}
+/* ряд для сравнения кнопок */
+.btnrow{display:flex; align-items:center; gap:16px 22px; flex-wrap:wrap; padding:16px 0; border-top:1px solid var(--line)}
+.btnrow:first-of-type{border-top:0}
+.btnrow-lbl{font-family:var(--text); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--dim); flex:0 0 160px; max-width:160px}
+
+/* ── Титул вариант 2: лого «Б» + КВЕСТ + линии, части настраиваются РАЗДЕЛЬНО ── */
+.tv2-stage{padding:clamp(14px,3vw,30px) 0}
+.tv2{width:min(92%,720px);height:auto;display:block;margin:0 auto;overflow:visible}
+/* > path — только прямые дети svg (не трогаем путь внутри <mask>) */
+/* лого «Б» (в исходнике stroke-width="6") — как настоящий логотип: бело-голубое ядро + синее зарево */
+.tv2 > path[stroke-width="6"]{fill:var(--t2-logofill,none); stroke:var(--t2-logo,#dffaff); stroke-width:var(--t2-logosw,6);
+  filter:drop-shadow(0 0 calc(1px*var(--t2-core,1)) var(--t2-logoglowc,var(--blue-2)))
+    drop-shadow(0 0 calc(6px*var(--t2-logoglow,1)) var(--t2-logoglowc,var(--blue-2)))
+    drop-shadow(0 0 calc(16px*var(--t2-logoglow,1)) var(--t2-logoglowc,var(--blue-3)))}
+.tv2 > path[stroke-width="6"].t2spin{transform-box:fill-box; transform-origin:center; animation:octSpin 7s linear infinite}
+/* слово КВЕСТ (path stroke-width="0.072") — сплошная заливка + зарево (цвет зарева = цвет буквы) */
+.tv2 > path[stroke-width="0.072"]{fill:var(--t2-word,#d9fbff); stroke:var(--t2-word,#d9fbff);
+  filter:drop-shadow(0 0 calc(2px*var(--t2-core,1)) #eaffff)
+    drop-shadow(0 0 calc(8px*var(--t2-wordglow,1)) var(--t2-wordglowc,var(--blue-2)))
+    drop-shadow(0 0 calc(18px*var(--t2-wordglow,1)) var(--t2-wordglowc,var(--blue-3)))}
+/* линии сверху/снизу (прямые дети без stroke-width и без mask) */
+.tv2 > path:not([stroke-width]):not([mask]){fill:var(--t2-line,#27e3ff); stroke:var(--t2-line,#27e3ff);
+  filter:drop-shadow(0 0 calc(5px*var(--t2-lineglow,1)) var(--t2-line,#27e3ff))
+    drop-shadow(0 0 calc(12px*var(--t2-lineglow,1)) var(--t2-line,#27e3ff))}
+.sg-grp{font-family:var(--text);font-weight:700;font-size:11px;color:var(--blue-1);
+  letter-spacing:.04em;text-transform:uppercase;align-self:center}
+
 /* ── октаэдр с иконкой ── */
 .oct-stage{display:flex; gap:26px; align-items:center; justify-content:center; flex-wrap:wrap; padding:14px 0}
 .oct{width:120px; height:120px; display:grid; place-items:center; perspective:600px}
 .oct-inner{width:100%; height:100%; transform-style:preserve-3d; animation:octSpin 6s linear infinite}  /* вращение отдельно от включения */
 .oct svg{width:100%; height:100%; overflow:visible; shape-rendering:geometricPrecision}
 /* ромб-контур убран — только иконка. Яркое бело-голубое ЯДРО + УЗКОЕ синее зарево (неон-трубка) */
-.oct .ic{fill:none; stroke:#dffaff; stroke-width:5; stroke-linecap:round; stroke-linejoin:round;
-  filter:drop-shadow(0 0 1px var(--blue-2)) drop-shadow(0 0 4px var(--blue-2)) drop-shadow(0 0 10px var(--blue-3))}
+/* иконки: локальные ползунки (--ic-*) поверх группы gO. Контур=--ic-main, деталь=--ic-det,
+   заливка=--ic-fill, толщина=--ic-sw, множитель свечения=--ic-glow */
+.oct .ic{fill:var(--ic-fill,none); stroke:var(--ic-main,var(--gO-core,#dffaff)); stroke-width:var(--ic-sw,5); stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 0 calc(1px*var(--gO-cw,1)) var(--ic-main,var(--gO-core,var(--blue-2))))
+    drop-shadow(0 0 calc(4px*var(--gO-gr,1)*var(--ic-glow,1)) color-mix(in srgb, var(--ic-main,var(--blue-2)) clamp(0%,calc(100%*var(--gO-gi,1)),100%), transparent))
+    drop-shadow(0 0 calc(10px*var(--gO-gr,1)*var(--ic-glow,1)) color-mix(in srgb, var(--ic-main,var(--blue-3)) clamp(0%,calc(100%*var(--gO-gi,1)),100%), transparent))}
+/* тёплая неон-деталь иконки (акцент) — та же группа gO, цвет=--ic-det */
+.oct .ic-warm{fill:var(--ic-fill,none); stroke:var(--ic-det,#fff3dd); stroke-width:var(--ic-sw,5); stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 0 calc(1px*var(--gO-cw,1)) var(--ic-det,var(--warm-1)))
+    drop-shadow(0 0 calc(4px*var(--gO-gr,1)*var(--ic-glow,1)) color-mix(in srgb, var(--ic-det,var(--warm-1)) clamp(0%,calc(100%*var(--gO-gi,1)),100%), transparent))
+    drop-shadow(0 0 calc(10px*var(--gO-gr,1)*var(--ic-glow,1)) color-mix(in srgb, var(--ic-det,var(--warm-2)) clamp(0%,calc(100%*var(--gO-gi,1)),100%), transparent))}
 
 /* ── вращающийся неоновый логотип ── */
 .logo-stage{display:flex; justify-content:center; padding:20px 0}
 .logo-box{width:150px; height:186px; perspective:800px}
 .logo-spin{width:100%; height:100%; transform-style:preserve-3d; animation:octSpin 7s linear infinite}
 .logo-box svg{width:100%; height:100%; overflow:visible; shape-rendering:geometricPrecision}
+/* лого: локальные ползунки (--lg-*) поверх группы gL. Контур=--lg-main, заливка=--lg-fill,
+   толщина=--lg-sw, множитель свечения=--lg-glow */
 .logo-box path{
-  fill:none; stroke:#dffaff; stroke-width:3.4; stroke-linejoin:round; stroke-linecap:round;   /* яркое бело-голубое ЯДРО — как иконки */
-  filter:drop-shadow(0 0 1px var(--blue-2)) drop-shadow(0 0 4px var(--blue-2)) drop-shadow(0 0 12px var(--blue-3));   /* УЗКОЕ зарево (как иконки), без 22px */
+  fill:var(--lg-fill,none); stroke:var(--lg-main,var(--gL-core,#dffaff)); stroke-width:var(--lg-sw,3.4); stroke-linejoin:round; stroke-linecap:round;
+  filter:drop-shadow(0 0 calc(1px*var(--gL-cw,1)) var(--lg-main,var(--gL-core,var(--blue-2))))
+    drop-shadow(0 0 calc(4px*var(--gL-gr,1)*var(--lg-glow,1)) color-mix(in srgb, var(--lg-main,var(--blue-2)) clamp(0%,calc(100%*var(--gL-gi,1)),100%), transparent))
+    drop-shadow(0 0 calc(12px*var(--gL-gr,1)*var(--lg-glow,1)) color-mix(in srgb, var(--lg-main,var(--blue-3)) clamp(0%,calc(100%*var(--gL-gi,1)),100%), transparent));
 }
+
+/* ════════ ТИТУЛ-КОМПОЗИЦИЯ (формат неон-вывески) ════════ */
+.title-demo{
+  position:relative; margin:0 auto; max-width:1060px; padding:clamp(38px,5vw,68px) clamp(26px,4vw,64px);
+  border-radius:20px; overflow:hidden;
+  background:radial-gradient(120% 130% at 38% 28%, #16203a 0%, #0a0e1c 55%, #05060d 100%);
+  border:1px solid rgba(120,170,255,.10);
+}
+.title-stack{display:flex; flex-direction:column; gap:.14em; align-items:flex-start;
+  font-size:clamp(16px,2.7vw,34px)}                        /* единый размер (длинное слово влезает) */
+.ttl-line{display:flex; flex-direction:column; width:max-content; max-width:100%;
+  text-transform:uppercase; line-height:1.02; letter-spacing:.04em;
+  font-family:var(--neuro); font-weight:400}
+/* тёплый белый неон (как вывеска Good Life) */
+.ttl-line.warm{color:#fff4e6;
+  text-shadow:0 0 2px #fff,0 0 8px #ffe6c2,0 0 20px rgba(255,201,140,.7),0 0 40px rgba(255,176,105,.5)}
+/* синий неон — КВЕСТ */
+.ttl-line.blue{color:#d9fbff;
+  text-shadow:0 0 3px #eaffff,0 0 10px var(--blue-2),0 0 24px var(--blue-2),0 0 46px var(--blue-3)}
+.ttl-1{margin-left:0}
+.ttl-2{margin-left:2.4rem}                                /* тот же размер, что и МОСКОВСКИЙ */
+.ttl-3{margin-left:4.6rem; font-family:var(--lib); letter-spacing:.02em}   /* тот же размер; шрифт LIBRARY 3 AM */
+/* неон-линии (трубки) сверху и снизу */
+.ttl-bar{height:3px; border-radius:3px; width:100%}
+.ttl-bar.top{margin:0 0 .22em; background:#ffeccf;
+  box-shadow:0 0 4px #ffe3ba,0 0 12px rgba(255,201,140,.75),0 0 24px rgba(255,176,105,.5)}
+.ttl-bar.bot{margin:.24em 0 0; background:#d9fbff;
+  box-shadow:0 0 4px #eaffff,0 0 12px var(--blue-2),0 0 26px var(--blue-3)}
+/* лого «Б» в углу */
+.ttl-logo{position:absolute; top:clamp(16px,3vw,30px); right:clamp(18px,3.5vw,40px);
+  width:clamp(44px,7vw,72px); height:auto}
+.ttl-logo svg{width:100%; height:auto; overflow:visible; shape-rendering:geometricPrecision}
+.ttl-logo path{fill:none; stroke:#dffaff; stroke-width:4; stroke-linejoin:round; stroke-linecap:round;
+  filter:drop-shadow(0 0 1px var(--blue-2)) drop-shadow(0 0 4px var(--blue-2)) drop-shadow(0 0 12px var(--blue-3))}
+
+/* импортированный титул (готовый SVG) + неон по цвету заливки */
+.imp-title{margin-top:1.6em}
+.imp-cap{font-family:var(--text); color:var(--dim); font-size:13px; margin-bottom:1em}
+.imp-stage{background:transparent; border:0; padding:clamp(18px,4vw,44px) 0}   /* без подложки — титул прямо на фоне презентации */
+.imp-stage svg{width:100%; height:auto; overflow:visible; display:block}
+.imp-stage path[fill="#FFF4E6"], .imp-stage path[fill="#FFECCF"]{
+  filter:drop-shadow(0 0 2px #ffe6c2) drop-shadow(0 0 6px #ffc98c) drop-shadow(0 0 14px rgba(255,176,105,.55))}
+.imp-stage path[fill="#D9FBFF"]{
+  filter:drop-shadow(0 0 2px #eaffff) drop-shadow(0 0 8px var(--blue-2)) drop-shadow(0 0 18px var(--blue-3))}
+.imp-stage .imp-logo{opacity:.5}                          /* фон-водяной знак «за словами» */
+.imp-stage .imp-logo path{fill:none; stroke:#dffaff; stroke-width:2.4; stroke-linejoin:round; stroke-linecap:round;
+  filter:drop-shadow(0 0 2px var(--blue-2)) drop-shadow(0 0 6px var(--blue-2)) drop-shadow(0 0 16px var(--blue-3))}
 
 footer{margin-top:min(12vh,110px); text-align:center; color:var(--dim); font-size:13px; padding-top:4vh; border-top:1px solid var(--line)}
 footer b{color:var(--warm-1); font-weight:400}
@@ -328,9 +698,64 @@ footer b{color:var(--warm-1); font-weight:400}
 
 .audio-hint{display:inline-flex; align-items:center; gap:.5em; color:var(--dim); font-size:12.5px; margin-top:1em}
 .audio-hint .led{width:9px;height:9px;border-radius:50%;background:var(--warm-2);box-shadow:0 0 8px var(--warm-2)}
+
+/* ═══════════ ВКЛАДКИ + ЛАБОРАТОРИЯ НЕОНА ═══════════ */
+.lab-tabs{display:flex;gap:10px;justify-content:center;margin:0 0 2.6em;flex-wrap:wrap}
+.lab-tab{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.03em;
+  color:var(--blue-1);background:rgba(39,227,255,.06);border:1px solid var(--blue-3);
+  border-radius:10px;padding:.7em 1.5em;cursor:pointer;transition:background .2s,color .2s,box-shadow .2s}
+.lab-tab.on{color:#04121a;background:linear-gradient(180deg,var(--blue-1),var(--blue-2));
+  border-color:transparent;box-shadow:0 0 14px rgba(39,227,255,.5)}
+/* ФЛАГ основного цвета: тёплый белый неон (как вывеска «место вкусных разговоров») вместо золотого */
+.wrap.warm-soft{--warm-core:#fff7ec; --warm-1:#ffe9cc; --warm-2:#ffd9a6; --warm-3:#ffc47e}
+.warm-flag{font-family:var(--disp);font-weight:600;font-size:13px;letter-spacing:.03em;
+  color:var(--warm-1);background:rgba(255,183,101,.08);border:1px solid var(--warm-3);
+  border-radius:10px;padding:.6em 1.2em;cursor:pointer;transition:all .2s}
+.warm-flag.on{color:#241708;background:linear-gradient(180deg,#fff7ec,#ffd9a6);border-color:transparent;box-shadow:0 0 14px rgba(255,217,166,.6)}
+#lab{display:none}
+.wrap.lab #lab{display:block}
+.wrap.lab > section:not(#lab), .wrap.lab > footer, .wrap.lab > header{display:none}
+.lab-grid{display:grid;grid-template-columns:290px 1fr;gap:24px;align-items:start;margin-bottom:1.6em}
+@media(max-width:820px){.lab-grid{grid-template-columns:1fr}}
+.lab-controls label{display:block;margin:0 0 1.15em}
+.lab-cap{display:flex;justify-content:space-between;font-size:12.5px;color:#bcd0dd;margin-bottom:.4em;letter-spacing:.02em}
+.lab-cap b{color:var(--blue-1);font-weight:600}
+.lab-controls input[type=range]{width:100%;accent-color:var(--blue-2);cursor:pointer}
+.lab-controls input[type=color]{width:100%;height:36px;padding:0;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer}
+.lab-controls input[type=text]{width:100%;padding:.55em .7em;border-radius:8px;background:#0d1420;color:#dfeaf2;border:1px solid var(--line);font-family:var(--text)}
+.lab-controls select{width:100%;padding:.55em;border-radius:8px;background:#0d1420;color:#dfeaf2;border:1px solid var(--line);font-family:var(--text);cursor:pointer}
+/* превью-сцена — яркость фона регулируется */
+#labStage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5em;
+  min-height:360px;border-radius:16px;padding:24px;overflow:hidden;
+  background:hsl(210 28% var(--lab-bgl,7%));transition:background .2s}
+.lab-title{font-family:var(--lab-ff,var(--disp));font-weight:700;font-size:clamp(40px,8vw,84px);
+  text-transform:uppercase;line-height:1;letter-spacing:.02em;text-align:center;
+  color:var(--lab-core,#dffaff);-webkit-text-stroke:calc(var(--lab-stroke,.6)*1px) var(--lab-glow,#27e3ff);
+  text-shadow:0 0 2px #fff,
+    0 0 calc(var(--lab-blur,18)*.5px) var(--lab-glow,#27e3ff),
+    0 0 calc(var(--lab-blur,18)*1px) var(--lab-glow,#27e3ff),
+    0 0 calc(var(--lab-blur,18)*2px) var(--lab-glow,#27e3ff);
+  filter:brightness(var(--lab-bright,1.1))}
+.lab-sub{font-family:var(--lab-ff,var(--disp));font-weight:600;font-size:clamp(16px,3vw,26px);
+  text-transform:uppercase;letter-spacing:.03em;color:var(--lab-core,#dffaff);
+  text-shadow:0 0 calc(var(--lab-blur,18)*.5px) var(--lab-glow,#27e3ff),0 0 calc(var(--lab-blur,18)*1px) var(--lab-glow,#27e3ff);
+  filter:brightness(var(--lab-bright,1.1))}
+/* КНОПКИ — реагируют на цвет/яркость (color-mix для полупрозрачных заливок/сияния) */
+.lab-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:1.2em}
+.labbtn{font-family:var(--lab-ff,var(--disp));font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.05em;
+  padding:.7em 1.5em;border-radius:10px;cursor:pointer;color:var(--lab-core,#dffaff);
+  background:transparent;border:1.5px solid var(--lab-glow,#27e3ff);
+  filter:brightness(var(--lab-bright,1.1));transition:box-shadow .2s,background .2s,transform .12s}
+.labbtn:hover{box-shadow:0 0 22px color-mix(in srgb,var(--lab-glow,#27e3ff) 70%,transparent),inset 0 0 14px color-mix(in srgb,var(--lab-glow,#27e3ff) 30%,transparent)}
+.labbtn:active{transform:translateY(1px)}
+.labbtn.v-fill{color:#04121a;background:linear-gradient(180deg,var(--lab-core,#dffaff),var(--lab-glow,#27e3ff));border-color:transparent;box-shadow:0 0 18px color-mix(in srgb,var(--lab-glow,#27e3ff) 60%,transparent)}
+.labbtn.v-glass{background:color-mix(in srgb,var(--lab-glow,#27e3ff) 12%,transparent);box-shadow:inset 0 0 16px color-mix(in srgb,var(--lab-glow,#27e3ff) 30%,transparent)}
+.labbtn.v-pill{border-radius:999px}
+.labbtn.v-ghost{border-color:transparent;text-shadow:0 0 8px var(--lab-glow,#27e3ff),0 0 20px var(--lab-glow,#27e3ff)}
+.labbtn.v-double{box-shadow:0 0 0 3px color-mix(in srgb,var(--lab-glow,#27e3ff) 18%,transparent),0 0 18px color-mix(in srgb,var(--lab-glow,#27e3ff) 55%,transparent)}
 </style>
 </head>
-<body>
+<body class="presbg">
 
 <div class="wrap">
 
@@ -343,6 +768,109 @@ footer b{color:var(--warm-1); font-weight:400}
     <button class="master-btn" id="playAll">▶ Показать эффекты со звуком</button>
     <div class="audio-hint"><span class="led"></span> звук лампы включается по кнопке (политика браузера)</div>
   </header>
+
+  <!-- ============ ВКЛАДКИ ============ -->
+  <div class="lab-tabs">
+    <button class="lab-tab on" data-tab="main">Дизайн-система</button>
+    <button class="lab-tab" data-tab="lab">🧪 Эксперименты</button>
+    <button class="warm-flag" id="warmFlag">Осн. цвет: Золотой</button>
+  </div>
+
+  <!-- ============ ПАНЕЛЬ ПАРАМЕТРОВ (живая правка цветов/яркости) ============ -->
+  <div class="tune-bar" id="tuneBar">
+    <div class="tune-head">
+      <span class="tune-title">🎨 Параметры</span>
+      <button class="tune-toggle" id="tToggle" title="Свернуть/раскрыть">▾</button>
+    </div>
+    <div class="tune-body" id="tuneBody">
+      <div class="tune-sec">
+        <div class="tune-lbl">Цвета</div>
+        <div class="tune-colors">
+          <label class="tune-c"><input type="color" id="tWarm" value="#ffb765"><span>Тёплый</span></label>
+          <label class="tune-c"><input type="color" id="tBlue" value="#27e3ff"><span>Синий</span></label>
+          <label class="tune-c"><input type="color" id="tRed" value="#ff2b4e"><span>Красный</span></label>
+          <label class="tune-c"><input type="color" id="tOrn" value="#ff8a1f"><span>Оранжевый</span></label>
+        </div>
+        <label class="tune-r"><span>Яркость</span><input type="range" id="tBright" min="0.6" max="1.6" step="0.02" value="1"></label>
+      </div>
+      <div class="tune-sec">
+        <div class="tune-lbl">✨ Свечение</div>
+        <label class="tune-r"><span>Элемент</span>
+          <select id="tEl">
+            <option value="gT">Текст + заголовки</option>
+            <option value="gI">Титул</option>
+            <option value="gU">Неон-шрифты</option>
+            <option value="gB">Кнопки</option>
+            <option value="gO">Иконки</option>
+            <option value="gL">Лого</option>
+          </select></label>
+        <label class="tune-r"><span>Цвет ядра</span><input type="color" id="tCore" value="#ffffff"></label>
+        <label class="tune-r"><span>Толщина ядра</span><input type="range" id="tCw" min="0.2" max="3" step="0.1" value="1"></label>
+        <label class="tune-r"><span>Радиус зарева</span><input type="range" id="tGr" min="0.3" max="3" step="0.1" value="1"></label>
+        <label class="tune-r"><span>Интенсивность</span><input type="range" id="tGi" min="0" max="2" step="0.05" value="1"></label>
+      </div>
+      <div class="tune-actions">
+        <button class="tune-reset" id="tPresBg">Фон презы: вкл</button>
+        <button class="tune-reset" id="tReset">Сброс</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ТИТУЛ (неон-вывеска) ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="sec-num">★</span><h2 class="glow-head n-warm">Титул</h2>
+      <span class="hint">Импортированный титул (Group 2087327338.svg): КВЕСТ — синий неон, остальные — тёплый белый, лого «Б» позади. Без подложки — прямо на фоне презентации.</span>
+    </div>
+    <div class="imp-stage">
+        <svg viewBox="0 0 1366 291" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Московский предпринимательский квест">
+          <g class="imp-logo" transform="translate(557,-12) scale(2.28)"><path d="M44.4008 27.5459V46.8304L76.259 46.8826L22.2033 100.546L36.0793 114.321L91.574 59.2301V88.1515H111V110.188C111 127.82 101.013 137.734 83.2524 137.734H0V0H110.995V27.5459H44.4008Z"/></g>
+          <path d="M913 287H4C1.79086 287 0 287.895 0 289C0 290.105 1.79086 291 4 291H913C915.209 291 917 290.105 917 289C917 287.895 915.209 287 913 287Z" fill="#FFECCF"/>
+          <path d="M1361.3 0H922.696C920.655 0 919 0.89543 919 2C919 3.10457 920.655 4 922.696 4H1361.3C1363.35 4 1365 3.10457 1365 2C1365 0.89543 1363.35 0 1361.3 0Z" fill="#D9FBFF"/>
+          <path d="M70.6889 127.335C70.6889 129.351 71.9849 130.359 74.5769 130.359C77.0969 130.359 78.4649 129.351 78.4649 127.335V83.1274C78.4649 80.9674 77.0969 79.8154 74.5049 79.8154C72.3449 79.8154 71.1929 80.6794 70.1129 82.0474L39.2249 121.935L8.48091 81.9754C7.40091 80.6074 6.17691 79.8154 4.01691 79.8154C1.49691 79.8154 0.128906 80.9674 0.128906 83.1274V127.335C0.128906 129.351 1.42491 130.359 3.94491 130.359C6.53691 130.359 7.90491 129.351 7.90491 127.335V93.0634L35.1929 128.415C35.9849 129.423 37.2089 130.359 39.2249 130.359C41.2409 130.359 42.4649 129.423 43.2569 128.415L70.6889 92.9914V127.335ZM142.185 115.959C142.185 121.359 137.793 124.095 128.937 124.095H113.457C104.601 124.095 100.209 121.359 100.209 115.959V94.0714C100.209 88.7434 104.601 86.0794 113.313 86.0794H129.081C137.793 86.0794 142.185 88.7434 142.185 94.0714V115.959ZM128.865 129.999C142.905 129.999 149.961 125.391 149.961 116.175V93.9274C149.961 84.7834 143.049 80.1754 129.225 80.1754H113.169C99.3449 80.1754 92.4329 84.7834 92.4329 93.9274V116.175C92.4329 125.391 99.4889 129.999 113.529 129.999H128.865ZM212.025 129.999C214.329 129.999 215.625 128.991 215.625 127.047C215.625 125.103 214.329 124.095 212.025 124.095H185.169C175.953 124.095 171.489 121.359 171.489 115.959V93.9274C171.489 88.6714 175.881 86.0794 184.593 86.0794H212.025C214.329 86.0794 215.625 85.0714 215.625 83.1274C215.625 81.1834 214.329 80.1754 212.025 80.1754H184.449C170.625 80.1754 163.713 84.7114 163.713 93.7834V116.175C163.713 125.391 170.769 129.999 184.809 129.999H212.025ZM273.585 129.423C274.953 130.287 275.889 130.359 276.609 130.359C279.201 130.359 280.641 129.207 280.641 127.335C280.641 126.039 280.137 125.247 278.337 124.311L240.681 104.655L277.617 85.5754C279.129 84.7834 279.561 83.7034 279.561 82.7674C279.561 80.8954 278.193 79.8154 275.889 79.8154C274.881 79.8154 273.945 80.1034 272.865 80.6794L236.001 100.479V82.7674C236.001 80.8234 234.633 79.8154 232.113 79.8154C229.593 79.8154 228.225 80.8234 228.225 82.7674V127.335C228.225 129.351 229.593 130.359 232.113 130.359C234.633 130.359 236.001 129.351 236.001 127.335V109.191L273.585 129.423ZM342.633 115.959C342.633 121.359 338.241 124.095 329.385 124.095H313.905C305.049 124.095 300.657 121.359 300.657 115.959V94.0714C300.657 88.7434 305.049 86.0794 313.761 86.0794H329.529C338.241 86.0794 342.633 88.7434 342.633 94.0714V115.959ZM329.313 129.999C343.353 129.999 350.409 125.391 350.409 116.175V93.9274C350.409 84.7834 343.497 80.1754 329.673 80.1754H313.617C299.793 80.1754 292.881 84.7834 292.881 93.9274V116.175C292.881 125.391 299.937 129.999 313.977 129.999H329.313ZM423.345 114.015C423.345 109.839 421.041 106.743 416.577 104.727C420.537 102.783 422.553 99.9754 422.553 96.1594V92.0554C422.553 84.1354 416.217 80.1754 403.689 80.1754H367.833C365.601 80.1754 364.377 81.1114 364.377 82.9834V127.191C364.377 129.063 365.601 129.999 367.833 129.999H404.841C417.153 129.999 423.345 126.399 423.345 119.055V114.015ZM415.569 118.407C415.569 122.223 411.897 124.095 404.553 124.095H372.729C372.369 124.095 372.153 123.951 372.153 123.591V107.679H404.553C411.897 107.679 415.569 109.695 415.569 113.727V118.407ZM414.849 96.3034C414.849 100.191 411.321 102.135 404.337 102.135H372.153V86.5834C372.153 86.2234 372.369 86.0794 372.729 86.0794H403.761C411.177 86.0794 414.849 88.1674 414.849 92.2714V96.3034ZM484.545 129.999C486.849 129.999 488.145 128.991 488.145 127.047C488.145 125.103 486.849 124.095 484.545 124.095H457.689C448.473 124.095 444.009 121.359 444.009 115.959V93.9274C444.009 88.6714 448.401 86.0794 457.113 86.0794H484.545C486.849 86.0794 488.145 85.0714 488.145 83.1274C488.145 81.1834 486.849 80.1754 484.545 80.1754H456.969C443.145 80.1754 436.233 84.7114 436.233 93.7834V116.175C436.233 125.391 443.289 129.999 457.329 129.999H484.545ZM546.105 129.423C547.473 130.287 548.409 130.359 549.129 130.359C551.721 130.359 553.161 129.207 553.161 127.335C553.161 126.039 552.657 125.247 550.857 124.311L513.201 104.655L550.137 85.5754C551.649 84.7834 552.081 83.7034 552.081 82.7674C552.081 80.8954 550.713 79.8154 548.409 79.8154C547.401 79.8154 546.465 80.1034 545.385 80.6794L508.521 100.479V82.7674C508.521 80.8234 507.153 79.8154 504.633 79.8154C502.113 79.8154 500.745 80.8234 500.745 82.7674V127.335C500.745 129.351 502.113 130.359 504.633 130.359C507.153 130.359 508.521 129.351 508.521 127.335V109.191L546.105 129.423ZM617.169 127.335C617.169 129.351 618.465 130.359 620.985 130.359C623.649 130.359 624.945 129.351 624.945 127.335V82.9114C624.945 80.8234 623.577 79.8154 620.913 79.8154C619.329 79.8154 618.249 80.3914 617.097 81.3994L573.393 119.703V82.7674C573.393 80.8234 572.025 79.8154 569.433 79.8154C566.913 79.8154 565.617 80.8234 565.617 82.7674V127.335C565.617 129.351 566.985 130.359 569.721 130.359C571.305 130.359 572.241 129.783 573.465 128.703L617.169 90.3274V127.335ZM685.785 64.9114C685.785 62.7514 684.993 61.8874 682.617 61.8874C680.313 61.8874 679.593 62.7514 679.089 64.0474C678.297 68.0074 677.145 72.9034 668.865 72.9034C660.585 72.9034 659.433 68.0074 658.641 64.0474C658.209 62.7514 657.489 61.8874 655.185 61.8874C652.737 61.8874 652.017 62.7514 652.017 64.9114C652.017 71.8234 657.921 77.8714 668.865 77.8714C679.881 77.8714 685.785 71.8234 685.785 64.9114ZM690.753 127.335C690.753 129.351 692.049 130.359 694.569 130.359C697.233 130.359 698.529 129.351 698.529 127.335V82.9114C698.529 80.8234 697.161 79.8154 694.497 79.8154C692.913 79.8154 691.833 80.3914 690.681 81.3994L646.977 119.703V82.7674C646.977 80.8234 645.609 79.8154 643.017 79.8154C640.497 79.8154 639.201 80.8234 639.201 82.7674V127.335C639.201 129.351 640.569 130.359 643.305 130.359C644.889 130.359 645.825 129.783 647.049 128.703L690.753 90.3274V127.335Z" fill="#FFF4E6"/>
+          <path d="M51.624 243.448C51.624 245.464 52.92 246.472 55.512 246.472C58.032 246.472 59.4 245.464 59.4 243.448V210.4C59.4 200.968 52.344 196.288 38.232 196.288H21.096C7.056 196.288 0 200.968 0 210.4V243.448C0 245.464 1.296 246.472 3.816 246.472C6.408 246.472 7.776 245.464 7.776 243.448V210.616C7.776 205 12.24 202.192 21.456 202.192H37.872C47.088 202.192 51.624 205 51.624 210.616V243.448ZM133.128 210.184C133.128 200.896 125.64 196.288 110.736 196.288H76.896C74.736 196.288 73.584 197.152 73.584 198.808V243.448C73.584 245.464 74.88 246.472 77.4 246.472C79.992 246.472 81.36 245.464 81.36 243.448V230.056H110.736C125.64 230.056 133.128 225.448 133.128 216.16V210.184ZM81.36 202.696C81.36 202.336 81.576 202.192 81.936 202.192H111.024C120.6 202.192 125.352 204.928 125.352 210.4V215.944C125.352 221.416 120.6 224.152 110.952 224.152H81.36V202.696ZM195.768 223.792C198.144 223.792 199.296 222.856 199.296 220.984C199.296 219.112 198.144 218.176 195.768 218.176H153.144V202.624C153.144 202.336 153.36 202.192 153.72 202.192H176.184C178.488 202.192 179.784 201.184 179.784 199.24C179.784 197.296 178.488 196.288 176.184 196.288H148.68C146.52 196.288 145.368 197.152 145.368 198.808V243.592C145.368 245.248 146.52 246.112 148.896 246.112H195.84C198.288 246.112 199.512 245.104 199.512 243.16C199.512 241.216 198.288 240.208 195.84 240.208H153.72C153.36 240.208 153.144 240.064 153.144 239.704V223.792H195.768ZM208.8 255.688C208.8 257.56 210.024 258.496 212.472 258.496C214.776 258.496 216 257.56 216 255.688V246.112H276.408V255.688C276.408 257.56 277.632 258.496 280.08 258.496C282.384 258.496 283.608 257.56 283.608 255.688V243.016C283.608 241.144 282.384 240.208 280.008 240.208H273.24V199.24C273.24 197.296 271.872 196.288 269.28 196.288H247.392C237.888 196.288 233.496 200.176 230.976 208.456C229.104 214.648 227.376 226.456 225.864 232.072C223.992 238.768 222.12 240.208 214.056 240.208H212.4C210.024 240.208 208.8 241.216 208.8 243.16V255.688ZM232.992 233.224C234.576 227.104 236.376 215.368 237.888 210.112C239.76 203.488 243.072 202.192 247.68 202.192H264.888C265.248 202.192 265.464 202.336 265.464 202.696V240.208H230.184C231.408 238.336 232.272 236.032 232.992 233.224ZM346.032 243.448C346.032 245.464 347.328 246.472 349.92 246.472C352.44 246.472 353.808 245.464 353.808 243.448V210.4C353.808 200.968 346.752 196.288 332.64 196.288H315.504C301.464 196.288 294.408 200.968 294.408 210.4V243.448C294.408 245.464 295.704 246.472 298.224 246.472C300.816 246.472 302.184 245.464 302.184 243.448V210.616C302.184 205 306.648 202.192 315.864 202.192H332.28C341.496 202.192 346.032 205 346.032 210.616V243.448ZM427.536 210.184C427.536 200.896 420.048 196.288 405.144 196.288H371.304C369.144 196.288 367.992 197.152 367.992 198.808V243.448C367.992 245.464 369.288 246.472 371.808 246.472C374.4 246.472 375.768 245.464 375.768 243.448V230.056H405.144C420.048 230.056 427.536 225.448 427.536 216.16V210.184ZM375.768 202.696C375.768 202.336 375.984 202.192 376.344 202.192H405.432C415.008 202.192 419.76 204.928 419.76 210.4V215.944C419.76 221.416 415.008 224.152 405.36 224.152H375.768V202.696ZM491.328 243.448C491.328 245.464 492.624 246.472 495.144 246.472C497.808 246.472 499.104 245.464 499.104 243.448V199.024C499.104 196.936 497.736 195.928 495.072 195.928C493.488 195.928 492.408 196.504 491.256 197.512L447.552 235.816V198.88C447.552 196.936 446.184 195.928 443.592 195.928C441.072 195.928 439.776 196.936 439.776 198.88V243.448C439.776 245.464 441.144 246.472 443.88 246.472C445.464 246.472 446.4 245.896 447.624 244.816L491.328 206.44V243.448ZM564.912 243.448C564.912 245.464 566.208 246.472 568.728 246.472C571.32 246.472 572.688 245.464 572.688 243.448V198.88C572.688 196.936 571.32 195.928 568.728 195.928C566.208 195.928 564.912 196.936 564.912 198.88V218.536H521.136V198.952C521.136 196.936 519.912 195.928 517.392 195.928C514.728 195.928 513.36 196.936 513.36 198.952V243.448C513.36 245.464 514.656 246.472 517.176 246.472C519.84 246.472 521.136 245.464 521.136 243.448V224.44H564.912V243.448ZM638.496 243.448C638.496 245.464 639.792 246.472 642.312 246.472C644.976 246.472 646.272 245.464 646.272 243.448V199.024C646.272 196.936 644.904 195.928 642.24 195.928C640.656 195.928 639.576 196.504 638.424 197.512L594.72 235.816V198.88C594.72 196.936 593.352 195.928 590.76 195.928C588.24 195.928 586.944 196.936 586.944 198.88V243.448C586.944 245.464 588.312 246.472 591.048 246.472C592.632 246.472 593.568 245.896 594.792 244.816L638.496 206.44V243.448ZM731.088 243.448C731.088 245.464 732.384 246.472 734.976 246.472C737.496 246.472 738.864 245.464 738.864 243.448V199.24C738.864 197.08 737.496 195.928 734.904 195.928C732.744 195.928 731.592 196.792 730.512 198.16L699.624 238.048L668.88 198.088C667.8 196.72 666.576 195.928 664.416 195.928C661.896 195.928 660.528 197.08 660.528 199.24V243.448C660.528 245.464 661.824 246.472 664.344 246.472C666.936 246.472 668.304 245.464 668.304 243.448V209.176L695.592 244.528C696.384 245.536 697.608 246.472 699.624 246.472C701.64 246.472 702.864 245.536 703.656 244.528L731.088 209.104V243.448ZM808.92 244.384C809.856 245.824 811.152 246.472 812.592 246.472C814.968 246.472 816.552 245.392 816.552 243.52C816.552 242.8 816.336 242.152 815.616 241.216L787.032 197.872C786.168 196.576 784.8 195.928 783.216 195.928C781.632 196 780.12 196.576 779.256 197.872L750.744 241.288C750.096 242.224 749.952 242.8 749.952 243.52C749.952 245.392 751.536 246.472 753.912 246.472C755.424 246.472 756.72 245.824 757.656 244.384L765.072 232.792H801.432L808.92 244.384ZM783.216 204.496L797.904 227.248H768.672L783.216 204.496ZM847.44 243.448C847.44 245.464 848.736 246.472 851.4 246.472C853.92 246.472 855.216 245.464 855.216 243.448V202.192H874.8C877.248 202.192 878.472 201.184 878.472 199.168C878.472 197.296 877.248 196.288 874.8 196.288H827.784C825.408 196.288 824.184 197.296 824.184 199.24C824.184 201.256 825.408 202.192 827.784 202.192H847.44V243.448ZM939.672 223.792C942.048 223.792 943.2 222.856 943.2 220.984C943.2 219.112 942.048 218.176 939.672 218.176H897.048V202.624C897.048 202.336 897.264 202.192 897.624 202.192H920.088C922.392 202.192 923.688 201.184 923.688 199.24C923.688 197.296 922.392 196.288 920.088 196.288H892.584C890.424 196.288 889.272 197.152 889.272 198.808V243.592C889.272 245.248 890.424 246.112 892.8 246.112H939.744C942.192 246.112 943.416 245.104 943.416 243.16C943.416 241.216 942.192 240.208 939.744 240.208H897.624C897.264 240.208 897.048 240.064 897.048 239.704V223.792H939.672ZM1009.37 243.448C1009.37 245.464 1010.66 246.472 1013.26 246.472C1015.78 246.472 1017.14 245.464 1017.14 243.448V199.24C1017.14 197.296 1015.78 196.288 1013.18 196.288H991.296C981.864 196.288 977.4 200.176 974.88 208.456C973.008 214.648 971.352 226.456 969.768 232.072C967.896 238.768 966.024 240.208 957.96 240.208H956.304C953.928 240.208 952.704 241.216 952.704 243.16C952.704 245.104 953.928 246.112 956.304 246.112H958.176C970.992 246.112 974.664 242.08 976.896 233.224C978.48 227.104 980.28 215.368 981.792 210.112C983.664 203.488 986.976 202.192 991.584 202.192H1008.79C1009.15 202.192 1009.37 202.336 1009.37 202.696V243.448ZM1090.94 228.688C1090.94 219.4 1083.46 214.792 1068.55 214.792H1039.18V198.952C1039.18 196.936 1037.81 195.928 1035.22 195.928C1032.7 195.928 1031.4 196.936 1031.4 198.952V243.592C1031.4 245.248 1032.55 246.112 1034.71 246.112H1068.55C1083.46 246.112 1090.94 241.504 1090.94 232.216V228.688ZM1068.7 220.696C1078.27 220.696 1083.17 223.432 1083.17 228.904V232C1083.17 237.472 1078.42 240.208 1068.84 240.208H1039.75C1039.39 240.208 1039.18 240.064 1039.18 239.704V220.696H1068.7ZM1151.28 246.112C1153.58 246.112 1154.88 245.104 1154.88 243.16C1154.88 241.216 1153.58 240.208 1151.28 240.208H1124.42C1115.21 240.208 1110.74 237.472 1110.74 232.072V210.04C1110.74 204.784 1115.14 202.192 1123.85 202.192H1151.28C1153.58 202.192 1154.88 201.184 1154.88 199.24C1154.88 197.296 1153.58 196.288 1151.28 196.288H1123.7C1109.88 196.288 1102.97 200.824 1102.97 209.896V232.288C1102.97 241.504 1110.02 246.112 1124.06 246.112H1151.28ZM1212.84 245.536C1214.21 246.4 1215.14 246.472 1215.86 246.472C1218.46 246.472 1219.9 245.32 1219.9 243.448C1219.9 242.152 1219.39 241.36 1217.59 240.424L1179.94 220.768L1216.87 201.688C1218.38 200.896 1218.82 199.816 1218.82 198.88C1218.82 197.008 1217.45 195.928 1215.14 195.928C1214.14 195.928 1213.2 196.216 1212.12 196.792L1175.26 216.592V198.88C1175.26 196.936 1173.89 195.928 1171.37 195.928C1168.85 195.928 1167.48 196.936 1167.48 198.88V243.448C1167.48 245.464 1168.85 246.472 1171.37 246.472C1173.89 246.472 1175.26 245.464 1175.26 243.448V225.304L1212.84 245.536ZM1283.9 243.448C1283.9 245.464 1285.2 246.472 1287.72 246.472C1290.38 246.472 1291.68 245.464 1291.68 243.448V199.024C1291.68 196.936 1290.31 195.928 1287.65 195.928C1286.06 195.928 1284.98 196.504 1283.83 197.512L1240.13 235.816V198.88C1240.13 196.936 1238.76 195.928 1236.17 195.928C1233.65 195.928 1232.35 196.936 1232.35 198.88V243.448C1232.35 245.464 1233.72 246.472 1236.46 246.472C1238.04 246.472 1238.98 245.896 1240.2 244.816L1283.9 206.44V243.448ZM1352.52 181.024C1352.52 178.864 1351.73 178 1349.35 178C1347.05 178 1346.33 178.864 1345.82 180.16C1345.03 184.12 1343.88 189.016 1335.6 189.016C1327.32 189.016 1326.17 184.12 1325.38 180.16C1324.94 178.864 1324.22 178 1321.92 178C1319.47 178 1318.75 178.864 1318.75 181.024C1318.75 187.936 1324.66 193.984 1335.6 193.984C1346.62 193.984 1352.52 187.936 1352.52 181.024ZM1357.49 243.448C1357.49 245.464 1358.78 246.472 1361.3 246.472C1363.97 246.472 1365.26 245.464 1365.26 243.448V199.024C1365.26 196.936 1363.9 195.928 1361.23 195.928C1359.65 195.928 1358.57 196.504 1357.42 197.512L1313.71 235.816V198.88C1313.71 196.936 1312.34 195.928 1309.75 195.928C1307.23 195.928 1305.94 196.936 1305.94 198.88V243.448C1305.94 245.464 1307.3 246.472 1310.04 246.472C1311.62 246.472 1312.56 245.896 1313.78 244.816L1357.49 206.44V243.448Z" fill="#FFF4E6"/>
+          <path d="M955.87 74.382L998.782 24.5272H972.604L933.581 70.0076V122.709H924.833V30.3598H933.581V57.5786L939.414 50.7739V24.5272H919V128.542H939.414V72.1601L975.243 30.3598H986.075L948.163 74.382L989.755 122.709H978.645L948.163 87.0193V96.0459L976.007 128.542H1002.46L955.87 74.382ZM1082.73 71.6046C1087.17 66.1192 1089.19 58.8978 1089.19 51.746C1089.19 37.8588 1077.11 24.5272 1056.97 24.5272H1019.68V69.9381H1056.34C1067.94 69.9381 1074.88 63.8972 1074.88 52.9958C1074.88 46.0522 1069.88 38.2754 1055.86 38.2754H1034.26V56.1899H1040.1V44.108H1055.86C1063.63 44.108 1069.05 47.0938 1069.05 52.9958C1069.05 60.2171 1065.02 64.1055 1056.9 64.1055H1025.51V30.3598H1056.97C1073.63 30.3598 1083.35 40.8446 1083.35 51.746C1083.35 63.55 1077.66 69.2438 1073.15 72.785C1082.59 76.8123 1088.91 84.4502 1088.91 97.4347C1088.91 110.905 1078.91 122.709 1060.44 122.709H1025.51V83.617H1059.05C1069.54 83.617 1074.33 89.7967 1074.33 96.6014C1074.33 103.198 1070.44 108.961 1060.72 108.961H1040.1V91.5326H1034.26V114.794H1060.72C1074.05 114.794 1080.16 106.045 1080.16 96.6014C1080.16 85.9083 1072.04 77.7844 1059.05 77.7844H1019.68V128.542H1060.44C1081.62 128.542 1094.74 114.655 1094.74 97.4347C1094.74 85.7695 1090.37 77.2289 1082.73 71.6046ZM1138.42 108.961V70.0076H1173.97V77.9232H1147.17V83.7558H1179.8V64.175H1132.58V114.794H1176.54V122.709H1123.84V30.3598H1175.56V38.2754H1132.58V56.2593H1138.42V44.108H1181.4V24.5272H1118V128.542H1182.37V108.961H1138.42ZM1271.11 101.809C1264.1 106.461 1256.6 110.419 1247.57 110.419C1232.02 110.419 1224.38 98.1984 1222.43 84.8668H1216.53C1218.75 101.462 1228.61 116.252 1247.57 116.252C1255.83 116.252 1262.85 113.474 1268.82 110.072L1272.71 117.502C1264.51 122.015 1256.18 124.167 1247.01 124.167C1220.42 124.167 1207.3 101.809 1207.3 77.4372V77.0206H1221.88V75.493C1221.88 59.245 1230.63 42.5805 1246.18 42.5805C1256.04 42.5805 1260.83 45.6356 1268.05 50.7739L1277.77 33.3455C1268.68 26.5408 1259.03 22.9996 1245.76 22.9996C1221.6 22.9996 1206.67 41.6778 1202.58 63.2723H1208.55C1212.37 44.733 1225 28.8322 1245.76 28.8322C1255.28 28.8322 1262.85 30.7764 1270.07 35.1508L1266.04 42.3721C1260.35 38.8309 1254.93 36.7479 1246.18 36.7479C1228.2 36.7479 1217.57 53.7596 1216.25 71.188H1201.6C1201.53 72.5767 1201.46 74.0348 1201.46 75.493V77.4372C1201.46 106.392 1218.13 130 1247.01 130C1260.69 130 1271.32 125.695 1280.41 119.654L1271.11 101.809ZM1332.49 24.5272V122.709H1323.74V24.5272H1290.76V44.108H1309.16V38.2754H1296.59V30.3598H1317.91V128.542H1338.32V30.3598H1359.57V38.2754H1347.07V44.108H1365.4V24.5272H1332.49Z" fill="#D9FBFF"/>
+        </svg>
+      </div>
+
+      <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
+        <span class="sec-num">★·</span><h2 class="glow-head n-warm" style="font-size:clamp(17px,2.4vw,24px)">Титул — вариант 2</h2>
+        <span class="hint">Лого «Б» + КВЕСТ + линии. Каждую часть настраиваешь отдельно ползунками ниже.</span>
+      </div>
+      <div class="tv2-stage" id="tv2Stage">
+        <svg class="tv2" viewBox="0 0 804 271" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Квест — вариант 2">
+<path d="M90.2877 76.3985V103.981L135.854 104.055L58.5389 180.809L78.3855 200.512L157.759 121.716V163.082H185.544V194.6C185.544 219.819 171.259 233.999 145.857 233.999H26.7819V37H185.536V76.3985H90.2877Z" stroke="#FF7A00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.5879 267.5H797.412C799.196 267.5 800.792 267.72 801.925 268.064C802.495 268.237 802.919 268.433 803.19 268.628C803.474 268.831 803.5 268.964 803.5 269C803.5 269.036 803.474 269.169 803.19 269.372C802.919 269.567 802.495 269.763 801.925 269.936C800.792 270.28 799.196 270.5 797.412 270.5H15.5879C13.8039 270.5 12.2084 270.28 11.0752 269.936C10.5055 269.763 10.0807 269.567 9.80957 269.372C9.5264 269.169 9.5 269.036 9.5 269C9.5 268.964 9.5264 268.831 9.80957 268.628C10.0807 268.433 10.5055 268.237 11.0752 268.064C12.2084 267.72 13.8039 267.5 15.5879 267.5Z" fill="#FF7A00" stroke="#FF7A00"/>
+<path d="M6.66309 0.5H797.337C799.142 0.5 800.757 0.720136 801.904 1.06445C802.481 1.23761 802.912 1.43372 803.188 1.62891C803.475 1.83321 803.5 1.96614 803.5 2C803.5 2.03386 803.475 2.16679 803.188 2.37109C802.912 2.56628 802.481 2.76239 801.904 2.93555C800.757 3.27986 799.142 3.5 797.337 3.5H6.66309C4.85812 3.5 3.24301 3.27986 2.0957 2.93555C1.51885 2.76239 1.08752 2.56628 0.8125 2.37109C0.524675 2.16679 0.5 2.03386 0.5 2C0.5 1.96614 0.524675 1.83321 0.8125 1.62891C1.08752 1.43372 1.51885 1.23761 2.0957 1.06445C3.24301 0.720136 4.85812 0.5 6.66309 0.5Z" fill="#FF7A00" stroke="#FF7A00"/>
+<mask id="path-4-inside-1_279_724" fill="white">
+<path d="M271.858 168.117L322.901 108.814H291.763L245.345 162.914V225.603H234.938V115.752H245.345V148.129L252.283 140.035V108.814H228V232.541H252.283V165.474L294.902 115.752H307.786L262.69 168.117L312.164 225.603H298.949L262.69 183.149V193.887L295.81 232.541H327.279L271.858 168.117ZM422.758 164.813C428.044 158.288 430.439 149.699 430.439 141.191C430.439 124.672 416.068 108.814 392.115 108.814H347.762V162.831H391.372C405.165 162.831 413.425 155.645 413.425 142.678C413.425 134.419 407.478 125.168 390.794 125.168H365.107V146.477H372.045V132.106H390.794C400.044 132.106 406.487 135.658 406.487 142.678C406.487 151.268 401.696 155.893 392.033 155.893H354.7V115.752H392.115C411.938 115.752 423.501 128.224 423.501 141.191C423.501 155.232 416.728 162.005 411.36 166.218C422.593 171.008 430.109 180.093 430.109 195.539C430.109 211.562 418.215 225.603 396.245 225.603H354.7V179.102H394.593C407.065 179.102 412.764 186.453 412.764 194.547C412.764 202.394 408.139 209.249 396.575 209.249H372.045V188.518H365.107V216.187H396.575C412.433 216.187 419.702 205.78 419.702 194.547C419.702 181.828 410.038 172.164 394.593 172.164H347.762V232.541H396.245C421.436 232.541 437.047 216.022 437.047 195.539C437.047 181.663 431.843 171.504 422.758 164.813ZM488.999 209.249V162.914H531.287V172.33H499.405V179.267H538.225V155.976H482.061V216.187H534.343V225.603H471.654V115.752H533.187V125.168H482.061V146.56H488.999V132.106H540.125V108.814H464.716V232.541H541.281V209.249H488.999ZM646.837 200.742C638.495 206.276 629.574 210.984 618.837 210.984C600.336 210.984 591.251 196.447 588.938 180.589H581.917C584.56 200.329 596.289 217.922 618.837 217.922C628.666 217.922 637.008 214.618 644.111 210.571L648.736 219.408C638.99 224.777 629.079 227.337 618.176 227.337C586.543 227.337 570.932 200.742 570.932 171.751V171.256H588.277V169.439C588.277 150.112 598.684 130.289 617.185 130.289C628.914 130.289 634.613 133.923 643.203 140.035L654.766 119.304C643.946 111.21 632.465 106.997 616.69 106.997C587.947 106.997 570.189 129.215 565.316 154.902H572.419C576.962 132.849 591.994 113.935 616.69 113.935C628.005 113.935 637.008 116.248 645.598 121.451L640.807 130.041C634.035 125.829 627.592 123.351 617.185 123.351C595.793 123.351 583.156 143.587 581.587 164.318H564.16C564.077 165.97 563.994 167.704 563.994 169.439V171.751C563.994 206.193 583.817 234.275 618.176 234.275C634.447 234.275 647.084 229.155 657.904 221.969L646.837 200.742ZM719.85 108.814V225.603H709.443V108.814H670.211V132.106H692.098V125.168H677.149V115.752H702.505V232.541H726.788V115.752H752.062V125.168H737.195V132.106H759V108.814H719.85Z"/>
+</mask>
+<path d="M271.858 168.117L322.901 108.814H291.763L245.345 162.914V225.603H234.938V115.752H245.345V148.129L252.283 140.035V108.814H228V232.541H252.283V165.474L294.902 115.752H307.786L262.69 168.117L312.164 225.603H298.949L262.69 183.149V193.887L295.81 232.541H327.279L271.858 168.117ZM422.758 164.813C428.044 158.288 430.439 149.699 430.439 141.191C430.439 124.672 416.068 108.814 392.115 108.814H347.762V162.831H391.372C405.165 162.831 413.425 155.645 413.425 142.678C413.425 134.419 407.478 125.168 390.794 125.168H365.107V146.477H372.045V132.106H390.794C400.044 132.106 406.487 135.658 406.487 142.678C406.487 151.268 401.696 155.893 392.033 155.893H354.7V115.752H392.115C411.938 115.752 423.501 128.224 423.501 141.191C423.501 155.232 416.728 162.005 411.36 166.218C422.593 171.008 430.109 180.093 430.109 195.539C430.109 211.562 418.215 225.603 396.245 225.603H354.7V179.102H394.593C407.065 179.102 412.764 186.453 412.764 194.547C412.764 202.394 408.139 209.249 396.575 209.249H372.045V188.518H365.107V216.187H396.575C412.433 216.187 419.702 205.78 419.702 194.547C419.702 181.828 410.038 172.164 394.593 172.164H347.762V232.541H396.245C421.436 232.541 437.047 216.022 437.047 195.539C437.047 181.663 431.843 171.504 422.758 164.813ZM488.999 209.249V162.914H531.287V172.33H499.405V179.267H538.225V155.976H482.061V216.187H534.343V225.603H471.654V115.752H533.187V125.168H482.061V146.56H488.999V132.106H540.125V108.814H464.716V232.541H541.281V209.249H488.999ZM646.837 200.742C638.495 206.276 629.574 210.984 618.837 210.984C600.336 210.984 591.251 196.447 588.938 180.589H581.917C584.56 200.329 596.289 217.922 618.837 217.922C628.666 217.922 637.008 214.618 644.111 210.571L648.736 219.408C638.99 224.777 629.079 227.337 618.176 227.337C586.543 227.337 570.932 200.742 570.932 171.751V171.256H588.277V169.439C588.277 150.112 598.684 130.289 617.185 130.289C628.914 130.289 634.613 133.923 643.203 140.035L654.766 119.304C643.946 111.21 632.465 106.997 616.69 106.997C587.947 106.997 570.189 129.215 565.316 154.902H572.419C576.962 132.849 591.994 113.935 616.69 113.935C628.005 113.935 637.008 116.248 645.598 121.451L640.807 130.041C634.035 125.829 627.592 123.351 617.185 123.351C595.793 123.351 583.156 143.587 581.587 164.318H564.16C564.077 165.97 563.994 167.704 563.994 169.439V171.751C563.994 206.193 583.817 234.275 618.176 234.275C634.447 234.275 647.084 229.155 657.904 221.969L646.837 200.742ZM719.85 108.814V225.603H709.443V108.814H670.211V132.106H692.098V125.168H677.149V115.752H702.505V232.541H726.788V115.752H752.062V125.168H737.195V132.106H759V108.814H719.85Z" fill="#FF7A00" stroke="#FF7A00" stroke-width="0.072"/>
+</svg>
+        <div class="sg-ctrls">
+          <span class="sg-grp">КВЕСТ</span>
+          <label>Цвет <input type="color" id="t2wordC" value="#d9fbff"></label>
+          <label>Свечение <input type="range" id="t2wordG" min="0" max="3" step="0.1" value="1"><span class="sg-val" id="t2wordGv">1.0</span></label>
+        </div>
+        <div class="sg-ctrls">
+          <span class="sg-grp">Лого</span>
+          <label>Цвет <input type="color" id="t2logoC" value="#dffaff"></label>
+          <label>Заливка <input type="checkbox" id="t2logoFillOn"></label>
+          <label><input type="color" id="t2logoFillC" value="#27e3ff"></label>
+          <label>Толщина <input type="range" id="t2logoSw" min="1" max="14" step="0.5" value="6"><span class="sg-val" id="t2logoSwv">6</span></label>
+          <label>Свечение <input type="range" id="t2logoG" min="0" max="3" step="0.1" value="1"><span class="sg-val" id="t2logoGv">1.0</span></label>
+          <label>Вращение <input type="checkbox" id="t2logoSpin"></label>
+        </div>
+        <div class="sg-ctrls">
+          <span class="sg-grp">Линии</span>
+          <label>Цвет <input type="color" id="t2lineC" value="#27e3ff"></label>
+          <label>Свечение <input type="range" id="t2lineG" min="0" max="3" step="0.1" value="1"><span class="sg-val" id="t2lineGv">1.0</span></label>
+          <span class="sg-grp" style="margin-left:16px">Общее</span>
+          <label>Ядро <input type="range" id="t2core" min="0" max="4" step="0.5" value="1"><span class="sg-val" id="t2corev">1</span></label>
+        </div>
+      </div>
+
+  </section>
 
   <!-- ============ 1. ПАЛИТРА ============ -->
   <section>
@@ -396,33 +924,120 @@ footer b{color:var(--warm-1); font-weight:400}
       </div>
     </div>
 
+    <!-- Сравнение шрифтов ПО РОЛЯМ: каждый шрифт на всех ролях сразу -->
+    <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
+      <span class="sec-num">02·</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Шрифты по ролям — сравнение</h2>
+      <span class="hint">Каждый шрифт сразу на всех ролях: титул · заголовок · осн. текст · описание · акцент. Свет и цвет одинаковые — меняется только гарнитура. Кандидаты для чтения: Neuropol X, Comfortaa, mr Neon Sans.</span>
+    </div>
+    <div id="fontMatrix" class="grid g2"></div>
+
     <!-- Сравнение неоновых шрифтов: титул + кнопка в каждом -->
     <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
-      <span class="sec-num">02·</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Неоновые шрифты — титул и кнопка</h2>
-      <span class="hint">Три шрифта с кириллицей, поверх — тот же CSS-неон. Выбираем один на титулы/кнопки.</span>
+      <span class="sec-num">02··</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Неоновые шрифты — титул и кнопка</h2>
+      <span class="hint">Семь шрифтов с кириллицей, эффект «неон-трубка» (ядро + грани). Выбираем один на титулы/кнопки.</span>
     </div>
     <div class="grid g3">
       <div class="card">
         <div class="font-name" style="margin:0 0 .7em">AA Neon</div>
-        <div class="f-aa glow-title n-warm cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
-        <div class="f-aa glow-text n-warm cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div class="f-aa glow-tube n-warm cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-aa glow-tube n-warm cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
         <div style="margin-top:1.1em"><span class="nbtn f-aa cmpbtn" style="font-weight:400">Начать игру</span></div>
       </div>
       <div class="card">
         <div class="font-name" style="margin:0 0 .7em">LIBRARY 3 AM</div>
-        <div class="f-lib glow-title n-blue cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
-        <div class="f-lib glow-text n-blue cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div class="f-lib glow-tube n-blue cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-lib glow-tube n-blue cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
         <div style="margin-top:1.1em"><span class="nbtn blue f-lib cmpbtn" style="font-weight:400">Начать игру</span></div>
       </div>
       <div class="card">
         <div class="font-name" style="margin:0 0 .7em">mr Neon Sans</div>
-        <div class="f-mrn glow-title n-orn cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
-        <div class="f-mrn glow-text n-orn cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div class="f-mrn glow-tube n-orn cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-mrn glow-tube n-orn cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
         <div style="margin-top:1.1em"><span class="nbtn orn f-mrn cmpbtn" style="font-weight:400">Начать игру</span></div>
+      </div>
+      <div class="card">
+        <div class="font-name" style="margin:0 0 .7em">Tektur <span>· TRON-подобный</span></div>
+        <div class="f-tek glow-tube n-blue cmp" style="font-size:clamp(30px,5vw,46px);font-weight:700;text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-tek glow-tube n-blue cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div style="margin-top:1.1em"><span class="nbtn blue f-tek cmpbtn" style="font-weight:600">Начать игру</span></div>
+      </div>
+      <div class="card">
+        <div class="font-name" style="margin:0 0 .7em">Jura <span>· тонкий геометрический</span></div>
+        <div class="f-jura glow-tube n-red cmp" style="font-size:clamp(30px,5vw,46px);font-weight:600;text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-jura glow-tube n-red cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div style="margin-top:1.1em"><span class="nbtn red f-jura cmpbtn" style="font-weight:600">Начать игру</span></div>
+      </div>
+      <div class="card">
+        <div class="font-name" style="margin:0 0 .7em">Comfortaa <span>· неон-трубка</span></div>
+        <div class="f-comf glow-tube n-warm cmp" style="font-size:clamp(30px,5vw,46px);font-weight:700;text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-comf glow-tube n-warm cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div style="margin-top:1.1em"><span class="nbtn f-comf cmpbtn" style="font-weight:600">Начать игру</span></div>
+      </div>
+      <div class="card">
+        <div class="font-name" style="margin:0 0 .7em">Neuropol X <span>· sci-fi техно</span></div>
+        <div class="f-neuro glow-tube n-blue cmp" style="font-size:clamp(30px,5vw,46px);text-transform:uppercase;line-height:1">Штаб</div>
+        <div class="f-neuro glow-tube n-blue cmp" style="font-size:22px;margin-top:.3em">Начать бизнес</div>
+        <div style="margin-top:1.1em"><span class="nbtn blue f-neuro cmpbtn" style="font-weight:400">Начать игру</span></div>
       </div>
     </div>
     <div style="text-align:center;margin-top:1.4em">
-      <button class="replay" data-fx="cmp" data-sound="1" style="font-size:13px">↻ включить все три со звуком</button>
+      <button class="replay" data-fx="cmp" data-sound="1" style="font-size:13px">↻ включить все семь со звуком</button>
+    </div>
+
+    <!-- Glitch-эффект на кириллице -->
+    <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
+      <span class="sec-num">02··</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Glitch-эффект (кириллица)</h2>
+      <span class="hint">5 техник на техно-шрифтах с кириллицей. Наводить не нужно — играют сами.</span>
+    </div>
+    <div class="card" style="text-align:center;margin-bottom:1.2rem">
+      <div class="font-name" style="margin:0 0 .8em;text-align:left">v5 · Срез-смещение <span>полоса вырезается и уезжает — на её месте дырка (как референс)</span></div>
+      <div id="sgDemo" class="f-lib slice-glitch" data-strips="14" data-amp="18" style="font-size:clamp(48px,11vw,120px);font-weight:700;text-transform:uppercase;line-height:1;letter-spacing:.04em;--sg-ow:2.5px;--sg-glow:8px;--sg-core:2">КВЕСТ</div>
+      <div class="sg-ctrls">
+        <label>Шрифт
+          <select id="sgFont">
+            <option value="--lib" selected>LIBRARY 3 AM</option>
+            <option value="--tek">Tektur</option>
+            <option value="--neuro">Neuropol X</option>
+            <option value="--aa">AA Neon</option>
+            <option value="--mrn">mr Neon Sans</option>
+            <option value="--jura">Jura</option>
+            <option value="--comf">Comfortaa</option>
+          </select>
+        </label>
+        <label>Цвет <input type="color" id="sgColor" value="#d9fbff"></label>
+        <label title="полые буквы = неон-трубка (на тонких шрифтах)">Контур <input type="checkbox" id="sgOutline"></label>
+        <label>Обводка <input type="checkbox" id="sgStroke"></label>
+        <label><input type="color" id="sgStrokeColor" value="#000000"></label>
+        <label>Толщина <input type="range" id="sgStrokeW" min="0" max="4" step="0.5" value="2.5"><span class="sg-val" id="sgStrokeWv">2.5</span></label>
+        <label>Ядро <input type="range" id="sgCore" min="0" max="8" step="0.5" value="2"><span class="sg-val" id="sgCorev">2</span></label>
+        <label>Свечение <input type="range" id="sgGlow" min="0" max="24" step="1" value="8"><span class="sg-val" id="sgGlowv">8</span></label>
+        <label>Яркость <input type="range" id="sgBri" min="0.5" max="2" step="0.05" value="1"><span class="sg-val" id="sgBriv">1.0×</span></label>
+        <label>Скорость <input type="range" id="sgSpeed" min="0.25" max="2" step="0.05" value="0.7"><span class="sg-val" id="sgSpeedv">0.7×</span></label>
+        <label>Полосы <input type="range" id="sgStrips" min="4" max="30" step="1" value="14"><span class="sg-val" id="sgStripsv">14</span></label>
+        <label>Сдвиг <input type="range" id="sgAmp" min="2" max="40" step="1" value="18"><span class="sg-val" id="sgAmpv">18</span></label>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card" style="text-align:center">
+        <div class="font-name" style="margin:0 0 .8em;text-align:left">v1 · RGB-сдвиг <span>циан / маджента</span></div>
+        <div class="f-neuro glitch" data-text="ШТАБ" style="font-size:clamp(34px,6vw,58px);text-transform:uppercase;line-height:1">ШТАБ</div>
+        <div class="f-neuro glitch" data-text="Начать бизнес" style="font-size:24px;margin-top:.7em">Начать бизнес</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="font-name" style="margin:0 0 .8em;text-align:left">v2 · VHS <span>скан-линии + срыв кадра</span></div>
+        <div class="f-neuro glx-vhs" data-text="ШТАБ" style="font-size:clamp(34px,6vw,58px);text-transform:uppercase;line-height:1">ШТАБ</div>
+        <div class="f-neuro glx-vhs" data-text="Начать бизнес" style="font-size:24px;margin-top:.7em">Начать бизнес</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="font-name" style="margin:0 0 .8em;text-align:left">v3 · Разрыв <span>рваные блоки, тёплый + циан</span></div>
+        <div class="f-neuro glx-tear" data-text="ШТАБ" style="font-size:clamp(34px,6vw,58px);text-transform:uppercase;line-height:1">ШТАБ</div>
+        <div class="f-neuro glx-tear" data-text="Начать бизнес" style="font-size:24px;margin-top:.7em">Начать бизнес</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="font-name" style="margin:0 0 .8em;text-align:left">v4 · Моргание <span>умирающая лампа, тёплый</span></div>
+        <div class="f-neuro glx-flick" style="font-size:clamp(34px,6vw,58px);text-transform:uppercase;line-height:1">ШТАБ</div>
+        <div class="f-neuro glx-flick" style="font-size:24px;margin-top:.7em">Начать бизнес</div>
+      </div>
     </div>
   </section>
 
@@ -460,22 +1075,32 @@ footer b{color:var(--warm-1); font-weight:400}
       <!-- Эффект 3 -->
       <div class="card">
         <span class="tag">Эффект 3 · иконка</span>
-        <div class="oct-stage">
+        <div class="oct-stage" id="octStage">
           <div class="oct"><div class="oct-inner">
             <svg class="fx3ic" viewBox="0 0 100 100">
-              <!-- иконка «дом/бизнес» -->
-              <path class="ic" d="M28 52 L50 32 L72 52 M34 48 V72 H66 V48 M46 72 V60 H54 V72"/>
+              <!-- иконка «дом/бизнес»: контур синий + дверь тёплая -->
+              <path class="ic" d="M28 52 L50 32 L72 52 M34 48 V72 H66 V48"/>
+              <path class="ic-warm" d="M46 72 V60 H54 V72"/>
             </svg>
           </div></div>
           <div class="oct"><div class="oct-inner">
             <svg class="fx3ic" viewBox="0 0 100 100">
-              <!-- иконка «щит» -->
-              <path class="ic" d="M50 26 L70 34 V54 C70 66 61 72 50 76 C39 72 30 66 30 54 V34 Z M42 52 L48 58 L60 44"/>
+              <!-- иконка «щит»: контур синий + галочка тёплая -->
+              <path class="ic" d="M50 26 L70 34 V54 C70 66 61 72 50 76 C39 72 30 66 30 54 V34 Z"/>
+              <path class="ic-warm" d="M42 52 L48 58 L60 44"/>
             </svg>
           </div></div>
         </div>
-        <button class="replay" data-fx="oct">↻ повторить включение</button>
-        <div class="role" style="margin-top:.6em">Включение лампы <b>+ постоянное вращение</b> октаэдра.</div>
+        <div class="sg-ctrls">
+          <label>Контур <input type="color" id="icMain" value="#27e3ff"></label>
+          <label>Деталь <input type="color" id="icDet" value="#ffd9a0"></label>
+          <label>Заливка <input type="checkbox" id="icFillOn"></label>
+          <label><input type="color" id="icFillC" value="#27e3ff"></label>
+          <label>Толщина <input type="range" id="icSw" min="1" max="10" step="0.5" value="5"><span class="sg-val" id="icSwv">5</span></label>
+          <label>Свечение <input type="range" id="icGlow" min="0" max="3" step="0.1" value="1"><span class="sg-val" id="icGlowv">1.0</span></label>
+        </div>
+        <button class="replay" data-fx="oct" style="margin-top:1em">↻ повторить включение</button>
+        <div class="role" style="margin-top:.6em">Включение лампы <b>+ постоянное вращение</b> октаэдра. Цвета/заливка/толщина — ползунки выше.</div>
       </div>
 
       <!-- Эффект 4 -->
@@ -508,14 +1133,36 @@ footer b{color:var(--warm-1); font-weight:400}
           <span class="nbtn blue f-mrn btnfx neon-idle" style="font-weight:400">Продолжить</span>
           <span class="nbtn orn f-lib btnfx neon-idle" style="font-weight:400">Опасность</span>
         </div>
-        <div class="role" style="margin-top:1em">Неон-шрифт + контурная рамка + свечение. Включение = <b>эффект 1</b> (со звуком).</div>
+        <!-- playbtn: тёплая рамка + плей на линии + синее слово (Neuropol X) -->
+        <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-top:1.6em">
+          <button class="playbtn">
+            <svg class="pb-frame" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"><path d="M14 2 L186 2 A12 12 0 0 1 198 14 L198 50 A12 12 0 0 1 186 62 L122 62 M78 62 L14 62 A12 12 0 0 1 2 50 L2 14 A12 12 0 0 1 14 2"/></svg>
+            <i class="pb-play"></i><span class="pb-txt">Начать</span>
+          </button>
+          <button class="playbtn">
+            <svg class="pb-frame" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"><path d="M14 2 L186 2 A12 12 0 0 1 198 14 L198 50 A12 12 0 0 1 186 62 L122 62 M78 62 L14 62 A12 12 0 0 1 2 50 L2 14 A12 12 0 0 1 14 2"/></svg>
+            <i class="pb-play"></i><span class="pb-txt">Начать бизнес</span>
+          </button>
+        </div>
+        <!-- gbtn: стекло по контуру слова + синий плей на своём стекле -->
+        <div class="gbtn-stage">
+          <button class="gbtn">
+            <span class="gt" data-text="Начать">Начать</span>
+            <span class="gp"><svg class="gp-ico" viewBox="0 0 24 28" aria-hidden="true"><path class="gp-glass" d="M5 4 L21 14 L5 24 Z"/><path class="gp-tube" d="M5 4 L21 14 L5 24 Z"/></svg></span>
+          </button>
+          <button class="gbtn">
+            <span class="gt" data-text="Начать бизнес">Начать бизнес</span>
+            <span class="gp"><svg class="gp-ico" viewBox="0 0 24 28" aria-hidden="true"><path class="gp-glass" d="M5 4 L21 14 L5 24 Z"/><path class="gp-tube" d="M5 4 L21 14 L5 24 Z"/></svg></span>
+          </button>
+        </div>
+        <div class="role" style="margin-top:1em">Неон-шрифт + контурная рамка + свечение (первый ряд). Ниже — <b>playbtn</b> (тёплая рамка + плей) и <b>стеклянные</b> кнопки. Включение = <b>эффект 1</b> (со звуком).</div>
         <button class="replay" data-fx="btn" data-sound="1">↻ включить кнопки со звуком</button>
       </div>
 
       <!-- Логотип -->
       <div class="card">
         <span class="tag">Логотип · вращение</span>
-        <div class="logo-stage">
+        <div class="logo-stage" id="logoStage">
           <div class="logo-box"><div class="logo-spin">
             <!-- Логотип Бизнес Москвы 3.svg — синий неон-контур, вращается; boot-мигание на самом SVG -->
             <svg class="fx-logo" viewBox="0 0 111 138">
@@ -523,13 +1170,130 @@ footer b{color:var(--warm-1); font-weight:400}
             </svg>
           </div></div>
         </div>
-        <div class="role">Лого как <b>вращающаяся неоновая трубка</b> (контур вместо заливки). Включение — эффект 1.</div>
-        <button class="replay" data-fx="logo" data-sound="1">↻ включить логотип со звуком</button>
+        <div class="sg-ctrls">
+          <label>Контур <input type="color" id="lgMain" value="#27e3ff"></label>
+          <label>Заливка <input type="checkbox" id="lgFillOn"></label>
+          <label><input type="color" id="lgFillC" value="#27e3ff"></label>
+          <label>Толщина <input type="range" id="lgSw" min="1" max="12" step="0.5" value="3.4"><span class="sg-val" id="lgSwv">3.4</span></label>
+          <label>Свечение <input type="range" id="lgGlow" min="0" max="3" step="0.1" value="1"><span class="sg-val" id="lgGlowv">1.0</span></label>
+        </div>
+        <div class="role" style="margin-top:1em">Лого как <b>вращающаяся неоновая трубка</b> (контур вместо заливки). Цвет/заливка/толщина — ползунки выше. Включение — эффект 1.</div>
+        <button class="replay" data-fx="logo" data-sound="1" style="margin-top:.4em">↻ включить логотип со звуком</button>
+      </div>
+    </div>
+
+    <!-- 5 новых вариантов кнопок в гамме презентации -->
+    <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
+      <span class="sec-num">04·</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Кнопки — 5 новых вариантов</h2>
+      <span class="hint">Гамма презентации: циан + золото. У каждой явная рамка/заливка/подчёркивание — читается как кнопка. Шрифт Neuropol X.</span>
+    </div>
+    <div class="card">
+      <div class="btnrow">
+        <span class="btnrow-lbl">1 · Неон-вывеска <span class="hint">трубка-рамка</span></span>
+        <button class="nb nb-sign">Начать</button>
+        <button class="nb nb-sign">Начать бизнес</button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">2 · HUD-уголки <span class="hint">скобки</span></span>
+        <button class="nb nb-hud">Начать</button>
+        <button class="nb nb-hud">Начать бизнес</button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">3 · Заливка-пилюля <span class="hint">CTA</span></span>
+        <button class="nb nb-pill"><i class="play"></i>Начать</button>
+        <button class="nb nb-pill"><i class="play"></i>Начать бизнес</button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">4 · Скошенные углы <span class="hint">техно</span></span>
+        <button class="nb nb-cut">Начать</button>
+        <button class="nb nb-cut">Начать бизнес</button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">5 · Золото + подчёркивание <span class="hint">тёплый акцент</span></span>
+        <button class="nb nb-gold"><i class="play"></i>Начать</button>
+        <button class="nb nb-gold"><i class="play"></i>Начать бизнес</button>
+      </div>
+    </div>
+
+    <!-- 5 вариантов кнопок с GLITCH: статичная рамка + глитч-текст внутри -->
+    <div class="sec-head" style="margin-top:2.4em;margin-bottom:1.2em">
+      <span class="sec-num">04··</span><h2 class="glow-head n-blue" style="font-size:clamp(17px,2.4vw,24px)">Кнопки с glitch — 5 вариантов</h2>
+      <span class="hint">Рамка статичная (это кнопка), текст глитчит. Играют сами. Гамма презентации.</span>
+    </div>
+    <div class="card">
+      <div class="btnrow">
+        <span class="btnrow-lbl">1 · Вывеска + RGB-сдвиг <span class="hint">циан/маджента</span></span>
+        <button class="nb nb-sign"><span class="glitch" data-text="Начать">Начать</span></button>
+        <button class="nb nb-sign"><span class="glitch" data-text="Начать бизнес">Начать бизнес</span></button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">2 · HUD-уголки + VHS <span class="hint">скан + срыв</span></span>
+        <button class="nb nb-hud"><span class="glx-vhs" data-text="Начать">Начать</span></button>
+        <button class="nb nb-hud"><span class="glx-vhs" data-text="Начать бизнес">Начать бизнес</span></button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">3 · Срезы + Разрыв <span class="hint">рваные блоки</span></span>
+        <button class="nb nb-cut"><span class="glx-tear" data-text="Начать">Начать</span></button>
+        <button class="nb nb-cut"><span class="glx-tear" data-text="Начать бизнес">Начать бизнес</span></button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">4 · Золото + Моргание <span class="hint">умирающая лампа</span></span>
+        <button class="nb nb-goldframe"><span class="glx-flick">Начать</span></button>
+        <button class="nb nb-goldframe"><span class="glx-flick">Начать бизнес</span></button>
+      </div>
+      <div class="btnrow">
+        <span class="btnrow-lbl">5 · Золото + Срез-смещение <span class="hint">как референс</span></span>
+        <button class="nb nb-goldframe"><span class="slice-glitch" data-strips="10" data-amp="6" style="--sg-color:#ffd24a;--sg-glowc:#ff9800;--sg-glow:6px;--sg-core:1">Начать</span></button>
+        <button class="nb nb-goldframe"><span class="slice-glitch" data-strips="10" data-amp="6" style="--sg-color:#ffd24a;--sg-glowc:#ff9800;--sg-glow:6px;--sg-core:1">Начать бизнес</span></button>
       </div>
     </div>
   </section>
 
   <!-- ============ КАК ЛЯЖЕТ В ПРЕЗЕНТАЦИЮ ============ -->
+  <!-- ════════ ЛАБОРАТОРИЯ: эксперименты с цветом/неоном/кнопками (живые контролы) ════════ -->
+  <section id="lab">
+    <div class="sec-head">
+      <span class="sec-num">🧪</span><h2 class="glow-head n-blue">Эксперименты</h2>
+      <span class="hint">Крути параметры — превью и кнопки меняются вживую. Основную систему не трогает.</span>
+    </div>
+    <div class="lab-grid">
+      <div class="card lab-controls">
+        <label><span class="lab-cap">Цвет ядра <b id="labCoreV">#dffaff</b></span><input type="color" id="labCore" value="#dffaff"></label>
+        <label><span class="lab-cap">Цвет неона <b id="labGlowV">#27e3ff</b></span><input type="color" id="labGlow" value="#27e3ff"></label>
+        <label><span class="lab-cap">Яркость <b id="labBrightV">1.1</b></span><input type="range" id="labBright" min="0.6" max="2" step="0.05" value="1.1"></label>
+        <label><span class="lab-cap">Радиус зарева <b id="labBlurV">18</b></span><input type="range" id="labBlur" min="0" max="60" step="1" value="18"></label>
+        <label><span class="lab-cap">Грань (обводка) <b id="labStrokeV">0.6</b></span><input type="range" id="labStroke" min="0" max="2.5" step="0.1" value="0.6"></label>
+        <label><span class="lab-cap">Яркость фона <b id="labBglV">7%</b></span><input type="range" id="labBgl" min="4" max="96" step="1" value="7"></label>
+        <label><span class="lab-cap">Шрифт</span>
+          <select id="labFont">
+            <option value="'Neuropol X'">Neuropol X</option>
+            <option value="'Tektur'">Tektur</option>
+            <option value="'LIBRARY 3 AM'">LIBRARY 3 AM</option>
+            <option value="'AA Neon'">AA Neon</option>
+            <option value="'mr Neon Sans'">mr Neon Sans</option>
+            <option value="'Jura'">Jura</option>
+            <option value="'Comfortaa'">Comfortaa</option>
+            <option value="Unbounded">Unbounded</option>
+          </select>
+        </label>
+        <label><span class="lab-cap">Текст превью</span><input type="text" id="labText" value="ШТАБ"></label>
+      </div>
+      <div class="card" id="labStage">
+        <div class="lab-title" id="labTitle">ШТАБ</div>
+        <div class="lab-sub">Начать бизнес</div>
+        <div class="lab-btns">
+          <button class="labbtn v-outline">Начать</button>
+          <button class="labbtn v-fill">Начать</button>
+          <button class="labbtn v-glass">Начать</button>
+          <button class="labbtn v-pill">Начать</button>
+          <button class="labbtn v-ghost">Начать</button>
+          <button class="labbtn v-double">Начать</button>
+        </div>
+      </div>
+    </div>
+    <div class="map-note">Стили кнопок: <code>v-outline</code> контур · <code>v-fill</code> заливка · <code>v-glass</code> стекло · <code>v-pill</code> капсула · <code>v-ghost</code> призрак · <code>v-double</code> двойная рамка · <code class="glow-text n-warm">playbtn</code> «играть» (тёплая рамка + тёплый треугольник-плей на линии + синее слово). Понравившийся перенесём в систему.</div>
+  </section>
+
   <footer>
     <div class="glow-text n-warm" style="font-family:var(--disp);font-weight:600;letter-spacing:.06em">На одной волне · 2026</div>
     <div class="map-note">
@@ -636,6 +1400,261 @@ window.addEventListener('load', ()=>{
   runFX('on'); runFX('accent');
   setTimeout(()=>document.getElementById('heroTitle').classList.add('play-boot'), 150);
 });
+</script>
+
+<!-- ЛАБОРАТОРИЯ: переключение вкладок + живые контролы -->
+<script>
+(function(){
+  var wrap=document.querySelector('.wrap');
+  var tabs=document.querySelectorAll('.lab-tab');
+  tabs.forEach(function(t){ t.addEventListener('click',function(){
+    tabs.forEach(function(x){ x.classList.remove('on'); }); t.classList.add('on');
+    wrap.classList.toggle('lab', t.dataset.tab==='lab'); window.scrollTo(0,0);
+  }); });
+  var wf=document.getElementById('warmFlag');
+  if(wf){ wf.addEventListener('click',function(){
+    var on=wrap.classList.toggle('warm-soft');
+    wf.classList.toggle('on', on);
+    wf.textContent = on ? 'Осн. цвет: Белый неон' : 'Осн. цвет: Золотой';
+  }); }
+  var lab=document.getElementById('lab'); if(!lab) return;
+  function setv(k,v){ lab.style.setProperty(k,v); }
+  function bind(id,k,suf){ var el=document.getElementById(id); if(!el) return;
+    var out=document.getElementById(id+'V');
+    function upd(){ setv(k, el.value+(suf||'')); if(out) out.textContent=el.value+(suf||''); }
+    el.addEventListener('input',upd); upd(); }
+  bind('labCore','--lab-core'); bind('labGlow','--lab-glow');
+  bind('labBright','--lab-bright'); bind('labBlur','--lab-blur');
+  bind('labStroke','--lab-stroke'); bind('labBgl','--lab-bgl','%');
+  var f=document.getElementById('labFont'); if(f){ var uf=function(){ setv('--lab-ff', f.value); }; f.addEventListener('change',uf); uf(); }
+  var tx=document.getElementById('labText'), ti=document.getElementById('labTitle');
+  if(tx&&ti){ tx.addEventListener('input',function(){ ti.textContent=tx.value||'ШТАБ'; }); }
+})();
+</script>
+
+<!-- ПАНЕЛЬ ПАРАМЕТРОВ: живая правка цветов палитры + яркости (основная вкладка) -->
+<script>
+(function(){
+  var root=document.documentElement;
+  // hex → {h,s,l} (h 0..360, s/l 0..100)
+  function hexHsl(hex){
+    var m=hex.replace('#',''); if(m.length===3) m=m[0]+m[0]+m[1]+m[1]+m[2]+m[2];
+    var r=parseInt(m.slice(0,2),16)/255, g=parseInt(m.slice(2,4),16)/255, b=parseInt(m.slice(4,6),16)/255;
+    var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn, h=0, s=0, l=(mx+mn)/2;
+    if(d){ s=d/(1-Math.abs(2*l-1));
+      if(mx===r) h=((g-b)/d)%6; else if(mx===g) h=(b-r)/d+2; else h=(r-g)/d+4;
+      h*=60; if(h<0) h+=360; }
+    return {h:Math.round(h), s:Math.round(s*100), l:Math.round(l*100)};
+  }
+  function hsl(h,s,l){ return 'hsl('+h+' '+Math.max(0,Math.min(100,s))+'% '+Math.max(0,Math.min(100,l))+'%)'; }
+  // из одного цвета выводим 4 оттенка роли: core (светлый), 1 (светлее), 2 (сам цвет), 3 (темнее)
+  function setRole(p, hex){
+    var c=hexHsl(hex);
+    root.style.setProperty('--'+p+'-2', hex);
+    root.style.setProperty('--'+p+'-1', hsl(c.h, Math.min(c.s,100), Math.min(c.l+16,86)));
+    root.style.setProperty('--'+p+'-3', hsl(c.h, c.s, Math.max(c.l-13,18)));
+    root.style.setProperty('--'+p+'-core', hsl(c.h, Math.min(c.s*0.45,55), 94));
+  }
+  function bindColor(id,p){ var el=document.getElementById(id); if(el) el.addEventListener('input',function(){ setRole(p, el.value); }); }
+  bindColor('tWarm','warm'); bindColor('tBlue','blue'); bindColor('tRed','red'); bindColor('tOrn','orn');
+  var tb=document.getElementById('tBright'); if(tb) tb.addEventListener('input',function(){ root.style.setProperty('--ui-bright', tb.value); });
+  var tg=document.getElementById('tToggle'), tbar=document.getElementById('tuneBar');
+  if(tg&&tbar) tg.addEventListener('click',function(){ var c=tbar.classList.toggle('collapsed'); tg.textContent=c?'▸':'▾'; });
+
+  var pbg=document.getElementById('tPresBg'); if(pbg) pbg.addEventListener('click',function(){
+    var on=document.body.classList.toggle('presbg'); pbg.textContent='Фон презы: '+(on?'вкл':'выкл'); });
+
+  // СВЕЧЕНИЕ по элементу: gT (текст+заголовки) / gI (титул) / gU (трубка) / gB (кнопки)
+  var GKEYS=['gT','gI','gU','gB','gO','gL'];
+  var gState={}; GKEYS.forEach(function(g){ gState[g]={cw:1,gr:1,gi:1,core:''}; });
+  var elSel=document.getElementById('tEl');
+  var gCore=document.getElementById('tCore'), gCw=document.getElementById('tCw'),
+      gGr=document.getElementById('tGr'), gGi=document.getElementById('tGi');
+  function curG(){ return elSel ? elSel.value : 'gT'; }
+  function loadG(){ var st=gState[curG()];
+    if(gCw) gCw.value=st.cw; if(gGr) gGr.value=st.gr; if(gGi) gGi.value=st.gi;
+    if(gCore) gCore.value=st.core||'#ffffff'; }
+  if(elSel) elSel.addEventListener('change', loadG);
+  function gset(param,val){ var g=curG(); gState[g][param]=val; root.style.setProperty('--'+g+'-'+param, val); }
+  if(gCw) gCw.addEventListener('input', function(){ gset('cw', gCw.value); });
+  if(gGr) gGr.addEventListener('input', function(){ gset('gr', gGr.value); });
+  if(gGi) gGi.addEventListener('input', function(){ gset('gi', gGi.value); });
+  if(gCore) gCore.addEventListener('input', function(){ gset('core', gCore.value); });
+
+  var tr=document.getElementById('tReset'); if(tr) tr.addEventListener('click',function(){
+    ['warm','blue','red','orn'].forEach(function(p){ ['core','1','2','3'].forEach(function(s){ root.style.removeProperty('--'+p+'-'+s); }); });
+    root.style.removeProperty('--ui-bright');
+    GKEYS.forEach(function(g){ ['cw','gr','gi','core'].forEach(function(pp){ root.style.removeProperty('--'+g+'-'+pp); }); gState[g]={cw:1,gr:1,gi:1,core:''}; });
+    if(gCw) gCw.value=1; if(gGr) gGr.value=1; if(gGi) gGi.value=1; if(gCore) gCore.value='#ffffff';
+    var d={tWarm:'#ffb765',tBlue:'#27e3ff',tRed:'#ff2b4e',tOrn:'#ff8a1f'};
+    Object.keys(d).forEach(function(k){ var e=document.getElementById(k); if(e) e.value=d[k]; });
+    var b=document.getElementById('tBright'); if(b) b.value=1;
+  });
+})();
+</script>
+
+<script>
+/* Срез-глитч: режем текст на горизонтальные полосы БЕЗ подложки.
+   Каждая полоса — копия текста, обрезанная clip-path до своей высоты.
+   Полоса уезжает по X независимо → на её месте дырка (фон). */
+(function(){
+  function buildSlice(el){
+    var n=+el.getAttribute('data-strips')||12;
+    var amp=+el.getAttribute('data-amp')||14;
+    var speed=+el.getAttribute('data-speed')||1;              // множитель скорости (больше = быстрее)
+    var txt=el.dataset.txt||(el.dataset.txt=el.textContent);  // исходный текст сохраняем 1 раз
+    el.querySelectorAll('.sg-strip').forEach(function(s){s.remove();});   // сброс прежних полос
+    var bleed=0.6;                                            // нахлёст полос, чтобы не было швов
+    for(var i=0;i<n;i++){
+      var s=document.createElement('span');
+      s.className='sg-strip';
+      s.textContent=txt;
+      var top=Math.max(0,i*100/n-bleed);
+      var bot=Math.max(0,100-(i+1)*100/n-bleed);
+      s.style.clipPath='inset('+top+'% 0 '+bot+'% 0)';
+      // детерминированный псевдослучай из индекса (стабильно между кадрами)
+      var r=Math.abs(Math.sin((i+1)*12.9898)*43758.5453)%1;
+      var r2=Math.abs(Math.sin((i+1)*78.233)*12543.132)%1;
+      var base=2.6+r*2.6;                                     // базовая длительность 2.6..5.2s
+      s.style.animationDuration=(base/speed).toFixed(2)+'s';
+      s.style.animationDelay=(-r2*5).toFixed(2)+'s';
+      s.style.setProperty('--a',((i%2?-1:1)*Math.round(amp*(0.4+r)))+'px');
+      el.appendChild(s);
+    }
+    el.classList.add('ready');
+  }
+  document.querySelectorAll('.slice-glitch').forEach(buildSlice);
+
+  /* Живые контролы демо-элемента v5 */
+  var demo=document.getElementById('sgDemo');
+  if(demo){
+    var setv=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+    var fnt=document.getElementById('sgFont');
+    if(fnt)fnt.addEventListener('change',function(){demo.style.fontFamily='var('+fnt.value+')';});
+    var col=document.getElementById('sgColor');
+    if(col)col.addEventListener('input',function(){demo.style.setProperty('--sg-color',col.value);demo.style.setProperty('--sg-glowc',col.value);});
+    var core=document.getElementById('sgCore');
+    if(core)core.addEventListener('input',function(){demo.style.setProperty('--sg-core',core.value);setv('sgCorev',core.value);});   // без 'px': --sg-core — число (везде идёт как calc(1px*var(--sg-core)))
+    var glow=document.getElementById('sgGlow');
+    if(glow)glow.addEventListener('input',function(){demo.style.setProperty('--sg-glow',glow.value+'px');setv('sgGlowv',glow.value);});
+    var bri=document.getElementById('sgBri');
+    if(bri)bri.addEventListener('input',function(){demo.style.setProperty('--sg-bri',bri.value);setv('sgBriv',(+bri.value).toFixed(2)+'×');});
+    var stk=document.getElementById('sgStroke'),stkC=document.getElementById('sgStrokeColor'),stkW=document.getElementById('sgStrokeW');
+    var applyStroke=function(){
+      demo.style.setProperty('--sg-sw',(stk&&stk.checked)?(stkW.value+'px'):'0');
+      demo.style.setProperty('--sg-sc',stkC.value);
+      demo.style.setProperty('--sg-ow',stkW.value+'px');   // толщина = ширина трубки в режиме «Контур»
+      setv('sgStrokeWv',stkW.value);
+    };
+    if(stk)stk.addEventListener('change',applyStroke);
+    if(stkC)stkC.addEventListener('input',applyStroke);
+    if(stkW)stkW.addEventListener('input',applyStroke);
+    // режим «Контур»: полые буквы = неон-трубка
+    var outl=document.getElementById('sgOutline');
+    if(outl)outl.addEventListener('change',function(){ demo.classList.toggle('outline', outl.checked); });
+    var sp=document.getElementById('sgSpeed');
+    if(sp)sp.addEventListener('input',function(){demo.setAttribute('data-speed',sp.value);setv('sgSpeedv',(+sp.value).toFixed(2)+'×');buildSlice(demo);});
+    var strp=document.getElementById('sgStrips');
+    if(strp)strp.addEventListener('input',function(){demo.setAttribute('data-strips',strp.value);setv('sgStripsv',strp.value);buildSlice(demo);});
+    var am=document.getElementById('sgAmp');
+    if(am)am.addEventListener('input',function(){demo.setAttribute('data-amp',am.value);setv('sgAmpv',am.value);buildSlice(demo);});
+    if(sp){demo.setAttribute('data-speed',sp.value);buildSlice(demo);}   // старт с медленной скорости слайдера
+  }
+})();
+</script>
+
+<script>
+/* Матрица «шрифт × роль»: один и тот же набор ролей во всех гарнитурах.
+   Свет/цвет одинаковые — сравниваем только шрифт. */
+(function(){
+  var host=document.getElementById('fontMatrix'); if(!host) return;
+  var fonts=[
+    {ff:'--text',  name:'Exo 2',        note:'текущий'},
+    {ff:'--neuro', name:'Neuropol X',   note:'sci-fi техно'},
+    {ff:'--comf',  name:'Comfortaa',    note:'скруглённый'},
+    {ff:'--mrn',   name:'mr Neon Sans', note:'неон-ретро'},
+    {ff:'--tek',   name:'Tektur',       note:'квадратный TRON'},
+    {ff:'--jura',  name:'Jura',         note:'тонкий гео'},
+    {ff:'--aa',    name:'AA Neon',      note:'вывеска'},
+    {ff:'--lib',   name:'LIBRARY 3 AM', note:'вывеска'}
+  ];
+  var roles=[
+    {lbl:'Титул',     cls:'glow-title n-warm', st:'font-size:clamp(24px,3vw,34px);text-transform:uppercase;line-height:1', txt:'Штаб'},
+    {lbl:'Заголовок', cls:'glow-head n-warm',  st:'font-size:18px;text-transform:uppercase;letter-spacing:.02em;line-height:1.1', txt:'Начинающий предприниматель'},
+    {lbl:'Осн. текст',cls:'glow-text n-warm',  st:'font-size:14px;font-weight:300;line-height:1.5', txt:'Съешь ещё этих мягких французских булок да выпей чаю. 0123456789.'},
+    {lbl:'Описание',  cls:'',                  st:'font-size:12.5px;color:var(--dim);line-height:1.5', txt:'Тонкий, техно — держит длинный текст читаемым даже со свечением.'},
+    {lbl:'Акцент',    cls:'glow-text n-blue',  st:'font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.03em', txt:'937 тыс. субъектов'}
+  ];
+  fonts.forEach(function(f){
+    var card=document.createElement('div');
+    card.className='card fcmp';
+    card.style.fontFamily='var('+f.ff+')';
+    var h='<div class="font-name" style="font-family:var(--disp);margin:0 0 .4em">'+f.name+' <span>· '+f.note+'</span></div>';
+    roles.forEach(function(r){
+      h+='<div class="fcmp-row"><span class="fcmp-lbl">'+r.lbl+'</span>'+
+         '<div class="fcmp-samp '+r.cls+'" style="'+r.st+'">'+r.txt+'</div></div>';
+    });
+    card.innerHTML=h;
+    host.appendChild(card);
+  });
+})();
+</script>
+
+<script>
+/* Локальные ползунки иконок (Эффект 3): пишут --ic-* на контейнере oct-stage */
+(function(){
+  var oc=document.getElementById('octStage'); if(!oc) return;
+  var setv=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+  var main=document.getElementById('icMain');
+  if(main)main.addEventListener('input',function(){oc.style.setProperty('--ic-main',main.value);});
+  var det=document.getElementById('icDet');
+  if(det)det.addEventListener('input',function(){oc.style.setProperty('--ic-det',det.value);});
+  var fOn=document.getElementById('icFillOn'), fC=document.getElementById('icFillC');
+  var applyFill=function(){ oc.style.setProperty('--ic-fill', (fOn&&fOn.checked)?fC.value:'none'); };
+  if(fOn)fOn.addEventListener('change',applyFill);
+  if(fC)fC.addEventListener('input',applyFill);
+  var sw=document.getElementById('icSw');
+  if(sw)sw.addEventListener('input',function(){oc.style.setProperty('--ic-sw',sw.value);setv('icSwv',sw.value);});
+  var gl=document.getElementById('icGlow');
+  if(gl)gl.addEventListener('input',function(){oc.style.setProperty('--ic-glow',gl.value);setv('icGlowv',(+gl.value).toFixed(1));});
+
+  /* Локальные ползунки лого: пишут --lg-* на logo-stage */
+  var lo=document.getElementById('logoStage');
+  if(lo){
+    var lm=document.getElementById('lgMain');
+    if(lm)lm.addEventListener('input',function(){lo.style.setProperty('--lg-main',lm.value);});
+    var lfOn=document.getElementById('lgFillOn'), lfC=document.getElementById('lgFillC');
+    var lApplyFill=function(){ lo.style.setProperty('--lg-fill',(lfOn&&lfOn.checked)?lfC.value:'none'); };
+    if(lfOn)lfOn.addEventListener('change',lApplyFill);
+    if(lfC)lfC.addEventListener('input',lApplyFill);
+    var lsw=document.getElementById('lgSw');
+    if(lsw)lsw.addEventListener('input',function(){lo.style.setProperty('--lg-sw',lsw.value);setv('lgSwv',lsw.value);});
+    var lgl=document.getElementById('lgGlow');
+    if(lgl)lgl.addEventListener('input',function(){lo.style.setProperty('--lg-glow',lgl.value);setv('lgGlowv',(+lgl.value).toFixed(1));});
+  }
+
+  /* Титул вариант 2: раздельная настройка КВЕСТ / лого / линий (--t2-* на #tv2Stage) */
+  var t2=document.getElementById('tv2Stage');
+  if(t2){
+    var col=function(id,v){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){t2.style.setProperty(v,e.value);});};
+    var rng=function(id,v,out,f){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){t2.style.setProperty(v,e.value);if(out)setv(out,f?f(e.value):e.value);});};
+    // цвет КВЕСТ/лого красит И линию, И зарево (glowc)
+    var col2=function(id,v1,v2){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){t2.style.setProperty(v1,e.value);t2.style.setProperty(v2,e.value);});};
+    col2('t2wordC','--t2-word','--t2-wordglowc');  rng('t2wordG','--t2-wordglow','t2wordGv',function(x){return(+x).toFixed(1);});
+    col2('t2logoC','--t2-logo','--t2-logoglowc');  rng('t2logoSw','--t2-logosw','t2logoSwv');
+    rng('t2logoG','--t2-logoglow','t2logoGv',function(x){return(+x).toFixed(1);});
+    col('t2lineC','--t2-line');   rng('t2lineG','--t2-lineglow','t2lineGv',function(x){return(+x).toFixed(1);});
+    rng('t2core','--t2-core','t2corev');
+    // заливка лого «Б»: галка + цвет
+    var lfo=document.getElementById('t2logoFillOn'), lfc=document.getElementById('t2logoFillC');
+    var t2fill=function(){ t2.style.setProperty('--t2-logofill',(lfo&&lfo.checked)?lfc.value:'none'); };
+    if(lfo)lfo.addEventListener('change',t2fill);
+    if(lfc)lfc.addEventListener('input',t2fill);
+    // вращение лого «Б»: класс .t2spin на пути (stroke-width="6")
+    var lspin=document.getElementById('t2logoSpin'), lpath=t2.querySelector('path[stroke-width="6"]');
+    if(lspin&&lpath)lspin.addEventListener('change',function(){ lpath.classList.toggle('t2spin', lspin.checked); });
+  }
+})();
 </script>
 </body>
 </html>
