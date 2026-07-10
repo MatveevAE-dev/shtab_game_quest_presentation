@@ -1,1 +1,10 @@
 .playwright-mcp/
+
+# Рабочие материалы встреч (транскрипты, pptx, pdf, docx) — не публикуем
+DPIIR_day/
+
+# Локальные бэкапы презентации
+presentation/_backup/
+
+# Временные файлы в корне
+hard-title.png
