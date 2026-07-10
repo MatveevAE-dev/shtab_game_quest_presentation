@@ -32,6 +32,16 @@ jobs:
           mkdir -p _site/presentation
           cp -r presentation/. _site/presentation/
           touch _site/.nojekyll
+          # В корне сайта своего index.html нет → короткий адрес отдавал 404.
+          # Кладём редирект: /<репо>/ → /<репо>/presentation/index.html
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>Московский предпринимательский квест</title>
+          <meta http-equiv="refresh" content="0; url=./presentation/index.html">
+          <link rel="canonical" href="./presentation/index.html">
+          <p>Переход к презентации… <a href="./presentation/index.html">Открыть</a></p>
+          HTML
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
