@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>На одной волне — сценарий показа</title>
+<title>На одной волне – сценарий показа</title>
 <!-- шрифты локально, встроены base64 (офлайн, без интернета) — см. assets/fonts/fonts.css -->
 <link href="assets/fonts/fonts.css" rel="stylesheet">
 <link href="assets/fonts/neon-fonts.css" rel="stylesheet">   <!-- AA Neon · LIBRARY 3 AM · mr Neon Sans (кириллица, base64) — титул слайда 1 -->
@@ -1057,7 +1057,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 @keyframes thinkGlowNeon{   /* как .hero-outline.glow, но для текста: резкое ядро всегда + пульс широкого зарева */
   0%,100%{filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 3px var(--neon)) drop-shadow(0 0 9px var(--neon))}
   50%{filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 5px var(--neon)) drop-shadow(0 0 16px var(--neon)) brightness(1.25)}}
-/* красный аналог thinkGlowNeon — для «ХАРД» (danger-акцент «тяжело») */
+/* красный аналог thinkGlowNeon — для «HARD» (danger-акцент «тяжело») */
 @keyframes hardGlow{
   0%,100%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 4px #ff2020) drop-shadow(0 0 10px #ff2020)}
   50%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 7px #ff2020) drop-shadow(0 0 18px #ff2020) brightness(1.3)}}
@@ -1225,6 +1225,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .n-on{animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}
 /* ЭФФЕКТ 1 — розжиг лампы (со звуком); идёт после .n-on → при равной специфичности побеждает */
 .n-boot{animation:neonBoot 1.6s ease-out both, neonIdle 3.6s ease-in-out 1.6s infinite}
+
+/* ═══════════ V5 · СРЕЗ-СМЕЩЕНИЕ (порт из design-system.html, под флагом CFG.style.v5) ═══════════
+   Текст режется JS на N горизонтальных полос БЕЗ подложки. Полоса уезжает по X → на её месте
+   фон (потеря цвета), как в референсе. Классы вешает JS только при включённом флаге —
+   без него эти правила ни к чему не применяются и вид не меняется. */
+.slice-glitch{position:relative;display:inline-block;   /* line-height НЕ трогаем: наследуем родителя, иначе поедет вёрстка строк */
+  text-shadow:none;                                  /* базовое свечение гасим — светят полосы */
+  filter:brightness(var(--sg-bri,1))}
+.slice-glitch.ready{color:transparent}                /* базовый текст = только размер бокса, невидим */
+.slice-glitch .sg-strip{position:absolute;left:0;top:0;width:100%;white-space:pre;pointer-events:none;
+  color:var(--sg-color,#d9fbff);
+  /* неон-трубка: раскалённое ЯДРО у самого глифа (--sg-core = радиус, --sg-corec = цвет)
+     + зарево в два слоя (--sg-glow, --sg-glowc). В design-system.html цвет ядра зашит как #eaffff
+     (холодный, почти циан) — на синем сливается, на красном лез бы в глаза. Здесь он вынесен в токен. */
+  text-shadow:0 0 calc(1px*var(--sg-core,0)) var(--sg-corec,#eaffff),
+    0 0 var(--sg-glow,8px) var(--sg-glowc,var(--n-blue-2)),
+    0 0 calc(var(--sg-glow,8px)*2.2) var(--sg-glowc,var(--n-blue-3));
+  animation:sgShift var(--sg-dur,2.4s) steps(1) infinite}
+@keyframes sgShift{                                   /* большую часть цикла на месте, изредка рывок вбок */
+  0%,60%,100%{transform:translateX(0)}
+  64%{transform:translateX(var(--a,10px))}
+  70%{transform:translateX(0)}
+  84%{transform:translateX(calc(var(--a,10px)*-.6))}
+  90%{transform:translateX(0)}}
+/* ЛОГО слайда 1 при v5 — свечение шире, «свет от лого» (было узкое зарево 1/4/12px) */
+body.fx-v5 .nl-logo-svg path{
+  filter:drop-shadow(0 0 2px #fff)
+    drop-shadow(0 0 10px var(--n-blue-2))
+    drop-shadow(0 0 26px var(--n-blue-2))
+    drop-shadow(0 0 54px var(--n-blue-3))
+    drop-shadow(0 0 90px rgba(39,227,255,.45))}
+/* КНОПКИ при v5 — шрифт срез-демо: LIBRARY 3 AM (вместо Neuropol X). Обе кнопки: «Начать» и «Начать бизнес» */
+body.fx-v5 .cbtn{font-family:var(--n-lib)}
+/* «HARD» (слайд 4, подслайд 2) при v5 — срез-смещение, цвет красный. Свойства = эталон v5, ничего сверху.
+   Правила .rules-title .rt-hard специфичнее .slice-glitch, поэтому display/color/animation перебиваем явно.
+   animation:none — снимаем hardGlow: это filter:drop-shadow ПОВЕРХ полос, свечение выходило вдвое сильнее.
+   Теперь светит только сам срез (text-shadow полос), как в design-system.html. */
+body.fx-v5 .rules-title .rt-hard{display:inline-block;font-family:var(--n-lib);animation:none}
+body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 @keyframes cBtnPulse{0%,100%{box-shadow:0 0 22px rgba(var(--cyan-rgb),.4),inset 0 0 18px rgba(var(--cyan-rgb),.2)}
   50%{box-shadow:0 0 38px rgba(var(--cyan-rgb),.75),inset 0 0 22px rgba(var(--cyan-rgb),.3)}}
 @keyframes cBtnSweep{0%{left:-60%}55%,100%{left:120%}}
@@ -1378,9 +1417,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   text-shadow:var(--sh-base);pointer-events:none;opacity:0;
   transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1),transform .9s cubic-bezier(.4,.1,.2,1),font-size .9s cubic-bezier(.4,.1,.2,1),max-width .9s ease,opacity var(--fade-title) ease}
 .rules-title.show{opacity:1}
-/* неон-свечение — на обёртке текста титула (СТИЛЬ 2, циан), чтобы filter не «ореолил» красное «ХАРД» */
+/* неон-свечение — на обёртке текста титула (СТИЛЬ 2, циан), чтобы filter не «ореолил» красное «HARD» */
 .rules-title .rt-main{display:block;animation:thinkGlowNeon 1.6s ease-in-out infinite}
-/* «ХАРД» (подслайд «Уровень сложности») — те же свойства титула (БЕЛЫЙ текст), меняем только цвет свечения на красный; отдельной строкой, проявляется ПОСЛЕ последнего блока */
+/* «HARD» (подслайд «Уровень сложности») — те же свойства титула (БЕЛЫЙ текст), меняем только цвет свечения на красный; отдельной строкой, проявляется ПОСЛЕ последнего блока */
 .rules-title .rt-hard{display:block;margin-top:.25cqw;color:#fff;
   opacity:0;transition:opacity var(--fade-title) ease;animation:hardGlow 1.6s ease-in-out infinite}
 .rules-title .rt-hard.show{opacity:1}
@@ -1994,8 +2033,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
       <div class="m1-dark m3-dark" id="m3Dark"></div>
       <!-- текст Штаба (после парковки эскаватора) -->
       <div class="podtext podbig m1-text m3-shtab" id="m3Shtab">
-        <span class="ln ptitle">Штаб — защита бизнеса</span>
-        <span class="ln psub">Возникла проблема на пути — Штаб защитит: обращения, барьеры, системные вопросы.</span>
+        <span class="ln ptitle">Штаб – защита бизнеса</span>
+        <span class="ln psub">Возникла проблема на пути – Штаб защитит: обращения, барьеры, системные вопросы.</span>
       </div>
     </div>
     <!-- вуаль ВЫХОДА (открыта на входе — раскрытие наследуется от landing; для будущего перехода) -->
@@ -2113,7 +2152,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
     <img class="cc-titleart" id="ccTitleArt" src="assets/img/objects/title-lockup.svg" alt="">
     <!-- НЕОН: титул (LIBRARY 3 AM, синий) + вращающийся неоновый логотип «Бизнес Москвы» -->
     <div class="neon-lockup" id="neonLockup">
-      <div class="nl-title" id="nlTitle">Команда поддержки и развития<br>предпринимательства</div>
+      <!-- текст в span: при v5 на него вешается срез-смещение, эффекты включения остаются на .nl-title -->
+      <div class="nl-title" id="nlTitle"><span class="nl-txt" id="nlTxt">Команда поддержки и развития<br>предпринимательства</span></div>
       <div class="nl-logo"><div class="nl-logo-spin">
         <svg class="nl-logo-svg" id="nlLogo" viewBox="0 0 111 138" xmlns="http://www.w3.org/2000/svg">
           <path d="M44.4008 27.5459V46.8304L76.259 46.8826L22.2033 100.546L36.0793 114.321L91.574 59.2301V88.1515H111V110.188C111 127.82 101.013 137.734 83.2524 137.734H0V0H110.995V27.5459H44.4008Z"/>
@@ -2178,7 +2218,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
             <path d="M742.492 267.5V301.213H648.901V333.312L651.397 333.315L690.118 333.378L618.443 404.533L616.656 406.308L618.443 408.082L637.944 427.442L639.706 429.19L641.468 427.442L715.198 354.247V391.389H742.5V419.859C742.5 431.784 739.131 440.747 733.101 446.733C727.068 452.723 718.028 456.072 706.003 456.072H591.5V267.5H742.492Z"/>
           </svg>
         </div></div>
-        <div class="qt-txt">МОСКОВСКИЙ<br>ПРЕДПРИНИМАТЕЛЬСКИЙ<br>КВЕСТ</div>
+        <!-- «КВЕСТ» в своём span: при v5 режется только он, две первые строки остаются как есть -->
+        <div class="qt-txt">МОСКОВСКИЙ<br>ПРЕДПРИНИМАТЕЛЬСКИЙ<br><span class="qt-quest" id="qtQuest">КВЕСТ</span></div>
       </div>
     </div>
     <div class="load-log" id="loadLog"></div>
@@ -2234,7 +2275,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
           <span class="rin gw-val"><span class="rnum">937</span> тыс. субъектов МСП</span>
           <span class="rin gw-cap">84% всех предприятий города</span>
         </div>
-        <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="38" cy="38" r="11"/><path d="M20 82 C20 62 56 62 56 82"/><circle class="ic-warm" cx="66" cy="44" r="9"/><path class="ic-warm" d="M52 84 C52 68 82 68 82 84"/></svg></span>NPC:</span>
+        <span class="rin gw-label gw-2line"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="38" cy="38" r="11"/><path d="M20 82 C20 62 56 62 56 82"/><circle class="ic-warm" cx="66" cy="44" r="9"/><path class="ic-warm" d="M52 84 C52 68 82 68 82 84"/></svg></span>Союзники:<br><span class="gw-sub">(занятые)</span></span>
         <div class="gw-right">
           <span class="rin gw-val"><span class="rnum">3,5</span> млн человек</span>
           <span class="rin gw-cap">каждый третий работает в МСП</span>
@@ -2251,23 +2292,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
       <div class="ch-list">
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M30 14 H60 L74 28 V86 H30 Z M60 14 V28 H74"/><circle class="ic-warm" cx="43" cy="46" r="6"/><circle class="ic-warm" cx="61" cy="66" r="6"/><path class="ic-warm" d="M64 40 L40 72"/></svg></span>Налоговая реформа</span>
-          <span class="rin ch-desc">Изменения НДС, а также ставок страховых взносов вынуждают перестраивать бизнес-модель и повышать цены на товары, работы, услуги</span>
+          <span class="rin ch-desc">Изменение НДС и ставок страховых взносов</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M24 84 V62 M44 84 V46 M64 84 V30"/><path class="ic-warm" d="M20 42 L72 20"/><path class="ic-warm" d="M60 18 L74 20 L68 33"/></svg></span>Высокая ключевая ставка</span>
-          <span class="rin ch-desc">Дорогие деньги ограничили возможности МСП по масштабированию деятельности, обновлению оборудования и запуску новых проектов, напрямую сдерживая рост выручки</span>
+          <span class="rin ch-desc">Дорогие деньги ограничили возможности развития МСП</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse cx="48" cy="54" rx="30" ry="22"/><path d="M40 36 H56"/><circle class="ic-warm" cx="38" cy="50" r="3"/><path d="M36 74 V82 M60 74 V82 M78 52 H86"/></svg></span>Переход населения к сберегательной модели поведения</span>
-          <span class="rin ch-desc">Формируется новая потребительская модель, характеризующаяся снижением покупательской активности и целенаправленной оптимизацией расходов</span>
+          <span class="rin ch-desc">Оптимизация расходов и снижение покупательской активности</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 22 H30 L40 62 H74 L82 34 H34"/><circle class="ic-warm" cx="44" cy="76" r="5"/><circle class="ic-warm" cx="70" cy="76" r="5"/></svg></span>Изменение потребительских принципов</span>
-          <span class="rin ch-desc">Под влиянием цифровизации розничной торговли и изменения покупательского поведения происходит устойчивое перераспределение товарных потоков в пользу маркетплейсов</span>
+          <span class="rin ch-desc">Устойчивое перераспределение товарных потоков в пользу маркетплейсов</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 32 H84 V68 H16 Z"/><circle class="ic-warm" cx="50" cy="50" r="10"/><path d="M26 40 V60 M74 40 V60"/></svg></span>Увеличение доли наличных расчётов и рост теневого сектора</span>
-          <span class="rin ch-desc">Рост наличного оборота приводит к уходу субъектов МСП из официального учёта: растёт распространённость практик «скидки без чека», неполного пробития суммы, фиктивных возвратов</span>
+          <span class="rin ch-desc">Практика «скидки без чека» и «скидка за наличку», фиктивные возвраты</span>
         </div>
       </div>
     </div>
@@ -2275,24 +2316,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
     <div class="rslide challenges" data-i="2">
       <div class="ch-list">
         <div class="ch-item">
-          <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="16"/><circle class="ic-warm" cx="50" cy="50" r="6"/><path d="M50 20 V30 M50 70 V80 M20 50 H30 M70 50 H80 M29 29 L36 36 M64 64 L71 71 M71 29 L64 36 M36 64 L29 71"/></svg></span>Устойчивость бизнес-моделей</span>
-          <span class="rin ch-desc">Повышение и оптимизация производственных процессов, в том числе за счёт интеграции искусственного интеллекта</span>
+          <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="16"/><circle class="ic-warm" cx="50" cy="50" r="6"/><path d="M50 20 V30 M50 70 V80 M20 50 H30 M70 50 H80 M29 29 L36 36 M64 64 L71 71 M71 29 L64 36 M36 64 L29 71"/></svg></span>Устойчивая бизнес-модель</span>
+          <span class="rin ch-desc">Оптимизация производственных процессов, в том числе за счёт интеграции ИИ</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 22 H82 V62 H18 Z"/><path d="M44 62 V74 H56 V62 M36 78 H64"/><path class="ic-warm" d="M34 54 V44 M46 54 V36 M58 54 V48"/></svg></span>Цифровизация</span>
-          <span class="rin ch-desc">CRM, аналитика и автоматизация больше не конкурентное преимущество, а обязательное условие для роста и развития</span>
+          <span class="rin ch-desc">CRM, аналитика и автоматизация – обязательное условие для роста и развития</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="ic-warm" d="M50 18 L59 40 L83 42 L64 57 L71 80 L50 66 L29 80 L36 57 L17 42 L41 40 Z"/></svg></span>Качество вместо количества</span>
-          <span class="rin ch-desc">Рост сетей не столько за счёт открытия новых точек, сколько путём развития действующих партнёров</span>
+          <span class="rin ch-desc">Повышение качества товаров/работ или услуг, повышение клиентоориентированности</span>
         </div>
         <div class="ch-item">
           <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M38 14 H62 Q66 14 66 18 V82 Q66 86 62 86 H38 Q34 86 34 82 V18 Q34 14 38 14 Z"/><path d="M44 22 H56"/><circle class="ic-warm" cx="50" cy="78" r="2.5"/></svg></span>DIGITAL-форматы</span>
-          <span class="rin ch-desc">Рост интереса к цифровым бизнес-моделям за счёт экономии на аренде, персонале и логистике, а также из-за лёгкости масштабирования</span>
-        </div>
-        <div class="ch-item">
-          <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 20 A20 20 0 0 1 70 40 C70 56 50 82 50 82 C50 82 30 56 30 40 A20 20 0 0 1 50 20 Z"/><circle class="ic-warm" cx="50" cy="40" r="7"/></svg></span>Региональная экспансия</span>
-          <span class="rin ch-desc">Региональные центры как зона роста московского бизнеса</span>
+          <span class="rin ch-desc">Лёгкость масштабирования и экономия на аренде, персонале и логистике</span>
         </div>
       </div>
     </div>
@@ -2368,7 +2405,33 @@ const CFG = {
   morebiz:{ textHold:1600, dimGap:600 },   // слайд 15: пауза после прорисовки контуров (зритель разглядывает кадр) · dimGap — от гашения контура героя до затемнения
   music:{ on:true, vol:0.3, xfade:1800, loopTail:2500 },   // фоновая музыка: вкл/выкл · громкость · кроссфейд смены трека (мс) · за сколько до конца заводить петлю (мс)
   lamp:{ on:true, vol:0.6, from:12.0, to:13.6 },   // «неоновая лампа» (эффект 1 на кнопке «Начать»): вкл/выкл · громкость · окно щелчка+миганий в mp3 (синхронно с neonBoot)
+  /* ═══ ФЛАГ АЛЬТЕРНАТИВНОГО СТИЛЯ «V5 · СРЕЗ-СМЕЩЕНИЕ» (из design-system.html) ═══
+     v5:true (ВКЛЮЧЕН) → на body класс .fx-v5:
+       слайд 1 — лого светит шире («свет от лого»), титул «Команда поддержки…» и кнопка «Начать» режутся полосами;
+       слайд 2 — слово «КВЕСТ» режется (остальные строки без изменений);
+       слайд 5 — кнопка «Начать бизнес» режется.
+     v5:false → прежний вид, без среза.
+     Переключить, не трогая код: ?style=off в адресе (обратно — ?style=v5). */
+  style:{ v5:true,
+          /* Значения 1-в-1 из демо design-system.html:
+             титул  (#sgDemo)        — strips 14 · amp 18 · glow 8px · core 2
+             кнопка (.nb-goldframe)  — strips 10 · amp 6  · glow 6px · core 1
+             общий множитель скорости 0.7×. Цвет полос = цвет зарева (в демо ползунок красит оба). */
+          slice:{ strips:{ title:14, btn:10, hard:14 },   // на сколько полос режем (титул / кнопка / «HARD»)
+                  amp:{ title:18, btn:6, hard:18 },       // амплитуда сдвига полосы, px
+                  speed:0.7,                              // множитель скорости (меньше = медленнее)
+                  glow:{ title:8, btn:6, hard:8 },        // радиус зарева, px
+                  core:{ title:2, btn:1, hard:2 },        // РАДИУС ядра (px), цвет ядра — --sg-corec, по умолч. #eaffff
+                  color:'#d9fbff',                        // цвет полос (зарево берёт --n-blue-2/3)
+                  // «HARD» (слайд 4, подслайд 2) — ровно тот же срез, только цвет КРАСНЫЙ (и полосы, и зарево).
+                  // corec — цвет раскалённого ядра трубки: штатный #eaffff холодный (почти циан) и на красном
+                  // читался как бело-синяя сердцевина. Берём тёплый. Совсем убрать ядро: core:0.
+                  // Пульс hardGlow при v5 выключен: это filter:drop-shadow поверх — давал двойное свечение.
+                  hard:{ color:'#ff2020', glowc:'#ff2020', corec:'#ffdede' } } },
 };
+/* флаг из адреса перекрывает CFG: ?style=v5 включает, ?style=off выключает */
+(()=>{ const s=new URLSearchParams(location.search).get('style');
+  if(s==='v5') CFG.style.v5=true; else if(s==='off') CFG.style.v5=false; })();
 
 /* ═══════════════════ ФОНОВАЯ МУЗЫКА ═══════════════════
    Три трека на весь квест. Три правила, из которых всё следует:
@@ -4162,7 +4225,7 @@ const dgSay=document.getElementById('dgSay');
 const dgFio=document.getElementById('dgFio');
 const dgTitle=document.getElementById('dgTitle');
 const DG_FIO='Байков С. Н.';
-const DG_SAY='Так, это уже наша работа — бизнес под защитой!';
+const DG_SAY='Так, это уже наша работа – бизнес под защитой!';
 let dgEndDone=false;
 function dgEndStart(){
   const guard=()=>id()==='danger';
@@ -4429,13 +4492,16 @@ const RULES_GOV ={fx:(1583/2172*100).toFixed(1)+'%', fy:(236/724*100).toFixed(1)
 /* СВОЙ титул у каждого подслайда: 0 «Правила игры» · 1 «Уровень сложности» · 2 «Тренды предпринимательства» */
 const RULES_TITLES=['Правила игры','Уровень сложности','Подсказки'];
 let rulesTitleShown='';
-const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после последнего блока добавляется красное «ХАРД»
-/* заполнить левый титул: обёртка .rt-main несёт неон; на «Уровне сложности» — скрытый .rt-hard «ХАРД» (проявится позже) */
+const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после последнего блока добавляется красное «HARD»
+/* заполнить левый титул: обёртка .rt-main несёт неон; на «Уровне сложности» — скрытый .rt-hard «HARD» (проявится позже) */
 function fillRulesTitle(step){
   const txt=RULES_TITLES[step]||'';
-  let html='<span class="rt-main">'+txt+'</span>';   // без двоеточия — «ХАРД» идёт отдельной строкой ниже
-  if(step===RULES_HARD_STEP) html+='<span class="rt-hard">ХАРД</span>';
+  let html='<span class="rt-main">'+txt+'</span>';   // без двоеточия — «HARD» идёт отдельной строкой ниже
+  if(step===RULES_HARD_STEP) html+='<span class="rt-hard">HARD</span>';
   rulesTitle.innerHTML=html;
+  // при v5 «HARD» режется полосами (красное зарево). Узел создан только что → нарезаем здесь, а не в applyStyleV5
+  if(CFG.style.v5 && step===RULES_HARD_STEP)
+    sliceEl(rulesTitle.querySelector('.rt-hard'), 'hard', CFG.style.slice.hard);
 }
 /* сменить левый титул подслайда с ПРОЯВЛЕНИЕМ (мгновенно скрыть → сменить текст → плавно проявить) */
 function setRulesTitle(step){
@@ -4463,7 +4529,7 @@ function showRules(){
   if(rules.classList.contains('intro')) return;                 // во время интро контент скрыт — не раскрываем
   setRulesTitle(rulesStep);                                     // свой титул подслайда (проявление при смене; на входе уже стоит — не мигает)
   const revEnd=revealRin(rSlides[rulesStep]);                   // построчный вылет .rin текущего подслайда; вернёт время конца
-  if(rulesStep===RULES_HARD_STEP){                              // «ХАРД» — проявляется ПОСЛЕ последнего блока
+  if(rulesStep===RULES_HARD_STEP){                              // «HARD» — проявляется ПОСЛЕ последнего блока
     const hard=rulesTitle.querySelector('.rt-hard');
     if(hard) gwTimers.push(setTimeout(()=>hard.classList.add('show'), revEnd));
   }
@@ -4496,7 +4562,7 @@ function revealRin(slide){
     g.forEach((e,j)=> gwTimers.push(setTimeout(()=>e.classList.add('show'), t + j*GW_INNER)));
     t += (g.length-1)*GW_INNER + GW_APPEAR + GW_PAUSE;
   });
-  return t;                                                     // время после последнего блока (для «ХАРД» на подслайде «Уровень сложности»)
+  return t;                                                     // время после последнего блока (для «HARD» на подслайде «Уровень сложности»)
 }
 function rulesFocus(f){ rulesVeil.style.setProperty('--fx',f.fx); rulesVeil.style.setProperty('--fy',f.fy); }
 /* РАЗВОРАЧИВАНИЕ из точки-фокуса: старт чёрный (--r 0) → раскрытие (--r 175%) */
@@ -4553,18 +4619,18 @@ const SCENES=[
   {id:'splash',   label:'Заставка'},
   {id:'hero',     label:'Знакомство с героем'},
   {id:'rules',    label:'Правила игры (3 подслайда: правила/уровень/тренды)'},
-  {id:'avatars',  label:'Помощники — 4 аватара'},
-  {id:'map',      label:'Сцена 3 — карта: объекты + маршруты → разведка → кафе'},
-  {id:'mission1', label:'МБМ — комплекс услуг (аватар Путилин)'},
-  {id:'mission1b',label:'МБМ — единый консультационный центр'},
+  {id:'avatars',  label:'Помощники – 4 аватара'},
+  {id:'map',      label:'Сцена 3 – карта: объекты + маршруты → разведка → кафе'},
+  {id:'mission1', label:'МБМ – комплекс услуг (аватар Путилин)'},
+  {id:'mission1b',label:'МБМ – единый консультационный центр'},
   {id:'quiz',     label:'КВИЗ (после консультационного центра)'},
-  {id:'binoc',    label:'Миссия 2 — найти деньги (ФСК, разведка → Банк, Купринов)'},
-  {id:'fsk',      label:'ФСК — финансирование'},
-  {id:'cafeopen', label:'Открытие кафе — cafe-2 → пыль → cafe-3 → опасность (эскаватор) → Байков'},
-  {id:'mission3', label:'Миссия 3 — защита бизнеса (cafe-3 + вывеска)'},
+  {id:'binoc',    label:'Миссия 2 – найти деньги (ФСК, разведка → Банк, Купринов)'},
+  {id:'fsk',      label:'ФСК – финансирование'},
+  {id:'cafeopen', label:'Открытие кафе – cafe-2 → пыль → cafe-3 → опасность (эскаватор) → Байков'},
+  {id:'mission3', label:'Миссия 3 – защита бизнеса (cafe-3 + вывеска)'},
   {id:'newcafe',  label:'Новый слайд (копия-база кафе-сцены)'},
   {id:'morebiz',  label:'Больше чем бизнес (интерьер кафе)'},
-  {id:'binoc2',   label:'Дубль слайда 10 — герой на крыше + раскрытие карты (без разведки)'},
+  {id:'binoc2',   label:'Дубль слайда 10 – герой на крыше + раскрытие карты (без разведки)'},
 ];
 /* какому подведу соответствует какая текстовая панель */
 /* POD (подвед-карточки ФПСП/Штаб/Финал) удалён вместе со слайдами — переходов «карточка наезжает» больше нет */
@@ -5099,7 +5165,7 @@ function applyScene(){
   resetDanger();
 
   let label=SCENES[cur].label;
-  if(sid==='map') label='Карта · шаг '+(mapStep+1)+'/'+MAP_STEPS+' — '+MAP_LABELS[mapStep];
+  if(sid==='map') label='Карта · шаг '+(mapStep+1)+'/'+MAP_STEPS+' – '+MAP_LABELS[mapStep];
   hint.textContent='['+(cur+1)+'/'+SCENES.length+'] '+label+'  ·  → далее  ← назад';
 }
 
@@ -5116,7 +5182,7 @@ const avRow=document.getElementById('avRow');
 const AVA=[
   {org:'МБМ',  name:'Путилин А. Р.', desc:'Комплексная поддержка бизнеса от старта до развития', img:'assets/img/objects/avatar-putilin.png', out:'assets/img/objects/avatar-putilin-outline.png', fit:{s:1, y:0}},
   {org:'ФСК',  name:'Купринов А. Э.', desc:'Финансовое обеспечение бизнес-процессов', img:'assets/img/objects/avatar-kuprinov.png', out:'assets/img/objects/avatar-kuprinov-outline.png', fit:{s:1, y:0}},
-  {org:'ШТАБ', name:'Байков С. Н.', desc:'Практическая помощь в проблемных ситуациях', img:'assets/img/objects/avatar-baikov-pad.png', out:'assets/img/objects/avatar-baikov-outline.png', fit:{s:1, y:0, oy:50}},   // Байков: PNG с запасом сверху (исходник 858×1218 «в облипку» → padded 1166×1412), s:1 без обреза
+  {org:'ШТАБ', name:'Байков С. Н.', desc:'Правовая помощь в сложных ситуациях', img:'assets/img/objects/avatar-baikov-pad.png', out:'assets/img/objects/avatar-baikov-outline.png', fit:{s:1, y:0, oy:50}},   // Байков: PNG с запасом сверху (исходник 858×1218 «в облипку» → padded 1166×1412), s:1 без обреза
   {org:'ФПСП', name:'Кремнева Н. С.', desc:'Поддержка социальных проектов', img:'assets/img/objects/avatar-kremneva.png', out:'assets/img/objects/avatar-kremneva-outline.png', fit:{s:1, y:0}},
   // fit:{s:размер, y:вертикаль%} — подгонка КАЖДОГО аватара под общий размер и выравнивание по глазам
 ];
@@ -5316,17 +5382,17 @@ const heroOutline=document.getElementById('heroOutline');
    side 'r' — справа от эллипса, якорь по ЛЕВОМУ краю (CSS left:edge%) к правой дуге, выключка влево, СТИЛЬ 2 (неон).
    edge = x дуги эллипса на середине блока (в % ширины стейджа); y = top блока (%). */
 const HERO_QUESTIONS=[
-  // ЛЕВЫЕ (сверху вниз) — правый край касается левой дуги эллипса (rx=327.5, шире прежнего)
-  {t:'Где найти идею для\nоткрытия бизнеса?',   side:'l', edge:59.8, y:2},
-  {t:'Как зарегистрировать\nбизнес?',           side:'l', edge:65.3, y:22},
-  {t:'Как подобрать локацию?',                  side:'l', edge:66.7, y:42},
-  {t:'Где взять деньги для\nразвития бизнеса?',  side:'l', edge:66.0, y:58},
-  {t:'Как повысить\nэффективность бизнеса?',     side:'l', edge:62.1, y:78},
-  // ПРАВЫЕ (сверху вниз) — левый край касается правой дуги эллипса (rx=327.5)
-  {t:'Как защитить свой\nбизнес?',              side:'r', edge:60.0, y:12},
-  {t:'Что делать, если я уже взял кредит,\nно не могу его платить?', side:'r', edge:63.0, y:33},
-  {t:'Как сделать бизнес\nболее технологичным?', side:'r', edge:63.0, y:54},
-  {t:'Что дает статус «социальное\nпредприятие» и как его получить?', side:'r', edge:60.0, y:74}
+  // 8 мыслей: 4 слева + 4 справа. edge — x дуги эллипса (cx1048 cy362 rx327.5 ry353) на СЕРЕДИНЕ блока
+  // ЛЕВЫЕ (сверху вниз) — правый край касается левой дуги эллипса
+  {t:'Как найти идею для\nоткрытия бизнеса?',    side:'l', edge:60.6, y:7},
+  {t:'Как зарегистрировать\nбизнес?',            side:'l', edge:65.7, y:28},
+  {t:'Как подобрать локацию?',                   side:'l', edge:66.8, y:51},
+  {t:'Где взять деньги?',                        side:'l', edge:65.1, y:71},
+  // ПРАВЫЕ (сверху вниз) — левый край касается правой дуги эллипса
+  {t:'Как повысить\nэффективность бизнеса?',     side:'r', edge:59.0, y:10},
+  {t:'Как защитить свой\nбизнес?',               side:'r', edge:62.6, y:31},
+  {t:'Как оценить пользу\nмоего бизнеса?',       side:'r', edge:63.2, y:52},
+  {t:'Как сделать бизнес\nболее технологичным?', side:'r', edge:61.2, y:72}
 ];
 /* мысли героя: hero — рукопись (.hthink, печать), hero2 — комикс-облака (.hcloud, остаются).
    Строим под сцену; heroQEls обновляется. */
@@ -5891,6 +5957,57 @@ function playLamp(cb){
 }
 /* перезапуск CSS-анимации: снять класс → reflow → вернуть (работает и для SVG) */
 function replayFx(el, cls){ if(!el)return; el.classList.remove(cls); el.getBoundingClientRect(); el.classList.add(cls); }
+
+/* ═══════════ V5 · СРЕЗ-СМЕЩЕНИЕ (порт из design-system.html; включается CFG.style.v5) ═══════════
+   Режем текст на N горизонтальных полос БЕЗ подложки: полоса — копия текста, обрезанная clip-path
+   до своей высоты, и уезжает по X независимо → на её месте остаётся фон (потеря цвета).
+   Метрики элемента НЕ нужны, поэтому строить можно до показа слайда (в т.ч. при display:none). */
+function buildSlice(el){
+  const n=+el.dataset.strips||12, amp=+el.dataset.amp||14, speed=+el.dataset.speed||1;
+  // <br> → \n: полосы рисуются с white-space:pre, поэтому перенос строки сохраняется
+  const txt = el.dataset.txt || (el.dataset.txt = el.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]*>/g,'').trim());
+  el.querySelectorAll('.sg-strip').forEach(s=>s.remove());          // сброс прежних полос
+  const bleed=0.6;                                                  // нахлёст полос, чтобы не было швов
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');
+    s.className='sg-strip'; s.textContent=txt;
+    const top=Math.max(0, i*100/n - bleed), bot=Math.max(0, 100-(i+1)*100/n - bleed);
+    s.style.clipPath='inset('+top+'% 0 '+bot+'% 0)';
+    // детерминированный псевдослучай из индекса — полосы не «прыгают» при пересборке
+    const r =Math.abs(Math.sin((i+1)*12.9898)*43758.5453)%1;
+    const r2=Math.abs(Math.sin((i+1)*78.233)*12543.132)%1;
+    s.style.animationDuration=((2.6+r*2.6)/speed).toFixed(2)+'s';   // базовая длительность 2.6..5.2с
+    s.style.animationDelay=(-r2*5).toFixed(2)+'s';
+    s.style.setProperty('--a', ((i%2?-1:1)*Math.round(amp*(0.4+r)))+'px');
+    el.appendChild(s);
+  }
+  el.classList.add('ready');
+}
+/* включение стиля: класс на body + нарезка помеченных элементов. Флаг выключен → функция ничего не делает */
+function applyStyleV5(){
+  if(!CFG.style.v5) return;
+  document.body.classList.add('fx-v5');                             // лого слайда 1 светит шире
+  sliceEl(document.getElementById('nlTxt'),  'title');               // слайд 1 — «Команда поддержки и развития…»
+  sliceEl(document.getElementById('qtQuest'),'title');               // слайд 2 — слово «КВЕСТ»
+  sliceEl(ccBtn.querySelector('.cbtn-txt'),  'btn');                 // слайд 1 — кнопка «Начать»
+  sliceEl(avCta.querySelector('.cbtn-txt'),  'btn');                 // слайд 5 — кнопка «Начать бизнес»
+  // «HARD» (слайд 4) режется не здесь: он пересоздаётся в fillRulesTitle при каждом заполнении титула
+}
+/* пометить элемент под срез и нарезать. kind — набор параметров из CFG.style.slice.
+   opt: {color, glowc, corec, core} — переопределение цвета полос / зарева / ядра и радиуса ядра
+   (например, красный «HARD»: ядро тёплое, иначе холодный #eaffff даёт бело-голубую сердцевину) */
+function sliceEl(el, kind, opt){
+  if(!el) return;
+  const S=CFG.style.slice;
+  el.classList.add('slice-glitch');
+  el.dataset.strips=S.strips[kind]; el.dataset.amp=S.amp[kind]; el.dataset.speed=S.speed;
+  el.style.setProperty('--sg-color', (opt&&opt.color) || S.color);
+  if(opt&&opt.glowc) el.style.setProperty('--sg-glowc', opt.glowc);   // иначе зарево из CSS: --n-blue-2/3
+  if(opt&&opt.corec) el.style.setProperty('--sg-corec', opt.corec);   // иначе ядро из CSS: #eaffff
+  el.style.setProperty('--sg-glow',  S.glow[kind]+'px');
+  el.style.setProperty('--sg-core',  (opt&&opt.core!=null) ? opt.core : S.core[kind]);
+  buildSlice(el);
+}
 /* 1-й клик на титуле: вуаль закрытия → чёрное → большая центр-кнопка «Начать» (ЭФФЕКТ 2, без звука) */
 function ccClose(){
   clearTimeout(ccCloseT);
@@ -6707,6 +6824,7 @@ function stopAlarm(){
   alarmEl.classList.remove('on');
   sirenStop(0);
 }
+applyStyleV5();          // альтернативный стиль (CFG.style.v5 / ?style=v5) — до первой отрисовки сцены
 applyScene();
 
 /* ===== загрузка на сплеше: плавный бар/процент; 5 текстов сменяются по времени; после 100% — титул; уход по клику ===== */
