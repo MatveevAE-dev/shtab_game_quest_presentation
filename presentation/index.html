@@ -2696,7 +2696,7 @@ const CFG = {
   fight:{ on:true, vol:0.5, from:5, dur:4.5, fade:900 },   // драка сл.13 (скорая решает вопрос — шутливо): тема Mortal Kombat, фрагмент с from сек · длина dur сек (в такт облаку: пыль гаснет на M3_DUST_OUT=4800мс) · fade — плавный уход в конце, мс
   newcafe:{ walk:2250, hold:450 },   // слайд 14: длительность ВСЕЙ прогулки женщины — от старта до входа, непрерывно (пара к --nc-walk) · hold — пауза после появления, перед стартом ходьбы
   baby:{ on:true, vol:0.45 },       // короткий плач ребёнка сл.14 (у входа без пандуса): вкл/выкл · громкость
-  morebiz:{ textHold:1600, dimGap:600 },   // слайд 15: пауза после прорисовки контуров (зритель разглядывает кадр) · dimGap — от гашения контура героя до затемнения
+  morebiz:{ textHold:1600, dimGap:600, outGap:450 },   // слайд 15: пауза после прорисовки контуров (зритель разглядывает кадр) · dimGap — от гашения контура героя до затемнения · outGap — пауза между обводкой соседних контуров (протез→меню→награда)
   music:{ on:true, vol:0.3, xfade:1800, loopTail:2500,   // фоновая музыка: вкл/выкл · громкость · кроссфейд смены трека (мс) · за сколько до конца заводить петлю (мс)
           titleIntro:true },   // ОТДЕЛЬНЫЙ 1-й клик на титуле, который включает пиксельную мелодию. false — как было: 1-й клик сразу даёт вуаль + кнопку «Начать» + трек «Загрузка», титульной мелодии нет вовсе
   lamp:{ on:true, vol:0.6, from:12.0, to:13.6 },   // «неоновая лампа» (эффект 1 на кнопке «Начать»): вкл/выкл · громкость · окно щелчка+миганий в mp3 (синхронно с neonBoot)
@@ -3861,7 +3861,8 @@ function coToNext(){
 }
 /* ═══ «БОЛЬШЕ ЧЕМ БИЗНЕС» (слайд 15): интерьер кафе + герой за стойкой ═══
    Шаги (mbStep): 0 герой по шаблону (искры→фото→контур→имя)
-                  1 подсветка награды и меню + затемнение + текст (контур героя и имя ГАСНУТ — не мешать чтению)
+                  1 обводка по очереди: ПРОТЕЗ → МЕНЮ → НАГРАДА → снимаем выделение героя+протеза+меню
+                    (награда остаётся) → затемнение → текст (контур героя и имя ГАСНУТ — не мешать чтению)
                   2 клик: текст ушёл → герою вернули контур и имя → level-up 4★→5★
                   клик: → ФПСП                                                            */
 const morebiz=document.getElementById('morebiz');
@@ -3922,21 +3923,37 @@ function playMbHero(){
     }
   }, CFG.hero.contour));
 }
-/* ШАГ 1 — подсветка НАГРАДЫ (контуры меню/протеза убраны) → пауза «разглядеть кадр» → затемнение + текст; контур героя и имя гаснут */
+/* ШАГ 1 — обводка ПО ОЧЕРЕДИ: протез → меню → награда → снимаем выделение героя+протеза+меню
+   (награда остаётся) → пауза «разглядеть кадр» → затемнение + текст; контур героя и имя гаснут */
 function mbHighlight(){
   if(mbStep>0) return; mbStep=1;
   mbTimers.splice(0).forEach(clearTimeout);
   mbNameTimers.splice(0).forEach(clearTimeout);
-  mbAward.classList.add('lit');               // награда с неоном — ЕДИНСТВЕННАЯ подсветка (контуры меню/протеза убраны)
-  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;   // держим кадр (зритель разглядывает)
-    mbHero.classList.remove('glow');          // 4) гаснет контур героя и панель имени — ПЕРЕД затемнением
-    mbName.classList.remove('show');
-    mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;   // 5) затемнение + титул + текст
+  const DRAW=1200;                            // длительность прорисовки одного контура (= ncDraw в CSS)
+  const G=CFG.morebiz.outGap;                 // пауза между соседними контурами
+  // обвести контур: показать → прорисовать (ncDraw) → перевести в пульс-свечение
+  const trace=(el)=>{ el.classList.add('show','draw');
+    mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return; el.classList.add('glow'); }, DRAW)); };
+  let t=0;
+  // 2) контур ПРОТЕЗА
+  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return; trace(mbArmOut); }, t));   t+=DRAW+G;
+  // 3) контур МЕНЮ
+  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return; trace(mbMenuOut); }, t));  t+=DRAW+G;
+  // 4) НАГРАДА (неон-подсветка — контура-SVG у неё нет, светится сама картинка)
+  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return; mbAward.classList.add('lit'); }, t));
+  t+=DRAW+CFG.morebiz.textHold;               // держим кадр (зритель разглядывает)
+  // 5) снимаем выделение ГЕРОЯ + ПРОТЕЗА + МЕНЮ (награда остаётся светиться)
+  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;
+    mbHero.classList.remove('glow'); mbName.classList.remove('show');   // контур героя и панель имени гаснут
+    mbArmOut.classList.remove('show','draw','glow');                    // контур протеза убираем
+    mbMenuOut.classList.remove('show','draw','glow');                   // контур меню убираем
+    // 6) затемнение + 7) титул + текст
+    mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;
       mbDark.classList.add('show');           // затемнение сцены
       mbBrand.classList.add('show');          // титул слева (стиль слайда 11)
       revealPod(mbPod, mbTimers);             // построчное появление текста
     }, CFG.morebiz.dimGap));
-  }, 1200+CFG.morebiz.textHold));
+  }, t));
 }
 /* ШАГ 2 (клик) — текст ушёл → герою вернули контур и имя → level-up 4★→5★ */
 function mbReward(){
@@ -3967,10 +3984,14 @@ function skipMbHero(){
   mbHtext.textContent=MB_HERO_NAME; mbHtext.classList.add('typed');
   mbHighlight();
 }
-/* скип шага 1: контуры в пульсе + затемнение + титул + весь текст сразу (не ждём паузу «разглядеть кадр») */
+/* скип шага 1: сразу финальное состояние — награда светится, выделение героя/протеза/меню снято, затемнение + текст */
 function skipMbText(){
   mbTimers.splice(0).forEach(clearTimeout);
-  mbDark.classList.add('show'); mbBrand.classList.add('show'); podRinAll(mbPod);   // контуры меню/протеза не подсвечиваем — только награда (mbAward.lit выставляется в mbHighlight/skip-intro)
+  mbAward.classList.add('lit');                      // награда остаётся выделена
+  mbHero.classList.remove('glow'); mbName.classList.remove('show');   // выделение героя снято
+  mbArmOut.classList.remove('show','draw','glow');   // контур протеза снят
+  mbMenuOut.classList.remove('show','draw','glow');  // контур меню снят
+  mbDark.classList.add('show'); mbBrand.classList.add('show'); podRinAll(mbPod);
 }
 function skipMbLevel(){
   mbTimers.splice(0).forEach(clearTimeout);
