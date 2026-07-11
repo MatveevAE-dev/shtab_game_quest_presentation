@@ -7,6 +7,7 @@
 <!-- шрифты локально, встроены base64 (офлайн, без интернета) — см. assets/fonts/fonts.css -->
 <link href="assets/fonts/fonts.css" rel="stylesheet">
 <link href="assets/fonts/neon-fonts.css" rel="stylesheet">   <!-- AA Neon · LIBRARY 3 AM · mr Neon Sans (кириллица, base64) — титул слайда 1 -->
+<link href="assets/fonts/exo2.css" rel="stylesheet">        <!-- Exo 2 (вариативный, кириллица) — 2-й вариант дизайн-системы: ?design=neuro2 -->
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:system-ui,sans-serif}
@@ -46,6 +47,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   --sh-read:0 .2vw 1vw rgba(0,0,0,.55);        /* читаемость текста на фото (×8) */
   --sh-base:0 2px 8px rgba(0,0,0,.95);         /* тёмная база под неон-текст (×6) */
   --glow-cyan:0 0 16px rgba(var(--cyan-rgb),.4);   /* небольшой циан-glow (×3) */
+  /* ═══ ПАЛИТРА ДИЗАЙН-СИСТЕМЫ (флаг CFG.style.ds / .ds-neuro): тёплый неон = база текста, синий = акцент ═══ */
+  --ds-warm-core:#fff4e2; --ds-warm-1:#ffd9a0; --ds-warm-2:#ffb765; --ds-warm-3:#ff9a3d;
+  --ds-blue-core:#e6fbff; --ds-blue-1:#8fe9ff; --ds-blue-2:#27e3ff; --ds-blue-3:#0bb6e6;
+  --ds-dim:#8ea0b6;   /* описания — серый, без свечения */
   /* ═══ СКОРОСТЬ ВУАЛЕЙ (раскрытие/сворачивание). Меняешь тут → все вуали этой роли. (JS-override у hero/rules/morebiz/av — пока литералы) ═══ */
   --veil-fast:1s;      /* СТАНДАРТ: все раскрытия/закрытия сцен (= вуаль av «Начать бизнес», 1с) */
   --veil-quick:1.6s;   /* резерв: подержать сцену чуть дольше (по умолчанию не используется) */
@@ -134,11 +139,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .herobox .hstars .star{font-size:1.5cqh;line-height:1}          /* звёзды под размер текста имени */
 .herobox .hstars .star.on{color:var(--gold);text-shadow:0 0 6px rgba(255,210,74,.6)}
 .herobox .hstars .star.off{color:rgba(255,255,255,.22)}
-/* имя: короткое («Новый игрок») — в одну строку; длинное («Начинающий предприниматель») — переносится */
-/* Кап = ширина самого длинного слова во всех LEVEL_NAMES — «ПРЕДПРИНИМАТЕЛЬ»:
-   глифы 10.42em + 15 символов × letter-spacing 1px. Короткое имя («Новый игрок») влезает в строку,
-   длинное переносится, и короб получается ровно по слову — без пустоты справа. */
-.herobox .htext{display:block;white-space:normal;text-align:left;width:max-content;max-width:calc(10.42em + 15px);line-height:1.15}
+/* имя героя ВСЕГДА в 2 строки (все ранги двухсловные: «Новый игрок», «Начинающий предприниматель» …).
+   width:min-content = короб ровно по САМОМУ ДЛИННОМУ слову В ТЕКУЩЕМ шрифте → каждое слово на своей строке,
+   слово никогда не вылезает (ни Hauss, ни широкий Neuropol X при ?design=neuro), короб авто-подстраивается. */
+.herobox .htext{display:block;white-space:normal;text-align:left;width:min-content;line-height:1.15}
 .herobox .htext::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
 .herobox .htext.typed::after{content:""}
 /* контур короба имени героя — чёткая циан-рамка + свечение (читается и на светлом фоне) */
@@ -404,8 +408,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* заставка после загрузки — титул ЗАЖИГАЕТСЯ как неон-вывеска (ЭФФЕКТ 2) и остаётся жить idle-мерцанием */
 .quest-title{display:none;position:relative}
 .quest-title.show{display:flex;flex-direction:column;align-items:center;gap:2.5vw}
-.quest-title .qt-line{opacity:0}                        /* до включения не видно; opacity даёт сама анимация */
-.quest-title .qt-line.on{animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}   /* ЭФФЕКТ 2 (дизайн-система): резкий набор → спокойное свечение → мерцание */
+.quest-title .qt-line{opacity:0}                        /* до включения не видно */
+/* ПОСЛЕДОВАТЕЛЬНОЕ появление: контейнер виден мгновенно (+ мерцание neonIdle для лого),
+   а лого и 3 слова зажигаются ПО ОЧЕРЕДИ (см. .qt-logo-box / .qt-w ниже). Работает при любых флагах. */
+.quest-title .qt-line.on{opacity:1;animation:neonIdle 3.6s ease-in-out infinite}
+/* --qt-step — базовая пауза между словами. Пауза перед КВЕСТ = ×2 (слово 3 стартует на 3×step). */
+.quest-title{--qt-step:.55s}
+.qt-art .qt-logo-box, .qt-txt .qt-w{opacity:0}          /* до своей очереди скрыты */
+.qt-txt .qt-w{display:inline-block}                     /* чтобы filter/opacity корректно ложились на слово */
+.qt-line.on .qt-logo-box{animation:neonOn .9s ease-out both}                       /* лого — с первым словом */
+.qt-line.on .qt-w:nth-of-type(1){animation:neonOn .9s ease-out both}               /* МОСКОВСКИЙ — сразу */
+.qt-line.on .qt-w:nth-of-type(2){animation:neonOn .9s ease-out var(--qt-step) both}          /* ПРЕДПРИНИМАТЕЛЬСКИЙ — +step */
+.qt-line.on .qt-w:nth-of-type(3){animation:neonOn .9s ease-out calc(var(--qt-step)*3) both}  /* КВЕСТ — +3×step (пауза перед ним ×2) */
 @keyframes titlePop{
   0%{opacity:0;transform:scale(.18)}
   60%{opacity:1;transform:scale(1.06)}
@@ -809,15 +823,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
    Подсвеченные объекты (меню x 4.3–9.4% y 54–63%, награда y 69–90%) остаются слева под титулом,
    герой (x 63.5–73%) на шаге текста затемнён — контур и имя погашены. */
 #morebiz #mbBrand{z-index:9}                       /* титул — НАД затемнением .mb-dark (z7) */
-.mb-text{position:absolute;right:4%;top:calc(27% - 5cqw);width:44%;z-index:9;pointer-events:none;
+/* ── СЛАЙД 15: БАЗА = СТАНДАРТНАЯ вёрстка (для ?design=off и ?design=neuro2/Exo 2 — шрифты ПЛОТНЕЕ, влезает без сжатия).
+   Кегль текста/иконок/отступы — как на др. слайдах этого типа (.ch-title базовые 1.6cqw, иконка 2.2cqw). Позиция/ширина — общие для всех режимов. ── */
+.mb-text{position:absolute;right:3%;top:calc(27% - 7.5cqw);width:53%;z-index:9;pointer-events:none;   /* поднят на 2.5cqw (было -5cqw): 6-й блок «…наклейки» упирался в низ/чёрную рамку. Левый край ~44% — сдвинут левее к центру; не наезжает на награду (правый край 42.3%) */
   display:flex;flex-direction:column;justify-content:flex-start;gap:.9cqw;
   color:#fff;font-family:var(--font-text);text-align:left}
 .mb-text .ch-list{gap:.7cqw}
-/* висячий отступ: перенос строки идёт ПОД ТЕКСТ, не под иконку (иконка 2.2cqw + зазор .6cqw) */
+/* висячий отступ: перенос строки идёт ПОД ТЕКСТ, не под иконку (иконка 2.2cqw + зазор .6cqw).
+   text-indent НАСЛЕДУЕТСЯ, а .gw-ico — inline-block: без сброса отступ применился бы второй раз внутри иконки. */
 .mb-text .ch-title{padding-left:2.8cqw;text-indent:-2.8cqw}
-/* text-indent НАСЛЕДУЕТСЯ, а .gw-ico — inline-block (блочный контейнер): без сброса
-   отрицательный отступ применялся второй раз внутри иконки и уводил её рисунок влево от заголовка. */
-.mb-text .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw;text-indent:0}   /* размеры как на слайде 11 */
+.mb-text .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw;text-indent:0}
+/* ── СЛАЙД 15 при ?design=neuro (Neuropol X — ШИРЕ, больше переносов): СЖАТАЯ вёрстка — мельче кегль/иконка, плотнее
+   отступы, верх выше, чтобы все 6 блоков влезли. НЕ для Exo (:not(.ds-exo)) и не для off. ── */
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text{top:calc(21% - 5cqw);gap:.8cqw}
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-list{gap:.8cqw}
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-title{font-size:1.4cqw;line-height:1.12;padding-left:2.4cqw;text-indent:-2.4cqw}
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-title .gw-ico{width:1.85cqw;height:1.85cqw;margin-right:.55cqw;vertical-align:-.3cqw}
 .mission3{position:absolute;inset:0;z-index:16;background:var(--bg);display:none}
 .mission3.show{display:block}
 .m3-stage{position:absolute;inset:0;margin:auto;overflow:hidden;z-index:1;
@@ -886,6 +907,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .m3-dark.show{opacity:1}
 /* текст подведа на кафе-сцене — раскладку держит .podbig; здесь только слой над затемнением + проявление по .show */
 .m1-text{z-index:7;pointer-events:none}
+/* слайд 7 (mission1): блок ШИРЕ (заголовок «Полный комплекс нефинансовых услуг для бизнеса» — в 2 строки).
+   Расширяем вправо (right 4%→2%) + добавляем ширины; левый край 44%→40% (в пустоте, до героя с 23% и лого далеко). */
+#pod-mission1{right:2%;width:58%}
 .m1-text .ln{opacity:0;transform:translateY(30px);
   transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1)}
 .m1-text.show .ln{opacity:1;transform:none}
@@ -948,13 +972,14 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 /* реплика НАД аватаром: низ прибит к верху аватара, растёт вверх → аватар не двигается */
 .hero-say.mission-say{position:absolute;left:50%;bottom:calc(100% + 1.6cqh);top:auto;right:auto;
   transform:translate(-50%,10px) scale(.96);transform-origin:center bottom;
+  font-size:2.3cqh;   /* реплика аватара-миссии (сл.6/10/12/14) — крупнее (база .hero-say = 1.9cqh) */
   width:100%;max-width:none;margin:0}   /* ширина = ширина октаэдра (.mission-ava 48cqh) */
 .hero-say.mission-say.show{transform:translate(-50%,0) scale(1)}
-/* реплика Купринова (слайд 10) — ровно 2 строки: 2-я длиннее октаэдра, поэтому пузырь растёт по контенту */
-#missionSay{width:max-content;max-width:70cqw}
+/* реплика Купринова (слайд 10) — ширина = октаэдр (.mission-ava 48cqh); длинная 2-я строка переносится */
+#missionSay{width:100%;max-width:none}
 /* ФИО ПОД аватаром: верх прибит к низу аватара → аватар не двигается */
 .mission-name{position:absolute;left:50%;top:calc(100% + 1.4cqh);transform:translateX(-50%);opacity:0;
-  font-family:var(--font-text);font-weight:700;color:#fff;font-size:1.9cqh;
+  font-family:var(--font-text);font-weight:700;color:#fff;font-size:2.3cqh;   /* ФИО аватара-миссии (сл.6/10/12/14) — крупнее */
   text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
   padding:.35em .8em;border:1px solid var(--cyan-soft);border-radius:.3em;
   background:rgba(8,16,30,.95);box-shadow:0 0 18px rgba(var(--cyan-rgb),.25)}
@@ -1259,6 +1284,178 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 @keyframes neonIdle{ 0%,100%{filter:brightness(1)} 17%{filter:brightness(1.06)} 19%{filter:brightness(.9)}
   21%{filter:brightness(1.05)} 46%{filter:brightness(.97)} 63%{filter:brightness(1.05)}
   71%{filter:brightness(.92)} 73%{filter:brightness(1.03)} 88%{filter:brightness(1)}}
+/* ══════════════════════════════════════════════════════════════════════════
+   ДИЗАЙН-СИСТЕМА НА NEUROPOL X (флаг CFG.style.ds → body.ds-neuro)
+   Весь текст — Neuropol X + гамма design-system.html. Свечение — тёплый неон
+   (база) / синий (акцент), рецепты 1-в-1 из design-system.html (glow-text/head/title).
+   Затемнение под текстом уже есть на всех сценах, поэтому тёплый читается.
+   «Живое» свечение = мерцание неоновой лампы (neonIdle) на всех ролях.
+   Роли ФИО/имена объектов/реплики НЕ трогаем — у них своя игровая механика. */
+/* 2-Й ВАРИАНТ (body.ds-exo, ?design=neuro2 / ?design=exo): та же система, но ВЕСЬ шрифт → Exo 2.
+   Весь ДС-текст берёт шрифт из токена var(--n-neuro) — переопределяем токен, меняется всюду одним махом. */
+body.ds-exo, body.ds-mix{--n-neuro:'Exo 2',sans-serif}   /* neuro2 — весь текст Exo 2; neuro3 (ds-mix) — база Exo 2, титулы/кнопки вернём на Neuropol X ниже */
+body.ds-neuro .mt-name, body.ds-neuro .ct-name, body.ds-neuro .rtitle,     /* ТИТУЛ (rtitle — «Игровой мир: Москва» сл.4-1) */
+body.ds-neuro .fsk-h, body.ds-neuro .podbig .ptitle, body.ds-neuro .podtext .h,   /* ЗАГОЛОВОК */
+body.ds-neuro .ch-title, body.ds-neuro .podbig .psub, body.ds-neuro .podtext .s, body.ds-neuro .fsk-hi,
+body.ds-neuro .gw-label, body.ds-neuro .gw-val,          /* ОСН. ТЕКСТ (+ метки/значения сл.4-1) */
+body.ds-neuro .ch-desc, body.ds-neuro .gw-cap,           /* ОПИСАНИЕ (+ подписи сл.4-1) */
+body.ds-neuro .mt-kicker, body.ds-neuro .ct-kicker,      /* КИКЕР */
+body.ds-neuro .quiz-ans-txt,                             /* ВАРИАНТЫ ОТВЕТОВ квиза (осн. текст) */
+body.ds-neuro .rnum, body.ds-neuro .accent-num, body.ds-neuro .quiz-count,   /* АКЦЕНТ (числа + счётчик «1/5») */
+body.ds-neuro .ava-org, body.ds-neuro .ava-name, body.ds-neuro .ava-desc,    /* сл.5: подписи аватара — подразделение/ФИО/описание (роли ниже) */
+body.ds-neuro .hthink{                                    /* МЫСЛИ героя сл.3 — через синий акцент */
+  font-family:var(--n-neuro);
+  animation:neonIdle 3.6s ease-in-out infinite;           /* мерцание неоновой лампы вместо статики */
+}
+/* десинхрон соседних ролей, чтобы не мигали в унисон */
+body.ds-neuro .ch-title{animation-duration:3.3s}
+body.ds-neuro .ch-desc, body.ds-neuro .gw-cap{animation-duration:4.1s}
+body.ds-neuro .fsk-h{animation-duration:4.4s}
+
+/* ── ТИТУЛ: тёплый неон, ядро #fff, зарево 2/8/22/44/80px (glow-title n-warm) ── */
+body.ds-neuro .mt-name, body.ds-neuro .ct-name, body.ds-neuro .rtitle{
+  color:var(--ds-warm-core);font-weight:400;
+  text-shadow:var(--sh-base),0 0 2px #fff,0 0 8px var(--ds-warm-1),0 0 22px var(--ds-warm-2),0 0 44px var(--ds-warm-3),0 0 80px rgba(255,138,31,.5)}
+/* ── ЗАГОЛОВОК: тёплый, ядро #fff, 1/6/16/30px (glow-head n-warm) ── */
+body.ds-neuro .fsk-h, body.ds-neuro .podbig .ptitle, body.ds-neuro .podtext .h{
+  color:var(--ds-warm-core);
+  text-shadow:var(--sh-base),0 0 1px #fff,0 0 6px var(--ds-warm-1),0 0 16px var(--ds-warm-2),0 0 30px rgba(255,154,61,.55)}
+/* ── ОСН. ТЕКСТ: тёплый core, тонкий (300), 1/4/9px (glow-text n-warm). Метки сл.4-1 чуть плотнее (600) ── */
+body.ds-neuro .ch-title, body.ds-neuro .podbig .psub, body.ds-neuro .podtext .s, body.ds-neuro .fsk-hi,
+body.ds-neuro .gw-label, body.ds-neuro .gw-val, body.ds-neuro .quiz-ans-txt, body.ds-neuro .ava-name{   /* +ФИО аватара сл.5 */
+  color:var(--ds-warm-core);font-weight:300;
+  text-shadow:var(--sh-base),0 0 1px var(--ds-warm-core),0 0 4px var(--ds-warm-1),0 0 9px rgba(255,154,61,.5)}
+body.ds-neuro .gw-label{font-weight:600}                  /* «Игроки:/Союзники:/Ресурсы:» — заметнее значения */
+/* neuro2 (Exo 2): ВЕСЬ текст → вес 600 (у Exo 2 тонкие/жирные веса Neuropol-варианта смотрятся не так) */
+body.ds-exo .ch-title, body.ds-exo .podbig .psub, body.ds-exo .podtext .s, body.ds-exo .fsk-hi,
+body.ds-exo .gw-label, body.ds-exo .gw-val, body.ds-exo .quiz-ans-txt, body.ds-exo .ava-name,   /* ОСН. ТЕКСТ */
+body.ds-exo .mt-name, body.ds-exo .ct-name, body.ds-exo .rtitle,                                 /* ТИТУЛ (роль ДС) */
+body.ds-exo .fsk-h, body.ds-exo .podbig .ptitle, body.ds-exo .podtext .h,                         /* ЗАГОЛОВОК */
+body.ds-exo .nl-title, body.ds-exo .levelup-banner,                                              /* титул сл.1 «КОМАНДА…» + баннер «УРОВЕНЬ ПОВЫШЕН» */
+body.ds-exo .cbtn,                                                                               /* кнопки «Начать» (сл.1) + «Начать бизнес» (сл.5) */
+body.ds-exo .rules-title .rt-main, body.ds-exo .rules-carry .rules-carry-title{font-weight:600}  /* левый док сл.4 + переносимые «ПРАВИЛА ИГРЫ»/«ПРОВОДНИКИ» */
+/* neuro3 (ds-mix): ОСН. ТЕКСТ тоже 600 (титулы/заголовки/кнопки/подразделения уже 600 через общий пульт body.ds-neuro ниже) */
+body.ds-mix .ch-title, body.ds-mix .podbig .psub, body.ds-mix .podtext .s, body.ds-mix .fsk-hi,
+body.ds-mix .gw-label, body.ds-mix .gw-val, body.ds-mix .quiz-ans-txt, body.ds-mix .ava-name{font-weight:600}
+/* ── ОПИСАНИЕ: ТЁПЛЫЙ (не серый — на фото не читался), приглушённее осн. текста: warm-1 + слабое зарево ── */
+body.ds-neuro .ch-desc, body.ds-neuro .gw-cap, body.ds-neuro .ava-desc{color:var(--ds-warm-1);font-weight:400;   /* +описание аватара сл.5 */
+  text-shadow:var(--sh-base),0 0 1px var(--ds-warm-1),0 0 4px rgba(255,154,61,.4)}
+/* ── КИКЕР: синий узкий ── */
+body.ds-neuro .mt-kicker, body.ds-neuro .ct-kicker{
+  color:var(--ds-blue-1);font-weight:600;
+  text-shadow:var(--sh-base),0 0 4px var(--ds-blue-2),0 0 10px var(--ds-blue-3)}
+/* ── АКЦЕНТ (числа + счётчик «1/5») + МЫСЛИ героя: синий n-blue — белая заливка + тёмная база + узкий циан ── */
+body.ds-neuro .rnum, body.ds-neuro .accent-num, body.ds-neuro .quiz-count, body.ds-neuro .hthink,
+body.ds-neuro .ava-org{                                   /* +название подразделения аватара сл.5 */
+  color:#fff;font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 3px var(--ds-blue-2),0 0 9px var(--ds-blue-2)}
+/* ФИО аватара (сл.5): роль «осн. текст» — плоский неон-текст, поэтому боксовую плашку убираем (рамка/фон/тень/отступ) */
+body.ds-neuro .ava-name{border:none;background:none;box-shadow:none;padding:0}
+/* СЛАЙД 5 ТОЛЬКО при ?design=neuro (Neuropol X ШИРЕ Hauss — не влезало): кегль подписей ×0.85, описание чуть шире октаэдра.
+   Для ?design=neuro2 (Exo 2, плотнее) и ?design=off (Hauss) — СТАНДАРТНЫЙ размер (база), поэтому :not(.ds-exo). */
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .ava-org{font-size:1.8cqw}                  /* подразделение «МБМ/ФСК/…» (база 2.15cqw) */
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .ava-name, body.ds-neuro:not(.ds-exo):not(.ds-mix) .ava-desc{font-size:calc(var(--sz-ava)*.85)}
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .ava-desc{max-width:115%}                   /* описание — немного за рамки октаэдра */
+/* ── БУКВЫ В ОКТАЭДРАХ (А/Б/В, SVG-текст .q-hl): Neuropol X + синий акцент (fill, свечение через filter) ── */
+body.ds-neuro .quiz-ans-mark .q-hl{font-family:var(--n-neuro);fill:var(--ds-blue-core);
+  filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--ds-blue-2)) drop-shadow(0 0 9px var(--ds-blue-3))}
+
+/* ── ИГРОВЫЕ РОЛИ → синий АКЦЕНТ Neuropol X: реплики аватаров, названия объектов на карте, имя героя.
+      Плашки/рамки/каретки (циан) оставляем — они и так акцент-цвета. ── */
+body.ds-neuro .hero-say, body.ds-neuro .mapname, body.ds-neuro .mission-name,
+body.ds-neuro .bmark-name,
+body.ds-neuro .bmark-name .bn-title,                      /* у .bn-title СВОЙ font-family (стр.991) — бьёт наследование, задаём явно */
+body.ds-neuro .bmark-name .bn-params{                     /* метка объекта в БИНОКЛЕ (разведка сл.6/10) */
+  font-family:var(--n-neuro);animation:neonIdle 3.6s ease-in-out infinite}
+body.ds-neuro .hero-say, body.ds-neuro .mapname, body.ds-neuro .herobox .htext, body.ds-neuro .mission-name,
+body.ds-neuro .bmark-name .bn-title{                      /* название объекта в бинокле */
+  color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 3px var(--ds-blue-2),0 0 9px var(--ds-blue-2)}
+/* (neuro-кап max-width у имени героя УБРАН — ширину держит fit-content(): пол по min-content = самое длинное слово
+   в ТЕКУЩЕМ шрифте, поэтому короб авто-подстраивается и в Neuropol X, слово не вылезает. См. .herobox .htext.) */
+/* красная часть реплики Байкова (тревога) — своё красное свечение, чтобы не унаследовать синее */
+body.ds-neuro .say-alarm{color:var(--alarm);text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px #ff2020,0 0 4px #ff2020,0 0 10px #ff2020}
+/* neuro: слово «Москва» (сл.4) и правые МЫСЛИ героя (сл.3, .tstyle-neon) — стиль АКЦЕНТА ДС, как цифра «937»:
+   белое ядро + узкий синий ореол + мерцание neonIdle. Глушим циан-glow thinkGlowNeon и тёплый цвет-инерит титула.
+   (Левые мысли уже в акцент-группе .rnum/.hthink выше — трогать не нужно.) */
+body.ds-neuro .gw-city,
+body.ds-neuro .hthink.tstyle-neon.show{
+  color:#fff;font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 3px var(--ds-blue-2),0 0 9px var(--ds-blue-2);
+  animation:neonIdle 3.6s ease-in-out infinite}
+/* ── neuro: титулы слайдов 4 и 5 + баннер «УРОВЕНЬ ПОВЫШЕН» → стиль слова «МОСКОВСКИЙ» (сл.2):
+   Neuropol X, белое ядро + тёмная база + УЗКИЙ синий неон 1/5/14px (глушим циан-filter thinkGlowNeon).
+   Левый док слайда 4 = .rules-title .rt-main; переносимые «ПРАВИЛА ИГРЫ»/«ПРОВОДНИКИ» = .rules-carry-title.
+   h2 «Игровой мир: Москва» (.rtitle) СЮДА НЕ входит — «Игровой мир:» остаётся ТЁПЛЫМ ТИТУЛОМ (роль выше), «Москва» = синий акцент (.gw-city).
+   «HARD» (.rt-hard) НЕ трогаем — остаётся красным. ── */
+body.ds-neuro .rules-title .rt-main,
+body.ds-neuro .rules-carry .rules-carry-title,
+body.ds-neuro .levelup-banner{
+  font-family:var(--n-neuro);color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 5px var(--ds-blue-2),0 0 14px var(--ds-blue-2)}
+/* мерцание неоновой лампы (как остальной neuro) — ТОЛЬКО там, где нет собственной entrance-анимации.
+   Слайд-4 carry «ПРАВИЛА ИГРЫ» держит titlePop (появление) — его animation НЕ трогаем (свечение синее статикой);
+   слайд-5 avttl «ПРОВОДНИКИ» без pop — там глушим циан thinkGlowNeon мерцанием neonIdle. */
+body.ds-neuro .rules-title .rt-main,
+body.ds-neuro .rules-carry.avttl .rules-carry-title{animation:neonIdle 3.6s ease-in-out infinite}
+/* баннер уровня: сохраняем движение lvlBanner (pop→подъём), гасим бело-циан lvlPulse; добавляем мерцание. Синее свечение — статикой из правила выше. */
+body.ds-neuro .levelup-banner.play{animation:lvlBanner 2.86s ease forwards, neonIdle 3.6s ease-in-out infinite}
+
+/* ── ТИТУЛ «Команда…» (сл.1) и КНОПКИ «Начать»/«Начать бизнес»: срез (v5) остаётся,
+      но шрифт полос → Neuropol X (был LIBRARY 3 AM), цвет → синий акцент ДС.
+      Шрифт задаём на контейнере — полосы .sg-strip его наследуют. ── */
+/* Титул «Команда» (сл.1), заставка «…КВЕСТ» (сл.2), кнопки, HARD (сл.4) — все на Neuropol X */
+body.ds-neuro .nl-title, body.ds-neuro .cbtn, body.ds-neuro .qt-txt,
+body.ds-neuro .rules-title .rt-hard{font-family:var(--n-neuro)}
+/* neuro: Neuropol X ШИРЕ LIBRARY 3 AM — строка «КОМАНДА ПОДДЕРЖКИ И РАЗВИТИЯ» (сл.1) перерастала экран и обрезалась
+   (срез-полосы .sg-strip рендерят строку целиком, max-width не действует). Уменьшаем кегль под ширину строки. */
+body.ds-neuro .nl-title{font-size:7cqh}
+/* синий акцент полос: титул сл.1, кнопки, слово КВЕСТ. HARD НЕ включён — его полосы остаются красными (sliceEl hard) */
+body.ds-neuro .nl-title .sg-strip, body.ds-neuro .cbtn .sg-strip, body.ds-neuro .qt-quest .sg-strip{
+  color:var(--ds-blue-core);
+  text-shadow:0 0 1px #fff,0 0 6px var(--ds-blue-2),0 0 16px var(--ds-blue-3)}
+/* кнопки БЕЗ среза (флаг v5 выключен) — тоже Neuropol X + акцент-синий текст/рамка */
+body.ds-neuro .cbtn{color:var(--ds-blue-core);border-color:var(--ds-blue-2)}
+
+/* ── ПУЛЬТ ВЕСОВ (?design=neuro): титулы / заголовки / кнопки / названия подразделений → 600.
+   Один блок = единый вес. Стоит ПОСЛЕ определений ролей → при равной специфичности бьёт их по порядку.
+   Срез-титулы (.nl-title/.qt-txt) и срез-кнопки (.cbtn): полосы .sg-strip веса не задают → наследуют 600 от контейнера. ── */
+body.ds-neuro .mt-name, body.ds-neuro .ct-name, body.ds-neuro .rtitle,          /* ТИТУЛ (роль ДС) */
+body.ds-neuro .nl-title, body.ds-neuro .qt-txt,                                 /* титул сл.1 «КОМАНДА…» + заставка «…КВЕСТ» */
+body.ds-neuro .rules-title .rt-main, body.ds-neuro .rules-carry .rules-carry-title, body.ds-neuro .levelup-banner,  /* титулы сл.4/5 + баннер уровня */
+body.ds-neuro .fsk-h, body.ds-neuro .podbig .ptitle, body.ds-neuro .podtext .h, /* ЗАГОЛОВОК */
+body.ds-neuro .cbtn,                                                            /* КНОПКИ «Начать»/«Начать бизнес» */
+body.ds-neuro .ava-org, body.ds-neuro .fsk-ttl .ttl-txt{                        /* НАЗВАНИЯ ПОДРАЗДЕЛЕНИЙ: «ФСК/МБМ…» (сл.5) + «Малый бизнес Москвы» */
+  font-weight:600}
+
+/* ── ЭКРАН ЗАГРУЗКИ (сл.2): шрифт Neuropol X всем. Логи + процент — синий АКЦЕНТ, «Гружу…» — тёплый ОСН.ТЕКСТ ── */
+body.ds-neuro .load-log .ll, body.ds-neuro .intro-pct, body.ds-neuro .intro-load{font-family:var(--n-neuro)}
+body.ds-neuro .load-log .ll{animation:neonIdle 3.6s ease-in-out infinite}   /* появление логов — через класс, не анимацию, поэтому neonIdle безопасен */
+/* процент и подпись появляются через fadeUp (базово opacity:0) — СОХРАНЯЕМ его, добавляем neonIdle ВТОРОЙ анимацией с той же задержкой */
+body.ds-neuro .intro-pct{animation:fadeUp .8s .8s forwards, neonIdle 3.6s ease-in-out .8s infinite}
+body.ds-neuro .intro-load{animation:fadeUp .8s .9s forwards, neonIdle 3.6s ease-in-out .9s infinite}
+/* логи (вкл. завершённые .done, что белеют) + процент — синий акцент (n-blue: белая заливка + тёмная база + узкий циан) */
+body.ds-neuro .load-log .ll, body.ds-neuro .load-log .ll.done, body.ds-neuro .intro-pct{
+  color:#fff;font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 3px var(--ds-blue-2),0 0 9px var(--ds-blue-2)}
+/* «Гружу-гружу…» — тёплый осн. текст (1/4/9px) */
+body.ds-neuro .intro-load{color:var(--ds-warm-core);font-weight:300;
+  text-shadow:var(--sh-base),0 0 1px var(--ds-warm-core),0 0 4px var(--ds-warm-1),0 0 9px rgba(255,154,61,.5)}
+
+/* ═══ 3-й ВАРИАНТ ?design=neuro3 (body.ds-mix) — СМЕШАННЫЙ ШРИФТ ═══
+   База (токен --n-neuro) уже = Exo 2 → весь текст Exo 2. Ниже ТИТУЛЫ / ЗАГОЛОВКИ / КНОПКИ / НАЗВАНИЯ МИССИЙ
+   возвращаем на Neuropol X (перебивают токен). Вес/цвет/свечение — как в neuro (пульт весов выше). Правила ПОСЛЕ всех neuro-шрифтов → бьют по порядку. */
+body.ds-mix .fsk-h, body.ds-mix .podbig .ptitle, body.ds-mix .podtext .h,                              /* ЗАГОЛОВКИ подслайдов */
+body.ds-mix .mt-name, body.ds-mix .ct-name, body.ds-mix .mt-kicker, body.ds-mix .ct-kicker, body.ds-mix .rtitle,   /* ТИТУЛ + НАЗВАНИЯ МИССИЙ (кикер «МИССИЯ N» + имя) + h2 сл.4 */
+body.ds-mix .nl-title, body.ds-mix .qt-txt, body.ds-mix .levelup-banner,                               /* титул сл.1 «КОМАНДА…», квест-титул сл.2, баннер «УРОВЕНЬ ПОВЫШЕН» */
+body.ds-mix .rules-title .rt-main, body.ds-mix .rules-carry .rules-carry-title,                        /* левый док сл.4 + переносимые «ПРАВИЛА ИГРЫ»/«ПРОВОДНИКИ» */
+body.ds-mix .cbtn{font-family:'Neuropol X',sans-serif}                                                  /* КНОПКИ «Начать»/«Начать бизнес» */
+/* КВЕСТ (сл.2) + HARD (сл.4) → LIBRARY 3 AM — в neuro3 (ds-mix) И neuro2 (ds-exo) (перебивают Neuropol X/Exo 2, унаследованный от qt-txt/rt-hard) */
+body.ds-mix .qt-quest, body.ds-mix .rules-title .rt-hard,
+body.ds-exo .qt-quest, body.ds-exo .rules-title .rt-hard{font-family:var(--n-lib)}
+/* КВЕСТ и HARD — КРУПНЕЕ, чтобы выделялись (neuro3 + neuro2) */
+body.ds-mix .qt-quest, body.ds-exo .qt-quest{font-size:1.4em}                    /* крупнее строк квест-титула (МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ) */
+body.ds-mix .rules-title .rt-hard, body.ds-exo .rules-title .rt-hard{font-size:15cqh}        /* было 12cqh */
+
 /* ЭФФЕКТ 2 — плавное включение (без звука); объявлен ПЕРВЫМ, чтобы эффект 1 его перебивал */
 .n-on{animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}
 /* ЭФФЕКТ 1 — розжиг лампы (со звуком); идёт после .n-on → при равной специфичности побеждает */
@@ -1294,13 +1491,15 @@ body.fx-v5 .nl-logo-svg path{
     drop-shadow(0 0 26px var(--n-blue-2))
     drop-shadow(0 0 54px var(--n-blue-3))
     drop-shadow(0 0 90px rgba(39,227,255,.45))}
-/* КНОПКИ при v5 — шрифт срез-демо: LIBRARY 3 AM (вместо Neuropol X). Обе кнопки: «Начать» и «Начать бизнес» */
-body.fx-v5 .cbtn{font-family:var(--n-lib)}
+/* КНОПКИ при v5 — шрифт срез-демо: LIBRARY 3 AM (вместо Neuropol X). Обе кнопки: «Начать» и «Начать бизнес».
+   :not(.ds-neuro) — при новой дизайн-системе шрифт задаёт ds (Neuropol X), это правило не мешает. */
+body.fx-v5:not(.ds-neuro) .cbtn{font-family:var(--n-lib)}
 /* «HARD» (слайд 4, подслайд 2) при v5 — срез-смещение, цвет красный. Свойства = эталон v5, ничего сверху.
    Правила .rules-title .rt-hard специфичнее .slice-glitch, поэтому display/color/animation перебиваем явно.
    animation:none — снимаем hardGlow: это filter:drop-shadow ПОВЕРХ полос, свечение выходило вдвое сильнее.
    Теперь светит только сам срез (text-shadow полос), как в design-system.html. */
-body.fx-v5 .rules-title .rt-hard{display:inline-block;font-family:var(--n-lib);animation:none}
+body.fx-v5 .rules-title .rt-hard{display:inline-block;animation:none}
+body.fx-v5:not(.ds-neuro) .rules-title .rt-hard{font-family:var(--n-lib)}   /* при ds шрифт HARD задаёт ds (Neuropol X) */
 body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 @keyframes cBtnPulse{0%,100%{box-shadow:0 0 22px rgba(var(--cyan-rgb),.4),inset 0 0 18px rgba(var(--cyan-rgb),.2)}
   50%{box-shadow:0 0 38px rgba(var(--cyan-rgb),.75),inset 0 0 22px rgba(var(--cyan-rgb),.3)}}
@@ -1458,6 +1657,11 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 /* иконка перед заголовком «Вызовы/Тренды» — мельче; описание — выключка под ТЕКСТ заголовка (после иконки) */
 .challenges .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw}
 .challenges .ch-desc{margin-left:2.8cqw}
+/* ВИСЯЧИЙ ОТСТУП заголовка (слайды 4 и 11): перенос 2-й строки идёт ПОД ТЕКСТ, а не под иконку.
+   padding-left = ширина иконки 2.2 + зазор .6 = 2.8cqw; text-indent:-2.8 возвращает 1-ю строку (с иконкой) к краю.
+   .gw-ico text-indent:0 — иначе унаследованный отрицательный отступ увёл бы рисунок иконки влево. */
+.challenges .ch-title, .fsk-slides .ch-title{padding-left:2.8cqw;text-indent:-2.8cqw}
+.challenges .ch-title .gw-ico, .fsk-slides .ch-title .gw-ico{text-indent:0}
 /* титул «ПРАВИЛА ИГРЫ» — СЛЕВА, размер/высота как заголовок подслайда; появляется после
    раскрытия вуали и виден на ВСЕХ подслайдах (постоянный) */
 /* ШАБЛОН «титул слайда»: на входе проявляется В ЦЕНТРЕ (над вуалью, z6), затем анимированно
@@ -2031,7 +2235,7 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
       <h2 class="fsk-ttl" id="mbBrand"><span class="ttl-txt">Фонд поддержки<br>социальных<br>проектов</span><svg class="dept-logo" style="--lg-h:6.02cqw;--lg-sw:1.01" viewBox="0 0 58.2 46.8" role="img" aria-label="Фонд поддержки социальных проектов"><use href="#lg-fpsp"/></svg></h2>
       <!-- текст: единый бренд БЧБ — заголовок + блоки с иконками (построчное появление через revealPod) -->
       <div class="mb-text" id="pod-morebiz">
-        <div class="fsk-h rin">Единый бренд «Больше чем бизнес»</div>
+        <div class="fsk-h rin">Единый бренд<br>«Больше чем бизнес»</div>
         <div class="ch-list">
           <div class="ch-item">
             <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 12 C56 12 60 17 60 23 V43 C60 49 56 54 50 54 C44 54 40 49 40 43 V23 C40 17 44 12 50 12 Z"/><path class="ic-warm" d="M30 41 C30 57 39 66 50 66 C61 66 70 57 70 41"/><path class="ic-warm" d="M50 66 V84 M34 84 H66"/></svg></span>Форум <span class="fsk-ac">«Больше чем бизнес»</span> и партнёрские мероприятия с позиционированием знака БЧБ</span>
@@ -2295,7 +2499,8 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
           </svg>
         </div></div>
         <!-- «КВЕСТ» в своём span: при v5 режется только он, две первые строки остаются как есть -->
-        <div class="qt-txt">МОСКОВСКИЙ<br>ПРЕДПРИНИМАТЕЛЬСКИЙ<br><span class="qt-quest" id="qtQuest">КВЕСТ</span></div>
+        <!-- каждое слово в своём span (.qt-w) — появляются ПО ОЧЕРЕДИ; пауза перед КВЕСТ ×2 (см. --qt-step) -->
+        <div class="qt-txt"><span class="qt-w">МОСКОВСКИЙ</span><br><span class="qt-w">ПРЕДПРИНИМАТЕЛЬСКИЙ</span><br><span class="qt-w qt-quest" id="qtQuest">КВЕСТ</span></div>
       </div>
     </div>
     <div class="load-log" id="loadLog"></div>
@@ -2508,7 +2713,7 @@ const CFG = {
        титула слева стоит лого подразделения (МБМ / ФСК / ШТАБ / ФПСП) в стиле неон-трубки.
      logos:false → прежние текстовые титулы.
      Переключить: ?logos=off в адресе (обратно — ?logos=on). */
-  style:{ v5:true, logos:true,
+  style:{ v5:true, logos:true, ds:true, dsExo:false, dsMix:true,   /* ПО УМОЛЧАНИЮ — 3-й вариант (dsMix, ?design=neuro3): СМЕШАННЫЙ шрифт — титулы/заголовки/кнопки/миссии Neuropol X, остальное Exo 2, КВЕСТ/HARD — LIBRARY 3 AM. По флагу: ?design=neuro — чистый Neuropol X; ?design=neuro2/exo — весь текст Exo 2; ?design=off — выключить всё */
           /* Значения 1-в-1 из демо design-system.html:
              титул  (#sgDemo)        — strips 14 · amp 18 · glow 8px · core 2
              кнопка (.nb-goldframe)  — strips 10 · amp 6  · glow 6px · core 1
@@ -2530,7 +2735,12 @@ const CFG = {
   const s=q.get('style');
   if(s==='v5') CFG.style.v5=true; else if(s==='off') CFG.style.v5=false;
   const g=q.get('logos');
-  if(g==='on') CFG.style.logos=true; else if(g==='off') CFG.style.logos=false; })();
+  if(g==='on') CFG.style.logos=true; else if(g==='off') CFG.style.logos=false;
+  const d=q.get('design');
+  if(d==='neuro'){ CFG.style.ds=true; CFG.style.dsMix=false; }                   // чистый Neuropol X (dsMix дефолтно вкл — гасим)
+  else if(d==='neuro2'||d==='exo'){ CFG.style.ds=true; CFG.style.dsExo=true; CFG.style.dsMix=false; }   // весь текст Exo 2
+  else if(d==='neuro3'){ CFG.style.ds=true; CFG.style.dsMix=true; }              // смешанный (он же по умолчанию)
+  else if(d==='off') CFG.style.ds=false; })();
 
 /* ═══════════════════ ФОНОВАЯ МУЗЫКА ═══════════════════
    Три трека на весь квест. Три правила, из которых всё следует:
@@ -3712,15 +3922,13 @@ function playMbHero(){
     }
   }, CFG.hero.contour));
 }
-/* ШАГ 1 — подсветка награды и контуров → пауза «разглядеть кадр» → затемнение + текст; контур героя и имя гаснут */
+/* ШАГ 1 — подсветка НАГРАДЫ (контуры меню/протеза убраны) → пауза «разглядеть кадр» → затемнение + текст; контур героя и имя гаснут */
 function mbHighlight(){
   if(mbStep>0) return; mbStep=1;
   mbTimers.splice(0).forEach(clearTimeout);
   mbNameTimers.splice(0).forEach(clearTimeout);
-  mbAward.classList.add('lit');               // 1) награда с неоном — ещё БЕЗ затемнения (герой пока в контуре)
-  mbOuts.forEach(o=>o.classList.add('show','draw'));   //    контуры меню и протеза прорисовываются (1.2с)
-  mbTimers.push(setTimeout(()=>{ if(id()==='morebiz') mbOuts.forEach(o=>o.classList.add('glow')); }, 1200));   // 2) → пульс контуров
-  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;   // 3) держим кадр (зритель разглядывает)
+  mbAward.classList.add('lit');               // награда с неоном — ЕДИНСТВЕННАЯ подсветка (контуры меню/протеза убраны)
+  mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;   // держим кадр (зритель разглядывает)
     mbHero.classList.remove('glow');          // 4) гаснет контур героя и панель имени — ПЕРЕД затемнением
     mbName.classList.remove('show');
     mbTimers.push(setTimeout(()=>{ if(id()!=='morebiz')return;   // 5) затемнение + титул + текст
@@ -3762,8 +3970,7 @@ function skipMbHero(){
 /* скип шага 1: контуры в пульсе + затемнение + титул + весь текст сразу (не ждём паузу «разглядеть кадр») */
 function skipMbText(){
   mbTimers.splice(0).forEach(clearTimeout);
-  mbOuts.forEach(o=>o.classList.add('show','glow'));
-  mbDark.classList.add('show'); mbBrand.classList.add('show'); podRinAll(mbPod);
+  mbDark.classList.add('show'); mbBrand.classList.add('show'); podRinAll(mbPod);   // контуры меню/протеза не подсвечиваем — только награда (mbAward.lit выставляется в mbHighlight/skip-intro)
 }
 function skipMbLevel(){
   mbTimers.splice(0).forEach(clearTimeout);
@@ -5281,7 +5488,7 @@ function applyScene(){
     questCarry.classList.remove('show','fade');
     if(questTitle.parentElement!==questHome){ questHome.appendChild(questTitle); }   // вернуть узел титула домой
     questTitle.removeAttribute('style');                           // снять пин (position/left/top/width/margin)
-    questTitle.querySelectorAll('.qt-line').forEach(l=>l.removeAttribute('style'));  // снять заморозку титула
+    questTitle.querySelectorAll('.qt-line, .qt-w, .qt-logo-box').forEach(l=>l.removeAttribute('style'));  // снять заморозку титула (+ слова/лого → снова opacity:0, .on запустит последовательность заново)
     splash.classList.add('go');                                    // включить анимации сплеша
     // загрузка проигрывается ВСЕГДА (и при возврате): сброс титула → рестарт
     splash.classList.remove('loaded');
@@ -5676,7 +5883,8 @@ function splashLeave(){
   questTitle.style.margin='0';
   // заморозить титул в финальном виде: перенос узла перезапустил бы neonOn (титул «зажигался» бы заново).
   // Оставляем только idle-мерцание — титул живёт, пока летит через вуаль, и растворяется на слайде 3.
-  questTitle.querySelectorAll('.qt-line').forEach(l=>{ l.style.animation='neonIdle 3.6s ease-in-out infinite'; l.style.opacity='1'; });
+  // замораживаем и слова/лого (у них свои поочерёдные neonOn) — иначе перенос узла перезапустил бы сборку титула на лету
+  questTitle.querySelectorAll('.qt-line, .qt-w, .qt-logo-box').forEach(l=>{ l.style.animation='neonIdle 3.6s ease-in-out infinite'; l.style.opacity='1'; });
   questCarry.appendChild(questTitle);                                      // тот же элемент → в оверлей над сценами
   questCarry.classList.remove('fade'); questCarry.classList.add('show');
   splashVeil.style.setProperty('--fx','50%'); splashVeil.style.setProperty('--fy','50%');
@@ -6155,6 +6363,14 @@ function applyStyleV5(){
    поэтому логика показа сцен (.show) не меняется. Флаг выключен → функция ничего не делает. */
 function applyStyleLogos(){
   if(CFG.style.logos) document.body.classList.add('fx-logos');
+}
+/* Новая дизайн-система (Neuropol X + гамма ДС). Вся работа — в CSS под body.ds-neuro,
+   поэтому механика сцен не меняется. Флаг выключен → функция ничего не делает. */
+function applyStyleDs(){
+  if(!CFG.style.ds) return;
+  document.body.classList.add('ds-neuro');
+  if(CFG.style.dsExo) document.body.classList.add('ds-exo');   // 2-й вариант — шрифт токена --n-neuro меняется на Exo 2 (CSS)
+  if(CFG.style.dsMix) document.body.classList.add('ds-mix');   // 3-й вариант — смешанный (Exo 2 текст + Neuropol X титулы + LIBRARY КВЕСТ/HARD)
 }
 /* пометить элемент под срез и нарезать. kind — набор параметров из CFG.style.slice.
    opt: {color, glowc, corec, core} — переопределение цвета полос / зарева / ядра и радиуса ядра
@@ -7114,6 +7330,7 @@ function stopAlarm(){
 }
 applyStyleV5();          // альтернативный стиль (CFG.style.v5 / ?style=v5) — до первой отрисовки сцены
 applyStyleLogos();       // лого подразделений вместо текстовых титулов (CFG.style.logos / ?logos=on)
+applyStyleDs();          // новая дизайн-система: весь текст Neuropol X + гамма ДС (CFG.style.ds / ?design=neuro)
 applyScene();
 
 /* ===== загрузка на сплеше: плавный бар/процент; 5 текстов сменяются по времени; после 100% — титул; уход по клику ===== */

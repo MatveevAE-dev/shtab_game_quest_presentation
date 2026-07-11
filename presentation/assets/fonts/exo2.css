@@ -1,0 +1,9 @@
+/* Exo 2 — вариативный (латиница + кириллица, веса 100–900). Google Fonts, лицензия OFL.
+   Локально (оффлайн, без интернета) — для второго варианта дизайн-системы: ?design=neuro2 (алиас ?design=exo). */
+@font-face{
+  font-family:'Exo 2';
+  src:url("exo2-var.ttf") format("truetype");
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
