@@ -193,6 +193,62 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .herobox .htext.name-in{animation:nameIn .9s ease}
 @keyframes nameIn{0%{color:#fff;text-shadow:none}15%{color:#ffe89a;text-shadow:0 0 14px rgba(255,210,74,.9)}100%{color:#fff;text-shadow:none}}
 
+/* ── СЛАЙД 16 ФИНАЛ: «развитие предпринимательства» — счётчик 937 000 + звёзды +N (рандом по карте), затем 3 киноленты фото ── */
+.bizgrowth{position:absolute;inset:0;z-index:11;pointer-events:none;display:none}
+.bizgrowth.on{display:block}
+/* большой счётчик — по центру сверху, стиль как баннер «УРОВЕНЬ ПОВЫШЕН» */
+.bg-counter{position:absolute;right:3%;bottom:5%;text-align:right;white-space:nowrap;animation:bgCntIn .6s ease both}
+@keyframes bgCntIn{0%{opacity:0;transform:translateY(2cqh) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.bg-num{font-family:var(--font-title);font-weight:700;font-size:12cqh;line-height:1;letter-spacing:.03em;color:#fff;display:inline-block;
+  text-shadow:0 0 12px rgba(255,255,255,.7),0 0 26px rgba(var(--neon-rgb),.85),0 0 54px rgba(var(--neon-rgb),.5),0 2px 10px rgba(0,0,0,.9)}
+.bg-num.bump{animation:bgBump .4s ease}
+@keyframes bgBump{0%{transform:scale(1)}30%{transform:scale(1.07)}100%{transform:scale(1)}}
+.bg-cap{margin-top:.15em;font-family:var(--font-title);font-weight:400;font-size:2.8cqh;letter-spacing:.16em;text-transform:uppercase;
+  color:#eaffff;text-shadow:0 0 8px rgba(var(--neon-rgb),.7),0 2px 6px rgba(0,0,0,.8)}
+/* слой летящих звёзд (+N ★) */
+.bg-stars{position:absolute;inset:0}
+.bg-pop{position:absolute;transform:translate(-50%,0);display:flex;align-items:center;gap:.35em;white-space:nowrap;
+  font-family:var(--font-title);font-weight:700;opacity:0;perspective:320px}
+.bg-plus{font-size:2.8cqh;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.7),0 0 16px rgba(var(--neon-rgb),.8),0 2px 6px rgba(0,0,0,.9)}
+.bg-star{font-size:3.4cqh;line-height:1;color:var(--gold);display:inline-block;text-shadow:0 0 12px var(--gold),0 0 26px #ff9800}
+.bg-pop.rise{animation:bgRise 1.9s ease-out forwards}
+.bg-pop.rise .bg-star{animation:bgSpin 1s linear infinite}
+@keyframes bgRise{0%{opacity:0;transform:translate(-50%,12px) scale(.55)}
+  14%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-13cqh) scale(1)}}
+@keyframes bgSpin{to{transform:rotateY(360deg)}}   /* вращение звезды вокруг своей (вертикальной) оси */
+/* киноленты — 3 вертикали полосой по центру, фото едут снизу вверх; шире ×2, без обводки, реалистичная плёнка */
+.bg-strips{position:absolute;left:50%;top:6%;bottom:9%;transform:translateX(-50%);display:flex;gap:3cqh;align-items:stretch;
+  opacity:0;transition:opacity .8s ease}
+.bg-strips.show{opacity:1}
+/* каждая лента слегка качается-«волнится» (собственная фаза), низ разматывается */
+.bg-strip{position:relative;width:32cqh;flex:none;transform-origin:top center;
+  animation:bgWave var(--wdur,7s) ease-in-out infinite;animation-delay:var(--wdly,0s)}
+@keyframes bgWave{0%,100%{transform:rotate(-1deg) translateX(-.4cqh) skewY(.5deg)}
+  50%{transform:rotate(1deg) translateX(.4cqh) skewY(-.5deg)}}
+/* тело плёнки — окно прокрутки (клип кадров); тёмная база с боковым бликом, без неон-обводки */
+.bg-window{position:absolute;inset:0;overflow:hidden;border-radius:3px;
+  background:linear-gradient(90deg,#0c0c0f,#17171b 10%,#111114 50%,#17171b 90%,#0b0b0e);
+  box-shadow:inset 0 0 46px rgba(0,0,0,.85),0 10px 34px rgba(0,0,0,.55)}
+/* перфорация по бокам — «дырки» плёнки (чуть светлее чёрной кромки, скруглены) */
+.bg-window::before,.bg-window::after{content:"";position:absolute;top:0;bottom:0;width:3cqh;z-index:3;background:#050506;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 .55cqh,#34343a .55cqh 1.7cqh,transparent 1.7cqh 2.4cqh)}
+.bg-window::before{left:0;box-shadow:inset -6px 0 10px rgba(0,0,0,.6)}
+.bg-window::after{right:0;box-shadow:inset 6px 0 10px rgba(0,0,0,.6)}
+.bg-track{display:flex;flex-direction:column;padding:0 4.4cqh;animation:bgScroll var(--dur,18s) linear infinite;animation-delay:var(--dly,0s)}
+@keyframes bgScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}   /* лента продублирована ×2 → -50% = бесшовно */
+.bg-cell{flex:none;aspect-ratio:3/4;margin-bottom:1.3cqh;border-radius:2px;overflow:hidden;
+  background:linear-gradient(160deg,#20242b,#0e1116);box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),inset 0 0 22px rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center}
+.bg-cell span{font-family:var(--font-title);font-weight:400;font-size:2.4cqh;letter-spacing:.08em;color:rgba(234,255,255,.42)}
+/* РАЗМАТЫВАНИЕ внизу: конец плёнки загибается вперёд (curl), чуть шире = «ослаблена/размотана» */
+.bg-roll{position:absolute;left:-3%;right:-3%;bottom:-4.5cqh;height:11cqh;z-index:4;pointer-events:none;
+  background:linear-gradient(rgba(0,0,0,0) 0%,rgba(0,0,0,.4) 26%,#121216 56%,#26262e 80%,#0b0b0e 100%);
+  border-radius:0 0 45% 45%/0 0 100% 100%;transform-origin:top center;transform:perspective(260px) rotateX(54deg);
+  box-shadow:0 10px 20px rgba(0,0,0,.6)}
+.bg-roll::before{content:"";position:absolute;left:8%;right:8%;top:34%;height:2px;background:rgba(255,255,255,.14);
+  border-radius:2px;filter:blur(.4px)}   /* блик на изгибе плёнки */
+
 /* маршруты: прозрачность задаём ГРУППЕ, иначе общие участки горят ярче */
 .route{fill:none;stroke:var(--neon);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
 #routes{opacity:0;transition:opacity .5s}
@@ -432,13 +488,106 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .qt-line.qt-art{display:flex;align-items:center;gap:.64em;font-size:min(3.64vw,70px);line-height:1}
 /* лого ВРАЩАЕТСЯ (как на слайде 1): perspective на боксе → nlSpin на обёртке → svg внутри */
 .qt-art .qt-logo-box{flex:none;height:3.14em;aspect-ratio:156/194;perspective:700px}
-.qt-art .qt-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
-.qt-art .qt-logo{width:100%;height:100%;overflow:visible;shape-rendering:geometricPrecision}
-.qt-art .qt-logo path{fill:none;stroke:#dffaff;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;
+.quest-title .qt-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
+.quest-title .qt-logo{width:100%;height:100%;overflow:visible;shape-rendering:geometricPrecision}
+.quest-title .qt-logo path{fill:none;stroke:#dffaff;stroke-width:6;stroke-linejoin:round;stroke-linecap:round;   /* ядро под толщину ядра текста заставки — было 5, при бо́льшем боксе (viewBox 194, ×1.13) линия смотрелась тоньше лого слайда 1 */
   filter:drop-shadow(0 0 1.4px var(--n-blue-2)) drop-shadow(0 0 5.6px var(--n-blue-2)) drop-shadow(0 0 17px var(--n-blue-3))}
 .qt-art .qt-txt{font-family:var(--n-lib);font-weight:400;text-transform:uppercase;text-align:left;
-  line-height:1.233;letter-spacing:0;color:#fff;
+  line-height:1.233;letter-spacing:0;color:#fff;position:relative;   /* position:relative — якорь для печати #qtQuest */
   text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--n-blue-2),0 0 5px var(--n-blue-2),0 0 14px var(--n-blue-2)}
+/* ═══ КВЕСТ = ПЕЧАТЬ (штамп) на заставке сл.2 ═══
+   #qtQuest — absolute поверх 2 строк, тёмно-синие чернила, грунж-фактура (filter #stampGrunge),
+   двойная скруглённая рамка, наклон как на референсе. ID-селектор бьёт флаг-правила .qt-quest → вид
+   одинаков при любом ?design. Позицию/размер/угол крути переменными --qs-ink/--qs-rot и right/bottom/font-size. */
+#qtQuest{
+  --qs-ink:#33a6ff;                                          /* ярко-голубые чернила — насыщенный азур, читается на тёмном фото (не белый, не тёмный) */
+  --qs-rot:-13deg;                                           /* угол печати (как референс) */
+  position:absolute; right:.35em; bottom:.55em;              /* ложится по диагонали на «…предпринимательский», задевая МОСКОВСКИЙ */
+  font-family:'Neuropol X',sans-serif; font-weight:400; letter-spacing:.08em;
+  color:var(--qs-ink); text-shadow:none;
+  font-size:1.4em; line-height:1; padding:.14em .3em; white-space:nowrap;
+  border:.1em solid var(--qs-ink); border-radius:.2em;
+  box-shadow:0 0 0 .045em var(--qs-ink);                     /* внешняя тонкая рамка = двойной кант */
+  transform:rotate(var(--qs-rot)); transform-origin:center;
+  /* грунж + ТЁМНАЯ микро-тень (отделяет светлые чернила на светлых участках фото) + мягкий голубой ореол */
+  filter:url(#stampGrunge) drop-shadow(0 1px 1px rgba(0,18,45,.6)) drop-shadow(0 0 7px rgba(90,180,255,.4));
+}
+#qtQuest::before{content:"";position:absolute;inset:.1em;border:.05em solid var(--qs-ink);border-radius:.14em;pointer-events:none}   /* внутренняя рамка */
+/* печать «ставится»: летит сверху крупной и полупрозрачной → удар (сжатие) → лёгкий overshoot → покой */
+@keyframes stampDown{
+  0%  {opacity:0; transform:rotate(var(--qs-rot)) scale(2.6)}
+  55% {opacity:.4;transform:rotate(var(--qs-rot)) scale(2.6)}
+  70% {opacity:1; transform:rotate(var(--qs-rot)) scale(.9)}
+  82% {          transform:rotate(var(--qs-rot)) scale(1.05)}
+  100%{opacity:1; transform:rotate(var(--qs-rot)) scale(1)}}
+.qt-line.on #qtQuest{animation:stampDown .9s cubic-bezier(.2,.8,.2,1) calc(var(--qt-step)*3) both}   /* ставится третьим, после 2 слов (пауза ×2) */
+/* ── ПОДРЕЖИМ var-0 «ГЛИТЧ» (Ctrl+K, класс .q0-glitch на #questTitle): КВЕСТ не печать, а срез-глитч
+   на Neuropol X, увеличенный, 3-й строкой (как было). Перебивает штамп по специфичности (класс + id). ── */
+.qtq-br{display:none}                                         /* 3-я строка — только в глитч-режиме */
+.quest-title.q0-glitch .qtq-br{display:inline}
+.quest-title.q0-glitch #qtQuest{
+  position:relative; display:inline-block;                    /* назад в поток 3-й строкой + якорь для полос среза */
+  inset:auto; margin-top:.14em;                               /* СБРОС смещений печати (right/bottom) — иначе при relative КВЕСТ наезжал вверх-влево; + зазор от строки выше */
+  border:none; box-shadow:none; border-radius:0; padding:0;
+  transform:none; filter:none;                                /* убрать рамку/наклон/грунж печати */
+  color:transparent;                                          /* база прозрачна — светят полосы среза (шрифт/размер Neuropol X 1.4em наследуются от #qtQuest) */
+}
+.quest-title.q0-glitch #qtQuest::before{display:none}         /* внутренняя рамка печати — прочь */
+.quest-title.q0-glitch .qt-line.on #qtQuest{animation:neonOn .9s ease-out calc(var(--qt-step)*3) both}   /* появление как было (neonOn), не stampDown → и звука печати нет */
+/* ═══ ВАРИАНТЫ ТИТУЛА слайда 2 (класс tv-0/1/2 на #questTitle, листает Ctrl+L) ═══
+   var-0 = текущий (.qt-line.qt-art) — не трогаем. var-1/var-2 — соседние блоки, показываем по классу.
+   КВЕСТ в каждом — живой span (#qtQuest / #qtQuest1 / #qtQuest2), глитч вешает applyStyleV5 через sliceEl. */
+.qt-var-1, .qt-var-2{display:none}
+.quest-title.tv-1 .qt-line.qt-art, .quest-title.tv-1 .qt-var-2{display:none}
+.quest-title.tv-2 .qt-line.qt-art, .quest-title.tv-2 .qt-var-1{display:none}
+.quest-title.tv-1 .qt-var-1{display:flex}
+.quest-title.tv-2 .qt-var-2{display:flex}
+/* неон-линии (общие для вариантов) */
+.qt-bar{height:3px;border-radius:3px;flex:none}
+.qt-bar.blue{background:#d9fbff;box-shadow:0 0 4px #eaffff,0 0 12px var(--n-blue-2),0 0 26px var(--n-blue-3)}
+.qt-bar.warm{background:#ffeccf;box-shadow:0 0 4px #ffe3ba,0 0 12px rgba(255,201,140,.75),0 0 24px rgba(255,176,105,.5)}
+/* ── вариант 1: лого + большое КВЕСТ, линии сверху/снизу по всей ширине (циан, как tv2) ── */
+.qt-var-1{flex-direction:column;align-items:stretch;gap:.32em;width:fit-content;max-width:96vw;
+  font-size:min(8vw,120px);line-height:1;animation:neonBoot 1.6s ease-out both, neonIdle 3.6s ease-in-out 1.6s infinite}
+.qt1-row{display:flex;align-items:center;justify-content:center;gap:.4em}
+.qt-var-1 .qt-bar{width:100%}
+.qt-var-1 .qt-logo-box{flex:none;height:1.05em;aspect-ratio:156/194;perspective:700px}
+.qt-var-1 .qt-quest{font-family:var(--n-lib);font-weight:400;text-transform:uppercase;letter-spacing:.03em;
+  color:#d9fbff;text-shadow:0 0 3px #eaffff,0 0 10px var(--n-blue-2),0 0 24px var(--n-blue-2),0 0 46px var(--n-blue-3)}
+/* ── вариант 2: дизайн-система. КВЕСТ — отдельный слой (absolute) поверх, справа НАД ПРЕДПРИНИМАТЕЛЬСКИЙ.
+      Ширина блока = по ПРЕДПРИНИМАТЕЛЬСКИЙ (fit-content) → правый край КВЕСТ (right:0) = конец ПРЕДПРИНИМАТЕЛЬСКИЙ.
+      --qt2-split — точка стыка линий (≈ левый край КВЕСТ): низ (тёплая) 0→split, верх (синяя) split→100%.
+      ПОДГОНИ --qt2-split под левый край КВЕСТ, размер КВЕСТ — .qt2-quest font-size. ── */
+.qt-var-2{position:relative;flex-direction:column;align-items:flex-start;width:fit-content;max-width:94vw;
+  padding:.5em 0;--qt2-split:56%;--qt2-kvfs:min(8.5vw,112px);--qt2-kvnudge:calc(.17*var(--qt2-kvfs));--qt2-kv-delay:.8s}
+.qt2-m, .qt2-p{font-family:'Neuropol X',sans-serif;font-weight:400;text-transform:uppercase;white-space:nowrap;
+  font-size:min(3.4vw,44px);line-height:1.06;letter-spacing:.03em;color:#fff4e6;
+  text-shadow:0 0 2px #fff,0 0 8px #ffe6c2,0 0 20px rgba(255,201,140,.7),0 0 40px rgba(255,176,105,.5)}
+.qt2-p{margin-top:.14em}
+/* КВЕСТ — отдельный слой поверх; правый край совпадает с концом ПРЕДПРИНИМАТЕЛЬСКИЙ */
+.qt2-r1{display:flex;align-items:flex-end;width:100%}
+.qt-var-2 .qt2-quest{margin-left:auto;white-space:nowrap;transform:translateY(calc(-1*var(--qt2-kvnudge)));
+  font-family:var(--n-lib);font-weight:400;text-transform:uppercase;letter-spacing:.03em;
+  font-size:var(--qt2-kvfs);line-height:.82;color:#d9fbff;
+  text-shadow:0 0 3px #eaffff,0 0 10px var(--n-blue-2),0 0 24px var(--n-blue-2),0 0 46px var(--n-blue-3)}
+/* верхняя линия — СИНЯЯ: от точки стыка до правого края (над КВЕСТ) */
+.qt2-top{position:absolute;top:0;left:var(--qt2-split);right:0;transform:translateY(calc(-1*var(--qt2-kvnudge)))}
+/* нижняя линия — ТЁПЛАЯ: от левого края до точки стыка (под ПРЕДПРИНИМАТЕЛЬСКИЙ) */
+.qt2-bot{position:absolute;bottom:0;left:0;width:var(--qt2-split)}
+/* тумблер Ctrl+K: убрать лого-водяной знак у варианта 2 */
+.quest-title.tv2-nologo .qt2-logo{display:none}
+.qt2-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:-1;
+  height:min(24vw,300px);aspect-ratio:156/194;opacity:.42;perspective:700px}
+/* ── Появление var-2 двумя группами. МП+лого+нижняя линия — ЭФФЕКТ 2 (neonOn) сразу;
+      КВЕСТ+верхняя линия — ЭФФЕКТ 1 (neonBoot, БЕЗ звука) с задержкой --qt2-kv-delay. ── */
+.qt-var-2 .qt2-m, .qt-var-2 .qt2-p, .qt-var-2 .qt2-bot{
+  animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}
+/* лого: вращение + эффект 2; opacity:.42 на .qt2-logo, здесь opacity 0→1 множится → финал .42 (водяной знак не станет непрозрачным) */
+.qt-var-2 .qt2-logo .qt-logo-spin{
+  animation:nlSpin 7s linear infinite, neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}
+/* КВЕСТ + верхняя линия — эффект 1 с задержкой (звук playLamp НЕ вызываем) */
+.qt-var-2 .qt2-quest, .qt-var-2 .qt2-top{
+  animation:neonBoot 1.6s ease-out var(--qt2-kv-delay) both, neonIdle 3.6s ease-in-out calc(var(--qt2-kv-delay) + 1.6s) infinite}
 /* вуаль СВОРАЧИВАНИЯ заставки (фокус в центр) → чёрный; титул (questCarry z50) остаётся поверх */
 .splash-veil{position:absolute;inset:0;z-index:40;background:var(--bg);pointer-events:none;opacity:0;
   --r:175%;--fx:50%;--fy:50%;
@@ -673,6 +822,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .co-exc{position:absolute;z-index:4;left:89.55%;top:52.49%;width:5.34%;height:auto;opacity:0;
   transform:scaleX(var(--flip,1));transform-origin:center;
   transition:left .6s ease,top .6s ease,width .6s ease}   /* сам проезд ведёт JS-анимация (coExcArrive); transition — на страховку */
+/* эскаватор (сл.12) — БЫСТРОЕ проявление (искра .2с + фото .7с ≈ 900мс), чтобы «почти сразу ехал».
+   Локальные --rv-* только на эскаваторе и его искрах — общая скорость появления других объектов не меняется.
+   Пара к JS-задержке CO_EXC_REVEAL (старт проезда). */
+#cafeopen .co-exc, #cafeopen .co-exc-sparks{--rv-spark:.2s; --rv-photo:.7s}
 .co-exc.reveal{animation:coExcReveal var(--rv-photo) ease var(--rv-spark) both}
 @keyframes coExcReveal{
   0%{opacity:0;filter:blur(12px) drop-shadow(0 0 2px var(--danger))}
@@ -713,6 +866,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   50%{filter:drop-shadow(0 0 2px #dffaff) drop-shadow(0 0 8px var(--neon))}}
 /* искры появления женщины — в точке старта (совпадает с NC_WOMAN_ANCHORS[0]) */
 #newcafe .nc-woman-sparks{left:47.33%;top:62.29%;width:7.46%;height:36.46%;aspect-ratio:auto}
+/* ПОЖИЛАЯ ПАРА — идёт ПОСЛЕ женщины по тем же точкам (NC_PAIR_ANCHORS); z3 = НАД пандусом (как женщина).
+   Появление — механика героя: искра→фото→контур (playNcPair). Ходьбу ведёт JS (ncPairWalk). */
+.nc-pair{position:absolute;z-index:3;height:auto;opacity:0;pointer-events:none;
+  transition:left var(--nc-walk) ease-in-out, top var(--nc-walk) ease-in-out, width var(--nc-walk) ease-in-out}
+.nc-pair.reveal{animation:ncWomanReveal var(--rv-photo) ease var(--rv-spark) both}   /* фото из размытия — как у женщины */
+.nc-pair.glow{animation:ncWomanGlow 1.6s ease-in-out infinite}                        /* синий неон-контур — как у женщины */
+#newcafe .nc-pair-sparks{left:47.33%;top:62.29%;width:7.30%;height:36.46%;aspect-ratio:auto}   /* искры в точке старта пары */
+/* «ЗАХОДИТ В ДВЕРЬ КАФЕ» — фигура плавно исчезает с лёгким шагом внутрь (влево-вверх); контур гаснет вместе с ней */
+.nc-woman.entered, .nc-pair.entered{opacity:0 !important;
+  transform:translate(-10%,-6%) scale(.93);
+  transition:opacity .55s ease, transform .55s ease}
 /* ГЕРОЙ поливает клумбу (rect 436/391 · 150×266). Низ отсечён clip-path по ломаной из SVG → ноги уходят за клумбу.
    filter (размытие/свечение) применяется ДО clip-path → по линии среза свечения нет. Механика появления — как у женщины. */
 .nc-hero{position:absolute;z-index:3;left:20.07%;top:54.01%;width:6.91%;height:auto;opacity:0;pointer-events:none;
@@ -736,7 +900,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   100%{transform:translateY(5.4cqh) scaleY(1.3);opacity:0}}
 /* КРАСНЫЙ неон-контур: вход в кафе + мусорка (пути из «Миссия 4 - часть 1.svg») — прорисовка → тревожный пульс */
 .nc-outline{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;opacity:0;transition:opacity .4s ease}
-#ncDoorOut{z-index:2}   /* контур входной двери — ПОД женщиной с коляской (z3) */
 .nc-outline.show{opacity:1}
 .nc-outline path{fill:none;stroke:var(--alarm);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;
   filter:drop-shadow(0 0 6px var(--alarm));
@@ -750,7 +913,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #ncStage.gone{display:none}
 #nc2Stage{display:none}
 #nc2Stage.show{display:block}
-/* ── ПОДСЛАЙД 2 («Миссия 4 - часть 2.svg»): герой строит пандус → урна раздельного сбора → текст ── */
+/* ── ПОДСЛАЙД 2 (РЕДИЗАЙН): крупный план пары с меню Брайля + официант с протезом; выделяем меню и протез ── */
+#nc2Stage{background-image:url("assets/img/bg/cafe - interior 0.png")}   /* свой фон (не cafe-3) */
 /* координаты = rect'ы SVG в системе 2172×724, пересчитанные в % стейджа */
 .nc2-obj{position:absolute;height:auto;opacity:0;pointer-events:none}
 .nc2-obj.show{opacity:1}
@@ -914,7 +1078,7 @@ body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-title .gw-ico{width:1.85cqw
   transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1)}
 .m1-text.show .ln{opacity:1;transform:none}
 .m1-text.show .ln:nth-child(2){transition-delay:.18s}
-/* ── ФСК (слайд 11): 3 подслайда в стиле слайда 4. Раскладка = .rules-inner (правая колонка, центр по вертикали). Титул персистентный (весь неон), меняются заголовок+блоки; появление по блокам с паузами (как слайд 4) ── */
+/* ── ФСК (слайд 11): 2 подслайда в стиле слайда 4. Раскладка = .rules-inner (правая колонка, центр по вертикали). Титул персистентный (весь неон), меняются заголовок+блоки; появление по блокам с паузами (как слайд 4) ── */
 .fsk-slides{position:absolute;right:4%;top:calc(27% - 5cqw);bottom:auto;width:52%;z-index:7;pointer-events:none;
   display:flex;flex-direction:column;justify-content:flex-start;gap:1.4cqw;
   color:#fff;font-family:var(--font-text);text-align:left}   /* верх = верх 3-строчного титула (центр 27% − половина высоты); текст растёт ВНИЗ, не поднимается выше титула */
@@ -1215,7 +1379,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   text-shadow:0 0 6px var(--n-blue-1),0 0 16px var(--n-blue-2);
   opacity:0;visibility:hidden;overflow:hidden;
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
-.cbtn:hover{background:rgba(39,227,255,.08);
+.cbtn:hover,.cbtn.sim-hover{background:rgba(39,227,255,.08);
   box-shadow:0 0 18px rgba(39,227,255,.85),inset 0 0 18px rgba(39,227,255,.32)}
 .cbtn-txt{position:relative;z-index:2}
 .cbtn::after{display:none}                     /* блик-градиент от старой кнопки убран */
@@ -1228,7 +1392,11 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .cbtn.cc-big{top:50%;bottom:auto;font-size:8cqh;letter-spacing:.08em;padding:2.2cqh 6.5cqh;border-radius:16px;border-width:2.5px;
   transform:translate(-50%,-50%) translateY(16px)}
 .cbtn.cc-big.show{transform:translate(-50%,-50%)}
-.cbtn:hover{background:linear-gradient(180deg,rgba(40,110,190,.7),rgba(16,52,100,.8));
+/* ── ИМИТАЦИЯ КУРСОРА-МЫШИ (слайды 1/5): пиксельная перчатка «Марио» над всем ── */
+#simCursor{position:fixed;left:0;top:0;z-index:100000;pointer-events:none;opacity:0;will-change:transform;
+  filter:drop-shadow(2px 3px 0 rgba(0,0,0,.55))}
+#simCursor img{display:block}
+.cbtn:hover,.cbtn.sim-hover{background:linear-gradient(180deg,rgba(40,110,190,.7),rgba(16,52,100,.8));
   box-shadow:0 0 34px rgba(var(--cyan-rgb),.7)}
 /* вуаль закрытия титула — плавно в чёрное (под кнопкой z4) */
 /* ШАБЛОННАЯ вуаль закрытия титула: радиальное сворачивание в точку-фокус (--fx/--fy), как .hveil/.splash-veil */
@@ -1261,7 +1429,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   height:24cqh;aspect-ratio:111/138;perspective:700px}
 .nl-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
 .nl-logo-svg{width:100%;height:100%;overflow:visible;opacity:0;shape-rendering:geometricPrecision}   /* скрыт до включения */
-.nl-logo-svg path{fill:none;stroke:#dffaff;stroke-width:3.4;stroke-linejoin:round;stroke-linecap:round;   /* яркое ядро — как иконки */
+.nl-logo-svg path{fill:none;stroke:#dffaff;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;   /* яркое ядро выровнено по толщине ядра текста титула (Neuropol X, вес 600) — было 3.4, линия смотрелась тоньше */
   filter:drop-shadow(0 0 1px var(--n-blue-2)) drop-shadow(0 0 4px var(--n-blue-2)) drop-shadow(0 0 12px var(--n-blue-3))}   /* узкое зарево */
 .nl-logo-svg.boot{animation:neonBoot 1.6s ease-out both, neonIdle 3.6s ease-in-out 1.6s infinite}   /* ЭФФЕКТ 1 */
 /* ЭФФЕКТ 1 — розжиг неон-лампы (тайминги 1-в-1 из design-system.html; провалы совпадают с тишиной в звуке лампы) */
@@ -1403,9 +1571,10 @@ body.ds-neuro .levelup-banner.play{animation:lvlBanner 2.86s ease forwards, neon
 /* ── ТИТУЛ «Команда…» (сл.1) и КНОПКИ «Начать»/«Начать бизнес»: срез (v5) остаётся,
       но шрифт полос → Neuropol X (был LIBRARY 3 AM), цвет → синий акцент ДС.
       Шрифт задаём на контейнере — полосы .sg-strip его наследуют. ── */
-/* Титул «Команда» (сл.1), заставка «…КВЕСТ» (сл.2), кнопки, HARD (сл.4) — все на Neuropol X */
-body.ds-neuro .nl-title, body.ds-neuro .cbtn, body.ds-neuro .qt-txt,
-body.ds-neuro .rules-title .rt-hard{font-family:var(--n-neuro)}
+/* Титул «Команда» (сл.1), заставка «…КВЕСТ» (сл.2), кнопки — на var(--n-neuro) */
+body.ds-neuro .nl-title, body.ds-neuro .cbtn, body.ds-neuro .qt-txt{font-family:var(--n-neuro)}
+/* «HARD» (сл.4, подслайд 2) — ЯВНО Neuropol X во всех ds-вариантах (в mix/exo токен --n-neuro=Exo2, а нужен Neuropol) */
+body.ds-neuro .rules-title .rt-hard{font-family:'Neuropol X',sans-serif}
 /* neuro: Neuropol X ШИРЕ LIBRARY 3 AM — строка «КОМАНДА ПОДДЕРЖКИ И РАЗВИТИЯ» (сл.1) перерастала экран и обрезалась
    (срез-полосы .sg-strip рендерят строку целиком, max-width не действует). Уменьшаем кегль под ширину строки. */
 body.ds-neuro .nl-title{font-size:7cqh}
@@ -1426,6 +1595,14 @@ body.ds-neuro .fsk-h, body.ds-neuro .podbig .ptitle, body.ds-neuro .podtext .h, 
 body.ds-neuro .cbtn,                                                            /* КНОПКИ «Начать»/«Начать бизнес» */
 body.ds-neuro .ava-org, body.ds-neuro .fsk-ttl .ttl-txt{                        /* НАЗВАНИЯ ПОДРАЗДЕЛЕНИЙ: «ФСК/МБМ…» (сл.5) + «Малый бизнес Москвы» */
   font-weight:600}
+
+/* ── СЛАЙД 4: титулы подслайдов (левый док .rt-main + входной carry «Игровой мир») → ТЁПЛОЕ свечение
+   (было синее). Рецепт = роль «ТИТУЛ» ДС (белое ядро + тёплый неон 2/8/22/44/80px). Стоит ПОСЛЕ синего правила → бьёт по порядку. ── */
+body.ds-neuro .rules-title .rt-main,
+body.ds-neuro #rulesCarry .rules-carry-title,
+body.ds-neuro #helpersCarry .rules-carry-title{                                     /* «ПРОВОДНИКИ» (сл.5) — тёплый цвет как титулы сл.4 */
+  color:var(--ds-warm-core);
+  text-shadow:var(--sh-base),0 0 2px #fff,0 0 8px var(--ds-warm-1),0 0 22px var(--ds-warm-2),0 0 44px var(--ds-warm-3),0 0 80px rgba(255,138,31,.5)}
 
 /* ── ЭКРАН ЗАГРУЗКИ (сл.2): шрифт Neuropol X всем. Логи + процент — синий АКЦЕНТ, «Гружу…» — тёплый ОСН.ТЕКСТ ── */
 body.ds-neuro .load-log .ll, body.ds-neuro .intro-pct, body.ds-neuro .intro-load{font-family:var(--n-neuro)}
@@ -1449,12 +1626,23 @@ body.ds-mix .mt-name, body.ds-mix .ct-name, body.ds-mix .mt-kicker, body.ds-mix 
 body.ds-mix .nl-title, body.ds-mix .qt-txt, body.ds-mix .levelup-banner,                               /* титул сл.1 «КОМАНДА…», квест-титул сл.2, баннер «УРОВЕНЬ ПОВЫШЕН» */
 body.ds-mix .rules-title .rt-main, body.ds-mix .rules-carry .rules-carry-title,                        /* левый док сл.4 + переносимые «ПРАВИЛА ИГРЫ»/«ПРОВОДНИКИ» */
 body.ds-mix .cbtn{font-family:'Neuropol X',sans-serif}                                                  /* КНОПКИ «Начать»/«Начать бизнес» */
-/* КВЕСТ (сл.2) + HARD (сл.4) → LIBRARY 3 AM — в neuro3 (ds-mix) И neuro2 (ds-exo) (перебивают Neuropol X/Exo 2, унаследованный от qt-txt/rt-hard) */
-body.ds-mix .qt-quest, body.ds-mix .rules-title .rt-hard,
-body.ds-exo .qt-quest, body.ds-exo .rules-title .rt-hard{font-family:var(--n-lib)}
+/* КВЕСТ (сл.2) → LIBRARY 3 AM в neuro3 (ds-mix) И neuro2 (ds-exo). HARD сюда БОЛЬШЕ НЕ входит — он на Neuropol X (правило выше) */
+body.ds-mix .qt-quest,
+body.ds-exo .qt-quest{font-family:var(--n-lib)}
 /* КВЕСТ и HARD — КРУПНЕЕ, чтобы выделялись (neuro3 + neuro2) */
-body.ds-mix .qt-quest, body.ds-exo .qt-quest{font-size:1.4em}                    /* крупнее строк квест-титула (МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ) */
+body.ds-mix .qt-txt .qt-quest, body.ds-exo .qt-txt .qt-quest{font-size:1.4em}                    /* крупнее строк квест-титула (МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ) */
 body.ds-mix .rules-title .rt-hard, body.ds-exo .rules-title .rt-hard{font-size:15cqh}        /* было 12cqh */
+
+/* ТОСТ смены дизайн-системы (Ctrl+D) — по центру экрана, всплывает и гаснет */
+.ds-toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);z-index:99999;
+  display:flex;flex-direction:column;gap:.35em;align-items:center;text-align:center;
+  padding:1em 1.6em;border-radius:10px;background:rgba(8,16,30,.94);border:1px solid var(--cyan-soft);
+  color:#fff;font-family:var(--hauss);pointer-events:none;max-width:80vw;
+  box-shadow:0 0 30px rgba(var(--cyan-rgb),.45),0 8px 40px rgba(0,0,0,.6);
+  opacity:0;transition:opacity .3s ease,transform .3s ease}
+.ds-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.ds-toast b{font-size:2.4vw;font-weight:800;letter-spacing:.02em;color:var(--cyan)}
+.ds-toast span{font-size:1.4vw;font-weight:600;color:#dbe8f5;line-height:1.3}
 
 /* ЭФФЕКТ 2 — плавное включение (без звука); объявлен ПЕРВЫМ, чтобы эффект 1 его перебивал */
 .n-on{animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}
@@ -1501,6 +1689,22 @@ body.fx-v5:not(.ds-neuro) .cbtn{font-family:var(--n-lib)}
 body.fx-v5 .rules-title .rt-hard{display:inline-block;animation:none}
 body.fx-v5:not(.ds-neuro) .rules-title .rt-hard{font-family:var(--n-lib)}   /* при ds шрифт HARD задаёт ds (Neuropol X) */
 body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
+/* ── 2-й ВАРИАНТ HARD (слайд 4, подслайд «Уровень сложности») = ПЕЧАТЬ (Ctrl+L): КРАСНЫЕ чернила + грунж-фактура
+   (как КВЕСТ-штамп на заставке). Класс .hard-stamp на .rules-title. Правила ПОСЛЕ v5-rt-hard → бьют по порядку. ── */
+.rules-title.hard-stamp .rt-hard{
+  --qs-ink:#ff2a2a;                                    /* красные чернила печати HARD */
+  --qs-rot:-12deg;                                     /* угол печати (ВАЖНО: keyframes stampDown берут rotate из --qs-rot; без него transform в анимации невалиден → удар пропадал, оставался только fade) */
+  position:relative; display:inline-block;
+  font-family:'Neuropol X',sans-serif;
+  color:var(--qs-ink); text-shadow:none; letter-spacing:.08em; line-height:1;
+  padding:.14em .34em; border:.1em solid var(--qs-ink); border-radius:.2em;
+  box-shadow:0 0 0 .045em var(--qs-ink);              /* внешняя тонкая рамка = двойной кант */
+  transform:rotate(var(--qs-rot)); transform-origin:center;
+  filter:url(#stampGrunge) drop-shadow(0 1px 1px rgba(40,0,0,.55)) drop-shadow(0 0 6px rgba(255,70,70,.4));   /* грунж + тёмно-красная микро-тень + красный ореол */
+  animation:none;                                      /* глушим hardGlow (свою анимацию печати даёт .show) */
+}
+.rules-title.hard-stamp .rt-hard::before{content:"";position:absolute;inset:.1em;border:.05em solid var(--qs-ink);border-radius:.14em;pointer-events:none}   /* внутренняя рамка */
+.rules-title.hard-stamp .rt-hard.show{animation:stampDown .9s cubic-bezier(.2,.8,.2,1) both}   /* «ставится» печатью (+ звук playStamp по animationstart) */
 @keyframes cBtnPulse{0%,100%{box-shadow:0 0 22px rgba(var(--cyan-rgb),.4),inset 0 0 18px rgba(var(--cyan-rgb),.2)}
   50%{box-shadow:0 0 38px rgba(var(--cyan-rgb),.75),inset 0 0 22px rgba(var(--cyan-rgb),.3)}}
 @keyframes cBtnSweep{0%{left:-60%}55%,100%{left:120%}}
@@ -1666,14 +1870,14 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
    раскрытия вуали и виден на ВСЕХ подслайдах (постоянный) */
 /* ШАБЛОН «титул слайда»: на входе проявляется В ЦЕНТРЕ (над вуалью, z6), затем анимированно
    переносится в фиксированный ДОК слева. Между подслайдами — только смена текста (класс .center не трогаем). */
-.rules-title{position:absolute;left:6cqw;top:27%;z-index:6;transform:translateY(-50%);transform-origin:center;   /* ДОК на уровне заголовка «Игровой мир» (одинаково на всех подслайдах) */
+.rules-title{position:absolute;left:6cqw;top:18.5%;z-index:6;transform:none;transform-origin:center;   /* ДОК: выключка по ВЕРХУ (top:18.5% = верх «Москва», без translateY) → ПЕРВАЯ строка титула на одной высоте на всех подслайдах, независимо от числа строк */
   font-family:var(--font-text);font-weight:700;color:#fff;text-transform:uppercase;white-space:normal;max-width:36cqw;text-align:left;
   font-size:var(--sz-title);line-height:1.07;letter-spacing:.02em;
   text-shadow:var(--sh-base);pointer-events:none;opacity:0;
   transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1),transform .9s cubic-bezier(.4,.1,.2,1),font-size .9s cubic-bezier(.4,.1,.2,1),max-width .9s ease,opacity var(--fade-title) ease}
 .rules-title.show{opacity:1}
 /* неон-свечение — на обёртке текста титула (СТИЛЬ 2, циан), чтобы filter не «ореолил» красное «HARD» */
-.rules-title .rt-main{display:block;animation:thinkGlowNeon 1.6s ease-in-out infinite}
+.rules-title .rt-main{display:block;animation:thinkGlow 1.6s ease-in-out infinite}   /* тёплый пульс (было циан thinkGlowNeon) — для не-ds режима; в ds свечение задаёт тёплый text-shadow выше */
 /* «HARD» (подслайд «Уровень сложности») — БЕЛЫЙ текст, красное свечение; отдельной строкой, проявляется ПОСЛЕ последнего блока.
    Кегль крупнее титула, опущен ниже (margin-top 1.6cqw). 12cqh ≈ 87 ед. контейнера — заметно крупнее строк титула (67 ед.). */
 .rules-title .rt-hard{display:block;margin-top:1.6cqw;color:#fff;font-size:12cqh;line-height:1;
@@ -1707,6 +1911,8 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 .rules-carry.avttl.show .rules-carry-title{opacity:1}
 /* слайд 5: состояние ЦЕНТР — титул по центру картинки, крупнее; потом ЕДЕТ в левый верхний угол (как слайд 4) */
 .rules-carry.avttl.tcenter .rules-carry-title{top:50%;left:50%;transform:translate(-50%,-50%);font-size:3.6cqw}   /* центр = центр титула слайда 4 (3.6cqw) */
+/* слайд 5: титул «ПРОВОДНИКИ» — по ГОРИЗОНТАЛИ по центру (по просьбе), высота та же top:4% */
+#helpersCarry.avttl .rules-carry-title{left:50%;transform:translateX(-50%);text-align:center;transform-origin:center top}
 /* шаблонная вуаль перехода правил (как .hveil): раскрытие/сворачивание из фокуса --fx/--fy */
 .rules-veil{position:absolute;inset:0;z-index:5;background:var(--bg);pointer-events:none;
   --r:175%;--fx:10%;--fy:50%;
@@ -2075,7 +2281,7 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
           <span class="htext" id="fskHtext"></span>
         </div>
       </div>
-      <!-- ПЕРСИСТЕНТНЫЙ титул СЛЕВА (координаты титула слайда 4) — один на все 3 подслайда, появляется 1 раз и остаётся -->
+      <!-- ПЕРСИСТЕНТНЫЙ титул СЛЕВА (координаты титула слайда 4) — один на оба подслайда, появляется 1 раз и остаётся -->
       <h2 class="fsk-ttl" id="fskBrand"><span class="ttl-txt">Фонд<br>содействия<br>кредитованию</span><svg class="dept-logo" style="--lg-h:3.00cqw;--lg-sw:2.08" viewBox="0 0 240 48" role="img" aria-label="Московский гарантийный фонд"><use href="#lg-fsk"/></svg></h2>
       <div class="fsk-slides m1-text" id="fskSlides">
         <!-- подслайд 1 — сопровождение: заголовок + буллиты (иконка+текст, описание под ним) -->
@@ -2117,20 +2323,6 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
               <span class="rin ch-desc">вебинары, конференции, финансовый гид</span>
             </div>
           </div>
-        </div>
-        <!-- подслайд 3 — цифры-акценты (заголовок без выделения) -->
-        <div class="fsk-sub" data-i="2">
-          <div class="fsk-h rin">Содействие кредитованию</div>
-          <div class="gw-list">
-            <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="40" r="26"/><path class="ic-warm" d="M38 40 L47 50 L64 32"/><path d="M38 64 L32 90 L50 80 L68 90 L62 64"/></svg></span>Выдано:</span>
-            <div class="gw-right"><span class="rin gw-val"><span class="rnum">24 550+</span></span><span class="rin gw-cap">поручительств бизнесу</span></div>
-            <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34"/><path class="ic-warm" d="M42 70 V34 H56 A11 11 0 0 1 56 56 H32 M32 46 H50"/></svg></span>Портфель:</span>
-            <div class="gw-right"><span class="rin gw-val"><span class="rnum">211 млрд ₽</span></span><span class="rin gw-cap">сумма поручительств</span></div>
-            <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 84 H88 M16 84 V14"/><path class="ic-warm" d="M24 68 L44 50 L58 60 L84 30 M68 30 H84 V46"/></svg></span>Привлечено:</span>
-            <div class="gw-right"><span class="rin gw-val"><span class="rnum">440 млрд ₽</span></span><span class="rin gw-cap">финансирования в экономику</span></div>
-          </div>
-          <div class="fsk-hi rin"><span class="rnum">5</span> программ льготного кредитования</div>
-          <div class="fsk-hi rin"><span class="rnum">5</span> гарантийных продуктов</div>
         </div>
       </div>
       <div class="cafe-ava" id="fskAva">
@@ -2321,19 +2513,22 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
   <!-- ════ МИССИЯ 4 — ЧАСТЬ 1 (слайд 14): женщина с коляской → нет пандуса (плач + красный неон) → Кремнева ════ -->
   <div class="newcafe" id="newcafe">
     <div class="nc-stage" id="ncStage">
-      <!-- КРАСНЫЕ неон-контуры: вход в кафе (2 пути) + мусорка — из «Миссия 4 - часть 1.svg» (viewBox 2172×724) -->
-      <svg class="nc-outline" id="ncDoorOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M709.5 515.5V381.5L775 385V549L740.5 552"/>
-        <path d="M722.5 553.5L736.5 552.5"/>
-      </svg>
-      <svg class="nc-outline" id="ncBinOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1013.5 572.5L1012.5 512V509.5H1042.5L1043.5 572.5C1043.5 572.5 1041 574.5 1039 575C1037 575.5 1035.04 575.55 1032.5 575.5C1028.59 575.423 1026 575 1022.5 574.5C1019 574 1013.5 572.5 1013.5 572.5Z"/>
-      </svg>
       <!-- вывеска «Ваш любимый кофе» на фасаде (rect0 из SVG: 457/170 · 449×152, поворот 1.7°) + циан-подсветка -->
       <img class="co-coffee nc-coffee" id="ncCoffee" src="assets/img/objects/cafe-coffee-sign.png" alt="Ваш любимый кофе">
+      <!-- ПАНДУС (перенесён с подслайда 2) — кафе ДОСТУПНО; зелёный неон-контур. z2 — под людьми -->
+      <img class="nc2-obj" id="nc2Ramp" src="assets/img/objects/cafe-ramp.png" alt="Пандус">
+      <svg class="nc-outline nc2-out" id="nc2RampOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M778.999 582.504L711.001 565.504L710 483.504C710 483.504 711 480.505 713 480.005C715 479.504 790 521.505 791.5 523.005C793 524.505 792.5 527.005 791.5 528.005C790.5 529.005 788 528.005 787.5 527.005C787 526.005 787.5 525.005 787.5 525.005L775.5 518.005L776 535.005L841 567.005L844.5 570.505L778.999 582.504Z"/>
+      </svg>
+      <!-- УРНА раздельного сбора (перенесена с подслайда 2) — зелёное свечение по альфе -->
+      <div class="cafesparks nc2-bin-sparks" id="nc2BinSparks"></div>
+      <img class="nc2-obj" id="nc2Bin" src="assets/img/objects/recycling-bins.png" alt="Раздельный сбор">
       <!-- женщина с коляской: появление (искра→фото→СИНИЙ контур), затем 3 точки движения к входу -->
       <div class="cafesparks nc-woman-sparks" id="ncWomanSparks"></div>
       <img class="nc-woman" id="ncWoman" src="assets/img/objects/woman-stroller.png" alt="">
+      <!-- пожилая пара: механика появления как у женщины (искра→фото→контур), затем идёт ПО ТЕМ ЖЕ координатам (NC_PAIR_ANCHORS) ПОСЛЕ неё; z2 — за ней -->
+      <div class="cafesparks nc-pair-sparks" id="ncPairSparks"></div>
+      <img class="nc-pair" id="ncPair" src="assets/img/objects/para-cafe.png" alt="">
       <!-- ГЕРОЙ поливает клумбу своего кафе (rect 436/391 · 150×266 из SVG); низ отсечён clip-path по ломаной → ноги за клумбой -->
       <div class="cafesparks nc-hero-sparks" id="ncHeroSparks"></div>
       <img class="nc-hero" id="ncHero" src="assets/img/objects/hero-water.png" alt="">
@@ -2368,31 +2563,18 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
         <div class="mission-name" id="ncFio"></div>
       </div>
     </div>
-    <!-- ПОДСЛАЙД 2 («Миссия 4 - часть 2.svg», rect'ы в системе 2172×724) — та же сцена кафе; показывается под чёрным, пока вуаль свёрнута -->
+    <!-- ПОДСЛАЙД 2 (РЕДИЗАЙН): крупный план пары с меню Брайля + официант с протезом (свой фон cafe-interior-0); выделяем меню и протез, затем текст -->
     <div class="nc-stage" id="nc2Stage">
-      <!-- вывеска «Ваш любимый кофе» — горит (перенесена с подслайда 1) -->
-      <img class="co-coffee nc-coffee show lit" src="assets/img/objects/cafe-coffee-sign.png" alt="Ваш любимый кофе">
-      <!-- ПАНДУС (rect 658/475 · 188×113, вырезан по маске-path из SVG) — под героем -->
-      <img class="nc2-obj" id="nc2Ramp" src="assets/img/objects/cafe-ramp.png" alt="Пандус">
-      <!-- ЗЕЛЁНЫЙ контур пандуса — тот же path, что маска в SVG -->
-      <svg class="nc-outline nc2-out" id="nc2RampOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M778.999 582.504L711.001 565.504L710 483.504C710 483.504 711 480.505 713 480.005C715 479.504 790 521.505 791.5 523.005C793 524.505 792.5 527.005 791.5 528.005C790.5 529.005 788 528.005 787.5 527.005C787 526.005 787.5 525.005 787.5 525.005L775.5 518.005L776 535.005L841 567.005L844.5 570.505L778.999 582.504Z"/>
+      <!-- выделяем 2 объекта из «Миссия 4 - часть 2 (новый вариант).svg» — синий неон (как меню/протез на слайде 15) -->
+      <!-- МЕНЮ БРАЙЛЯ (пути 0+1) -->
+      <svg class="mb-out" id="nc2MenuOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M576.5 500.5L626 374.5L932.5 404L871 539.5"/>
+        <path d="M552.5 569L519.5 672L524.5 675.5L663.5 683L806.5 674L830.5 619"/>
       </svg>
-      <!-- ГЕРОЙ строит пандус (rect 644/471 · 86×109) — НАД пандусом; шаблон появления героя: искры → фото → контур + имя -->
-      <div class="cafesparks nc2-hero-sparks" id="nc2HeroSparks"></div>
-      <img class="cafehero nc2-hero" id="nc2Hero" src="assets/img/objects/hero-ramp.png" alt="">
-      <img class="cafeglow nc2-hero" id="nc2HeroGlow" src="assets/img/objects/hero-ramp-outline.png" alt="">
-      <div class="cafe-name nc2-name" id="nc2NamePanel">
-        <div class="mapname boxed herobox">
-          <span class="hstars"><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span><span class="star on">★</span><span class="star off">★</span></span>
-          <span class="htext" id="nc2Htext"></span>
-        </div>
-      </div>
-      <!-- УРНА раздельного сбора (rect 1006/505 · 112×75) — проявление фото + зелёный контур -->
-      <div class="cafesparks nc2-bin-sparks" id="nc2BinSparks"></div>
-      <img class="nc2-obj" id="nc2Bin" src="assets/img/objects/recycling-bins.png" alt="Раздельный сбор">
-      <!-- облако пыли от стройки пандуса (реюз .co-dust/.puff, зона по размеру пандуса) -->
-      <div class="co-dust nc2-dust" id="nc2Dust"></div>
+      <!-- БИОНИЧЕСКИЙ ПРОТЕЗ официанта (путь 2) -->
+      <svg class="mb-out" id="nc2ArmOut" viewBox="0 0 2172 724" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1239.5 436L1242 438L1250.5 445L1261 454L1267 464L1282 466L1317.5 464L1340.5 457.5L1352 454H1371.5L1395.5 464L1412.5 477L1423 494.5C1423 494.5 1426.38 506.897 1423 513.5C1421.23 516.949 1416.5 521 1416.5 521C1416.5 521 1410 531 1404 534C1398 537 1371.5 534 1371.5 534H1360.5L1350 524C1347 523 1340.8 521 1340 521C1339.2 521 1333 520.333 1330 520H1323L1317 518L1311 516.5C1309.33 516.667 1305.8 517.2 1305 518C1304.2 518.8 1301 520.333 1299.5 521L1293 524H1283.5L1273 526C1271.67 525.333 1267 526 1267 526C1267 526 1261.33 527.333 1259.5 527C1257.83 526.667 1254.4 526 1254 526C1253.5 526 1250 525 1249 525C1248 525 1247 525 1246.5 525.5C1246 526 1246 526 1245.5 527C1245 528 1244 528 1243.5 528.5C1243 529 1242 528 1241.5 527.5C1241.1 527.1 1239.33 526 1238.5 525.5L1216 505L1207 502.5L1184 501C1181.83 501.667 1177.5 501 1177.5 501C1177.5 501 1176.5 495.833 1176.5 493.5L1176 488L1178.5 481.5L1179.5 479V466L1182 462.5L1183 460.5L1184 459C1184 457.5 1184 454.4 1184 454C1184 453.6 1186.33 451.167 1187.5 450L1194 448H1196L1198 445.5L1200.5 438.5L1201.5 433.5L1203 430.5L1206.5 427.5L1212.5 426.5H1217L1227.5 432.5"/>
+      </svg>
       <!-- затемнение (механика слайда 13) + текст в стиле слайда 11: титул слева, заголовок + блоки с иконками справа -->
       <div class="m1-dark m3-dark" id="nc2Dark"></div>
       <h2 class="fsk-ttl dept-bl" id="nc2Brand"><span class="ttl-txt">Фонд поддержки<br>социальных<br>проектов</span><svg class="dept-logo" style="--lg-h:6.02cqw;--lg-sw:1.01" viewBox="0 0 58.2 46.8" role="img" aria-label="Фонд поддержки социальных проектов"><use href="#lg-fpsp"/></svg></h2>
@@ -2430,7 +2612,7 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
     <img class="cc-titleart" id="ccTitleArt" src="assets/img/objects/title-lockup.svg" alt="">
     <!-- НЕОН: титул (LIBRARY 3 AM, синий) + вращающийся неоновый логотип «Бизнес Москвы» -->
     <div class="neon-lockup" id="neonLockup">
-      <!-- текст в span: при v5 на него вешается срез-смещение, эффекты включения остаются на .nl-title -->
+      <!-- текст в span: при v5 на него вешается срез-смещение (весь титул), эффекты включения остаются на .nl-title -->
       <div class="nl-title" id="nlTitle"><span class="nl-txt" id="nlTxt">Команда поддержки и развития<br>предпринимательства</span></div>
       <div class="nl-logo"><div class="nl-logo-spin">
         <svg class="nl-logo-svg" id="nlLogo" viewBox="0 0 111 138" xmlns="http://www.w3.org/2000/svg">
@@ -2489,7 +2671,17 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 <div class="splash" id="splash">
   <div class="intro-bg"></div>
   <div class="intro-inner">
-    <div class="quest-title" id="questTitle">
+    <!-- грунж-фильтр печати «КВЕСТ»: рвём края чернил (displacement) + пятнистая потеря краски (маска из шума) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <filter id="stampGrunge" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.016" numOctaves="3" seed="7" result="warp"/>
+        <feDisplacementMap in="SourceGraphic" in2="warp" scale="6" xChannelSelector="R" yChannelSelector="G" result="disp"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.34 0.42" numOctaves="2" seed="4" result="speck"/>
+        <feColorMatrix in="speck" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.55" result="mask"/>
+        <feComposite in="disp" in2="mask" operator="in"/>
+      </filter>
+    </defs></svg>
+    <div class="quest-title tv-0" id="questTitle">
       <!-- титул = верхний титул из design-system.html (секция «Титул», импорт Group 2087327338.svg):
            КВЕСТ — синий неон, МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ — тёплый белый, лого «Б» водяным знаком позади -->
       <div class="qt-line qt-art">
@@ -2498,9 +2690,25 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
             <path d="M742.492 267.5V301.213H648.901V333.312L651.397 333.315L690.118 333.378L618.443 404.533L616.656 406.308L618.443 408.082L637.944 427.442L639.706 429.19L641.468 427.442L715.198 354.247V391.389H742.5V419.859C742.5 431.784 739.131 440.747 733.101 446.733C727.068 452.723 718.028 456.072 706.003 456.072H591.5V267.5H742.492Z"/>
           </svg>
         </div></div>
-        <!-- «КВЕСТ» в своём span: при v5 режется только он, две первые строки остаются как есть -->
-        <!-- каждое слово в своём span (.qt-w) — появляются ПО ОЧЕРЕДИ; пауза перед КВЕСТ ×2 (см. --qt-step) -->
-        <div class="qt-txt"><span class="qt-w">МОСКОВСКИЙ</span><br><span class="qt-w">ПРЕДПРИНИМАТЕЛЬСКИЙ</span><br><span class="qt-w qt-quest" id="qtQuest">КВЕСТ</span></div>
+        <!-- КВЕСТ, var-0: 2 подрежима (Ctrl+K) — ПЕЧАТЬ (штамп, absolute поверх 2 строк) ИЛИ ГЛИТЧ (срез, Neuropol X, 3-я строка). `.qtq-br` даёт 3-ю строку только в глитч-режиме. См. #qtQuest / .q0-glitch в CSS. -->
+        <div class="qt-txt"><span class="qt-w">МОСКОВСКИЙ</span><br><span class="qt-w">ПРЕДПРИНИМАТЕЛЬСКИЙ</span><br class="qtq-br"><span class="qt-w qt-quest" id="qtQuest">КВЕСТ</span></div>
+      </div>
+      <!-- ВАРИАНТ 1 (Ctrl+L): лого + большое слово КВЕСТ (глитч) -->
+      <div class="qt-var-1">
+        <i class="qt-bar blue"></i>
+        <div class="qt1-row">
+          <div class="qt-logo-box"><div class="qt-logo-spin"><svg class="qt-logo" viewBox="589 265 156 194" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M742.492 267.5V301.213H648.901V333.312L651.397 333.315L690.118 333.378L618.443 404.533L616.656 406.308L618.443 408.082L637.944 427.442L639.706 429.19L641.468 427.442L715.198 354.247V391.389H742.5V419.859C742.5 431.784 739.131 440.747 733.101 446.733C727.068 452.723 718.028 456.072 706.003 456.072H591.5V267.5H742.492Z"/></svg></div></div>
+          <span class="qt-quest" id="qtQuest1">КВЕСТ</span>
+        </div>
+        <i class="qt-bar blue"></i>
+      </div>
+      <!-- ВАРИАНТ 2 (Ctrl+L): дизайн-система — тёплые МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ + циан КВЕСТ (глитч) + неон-линии + лого-водяной знак -->
+      <div class="qt-var-2">
+        <div class="qt2-logo"><div class="qt-logo-spin"><svg class="qt-logo" viewBox="589 265 156 194" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M742.492 267.5V301.213H648.901V333.312L651.397 333.315L690.118 333.378L618.443 404.533L616.656 406.308L618.443 408.082L637.944 427.442L639.706 429.19L641.468 427.442L715.198 354.247V391.389H742.5V419.859C742.5 431.784 739.131 440.747 733.101 446.733C727.068 452.723 718.028 456.072 706.003 456.072H591.5V267.5H742.492Z"/></svg></div></div>
+        <i class="qt-bar blue qt2-top"></i>
+        <div class="qt2-r1"><span class="qt2-m">МОСКОВСКИЙ</span><span class="qt-quest qt2-quest" id="qtQuest2">КВЕСТ</span></div>
+        <span class="qt2-p">ПРЕДПРИНИМАТЕЛЬСКИЙ</span>
+        <i class="qt-bar warm qt2-bot"></i>
       </div>
     </div>
     <div class="load-log" id="loadLog"></div>
@@ -2549,14 +2757,15 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
   <div class="rules-inner">
     <!-- слайд 1 — «Игровой мир: Москва» (построчное авто-появление; октаэдры убраны) -->
     <div class="rslide gameworld" data-i="0">
-      <h2 class="rtitle"><span class="rin">Игровой мир:</span> <span class="rin gw-city">Москва</span></h2>
+      <h2 class="rtitle"><span class="rin gw-city">Москва</span></h2>   <!-- «Игровой мир» ушёл в левый док (RULES_TITLES[0]); здесь остаётся город одним словом, выключка по левому краю = по иконкам списка -->
+
       <div class="gw-list">
         <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M22 84 V44 H48 V84 M56 84 V28 H80 V84"/><path class="ic-warm" d="M30 56 H40 M30 68 H40 M64 42 H72 M64 56 H72 M64 68 H72"/></svg></span>Игроки:</span>
         <div class="gw-right">
           <span class="rin gw-val"><span class="rnum">937</span> тыс. субъектов МСП</span>
           <span class="rin gw-cap">84% всех предприятий города</span>
         </div>
-        <span class="rin gw-label gw-2line"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="38" cy="38" r="11"/><path d="M20 82 C20 62 56 62 56 82"/><circle class="ic-warm" cx="66" cy="44" r="9"/><path class="ic-warm" d="M52 84 C52 68 82 68 82 84"/></svg></span>Союзники:<br><span class="gw-sub">(занятые)</span></span>
+        <span class="rin gw-label gw-2line"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="38" cy="38" r="11"/><path d="M20 82 C20 62 56 62 56 82"/><circle class="ic-warm" cx="66" cy="44" r="9"/><path class="ic-warm" d="M52 84 C52 68 82 68 82 84"/></svg></span>NPC:<br><span class="gw-sub">(занятые)</span></span>
         <div class="gw-right">
           <span class="rin gw-val"><span class="rnum">3,5</span> млн человек</span>
           <span class="rin gw-cap">каждый третий работает в МСП</span>
@@ -2616,14 +2825,15 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
     </div>
   </div>
   <!-- вступительный крупный титул (формат заставки), слева -->
-  <div class="rules-title" id="rulesTitle">Правила игры</div>
+  <div class="rules-title" id="rulesTitle">Игровой<br>мир</div>
   <!-- шаблонная вуаль перехода: раскрытие/сворачивание из точки-фокуса -->
   <div class="rules-veil" id="rulesVeil"></div>
   </div>
 </div>
 <!-- ПЕРЕНОСИМЫЙ ВХОДНОЙ титул «Правила игры» (1-й подслайд): появляется на слайде 4, живёт над сценами при
      сворачивании hveil, растворяется при раскрытии rules-veil (шаблон, как quest-carry) -->
-<div class="rules-carry" id="rulesCarry"><div class="rules-carry-title">Правила игры</div></div>
+<div class="rules-carry" id="rulesCarry"><div class="rules-carry-title">Игровой<br>мир</div></div>   <!-- входной carry: тоже в 2 строки, чтобы совпадал с доком -->
+
 <!-- Титул слайда 5 «Проводники»: приходит переносом с правил, ДОКуется в левый верхний угол и остаётся на слайде -->
 <div class="rules-carry" id="helpersCarry"><div class="rules-carry-title">Проводники</div></div>
 
@@ -2697,9 +2907,12 @@ const CFG = {
   newcafe:{ walk:2250, hold:450 },   // слайд 14: длительность ВСЕЙ прогулки женщины — от старта до входа, непрерывно (пара к --nc-walk) · hold — пауза после появления, перед стартом ходьбы
   baby:{ on:true, vol:0.45 },       // короткий плач ребёнка сл.14 (у входа без пандуса): вкл/выкл · громкость
   morebiz:{ textHold:1600, dimGap:600, outGap:450 },   // слайд 15: пауза после прорисовки контуров (зритель разглядывает кадр) · dimGap — от гашения контура героя до затемнения · outGap — пауза между обводкой соседних контуров (протез→меню→награда)
-  music:{ on:true, vol:0.3, xfade:1800, loopTail:2500,   // фоновая музыка: вкл/выкл · громкость · кроссфейд смены трека (мс) · за сколько до конца заводить петлю (мс)
+  music:{ on:true, vol:0.3, xfade:1800, loopTail:2500,   // фоновая музыка: вкл/выкл · громкость (общая, по умолчанию) · кроссфейд смены трека (мс) · за сколько до конца заводить петлю (мс)
+          volBySlide:{},   // ГРОМКОСТЬ ПО СЛАЙДАМ (пульт Ctrl+M): { sid: 0..1 }. Нет слайда в списке → берётся общая vol. Живёт в localStorage; сюда можно «вшить базово» финальные уровни зала
           titleIntro:true },   // ОТДЕЛЬНЫЙ 1-й клик на титуле, который включает пиксельную мелодию. false — как было: 1-й клик сразу даёт вуаль + кнопку «Начать» + трек «Загрузка», титульной мелодии нет вовсе
   lamp:{ on:true, vol:0.6, from:12.0, to:13.6 },   // «неоновая лампа» (эффект 1 на кнопке «Начать»): вкл/выкл · громкость · окно щелчка+миганий в mp3 (синхронно с neonBoot)
+  stamp:{ snd:{ on:true, vol:0.5 } },   // ЗВУК ПЕЧАТИ «КВЕСТ» (заставка сл.2): синтез-«тумк» (глухой удар + щелчок контакта) в момент удара штампа. Громкость 0..1
+  /* ↑ WebAudio-синтез, без файла. Играет по animationstart анимации stampDown + задержка до «удара» (70% × 900мс) */
   /* ═══ ФЛАГ АЛЬТЕРНАТИВНОГО СТИЛЯ «V5 · СРЕЗ-СМЕЩЕНИЕ» (из design-system.html) ═══
      v5:true (ВКЛЮЧЕН) → на body класс .fx-v5:
        слайд 1 — лого светит шире («свет от лого»), титул «Команда поддержки…» и кнопка «Начать» режутся полосами;
@@ -2713,7 +2926,8 @@ const CFG = {
        титула слева стоит лого подразделения (МБМ / ФСК / ШТАБ / ФПСП) в стиле неон-трубки.
      logos:false → прежние текстовые титулы.
      Переключить: ?logos=off в адресе (обратно — ?logos=on). */
-  style:{ v5:true, logos:true, ds:true, dsExo:false, dsMix:true,   /* ПО УМОЛЧАНИЮ — 3-й вариант (dsMix, ?design=neuro3): СМЕШАННЫЙ шрифт — титулы/заголовки/кнопки/миссии Neuropol X, остальное Exo 2, КВЕСТ/HARD — LIBRARY 3 AM. По флагу: ?design=neuro — чистый Neuropol X; ?design=neuro2/exo — весь текст Exo 2; ?design=off — выключить всё */
+  style:{ v5:true, logos:true, ds:true, dsExo:false, dsMix:true, titleVar:0,   /* титул слайда 2 (Ctrl+L): 0=лого+3 строки · 1=лого+КВЕСТ · 2=дизайн-система (МПК+КВЕСТ). Глитч КВЕСТ — из v5. */
+          tv2Logo:true,   /* вариант 2 титула: показывать лого-водяной знак? Ctrl+K — вкл/выкл на заставке */   /* ПО УМОЛЧАНИЮ — 3-й вариант (dsMix, ?design=neuro3): СМЕШАННЫЙ шрифт — титулы/заголовки/кнопки/миссии Neuropol X, остальное Exo 2, КВЕСТ/HARD — LIBRARY 3 AM. По флагу: ?design=neuro — чистый Neuropol X; ?design=neuro2/exo — весь текст Exo 2; ?design=off — выключить всё */
           /* Значения 1-в-1 из демо design-system.html:
              титул  (#sgDemo)        — strips 14 · amp 18 · glow 8px · core 2
              кнопка (.nb-goldframe)  — strips 10 · amp 6  · glow 6px · core 1
@@ -2755,7 +2969,8 @@ const CFG = {
    браузер их не срезает → на стыке петли слышна дырка. Почему не WebAudio decodeAudioData:
    ему нужен fetch(), а тот запрещён на file:// — презентацию открывают и двойным кликом. */
 const BG_SRC={
-  load:'assets/audio/bg-load.mp3',
+  load:'assets/audio/bg-mario-intro.mp3',   // «Загрузка»: интро Super Mario (играет первые ~10с, дальше цепочка → loadloop)
+  loadloop:'assets/audio/bg-mario-trap.mp3',// продолжение «Загрузки»: Trap-ремикс Super Mario, ЭТОТ трек и зацикливается
   city:'assets/audio/bg-city.mp3',
   map :'assets/audio/bg-map.mp3',
   cafe:'assets/audio/bg-cafe.m4a',   // разговоры в кафе (AAC в контейнере MP4 — браузер играет так же, как mp3)
@@ -2765,7 +2980,20 @@ const BG_SRC={
    Исходник не режем — так проще подвинуть границы. */
 const BG_CLIP={
   title:{ from:0, to:20 },
+  load :{ from:0, to:12.5 },   // интро играет солидно первые 10с, затем кроссфейд loopTail(2.5с) → to=12.5 (переход стартует на 10-й секунде)
 };
+/* Цепочка: когда трек доиграл свой фрагмент — не зацикливается сам в себя, а КРОССФЕЙДИТСЯ на другой трек.
+   'load' (интро) → 'loadloop' (Trap-петля). У loadloop цепочки нет → он зацикливается сам как обычный трек. */
+const BG_CHAIN={ load:'loadloop' };
+/* Логическая группа: 'load' и 'loadloop' — один трек с точки зрения bgPlay(). Иначе applyScene('splash')
+   позвал бы bgPlay('load') уже после перехода на loadloop → перезапустил бы интро. */
+const BG_GROUP={ loadloop:'load' };
+function bgGroup(n){ return BG_GROUP[n]||n||null; }
+/* Альт-трек КАРТЫ: London Philharmonic — Super Mario Bros Theme. Переключается горячей клавишей Alt+M.
+   Не в BG_SRC (иначе тянулся бы в прогрев ~10 МБ всегда) — резолвер bgSrcFor подставляет его на лету. */
+const BG_MAP_ALT='assets/audio/bg-map-mario.mp3';
+if(CFG.music.mapAlt===undefined) CFG.music.mapAlt=false;
+function bgSrcFor(name){ return (name==='map' && CFG.music.mapAlt) ? BG_MAP_ALT : BG_SRC[name]; }
 /* сцена → трек. Нет в списке → тишина (плавная). */
 const BG_SCENE={
   splash:'load',                                                   // 2
@@ -2799,11 +3027,12 @@ function bgRamp(v, to, ms, done){
   v.raf=requestAnimationFrame(step);
 }
 function bgVoiceStop(v, ms){
+  v.looping=true;   // «на пенсии»: applyMusicVol (пульт Ctrl+M) не должен тянуть громкость гаснущего голоса обратно вверх
   bgRamp(v, 0, ms, ()=>{ try{ v.el.pause(); }catch(e){} bgVoices=bgVoices.filter(x=>x!==v); });
 }
 /* завести голос: 0 → CFG.music.vol за fadeMs; сам себя зацикливает кроссфейдом у конца трека (или фрагмента) */
 function bgVoiceStart(name, fadeMs){
-  const el=new Audio(BG_SRC[name]);
+  const el=new Audio(bgSrcFor(name));                 // src через резолвер: у 'map' может быть альт-файл (Alt+M)
   const clip=BG_CLIP[name]||null;                     // играем фрагмент [from..to], если задан
   el.preload='auto'; el.volume=0;
   const v={name, el, looping:false, raf:null};
@@ -2817,18 +3046,21 @@ function bgVoiceStart(name, fadeMs){
     if(!isFinite(end)) return;
     if(el.currentTime < end - CFG.music.loopTail/1000) return;
     v.looping=true;                                   // этот голос уходит...
+    const nxt=BG_CHAIN[name]||name;                   // цепочка ('load'→'loadloop') или сам в себя
+    if(nxt!==name) bgCur=nxt;                          // смена фазы внутри той же группы (bgPlay это учитывает)
     bgVoiceStop(v, CFG.music.loopTail);
-    bgVoiceStart(name, CFG.music.loopTail);           // ...а его копия уже вступила
+    bgVoiceStart(nxt, CFG.music.loopTail);            // ...а его копия/наследник уже вступил
   });
   el.play().catch(()=>{});                            // нет жеста — доиграем с bgKick()
-  bgRamp(v, CFG.music.vol, fadeMs);
+  bgRamp(v, musicTargetVol(), fadeMs);                 // уровень ТЕКУЩЕГО слайда (пульт Ctrl+M), иначе общий CFG.music.vol
   return v;
 }
 /* переключить фон на трек name (null → тишина). Тот же трек — не трогаем. */
 function bgPlay(name){
   if(!CFG.music.on) return;
-  const playing=bgVoices.some(v=>v.name===name && !v.el.paused);
-  if(bgCur===name && (playing || !name)) return;      // уже звучит (или уже тишина) — ничего не делаем
+  const g=bgGroup(name);
+  const playing=bgVoices.some(v=>bgGroup(v.name)===g && !v.el.paused);
+  if(bgGroup(bgCur)===g && (playing || !name)) return;// та же группа уже звучит (или уже тишина) — ничего не делаем
   bgCur=name||null;
   const x=CFG.music.xfade;
   bgVoices.slice().forEach(v=>bgVoiceStop(v, x));     // всё прежнее плавно гасим
@@ -2838,6 +3070,188 @@ function bgPlay(name){
 function bgKick(){ bgVoices.forEach(v=>{ if(v.el.paused) v.el.play().catch(()=>{}); }); }
 addEventListener('pointerdown', bgKick);
 addEventListener('keydown', bgKick);
+
+/* ═══════════════════ ПУЛЬТ ГРОМКОСТИ ЗВУКА (Ctrl+M) ═══════════════════
+   Настройка «в зале». Пульт крутит ДВЕ вещи:
+   • ФОНОВУЮ МУЗЫКУ — свой уровень на КАЖДОМ слайде (один трек через неск. слайдов
+     не рвётся, плавно перетекает на уровень нового слайда);
+   • ОТДЕЛЬНЫЕ ЗВУКИ (появление, сирена, бульдозер, драка, печать и т.д.) — у каждого
+     свой ползунок и кнопка ▶ (проиграть пример). Громкость звука — общая на всю
+     презентацию (звук привязан к своим слайдам). Пульт показывает звуки текущего слайда
+     отдельной группой, остальные — ниже.
+   Всё применяется вживую, показывается на экране, сохраняется (localStorage) —
+   переживает перезагрузку. «Копировать всё» → уровни в буфер, чтобы «вшить базово». */
+const MVOL_KEY='mvp.audioLevels';   // {slides:{sid:0..1}, sfx:{key:0..1}, rst:N}
+const MVOL_RESET=1;   // ↑ номер выравнивания: подними на +1, когда надо разово погасить прежние уровни музыки по слайдам (все слайды вернутся на общую громкость CFG.music.vol)
+/* целевая громкость сцены sid: свой уровень слайда, иначе общий CFG.music.vol */
+function musicVolFor(sid){ const o=CFG.music.volBySlide; return (o && sid in o) ? o[sid] : CFG.music.vol; }
+function musicTargetVol(){ return musicVolFor(id()); }
+/* какой трек играет на слайде sid (для подписи в пульте); null → тишина */
+function musicTrackFor(sid){ return (sid==='title') ? 'title' : (BG_SCENE[sid]||null); }
+/* плавно подвести живые голоса к уровню текущего слайда (переход слайда / правка ползунком) */
+function applyMusicVol(ms){ const to=musicTargetVol();
+  bgVoices.forEach(v=>{ if(!v.looping) bgRamp(v, to, ms==null?CFG.music.xfade:ms); }); }
+
+/* ── РЕЕСТР ЗВУКОВЫХ КАНАЛОВ: label · где лежит громкость (o()[k], 0..1) · test() проиграть пример ── */
+const SFX_CH=[
+  {key:'appear', label:'Появление объекта (искра→фото)', o:()=>CFG.appear.snd, k:'vol',       test:()=>revealSound(0.7)},
+  {key:'level',  label:'Уровень повышен (звёзды)',        o:()=>CFG.level.snd,  k:'vol',       test:()=>levelSound()},
+  {key:'co',     label:'Стройка / ремонт',                o:()=>CFG.co.snd,     k:'vol',       test:()=>repairSound()},
+  {key:'route',  label:'Импульсы по маршрутам',           o:()=>CFG.route.snd,  k:'vol',       test:()=>pulseLaunch(3)},
+  {key:'arrive', label:'Импульс — прибытие (дзинь)',      o:()=>CFG.route.snd,  k:'arriveVol', test:()=>pulseArriveSound()},
+  {key:'siren',  label:'Сирена скорой',                   o:()=>CFG.siren,      k:'vol',       test:()=>{ sirenStart(); setTimeout(()=>sirenStop(400),1200); }},
+  {key:'bull',   label:'Бульдозер (едет)',                o:()=>CFG.bulldozer,  k:'vol',       test:()=>{ bulldozerStart(); setTimeout(()=>bulldozerStop(400),1400); }},
+  {key:'dig',    label:'Бульдозер — стук ковша',          o:()=>CFG.bulldozer,  k:'digVol',    test:()=>digKnock()},
+  {key:'fight',  label:'Драка (скорая решает)',           o:()=>CFG.fight,      k:'vol',       test:()=>fightSound()},
+  {key:'baby',   label:'Плач ребёнка',                    o:()=>CFG.baby,       k:'vol',       test:()=>babyCry()},
+  {key:'lamp',   label:'Неон-лампа (кнопка «Начать»)',    o:()=>CFG.lamp,       k:'vol',       test:()=>playLamp()},
+  {key:'stamp',  label:'Печать «КВЕСТ»',                  o:()=>CFG.stamp.snd,  k:'vol',       test:()=>playStamp()},
+];
+const SFX_BY_KEY={}; SFX_CH.forEach(c=>SFX_BY_KEY[c.key]=c);
+/* какие звуки звучат на каком слайде — для группы «звуки этого слайда» (остальные доступны ниже) */
+const SCENE_SFX={
+  title:['lamp'], splash:['stamp'], hero:['appear'], rules:[], avatars:['appear'],
+  map:['appear','route','arrive','level'], mission1:['appear'], mission1b:['appear'],
+  quiz:['appear'], binoc:['appear'], fsk:['appear'],
+  cafeopen:['appear','bull','dig'], mission3:['appear','siren','fight'],
+  newcafe:['appear','baby'], morebiz:['appear'], binoc2:['appear'],
+};
+function sfxGet(c){ return c.o()[c.k]; }                 // 0..1
+function sfxSet(c,val){ c.o()[c.k]=val; }
+function sfxVol(c){ return Math.round(sfxGet(c)*100); }   // 0..100
+
+/* ── сохранение/загрузка уровней зала (музыка по слайдам + громкости звуков) ── */
+function mvolSave(){ try{
+  const sfx={}; SFX_CH.forEach(c=>sfx[c.key]=sfxGet(c));
+  localStorage.setItem(MVOL_KEY, JSON.stringify({slides:CFG.music.volBySlide, sfx, rst:MVOL_RESET}));
+}catch(e){} }
+(()=>{ try{ const raw=localStorage.getItem(MVOL_KEY); if(!raw) return;
+  const o=JSON.parse(raw); if(!o || typeof o!=='object') return;
+  if((o.rst||0) < MVOL_RESET){ o.slides={}; o.rst=MVOL_RESET; localStorage.setItem(MVOL_KEY, JSON.stringify(o)); }   // выравнивание: гасим прежние уровни по слайдам → все слайды на общей громкости (30%)
+  if(o.slides && typeof o.slides==='object') Object.assign(CFG.music.volBySlide, o.slides);
+  if(o.sfx && typeof o.sfx==='object') SFX_CH.forEach(c=>{ if(c.key in o.sfx) sfxSet(c, o.sfx[c.key]); });
+}catch(e){} })();
+
+/* ── UI пульта ── */
+const volEdit={ open:false, el:null, mSlider:null, mVal:null, mSlide:null, mTrack:null, list:null };
+function buildVolPanel(){
+  const p=document.createElement('div'); p.id='volPanel';
+  p.style.cssText='position:fixed;left:50%;bottom:5%;transform:translateX(-50%);z-index:100000;'+
+    'width:min(88vw,640px);max-height:88vh;overflow:auto;padding:16px 20px 12px;'+
+    'border:1px solid var(--neon,#27e3ff);border-radius:14px;background:rgba(6,16,24,.96);'+
+    'color:#eaf4ff;font:600 14px/1.3 system-ui,sans-serif;letter-spacing:.02em;'+
+    'box-shadow:0 0 26px rgba(39,227,255,.4),0 10px 44px rgba(0,0,0,.6);display:none';
+  p.innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">'+
+      '<span style="font:800 16px/1 system-ui;letter-spacing:.06em;color:#27e3ff">♪ ГРОМКОСТЬ ЗВУКА</span>'+
+      '<span id="volSlide" style="font-size:12px;opacity:.75"></span></div>'+
+    // фоновая музыка (уровень текущего слайда)
+    '<div style="display:flex;align-items:center;gap:12px;padding:4px 0 6px">'+
+      '<span style="flex:0 0 42%;line-height:1.15">🎵 <b>Фоновая музыка</b><br>'+
+        '<span id="volTrack" style="font-size:11px;opacity:.6"></span></span>'+
+      '<input id="volSlider" type="range" min="0" max="100" step="1" tabindex="-1" '+
+        'style="flex:1;height:6px;accent-color:#27e3ff;cursor:pointer">'+
+      '<span id="volVal" style="font:800 26px/1 system-ui;min-width:2.1em;text-align:right;color:#fff;'+
+        'text-shadow:0 0 12px rgba(39,227,255,.65)">0</span>'+
+      '<span style="flex:0 0 26px"></span></div>'+
+    '<div id="volList"></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;'+
+        'border-top:1px solid rgba(39,227,255,.22);font-size:12px;opacity:.72;gap:8px;flex-wrap:wrap">'+
+      '<span>Ctrl+M / Esc — закрыть · ↑/↓ музыка · ←/→ слайды · ▶ — прослушать</span>'+
+      '<span><b id="volReset" style="cursor:pointer;color:#27e3ff">сброс музыки</b> · '+
+        '<b id="volCopy" style="cursor:pointer;color:#27e3ff">копировать всё</b></span>'+
+    '</div>';
+  document.body.appendChild(p);
+  // клики/тапы по пульту НЕ должны листать слайд (глобальный click→next и pointerdown→bgKick)
+  p.addEventListener('click', e=>e.stopPropagation());
+  p.addEventListener('pointerdown', e=>e.stopPropagation());
+  volEdit.el=p;
+  volEdit.mSlider=p.querySelector('#volSlider');
+  volEdit.mVal  =p.querySelector('#volVal');
+  volEdit.mSlide=p.querySelector('#volSlide');
+  volEdit.mTrack=p.querySelector('#volTrack');
+  volEdit.list  =p.querySelector('#volList');
+  volEdit.mSlider.addEventListener('input', ()=> setSlideVol(+volEdit.mSlider.value, 120));
+  // после перетаскивания снять фокус, чтобы ←/→ листали слайды, а не двигали ползунок
+  volEdit.mSlider.addEventListener('pointerup', ()=> volEdit.mSlider.blur());
+  volEdit.mSlider.addEventListener('change',    ()=> volEdit.mSlider.blur());
+  p.querySelector('#volReset').addEventListener('click', ()=>{
+    delete CFG.music.volBySlide[id()]; mvolSave(); applyMusicVol(200); refreshMusicRow(); });
+  p.querySelector('#volCopy').addEventListener('click', copyVolLevels);
+}
+/* строка звукового канала: label · ползунок · значение · ▶ (проиграть) */
+function sfxRow(c){
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:10px;padding:3px 0';
+  const lab=document.createElement('span'); lab.style.cssText='flex:0 0 42%;font-size:13px;opacity:.92'; lab.textContent=c.label;
+  const sl=document.createElement('input'); sl.type='range'; sl.min=0; sl.max=100; sl.step=1; sl.tabIndex=-1;
+  sl.style.cssText='flex:1;height:5px;accent-color:#7ad7ff;cursor:pointer'; sl.value=sfxVol(c);
+  const val=document.createElement('span'); val.style.cssText='width:2.1em;text-align:right;font-weight:800;font-size:15px'; val.textContent=sfxVol(c);
+  const btn=document.createElement('button'); btn.textContent='▶'; btn.title='Проиграть';
+  btn.style.cssText='flex:0 0 auto;width:26px;height:24px;border:1px solid #27e3ff;border-radius:6px;'+
+    'background:rgba(39,227,255,.12);color:#eaf4ff;cursor:pointer;font-size:11px;line-height:1';
+  sl.addEventListener('input', ()=>{ sfxSet(c,(+sl.value)/100); val.textContent=sl.value; mvolSave(); });
+  sl.addEventListener('pointerup', ()=> sl.blur());
+  sl.addEventListener('change',    ()=> sl.blur());
+  btn.addEventListener('click', e=>{ e.stopPropagation(); try{ c.test&&c.test(); }catch(err){} });
+  row.append(lab, sl, val, btn);
+  return row;
+}
+/* перерисовать список звуков под текущий слайд: сверху «звуки этого слайда», ниже — остальные */
+function renderSfxList(){
+  const list=volEdit.list; if(!list) return; list.innerHTML='';
+  const rel=SCENE_SFX[id()]||[];
+  const head=t=>{ const h=document.createElement('div'); h.textContent=t;
+    h.style.cssText='margin:10px 0 2px;font:700 11px/1 system-ui;letter-spacing:.08em;color:#27e3ff;opacity:.85'; return h; };
+  if(rel.length){ list.appendChild(head('ЗВУКИ ЭТОГО СЛАЙДА'));
+    rel.forEach(k=>{ const c=SFX_BY_KEY[k]; if(c) list.appendChild(sfxRow(c)); }); }
+  const rest=SFX_CH.filter(c=>!rel.includes(c.key));
+  if(rest.length){ list.appendChild(head(rel.length?'ОСТАЛЬНЫЕ ЗВУКИ':'ВСЕ ЗВУКИ'));
+    rest.forEach(c=> list.appendChild(sfxRow(c))); }
+}
+/* задать громкость МУЗЫКИ текущего слайда (0..100): применить, сохранить, обновить экран */
+function setSlideVol(pct, ms){
+  pct=Math.max(0, Math.min(100, Math.round(pct)));
+  CFG.music.volBySlide[id()]=pct/100;
+  mvolSave();
+  applyMusicVol(ms||120);
+  refreshMusicRow();
+}
+function nudgeVol(d){ setSlideVol(musicTargetVol()*100 + d, 120); }
+/* обновить строку музыки под текущий слайд */
+function refreshMusicRow(){
+  if(!volEdit.open || !volEdit.el) return;
+  const sid=id(), pct=Math.round(musicVolFor(sid)*100), custom=(sid in CFG.music.volBySlide);
+  volEdit.mSlider.value=pct;
+  volEdit.mVal.textContent=pct;
+  volEdit.mSlide.textContent='Слайд '+(cur+1)+'/'+SCENES.length+' · '+sid;
+  const trk=musicTrackFor(sid);
+  volEdit.mTrack.textContent = trk
+    ? (trk+(custom?' · свой уровень':' · общий '+Math.round(CFG.music.vol*100)))
+    : 'на этом слайде тишина';
+}
+/* обновить весь пульт под текущий слайд (музыка + список звуков) */
+function refreshVolPanel(){ if(!volEdit.open || !volEdit.el) return; refreshMusicRow(); renderSfxList(); }
+function toggleVolEdit(force){
+  if(!volEdit.el) buildVolPanel();
+  volEdit.open = (force===undefined) ? !volEdit.open : !!force;
+  volEdit.el.style.display = volEdit.open ? 'block' : 'none';
+  if(volEdit.open) refreshVolPanel();
+  if(typeof revToast==='function') revToast('Пульт громкости: '+(volEdit.open?'ВКЛ · Ctrl+M закрыть':'ВЫКЛ'));
+}
+/* скопировать все выставленные уровни — чтобы «вшить базово» в CFG */
+function copyVolLevels(){
+  const sl=CFG.music.volBySlide;
+  const mlines=SCENES.map((s,i)=> (s.id in sl) ? ('  '+(i+1)+'. '+s.id+' → '+Math.round(sl[s.id]*100)+'%') : null).filter(Boolean);
+  const slines=SFX_CH.map(c=> '  '+c.label+' → '+sfxVol(c)+'%');
+  const txt='=== ГРОМКОСТЬ ЗАЛА ===\nМузыка по слайдам (общая '+Math.round(CFG.music.vol*100)+'%):\n'+
+    (mlines.join('\n')||'  (все слайды по умолчанию)')+'\n\nЗвуки (общие):\n'+slines.join('\n')+
+    '\n\nvolBySlide: '+JSON.stringify(sl)+
+    '\nsfx: '+JSON.stringify(SFX_CH.reduce((a,c)=>{ a[c.key]=sfxGet(c); return a; },{}));
+  const done=m=>{ if(typeof revToast==='function') revToast(m); };
+  try{ navigator.clipboard.writeText(txt).then(()=>done('Все уровни скопированы'), ()=>{ console.log(txt); done('Уровни в консоли (F12)'); }); }
+  catch(e){ console.log(txt); done('Уровни в консоли (F12)'); }
+}
 
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
@@ -2862,14 +3276,13 @@ const landingVeil=document.getElementById('landingVeil');
 const landingTitle=document.getElementById('landingTitle');
 /* ── 5 ВОПРОСОВ КВИЗА (ШАБЛОН): текст вопроса + путь к QR-коду. Заполнить q/qr. ── */
 const QUIZ_TEST_QR='assets/img/objects/q - тест.png';   // тестовый QR (потом заменить на свой для каждого вопроса)
-/* q — вопрос, a — 3 варианта ответа (маркеры А/Б/В генерируются в showQuizItem).
-   Варианты из «Квиз про МБМ.docx» где вопрос совпал; где в файле ответов нет — ЗАГЛУШКИ (заменить). */
+/* q — вопрос, a — 3 варианта ответа (маркеры А/Б/В генерируются в showQuizItem). */
 const QUIZ_ITEMS=[
   {q:'Сколько лет ГБУ «МБМ»?',                                           a:['7','9','14'], qr:QUIZ_TEST_QR},
-  {q:'Сколько консультаций в год оказывает МБМ?',                        a:['Вариант ответа 1','Вариант ответа 2','Вариант ответа 3'], qr:QUIZ_TEST_QR},   // ЗАГЛУШКИ — в файле нет
-  {q:'Сколько мероприятий для бизнеса МБМ проводит ежегодно?',           a:['Более 100','Более 250','Более 500'], qr:QUIZ_TEST_QR},
-  {q:'Какое имя самое популярное у женщин-предпринимательниц в Москве?', a:['Елена','Галина','Лидия'], qr:QUIZ_TEST_QR},
-  {q:'Где ни разу не бывал флаг МБМ?',                                   a:['Вариант ответа 1','Вариант ответа 2','Вариант ответа 3'], qr:QUIZ_TEST_QR},   // ЗАГЛУШКИ — в файле нет
+  {q:'Сколько консультаций в год оказывает МБМ?',                        a:['Более 1 тыс.','Более 130 тыс.','Более 300 тыс.'], qr:QUIZ_TEST_QR},
+  {q:'Сколько мероприятий для бизнеса МБМ проводит ежегодно?',           a:['Более 500','Более 250','Более 100'], qr:QUIZ_TEST_QR},
+  {q:'Какое имя самое популярное у женщин-предпринимательниц в Москве?', a:['Елена','Клавдия','Анна'], qr:QUIZ_TEST_QR},
+  {q:'Где ни разу не бывал флаг МБМ?',                                   a:['Эверест','Морское дно','Северный полюс'], qr:QUIZ_TEST_QR},
 ];
 const QUIZ_LETTERS=['А','Б','В'];
 /* октаэдр-буллит варианта: гекс-рамка + буква ВНУТРИ одного SVG → вращаются вместе (hexspin) */
@@ -2880,7 +3293,7 @@ function quizMark(i){
     +'<text class="q-hl" x="22" y="22" text-anchor="middle" dominant-baseline="central">'+QUIZ_LETTERS[i]+'</text>'
     +'</svg></span>';
 }
-const QUIZ_FIO='Путилин А. Р.';
+const QUIZ_FIO='Александр Путилин';
 const QUIZ_SAY='Тем временем…';
 let qTimers=[], quizStep=0, quizPanelShown=false, quizEndStarted=false, quizEndDone=false, quizNextGo=false;
 /* показать текущий вопрос + варианты + QR: прежний уходит (fade) → счётчик → вопрос → 3 ответа по очереди (как слайд 11) */
@@ -3045,7 +3458,7 @@ const cafeAvatar=document.getElementById('cafeAvatar');
 const cafeSay=document.getElementById('cafeSay');
 const cafeFio=document.getElementById('cafeFio');
 const cafeQuizTitle=document.getElementById('cafeQuizTitle');
-const CAFE_FIO='Путилин А. Р.';
+const CAFE_FIO='Александр Путилин';
 // имена героя по числу звёзд (индекс = заполненные звёзды 0..5) — единый источник
 const LEVEL_NAMES=['Новый игрок','Начинающий предприниматель','Действующий предприниматель','Продвинутый предприниматель','Опытный предприниматель','Московский предприниматель'];
 const CAFE_HERO_NAME=LEVEL_NAMES[0];                     // старт первой сцены кафе = 0★ «Новый игрок»
@@ -3239,7 +3652,7 @@ const cafeSay2=document.getElementById('cafeSay2');
 const cafeFio2=document.getElementById('cafeFio2');
 const cafeQuizTitle2=document.getElementById('cafeQuizTitle2');
 const mission1bVeil=document.getElementById('mission1bVeil');   // только для ВЫХОДА (cafe2ToNext); вход-раскрытие наследуется от квиза
-const CAFE2_FIO='Купринов А. Э.';
+const CAFE2_FIO='Антон Купринов';
 const CAFE2_HERO_NAME=LEVEL_NAMES[1];    // старт слайда 10 = 1★ «Начинающий» (после кафе1)
 const CAFE2_HERO_NAME2=LEVEL_NAMES[2];   // (не используется — на слайде 10 без апгрейда)
 const CAFE2_SAY1='А где же наш герой деньги-то возьмёт для развития?';   // единственная реплика
@@ -3409,7 +3822,7 @@ const fskFio=document.getElementById('fskFio');
 const fskVeil=document.getElementById('fskVeil');
 const fskTitle=document.getElementById('fskTitle');
 const fskOpenTitle=document.getElementById('fskOpenTitle');
-const FSK_FIO='Купринов А. Э.';
+const FSK_FIO='Антон Купринов';
 const FSK_HERO_NAME=LEVEL_NAMES[2];    // старт 2★ «Действующий предприниматель»
 const FSK_HERO_NAME2=LEVEL_NAMES[3];   // после уровня 3★ «Продвинутый предприниматель»
 const FSK_SAY='Поздравляю! Теперь кафе можно открывать!';
@@ -3576,9 +3989,9 @@ const coExcSparks=document.getElementById('coExcSparks');
 const coExcDust=document.getElementById('coExcDust');
 const coStarsG=document.getElementById('coStarsG');
 const coAlarm=document.getElementById('coAlarm');
-const CO_FIO='Байков С. Н.';
+const CO_FIO='Сергей Байков';
 /* реплика Байкова: 1-я строка красная (тревога), 2-я белая. \n = перенос (.say-txt имеет white-space:pre-line) */
-const CO_SAY=[{t:'Угроза бизнесу!\n', cls:'say-alarm'}, {t:'Самое время мне вмешаться!'}];
+const CO_SAY=[{t:'Самое время мне вмешаться!'}];   // «Угроза бизнесу!» (красная строка) убрана по просьбе
 let coTimers=[], coNameTimers=[], coHeroTimer=null, coFromLanding=false, coDustBuilt=false;
 let coHeroStarted=false, coHeroDone=false, coStoryStarted=false, coStoryDone=false, coDangerShown=false, coGo=false, coExcDone=false;
 /* ── ЭСКАВАТОР ОПАСНОСТИ (слайд 12): приезд по точкам из «Движение эскаватора.svg» + аларм/сирена → работа ковшом → паркинг ── */
@@ -3595,6 +4008,7 @@ const CO_EXC_ANCHORS=[
   {left:39.73, top:19.20, w:25.60},   // финиш — паркинг = поза слайда 13 (стрела поднята)
 ];
 const CO_EXC_DRIVE=2250;                                     // мс на весь проезд
+const CO_EXC_REVEAL=900;                                    // пауза «появление → поехал» (искра .2с + фото .7с из CSS #cafeopen .co-exc) — почти сразу едет
 const CO_EXC_START=CO_EXC_ANCHORS[0];
 const CO_EXC_PARK =CO_EXC_ANCHORS[CO_EXC_ANCHORS.length-1];
 const CO_EXC_PARK_SRC=CO_EXC_UP;                             // кадр паркинга = поза слайда 13 (стрела поднята)
@@ -3665,7 +4079,7 @@ function coExcArrive(done){
       coExc.setAttribute('src', CO_EXC_BUCKET);                      // приехал — ковш вниз
       coExcWork(done);                                               // работа ковшом
     };
-  }, CFG.hero.contour));   // контур/glow — как у всех объектов (искра→фото→контур единой скорости)
+  }, CO_EXC_REVEAL));   // БЫСТРО: почти сразу поехал (было CFG.hero.contour ≈ 2900мс)
 }
 /* россыпь искр к центру эскаватора (в контейнере coExcSparks) */
 function buildCoSparks2(n){
@@ -4026,6 +4440,8 @@ function moreBizToNext(){
 const newcafe=document.getElementById('newcafe');
 const ncStage=document.getElementById('ncStage');
 const ncWoman=document.getElementById('ncWoman');
+const ncPair=document.getElementById('ncPair');
+const ncPairSparks=document.getElementById('ncPairSparks');
 const ncWomanSparks=document.getElementById('ncWomanSparks');
 const ncHero=document.getElementById('ncHero');
 const ncName=document.getElementById('ncName');
@@ -4033,8 +4449,6 @@ const ncHtext=document.getElementById('ncHtext');
 const ncHeroSparks=document.getElementById('ncHeroSparks');
 const ncDrops=document.getElementById('ncDrops');
 const ncCoffee=document.getElementById('ncCoffee');
-const ncDoorOut=document.getElementById('ncDoorOut');
-const ncBinOut=document.getElementById('ncBinOut');
 const ncAva=document.getElementById('ncAva');
 const ncAvatar=document.getElementById('ncAvatar');
 const ncSay=document.getElementById('ncSay');
@@ -4042,21 +4456,17 @@ const ncFio=document.getElementById('ncFio');
 const nc2Stage=document.getElementById('nc2Stage');
 const nc2Ramp=document.getElementById('nc2Ramp');
 const nc2RampOut=document.getElementById('nc2RampOut');
-const nc2Hero=document.getElementById('nc2Hero');
-const nc2HeroGlow=document.getElementById('nc2HeroGlow');
-const nc2HeroSparks=document.getElementById('nc2HeroSparks');
-const nc2NamePanel=document.getElementById('nc2NamePanel');
-const nc2Htext=document.getElementById('nc2Htext');
 const nc2Bin=document.getElementById('nc2Bin');
 const nc2BinSparks=document.getElementById('nc2BinSparks');
-const nc2Dust=document.getElementById('nc2Dust');
+const nc2MenuOut=document.getElementById('nc2MenuOut');   // выделение меню Брайля (подслайд 2)
+const nc2ArmOut=document.getElementById('nc2ArmOut');     // выделение протеза официанта
 const nc2Dark=document.getElementById('nc2Dark');
 const nc2Brand=document.getElementById('nc2Brand');
 const nc2Text=document.getElementById('nc2Text');
 const ncVeil=document.getElementById('ncVeil');
 const ncDefocusLayer=document.getElementById('ncDefocusLayer');
 const ncTitle=document.getElementById('ncTitle');
-const NC_FIO='Кремнева Н. С.';
+const NC_FIO='Наталья Кремнёва';
 const NC_SAY='Давайте делать больше чем бизнес!';
 /* Опорные точки пути женщины (rect из «Миссия 4 - часть 1.svg», viewBox 2172×724 = nc-stage):
    старт ближе к зрителю (крупная) → середина → у входа в кафе (мельче, вглубь).
@@ -4070,8 +4480,8 @@ const NC_WOMAN_START=NC_WOMAN_ANCHORS[0];
 const NC_WOMAN_END  =NC_WOMAN_ANCHORS[NC_WOMAN_ANCHORS.length-1];
 let ncWomanAnim=null;
 /* offset кейфрейма = доля пройденной ДЛИНЫ пути (не «i из 3»), иначе скорость шага гуляет между отрезками */
-function ncWomanKeyframes(){
-  const A=NC_WOMAN_ANCHORS, len=[];
+function anchorWalkKeyframes(A){
+  const len=[];
   for(let i=0;i<A.length-1;i++) len.push(Math.hypot(A[i+1].left-A[i].left, A[i+1].top-A[i].top));
   const total=len.reduce((a,b)=>a+b,0);
   let acc=0;
@@ -4080,6 +4490,41 @@ function ncWomanKeyframes(){
     return {left:f.left+'%', top:f.top+'%', width:f.w+'%', offset:+(acc/total).toFixed(4)};
   });
 }
+function ncWomanKeyframes(){ return anchorWalkKeyframes(NC_WOMAN_ANCHORS); }
+/* ПАРА: те же left/top, что у женщины; ширина ×0.9787 → высота пары = высоте женщины
+   (аспекты W/H: женщина 745×1217=0.612, пара 765×1223=0.626) */
+const NC_PAIR_ANCHORS=[
+  {left:47.33, top:62.29, w:7.30},
+  {left:40.01, top:61.05, w:6.49},
+  {left:34.62, top:59.94, w:5.36},
+];
+const NC_PAIR_START=NC_PAIR_ANCHORS[0];
+const NC_PAIR_END  =NC_PAIR_ANCHORS[NC_PAIR_ANCHORS.length-1];
+let ncPairAnim=null;
+function setNcPairPos(f){ ncPair.style.left=f.left+'%'; ncPair.style.top=f.top+'%'; ncPair.style.width=f.w+'%'; }
+function stopNcPairAnim(){ if(ncPairAnim){ ncPairAnim.cancel(); ncPairAnim=null; } }
+const NC_ENTER_HOLD=300;    // короткая пауза у двери перед «входом» (сразу заходят, без залипания)
+const NC_ENTER_GAP=700;     // пауза между «зашёл» и следующим появлением
+/* появление пары — МЕХАНИКА ЖЕНЩИНЫ: искры → фото из размытия → СИНИЙ неон-контур */
+function playNcPair(){
+  const guard=()=>id()==='newcafe';
+  ncPair.style.transition='none'; setNcPairPos(NC_PAIR_START); void ncPair.offsetWidth; ncPair.style.transition='';
+  buildSparks(ncPairSparks,16); ncPairSparks.classList.add('play');
+  revealSound();                                                            // звук появления «искра→фото»
+  ncPair.style.opacity='1'; void ncPair.offsetWidth; ncPair.classList.add('reveal');
+  ncTimers.push(setTimeout(()=>{ if(!guard())return;
+    ncPair.classList.remove('reveal'); ncPair.classList.add('glow');        // синий контур
+  }, CFG.hero.contour));
+}
+/* пара идёт (уже видна после playNcPair): непрерывный проход тем же путём до входа */
+function ncPairWalk(){
+  const guard=()=>id()==='newcafe';
+  stopNcPairAnim();
+  ncPairAnim=ncPair.animate(anchorWalkKeyframes(NC_PAIR_ANCHORS), {duration:CFG.newcafe.walk, easing:'ease-in-out', fill:'forwards'});
+  ncPairAnim.onfinish=()=>{ if(!guard())return; setNcPairPos(NC_PAIR_END); stopNcPairAnim(); };
+}
+/* «зашёл в дверь кафе» — фигура плавно исчезает (шаг внутрь); контур гаснет с ней */
+function ncEnter(el){ el.classList.remove('reveal'); el.classList.add('entered'); }
 function setNcWomanPos(f){ ncWoman.style.left=f.left+'%'; ncWoman.style.top=f.top+'%'; ncWoman.style.width=f.w+'%'; }
 function stopNcWomanAnim(){ if(ncWomanAnim){ ncWomanAnim.cancel(); ncWomanAnim=null; } }
 /* пошла: один непрерывный проход от старта до входа */
@@ -4093,7 +4538,7 @@ function ncWomanWalk(){
 }
 let ncTimers=[], ncGo=false, ncWalkDone=false, ncStoryStarted=false, ncStoryDone=false;
 let ncSub=0, ncSubGo=false;              // текущий подслайд (0 — часть 1, 1 — часть 2) · защита от двойного перехода
-let nc2DustBuilt=false, nc2Done=false;   // облако пыли построено · сценарий части 2 доигран (текст показан)
+let nc2Done=false;   // сценарий части 2 доигран (текст показан)
 function resetNewCafe(){
   ncTimers.splice(0).forEach(clearTimeout);
   babyCryStop();                                                             // оборвать плач при уходе со сцены
@@ -4102,14 +4547,18 @@ function resetNewCafe(){
   ncStage.classList.remove('gone'); nc2Stage.classList.remove('show');
   resetNc2();                                                                // объекты части 2 скрыты
   ncCoffee.classList.remove('show','lit');                                   // вывеска «Ваш любимый кофе» потушена
-  ncWoman.classList.remove('reveal','glow'); ncWoman.style.opacity='0'; stopNcWomanAnim();   // женщина скрыта, точка старта (без анимации)
+  ncWoman.classList.remove('reveal','glow','entered'); ncWoman.style.opacity='0'; ncWoman.style.transform=''; stopNcWomanAnim();   // женщина скрыта, точка старта
   ncWoman.style.transition='none'; setNcWomanPos(NC_WOMAN_START); void ncWoman.offsetWidth; ncWoman.style.transition='';
+  ncPair.classList.remove('reveal','glow','entered'); ncPair.style.opacity='0'; ncPair.style.transform=''; stopNcPairAnim();   // пара скрыта, точка старта
+  ncPairSparks.classList.remove('play'); ncPairSparks.innerHTML='';
+  ncPair.style.transition='none'; setNcPairPos(NC_PAIR_START); void ncPair.offsetWidth; ncPair.style.transition='';
   ncWomanSparks.classList.remove('play'); ncWomanSparks.innerHTML='';
   ncHero.classList.remove('reveal','glow'); ncHero.style.opacity='0';        // герой (поливает клумбу) скрыт
   ncName.classList.remove('show'); ncHtext.textContent=''; ncHtext.classList.remove('typed');   // панель имени героя
   ncHeroSparks.classList.remove('play'); ncHeroSparks.innerHTML='';
   ncDrops.classList.remove('show');                                          // капли выключены
-  [ncDoorOut,ncBinOut].forEach(o=>o.classList.remove('show','draw','glow')); // красные контуры погашены
+  nc2Ramp.classList.remove('show','reveal','reveal-fast','glow'); nc2RampOut.classList.remove('show','draw','glow');   // пандус + зелёный контур сброшены
+  nc2Bin.classList.remove('show','reveal','glow'); nc2BinSparks.classList.remove('play'); nc2BinSparks.innerHTML='';   // урна сброшена
   ncAva.classList.remove('show'); ncAvatar.classList.remove('play','live');  // аватар Кремневой
   ncAvatar.querySelectorAll('.ava-spark').forEach(s=>s.remove());
   ncSay.classList.remove('show'); ncSay.innerHTML='';
@@ -4122,20 +4571,27 @@ function resetNewCafe(){
 }
 function runNewCafe(){
   resetNewCafe();
-  // длины путей контуров для прорисовки (у двери 2 пути)
-  [ncDoorOut,ncBinOut].forEach(svg=>svg.querySelectorAll('path').forEach(p=>{ try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} }));
   const guard=()=>id()==='newcafe';
   const W=CFG.newcafe.walk, H=CFG.newcafe.hold;
   ncTimers.push(setTimeout(()=>{ if(!guard())return;                         // 1) раскрытие из чёрного
     ncVeil.style.transition='--r var(--veil-fast) cubic-bezier(.4,.1,.2,1)'; ncVeil.style.setProperty('--r','175%'); }, 60));
   ncTimers.push(setTimeout(()=>{ if(!guard())return; ncCoffee.classList.add('show','lit'); }, 900));   // 2) вывеска «Ваш любимый кофе» зажигается (циан)
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncShowAccess(); }, 1000));   // 2b) ПАНДУС + УРНА с зелёным выделением — кафе доступно
   const t0=1400;                                                             // 3) ОДНОВРЕМЕННО: женщина и герой ПОЯВЛЯЮТСЯ (искры → фото → синий контур)
   ncTimers.push(setTimeout(()=>{ if(!guard())return; playNcWoman(); playNcHero(); }, t0));
   const t1=t0+CFG.hero.contour+H;                                            // 4) контур зажёгся → пауза → пошла (непрерывно, до самого входа)
   ncTimers.push(setTimeout(()=>{ if(!guard())return; ncWomanWalk(); }, t1));
-  const arrive=t1+W;                                                         // 5) дошла: плач + КРАСНАЯ подсветка входа/мусорки
+  const arrive=t1+W;                                                         // 5) дошла до входа (кафе доступно — пандус)
   ncTimers.push(setTimeout(()=>{ if(!guard())return; ncArrive(); }, arrive));
-  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncKremneva(); }, arrive+1900));   // 7) АВТО → аватар Кремневой
+  const wEnter=arrive+NC_ENTER_HOLD;                                         // 6) женщина ЗАХОДИТ в дверь (исчезает)
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncEnter(ncWoman); }, wEnter));
+  const pAppear=wEnter+NC_ENTER_GAP;                                         // 7) пара ПОЯВЛЯЕТСЯ (искра→фото→контур) — после женщины
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; playNcPair(); }, pAppear));
+  const pWalk=pAppear+CFG.hero.contour+H;                                    // 8) пара идёт тем же путём
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncPairWalk(); }, pWalk));
+  const pEnter=pWalk+W+NC_ENTER_HOLD;                                        // 9) пара ЗАХОДИТ в дверь (исчезает)
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncEnter(ncPair); }, pEnter));
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; ncKremneva(); }, pEnter+NC_ENTER_GAP));   // 10) АВТО → аватар Кремневой
 }
 /* появление женщины с коляской — механика героя: искры → фото из размытия → СИНИЙ неон-контур */
 function playNcWoman(){
@@ -4160,13 +4616,18 @@ function playNcHero(){
     for(let i=1;i<=nm.length;i++) ncTimers.push(setTimeout(()=>{ ncHtext.textContent=nm.slice(0,i); if(i===nm.length) ncHtext.classList.add('typed'); }, i*CFG.type.name));
   }, CFG.hero.contour));
 }
-/* дошла до входа: короткий плач ребёнка + КРАСНЫЙ неон (вход + мусорка + сама женщина) */
-function ncArrive(){
+/* пандус + урна с зелёным выделением (кафе доступно) — показываются в начале сцены */
+function ncShowAccess(){
   const guard=()=>id()==='newcafe';
-  babyCry();                                                                 // плач ребёнка (baby-cry.mp3, 7с с затуханием)
-  [ncDoorOut,ncBinOut].forEach(o=>o.classList.add('show','draw'));           // прорисовка КРАСНЫХ контуров (вход + мусорка)
-  ncTimers.push(setTimeout(()=>{ if(!guard())return;
-    [ncDoorOut,ncBinOut].forEach(o=>o.classList.add('glow')); }, 1200));     // → тревожный пульс
+  nc2RampOut.querySelectorAll('path').forEach(p=>{ try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} });
+  nc2Ramp.classList.add('show'); void nc2Ramp.offsetWidth; nc2Ramp.classList.add('reveal-fast');   // пандус уже построен (без искр)
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; nc2RampOut.classList.add('show','draw'); }, 1220));   // зелёный контур пандуса: прорисовка
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; nc2RampOut.classList.add('glow'); }, 2420));          // → зелёный пульс
+  nc2Reveal(nc2Bin, nc2BinSparks);                                                                   // урна: искры → фото
+  ncTimers.push(setTimeout(()=>{ if(!guard())return; nc2Bin.classList.add('glow'); }, CFG.hero.contour)); // → зелёное свечение урны
+}
+/* дошла до входа: кафе ДОСТУПНО (пандус). Плача и красного неона больше нет */
+function ncArrive(){
   ncWalkDone=true;
 }
 /* скип шага 1: женщина сразу у входа + красная подсветка (без плача) */
@@ -4176,12 +4637,16 @@ function skipNcWalk(){
   ncCoffee.classList.add('show','lit');
   stopNcWomanAnim();
   ncWoman.style.transition='none'; setNcWomanPos(NC_WOMAN_END); void ncWoman.offsetWidth; ncWoman.style.transition='';
-  ncWomanSparks.classList.remove('play'); ncHeroSparks.classList.remove('play');
-  ncWoman.style.opacity='1'; ncWoman.classList.remove('reveal'); ncWoman.classList.add('glow');
+  stopNcPairAnim();                                                          // пара — сразу у входа (за женщиной)
+  ncPair.style.transition='none'; setNcPairPos(NC_PAIR_END); void ncPair.offsetWidth; ncPair.style.transition='';
+  ncWomanSparks.classList.remove('play'); ncHeroSparks.classList.remove('play'); ncPairSparks.classList.remove('play');
+  ncWoman.style.opacity='1'; ncWoman.classList.remove('reveal'); ncWoman.classList.add('glow','entered');   // женщина у входа → зашла
+  ncPair.style.opacity='1'; ncPair.classList.remove('reveal'); ncPair.classList.add('glow','entered');       // пара у входа → зашла
   ncHero.style.opacity='1'; ncHero.classList.remove('reveal'); ncHero.classList.add('glow');
   ncDrops.classList.add('show');
   ncName.classList.add('show'); ncHtext.textContent=LEVEL_NAMES[4]; ncHtext.classList.add('typed');
-  [ncDoorOut,ncBinOut].forEach(o=>o.classList.add('show','glow'));
+  nc2Ramp.classList.add('show'); nc2RampOut.classList.add('show','glow');     // пандус + зелёный контур сразу
+  nc2Bin.classList.add('show','glow');                                        // урна + зелёное свечение
   ncWalkDone=true;
   ncTimers.push(setTimeout(()=>{ if(id()==='newcafe') ncKremneva(); }, CFG.hero.textGap));   // авто-переход к Кремневой
 }
@@ -4219,28 +4684,9 @@ function skipNcStory(){
 }
 /* ═══ ПОДСЛАЙД 2 («Миссия 4 - часть 2»): герой строит пандус (пыль + звук ремонта) → пандус (зелёный контур) →
        урна раздельного сбора (проявление фото + зелёный контур) → затемнение + текст (механика слайда 13) ═══ */
-/* облако пыли ПО РАЗМЕРУ ПАНДУСА (пандус: x 30.3–38.9%, низ ~81%) — реюз .co-dust/.puff со слайда 12 */
-function buildNc2Dust(){
-  if(nc2DustBuilt) return; nc2DustBuilt=true;
-  nc2Dust.innerHTML='';
-  const spots=[[33,78],[36,74],[35,82],[32,72],[38,79],[34,70],[37,84],[31,80],[39,73]];
-  spots.forEach((p,i)=>{
-    const d=document.createElement('div'); d.className='puff';
-    const sz=6+(i*2)%6, hz=sz*0.66;                                           // клубы мелкие: облако не больше пандуса
-    d.style.width=sz+'cqw'; d.style.height=hz+'cqw';
-    d.style.left=(p[0]-sz/2)+'%'; d.style.top=(p[1]-hz)+'%';
-    d.style.setProperty('--del',((i%5)*60)+'ms');
-    d.style.setProperty('--pd',(1350+(i%4)*170)+'ms');
-    nc2Dust.appendChild(d);
-  });
-}
 function resetNc2(){
   nc2Done=false;
-  [nc2Hero,nc2HeroGlow,nc2Ramp,nc2Bin].forEach(o=>o.classList.remove('show','reveal','reveal-fast','glow'));
-  nc2NamePanel.classList.remove('show'); nc2Htext.textContent=''; nc2Htext.classList.remove('typed');
-  nc2RampOut.classList.remove('show','draw','glow');
-  [nc2HeroSparks,nc2BinSparks].forEach(s=>{ s.classList.remove('play'); s.innerHTML=''; });
-  nc2Dust.classList.remove('play'); nc2Dust.style.opacity='0';
+  [nc2MenuOut,nc2ArmOut].forEach(o=>o.classList.remove('show','draw','glow'));   // выделения меню/протеза сброшены
   nc2Dark.classList.remove('show'); nc2Brand.classList.remove('show'); podRinHide(nc2Text);   // текст — как на слайде 11 (блоки .rin)
 }
 /* появление объекта: искры → фото из размытия (единая скорость --rv-spark/--rv-photo) */
@@ -4250,51 +4696,28 @@ function nc2Reveal(img, sparks){
   img.classList.add('show'); void img.offsetWidth; img.classList.add('reveal');
 }
 function runNc2(){
-  resetNc2(); buildNc2Dust();
-  nc2RampOut.querySelectorAll('path').forEach(p=>{ try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} });
+  resetNc2();
   const guard=()=>id()==='newcafe' && ncSub===1;
-  const C=CFG.hero.contour;                                                   // время «искры → фото»
-  const RF=1100;                                                              // быстрое проявление пандуса (.reveal-fast)
-  const NM=LEVEL_NAMES[4];                                                    // сквозной ранг после слайда 13 — 4★ «Опытный предприниматель»
+  [nc2MenuOut,nc2ArmOut].forEach(o=>o.querySelectorAll('path').forEach(p=>{ try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} }));
+  const DRAW=1200, G=550;                                                     // прорисовка одного контура · пауза между
   const T=(ms,fn)=>ncTimers.push(setTimeout(()=>{ if(guard()) fn(); }, ms));
-  T(300, ()=>{                                                                // 1) ГЕРОЙ — шаблон появления: искры → фото…
-    buildSparks(nc2HeroSparks,16); nc2HeroSparks.classList.add('play');
-    revealSound();
-    void nc2Hero.offsetWidth; void nc2HeroGlow.offsetWidth;
-    nc2Hero.classList.add('show','reveal');
-  });
-  T(300+C, ()=>{                                                              //    …→ контур + панель с печатью имени
-    nc2HeroGlow.classList.add('show','glow');
-    nc2NamePanel.classList.add('show');
-    for(let i=1;i<=NM.length;i++) T(i*CFG.type.name, ()=>{ nc2Htext.textContent=NM.slice(0,i); if(i===NM.length) nc2Htext.classList.add('typed'); });
-  });
-  const tDust=300+C+NM.length*CFG.type.name+CFG.hero.textGap;                 // 2) имя допечаталось → он строит пандус: пыль + звук ремонта (как слайд 12)
-  T(tDust, ()=>{ nc2Dust.style.opacity='1'; nc2Dust.classList.add('play'); repairSound(); });
-  const tRamp=tDust+720;                                                      // 3) под пиком пыли проявляется ПАНДУС
-  T(tRamp, ()=>{ nc2Ramp.classList.add('show'); void nc2Ramp.offsetWidth; nc2Ramp.classList.add('reveal-fast'); });
-  T(tDust+1800, ()=>{ nc2Dust.classList.remove('play'); nc2Dust.style.opacity='0'; });   // 4) пыль растворяется (пандус уже проявился)
-  const tOut=tRamp+RF+120;                                                    // 5) ЗЕЛЁНЫЙ контур пандуса: прорисовка…
-  T(tOut, ()=>nc2RampOut.classList.add('show','draw'));
-  T(tOut+1200, ()=>nc2RampOut.classList.add('glow'));                         //    …→ пульс
-  const tBin=tOut+1200+400;                                                   // 6) УРНА раздельного сбора: проявление фото
-  T(tBin, ()=>nc2Reveal(nc2Bin, nc2BinSparks));
-  T(tBin+C, ()=>nc2Bin.classList.add('glow'));                                //    → зелёный контур по альфе
-  T(tBin+C+900, ()=>{                                                         // 7) затемнение (как слайд 13) + текст в стиле слайда 11
+  const trace=(el)=>{ el.classList.add('show','draw'); T(DRAW, ()=>el.classList.add('glow')); };   // прорисовка → пульс
+  let t=400;
+  T(t, ()=>trace(nc2MenuOut)); t+=DRAW+G;                                      // 1) МЕНЮ БРАЙЛЯ (синий)
+  T(t, ()=>trace(nc2ArmOut));  t+=DRAW+G;                                      // 2) ПРОТЕЗ официанта (синий)
+  t+=900;                                                                      // подержать кадр (зритель разглядывает)
+  T(t, ()=>{                                                                   // 3) протез гаснет (пересекается с текстом справа) → затемнение + текст; МЕНЮ остаётся выделенным
+    nc2ArmOut.classList.remove('show','draw','glow');
     nc2Dark.classList.add('show'); nc2Brand.classList.add('show');            //    титул ФПСП — персистентный, слева
-    revealPod(nc2Text, ncTimers);                                             //    заголовок → блоки по одному с паузами (ритм слайда 11)
+    revealPod(nc2Text, ncTimers);                                             //    заголовок → блоки по одному с паузами
     nc2Done=true;
   });
 }
-/* скип части 2: всё сразу — герой, пандус с контуром, урна, затемнение + текст */
+/* скип части 2: сразу финал — МЕНЮ выделено + затемнение + текст (протез снят) */
 function skipNc2(){
   ncTimers.splice(0).forEach(clearTimeout);
   resetNc2();
-  [nc2Hero,nc2Ramp,nc2Bin].forEach(o=>o.classList.add('show'));
-  nc2HeroGlow.classList.add('show','glow');                                   // контур героя
-  nc2NamePanel.classList.add('show');                                         // панель имени — сразу целиком
-  nc2Htext.textContent=LEVEL_NAMES[4]; nc2Htext.classList.add('typed');
-  nc2Bin.classList.add('glow');
-  nc2RampOut.classList.add('show','glow');
+  nc2MenuOut.classList.add('show','glow');                                    // меню остаётся выделенным (как в финале runNc2)
   nc2Dark.classList.add('show'); nc2Brand.classList.add('show'); podRinAll(nc2Text);   // текст — весь сразу
   nc2Done=true;
 }
@@ -4310,6 +4733,7 @@ function ncToSub2(){
   ncTimers.push(setTimeout(()=>{ if(!guard())return;
     ncSub=1;
     ncStage.classList.add('gone'); nc2Stage.classList.add('show');           // 2) под чёрным меняем подслайд
+    bgPlay('cafe');                                                          //    «мы внутри» → музыка кафе (bg-cafe.m4a), кроссфейд с city; переход 14→15 (тоже cafe) станет бесшовным
     ncTimers.push(setTimeout(()=>{ if(!guard())return;                       // 3) держим чёрное с титулом (как landing)
       ncVeil.style.setProperty('--r','175%');                                // 4) раскрытие подслайда 2…
       ncTitle.classList.add('faded');                                        //    …и титул гаснет параллельно
@@ -4406,7 +4830,7 @@ const M3_DUST_PD  =4350;   // длительность клуба пыли (мс
 const M3_EXC_PARK =1800;   // эскаватор → поз.1 (под плотным облаком)
 const M3_DUST_OUT =4800;   // пыль растворяется
 const M3_SHTAB_AT =5100;   // → затемнение + текст Штаба
-const M3_SPP_AT   =1200;   // пауза от готового кадра (все на месте) до выезда скорой
+const M3_SPP_AT   =300;    // пауза от готового кадра (все на месте) до выезда скорой — почти сразу едет (было 1200)
 /* облако «драки» над зоной эскаватор(48–69%)+скорая(78–95%) — параметры как облако ремонта сл.12 (buildDust) */
 function buildM3Dust(){
   if(m3DustBuilt) return; m3DustBuilt=true;
@@ -4463,7 +4887,7 @@ function runMission3(){
   m3PlaceAll();
   const guard=()=>id()==='mission3';
   // КАДР 1 стартует после раскрытия вуали (наследованной от danger через landing)
-  m3Timers.push(setTimeout(()=>{ if(!guard())return; m3Frame1(); }, mission3FromLanding?1500:300));
+  m3Timers.push(setTimeout(()=>{ if(!guard())return; m3Frame1(); }, mission3FromLanding?1100:300));   // вход: только на раскрытие вуали (было 1500) → кадр раньше → скорая раньше
   mission3FromLanding=false;
 }
 /* КАДР 1: герой, эскаватор и скорая уже стоят (m3PlaceAll) — здесь только вывеска, затем авто-выезд скорой */
@@ -4603,7 +5027,7 @@ const dgAvatar=document.getElementById('dgAvatar');
 const dgSay=document.getElementById('dgSay');
 const dgFio=document.getElementById('dgFio');
 const dgTitle=document.getElementById('dgTitle');
-const DG_FIO='Байков С. Н.';
+const DG_FIO='Сергей Байков';
 const DG_SAY='Так, это уже наша работа – бизнес под защитой!';
 let dgEndDone=false;
 function dgEndStart(){
@@ -4832,21 +5256,20 @@ function resetCafeOpen(){
   coDust.classList.remove('play'); coDust.style.opacity='0';
 }
 function runCafeOpen(){
-  buildDust();
   resetCafeOpen();
+  coBg2.classList.add('show'); coCoffee.classList.add('show');     // СРАЗУ готовое кафе (cafe-3) + вывеска — без сцены ремонта/пыли/звука
   // длина контура кафе для прорисовки (stroke-dashoffset)
   { const p=coOutline.querySelector('path'); try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} }
   const guard=()=>id()==='cafeopen';
-  const delay=coFromLanding ? 3900 : 1000;                 // ждём раскрытия landing (или сразу — при прямой навигации)
+  // ждём РОВНО до конца раскрытия landing-вуали: подъём стартует на +1100мс (см. fskToNext) + длительность вуали.
+  // Привязано к вуали, а не к магической паузе (было 3900 → ~1.7с кафе стояло впустую).
+  const delay=coFromLanding ? Math.round(1100+veilMs('fast')+AFTER_VEIL) : 1000;
   coFromLanding=false;
   coTimers.push(setTimeout(()=>{ if(!guard())return;
-    coDust.style.opacity='1'; coDust.classList.add('play'); repairSound();                  // 1) облако пыли поднимается + звук ремонта (стройка)
-    coTimers.push(setTimeout(()=>{ if(!guard())return; coBg2.classList.add('show'); coCoffee.classList.add('show'); }, 720));   // 2) под пиком пыли — cafe-2 → cafe-3 + вывеска кофе
-    coTimers.push(setTimeout(()=>{ if(!guard())return; coDust.classList.remove('play'); coDust.style.opacity='0'; }, 1800));    // 3) пыль растворяется → готовое кафе
-    coTimers.push(setTimeout(()=>{ if(!guard())return; coOutline.classList.add('show','draw');                                  // 4) контур обновлённого кафе — прорисовка → пульс
-      coTimers.push(setTimeout(()=>{ if(guard()) coOutline.classList.add('glow'); }, 2400)); }, 2100));
-    coTimers.push(setTimeout(()=>{ if(!guard())return; coCoffee.classList.add('lit'); }, 4800));                                       // 5) вывеска «Ваш любимый кофе» загорается (обводка ЦУБ убрана)
-    coTimers.push(setTimeout(()=>{ if(!guard())return; playCoHero(); }, 5400));                                                       // 6) герой за столиком (искры → фото → скан контура → имя)
+    coOutline.classList.add('show','draw');                                                                  // 1) контур готового кафе — прорисовка → пульс
+    coTimers.push(setTimeout(()=>{ if(guard()) coOutline.classList.add('glow'); }, 2400));
+    coTimers.push(setTimeout(()=>{ if(!guard())return; coCoffee.classList.add('lit'); }, 2700));             // 2) вывеска «Ваш любимый кофе» загорается
+    coTimers.push(setTimeout(()=>{ if(!guard())return; playCoHero(); }, 3300));                              // 3) герой за столиком (искры → фото → скан контура → имя)
   }, delay));
 }
 const rules  = document.getElementById('rules');
@@ -4869,20 +5292,50 @@ let rulesTimers=[];
 /* фокусы шаблона: открытие — слева по центру; закрытие — объект «Правительство Москвы» (o-gov 1583/236) */
 const RULES_OPEN={fx:'85%',fy:'80%'};   // фокус раскрытия вуали — правый нижний, чуть отступя от угла
 const RULES_GOV ={fx:(1583/2172*100).toFixed(1)+'%', fy:(236/724*100).toFixed(1)+'%'};
-/* СВОЙ титул у каждого подслайда: 0 «Правила игры» · 1 «Уровень сложности» · 2 «Тренды предпринимательства» */
-const RULES_TITLES=['Правила игры','Уровень сложности','Подсказки'];
+/* СВОЙ титул у каждого подслайда: 0 «Игровой мир» · 1 «Уровень сложности» · 2 «Подсказки» */
+const RULES_TITLES=['Игровой<br>мир','Уровень сложности','Подсказки'];   // «Игровой мир» — в 2 строки (перенос <br>, рендерится в .rt-main через innerHTML)
 let rulesTitleShown='';
 const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после последнего блока добавляется красное «HARD»
+let hardStamp=false;       // 2-й вариант HARD: false = текст (срез/неон), true = ПЕЧАТЬ (красный штамп). Переключение Ctrl+L на слайде 4
 /* заполнить левый титул: обёртка .rt-main несёт неон; на «Уровне сложности» — скрытый .rt-hard «HARD» (проявится позже) */
 function fillRulesTitle(step){
   const txt=RULES_TITLES[step]||'';
   let html='<span class="rt-main">'+txt+'</span>';   // без двоеточия — «HARD» идёт отдельной строкой ниже
   if(step===RULES_HARD_STEP) html+='<span class="rt-hard">HARD</span>';
   rulesTitle.innerHTML=html;
-  // при v5 «HARD» режется полосами (красное зарево). Узел создан только что → нарезаем здесь, а не в applyStyleV5
-  if(CFG.style.v5 && step===RULES_HARD_STEP)
+  rulesTitle.classList.toggle('hard-stamp', hardStamp && step===RULES_HARD_STEP);   // 2-й вариант HARD — печать
+  // при v5 «HARD» режется полосами (красное зарево) — ТОЛЬКО в текстовом варианте (в печати срез не нужен). Узел создан только что.
+  if(CFG.style.v5 && step===RULES_HARD_STEP && !hardStamp)
     sliceEl(rulesTitle.querySelector('.rt-hard'), 'hard', CFG.style.slice.hard);
 }
+/* переключить 2-й вариант HARD (текст ↔ ПЕЧАТЬ) на текущем титуле */
+function applyHardStamp(){
+  const rh=rulesTitle.querySelector('.rt-hard');
+  rulesTitle.classList.toggle('hard-stamp', hardStamp && rulesStep===RULES_HARD_STEP);
+  if(!rh) return;
+  if(hardStamp){
+    rh.classList.remove('slice-glitch','ready');                 // печать: убрать срез
+    rh.querySelectorAll('.sg-strip').forEach(s=>s.remove());
+    if(rh.classList.contains('show')){                           // HARD уже виден → перезапустить «удар» печати (+ звук через animationstart)
+      rh.style.animation='none'; void rh.offsetWidth; rh.style.animation='';
+    }
+  } else if(CFG.style.v5){
+    sliceEl(rh, 'hard', CFG.style.slice.hard);                   // назад в текст: вернуть срез
+  }
+}
+/* Ctrl+L на слайде 4 — HARD текст ↔ печать (на заставке Ctrl+L листает варианты титула — там свой обработчик по id()==='splash') */
+addEventListener('keydown', e=>{
+  if(!e.ctrlKey || !(e.key==='l'||e.key==='L'||e.code==='KeyL')) return;
+  if(id()!=='rules') return;
+  e.preventDefault();
+  hardStamp=!hardStamp; applyHardStamp();
+  if(typeof revToast==='function') revToast('HARD: '+(hardStamp?'печать (красная)':'текст'));
+});
+/* звук простановки печати HARD: старт CSS-анимации stampDown у .rt-hard → «тумк» playStamp в момент удара (70%×900мс) */
+rulesTitle.addEventListener('animationstart', e=>{
+  if(e.animationName==='stampDown' && e.target.classList && e.target.classList.contains('rt-hard'))
+    setTimeout(()=>{ if(typeof playStamp==='function') playStamp(); }, 630);
+});
 /* сменить левый титул подслайда с ПРОЯВЛЕНИЕМ (мгновенно скрыть → сменить текст → плавно проявить) */
 function setRulesTitle(step){
   const txt=RULES_TITLES[step]||'';
@@ -5034,6 +5487,7 @@ let binocHero=null;               // подпись героя в бинокле
 let binocTimers=[];
 let binocScene='binoc';           // в какой сцене сейчас идёт разведка (задаётся в runBinoc): 'map' (сцена 3) | 'binoc' (сцена 5)
 let binocFromLanding=false;       // слайд 11: пришли через landing (mission1b→binoc) → вход как слайд 7
+let binocReconPending=false;      // слайд 10: карта раскрыта, ЖДЁМ КЛИК перед разведкой биноклем (задержаться на городе)
 let binocStartT=null;             // таймер шагов входа (раскрытие карты / старт разведки)
 let binocPanelT=null;             // таймер панели крышного героя (1★ «Начинающий»)
 let mapFinaleReady=false;         // финал разведки на карте: текст рассказчика напечатан, ждём клик для сворачивания
@@ -5155,6 +5609,7 @@ function runMission(m){
   }, CFG.binoc.shiftDur));                                               // аватар — ПОСЛЕ завершения сдвига бинокля
 }
 function resetBinoc(){
+  binocReconPending=false;
   binocTimers.splice(0).forEach(clearTimeout);
   binoc.classList.remove('show','lenses','full');
   if(binocCafe) binocCafe.classList.remove('show');
@@ -5265,15 +5720,20 @@ function runRoofHeroMapIntro(sceneId, lvl, onOpen){
    Объекты показывает сама разведка (не трогаем). */
 function runBinocMapIntro(){
   binocFromLanding=false;
-  runRoofHeroMapIntro('binoc', RECON.binoc.heroLevel, ()=>runBinoc(RECON.binoc));
+  binocReconPending=false;
+  // карта раскрылась → НЕ запускаем разведку сразу, а ждём клик (можно задержаться на городе)
+  runRoofHeroMapIntro('binoc', RECON.binoc.heroLevel, ()=>{ binocReconPending=true; });
 }
+/* клик на слайде 10 после раскрытия карты — запустить разведку биноклем */
+function startBinocRecon(){ binocReconPending=false; runBinoc(RECON.binoc); }
 /* ── ДУБЛЬ слайда 10 (слайд 16, после «Больше чем бизнес»): тот же вход, но БЕЗ разведки биноклем.
       Карта раскрылась — и всё, сцена ждёт клика. Бинокль/зум/маршрут/финал сюда не тянем. ── */
 const BINOC2_HERO_LEVEL=5;   // ранг героя к этому моменту (после level-up слайда 15 — 5★ «Московский предприниматель»)
 let binoc2Open=false;        // карта уже раскрыта (интро доиграло) → клик листает дальше
 function runBinoc2(){
   binoc2Open=false;
-  runRoofHeroMapIntro('binoc2', BINOC2_HERO_LEVEL, ()=>{ binoc2Open=true; });
+  bizGrowthStop();                                                 // сброс финала при (пере)входе на слайд
+  runRoofHeroMapIntro('binoc2', BINOC2_HERO_LEVEL, ()=>{ binoc2Open=true; bizGrowthStart(); });   // карта раскрылась → финал
 }
 /* клик во время интро — мгновенно к раскрытой карте (без искр/вуали) */
 function skipBinoc2(){
@@ -5285,6 +5745,79 @@ function skipBinoc2(){
   stage.classList.remove('dark','reveal'); stage.classList.add('open');
   OBJS.forEach(o=>{ if(!o.levelUp) revealObject(o); });
   binoc2Open=true;
+  bizGrowthStart();                                     // пропуск интро → карта открыта → сразу финал
+}
+
+/* ═══════════════ СЛАЙД 16 (ФИНАЛ): «РАЗВИТИЕ ПРЕДПРИНИМАТЕЛЬСТВА» ═══════════════
+   Часть 1 (сразу при открытии карты): большой счётчик «937 000» (стиль баннера «УРОВЕНЬ ПОВЫШЕН»);
+     каждую секунду в 1..8 случайных точках карты вспыхивает звезда с «+N» — вращается вокруг оси,
+     связка (+N ★) уезжает вверх и тает; счётчик += N за каждую звезду.
+   Часть 2 (через 5с, поверх): 3 вертикальные киноленты по центру — фото едут снизу вверх (пока заглушки, 50 фото на 3 ленты).
+   Всё крутится бесконечно до клика (слайд последний). Полная очистка — bizGrowthStop(). */
+const BIZ={ base:937000, perSecMin:1, perSecMax:8, stepMin:1, stepMax:5, stripsAt:5000, photos:50, strips:3,
+  yMin:16, yMax:54 };   // зона появления звёзд по вертикали (% высоты): ВЫШЕ середины — там основной город
+let bizRunning=false, bizCount=0, bizSpawnT=null, bizStripsT=null, bizTimers=[], bizWrap=null, bizNumEl=null;
+function bizFmt(n){ return n.toLocaleString('ru-RU'); }              // 937000 → «937 000»
+function bizGrowthStart(){
+  if(bizRunning) return;                                            // уже идёт — не дублируем (onOpen + skip)
+  bizRunning=true; bizCount=BIZ.base;
+  bizWrap=document.createElement('div'); bizWrap.className='bizgrowth on';
+  const cnt=document.createElement('div'); cnt.className='bg-counter';
+  bizNumEl=document.createElement('div'); bizNumEl.className='bg-num'; bizNumEl.textContent=bizFmt(bizCount);
+  const cap=document.createElement('div'); cap.className='bg-cap'; cap.textContent='новых бизнесов в Москве';
+  cnt.appendChild(bizNumEl); cnt.appendChild(cap); bizWrap.appendChild(cnt);
+  const starLayer=document.createElement('div'); starLayer.className='bg-stars'; bizWrap.appendChild(starLayer);
+  stage.appendChild(bizWrap);
+  // цикл: раз в секунду — 1..8 звёзд, разбросаны по времени внутри секунды
+  const tick=()=>{
+    if(!bizRunning) return;
+    bizTimers.forEach(clearTimeout); bizTimers=[];                  // прошлые (за <1с) уже сработали — держим массив коротким
+    const k=BIZ.perSecMin+Math.floor(Math.random()*(BIZ.perSecMax-BIZ.perSecMin+1));
+    for(let i=0;i<k;i++) bizTimers.push(setTimeout(()=>{ if(bizRunning) bizSpawnStar(starLayer); }, Math.random()*900));
+  };
+  tick();                                                           // первый залп сразу
+  bizSpawnT=setInterval(tick, 1000);
+  bizStripsT=setTimeout(()=>{ if(bizRunning) bizBuildStrips(bizWrap); }, BIZ.stripsAt);   // ленты — через 5с
+}
+function bizSpawnStar(layer){
+  const n=BIZ.stepMin+Math.floor(Math.random()*(BIZ.stepMax-BIZ.stepMin+1));
+  bizCount+=n;                                                      // счётчик += N
+  if(bizNumEl){ bizNumEl.textContent=bizFmt(bizCount); bizNumEl.classList.remove('bump'); void bizNumEl.offsetWidth; bizNumEl.classList.add('bump'); }
+  const x=6+Math.random()*88;                                       // по всей ширине
+  const y=BIZ.yMin+((Math.random()+Math.random())/2)*(BIZ.yMax-BIZ.yMin);   // треугольное: гуще к центру полосы (над серединой = основной город)
+  const pop=document.createElement('div'); pop.className='bg-pop';
+  pop.style.left=x+'%'; pop.style.top=y+'%';
+  pop.innerHTML='<span class="bg-plus">+'+n+'</span><span class="bg-star">★</span>';
+  layer.appendChild(pop); void pop.offsetWidth; pop.classList.add('rise');
+  pop.addEventListener('animationend', e=>{ if(e.animationName==='bgRise') pop.remove(); });   // убрать после подъёма (spin — бесконечный, его игнорим)
+}
+function bizBuildStrips(wrap){
+  const band=document.createElement('div'); band.className='bg-strips';
+  const per=Math.ceil(BIZ.photos/BIZ.strips); let no=1;
+  for(let s=0;s<BIZ.strips;s++){
+    const strip=document.createElement('div'); strip.className='bg-strip';
+    strip.style.setProperty('--wdur',(6+s*1.5)+'s');               // своя частота качания-«волны»
+    strip.style.setProperty('--wdly',(-2.2*s)+'s');                // сдвиг фазы — ленты волнятся не в такт
+    const win=document.createElement('div'); win.className='bg-window';
+    const track=document.createElement('div'); track.className='bg-track';
+    const cells=[];
+    for(let c=0;c<per && no<=BIZ.photos;c++,no++) cells.push('<div class="bg-cell"><span>ФОТО '+no+'</span></div>');
+    track.innerHTML=cells.join('')+cells.join('');                 // дубль ленты ×2 → бесшовный цикл (-50%)
+    track.style.setProperty('--dur',(16+s*4)+'s');                 // разная скорость каждой ленте
+    track.style.setProperty('--dly',(-3*s)+'s');                   // сдвиг старта — ленты не синхронны
+    win.appendChild(track); strip.appendChild(win);
+    const roll=document.createElement('div'); roll.className='bg-roll'; strip.appendChild(roll);   // разматывание внизу
+    band.appendChild(strip);
+  }
+  wrap.appendChild(band); void band.offsetWidth; band.classList.add('show');
+}
+function bizGrowthStop(){
+  bizRunning=false;
+  if(bizSpawnT){ clearInterval(bizSpawnT); bizSpawnT=null; }
+  if(bizStripsT){ clearTimeout(bizStripsT); bizStripsT=null; }
+  bizTimers.forEach(clearTimeout); bizTimers=[];
+  if(bizWrap){ bizWrap.remove(); bizWrap=null; }
+  bizNumEl=null;
 }
 /* КОНФИГИ РАЗВЕДКИ (шаблонная механика бинокля): маршрут поиска (stops) + крючок героя.
    panel:true — на объекте печатается панель параметров (сейчас только у кафе). */
@@ -5297,7 +5830,7 @@ const RECON={
     finale:true,                                          // после кафе — сворачивание с фокусом → чёрный
     mission:{                                             // на чёрном: титул миссии + аватар-помощник (механика появления аватара)
       title:'<div class="mt-kicker">МИССИЯ 1</div><div class="mt-name">НАЧАТЬ БИЗНЕС</div>',
-      name:'Путилин А. Р.',
+      name:'Александр Путилин',
       img:'assets/img/objects/avatar-putilin.png',
       out:'assets/img/objects/avatar-putilin-outline.png',
       say:'Всё начинается с МБМ!'   // единственная реплика аватара на карте (слайд 7)
@@ -5311,7 +5844,7 @@ const RECON={
     finale:true,                                          // после Банка — сворачивание с фокусом → чёрный
     mission:{                                             // на чёрном: титул миссии + аватар Купринова (ФСК)
       title:'<div class="mt-kicker">МИССИЯ 2</div><div class="mt-name">НАЙТИ ДЕНЬГИ</div>',
-      name:'Купринов А. Э.',
+      name:'Антон Купринов',
       img:'assets/img/objects/avatar-kuprinov.png',
       out:'assets/img/objects/avatar-kuprinov-outline.png',
       say:'Нужны деньги на развитие?\nФСК поможет с поручительством и льготным кредитом'   // реплика Купринова (2 строки: \n — перенос, .say-txt имеет white-space:pre-line)
@@ -5436,6 +5969,8 @@ function id(){return SCENES[cur].id;}
 function applyScene(){
   const sid=id();
   bgPlay(BG_SCENE[sid]||null);            // фоновая музыка: тот же трек — не трогаем, другой — кроссфейд
+  applyMusicVol(CFG.music.xfade);         // подвести громкость к уровню этого слайда (тот же трек через неск. слайдов — плавно перетекает)
+  refreshVolPanel();                      // если открыт пульт Ctrl+M — показать значение нового слайда
   if(sid!=='map') clearMapTimer();        // ушли с Карты — гасим авто-проигрыш
   // классы стадии под текущую сцену
   stage.className='stage scene-'+sid;
@@ -5461,7 +5996,7 @@ function applyScene(){
     else runBinoc(RECON.binoc);
   } else { resetBinoc(); clearTimeout(binocStartT); clearTimeout(binocPanelT); }
   // дубль слайда 10 — только герой на крыше + раскрытие карты (запуск ПОСЛЕ resetBinoc выше, иначе он снёс бы наши таймеры)
-  if(sid==='binoc2') runBinoc2(); else binoc2Open=false;
+  if(sid==='binoc2') runBinoc2(); else { binoc2Open=false; bizGrowthStop(); }   // ушли со слайда 16 → погасить финал
 
   // миссия 1 — кафе-сцена: титул на чёрном → вуаль раскрывает кафе → цепочка героя
   mission1.classList.toggle('show', sid==='mission1');
@@ -5560,10 +6095,10 @@ const avatars=document.getElementById('avatars');
 const avRow=document.getElementById('avRow');
 /* 4 помощника (пока фото Дерюгина — плейсхолдер для всех; тексты дадут позже) */
 const AVA=[
-  {org:'МБМ',  name:'Путилин А. Р.', desc:'Комплексная поддержка бизнеса от старта до развития', img:'assets/img/objects/avatar-putilin.png', out:'assets/img/objects/avatar-putilin-outline.png', fit:{s:1, y:0}},
-  {org:'ФСК',  name:'Купринов А. Э.', desc:'Финансовое обеспечение бизнес-процессов', img:'assets/img/objects/avatar-kuprinov.png', out:'assets/img/objects/avatar-kuprinov-outline.png', fit:{s:1, y:0}},
-  {org:'ШТАБ', name:'Байков С. Н.', desc:'Правовая помощь в сложных ситуациях', img:'assets/img/objects/avatar-baikov-pad.png', out:'assets/img/objects/avatar-baikov-outline.png', fit:{s:1, y:0, oy:50}},   // Байков: PNG с запасом сверху (исходник 858×1218 «в облипку» → padded 1166×1412), s:1 без обреза
-  {org:'ФПСП', name:'Кремнева Н. С.', desc:'Поддержка социальных проектов', img:'assets/img/objects/avatar-kremneva.png', out:'assets/img/objects/avatar-kremneva-outline.png', fit:{s:1, y:0}},
+  {org:'МБМ',  name:'Александр Путилин', desc:'Комплексная поддержка бизнеса от старта до развития', img:'assets/img/objects/avatar-putilin.png', out:'assets/img/objects/avatar-putilin-outline.png', fit:{s:1, y:0}},
+  {org:'ФСК',  name:'Антон Купринов', desc:'Финансовое обеспечение бизнес-процессов', img:'assets/img/objects/avatar-kuprinov.png', out:'assets/img/objects/avatar-kuprinov-outline.png', fit:{s:1, y:0}},
+  {org:'ШТАБ', name:'Сергей Байков', desc:'Правовая помощь в сложных ситуациях', img:'assets/img/objects/avatar-baikov-pad.png', out:'assets/img/objects/avatar-baikov-outline.png', fit:{s:1, y:0, oy:50}},   // Байков: PNG с запасом сверху (исходник 858×1218 «в облипку» → padded 1166×1412), s:1 без обреза
+  {org:'ФПСП', name:'Наталья Кремнёва', desc:'Поддержка социальных проектов', img:'assets/img/objects/avatar-kremneva.png', out:'assets/img/objects/avatar-kremneva-outline.png', fit:{s:1, y:0}},
   // fit:{s:размер, y:вертикаль%} — подгонка КАЖДОГО аватара под общий размер и выравнивание по глазам
 ];
 const AV_IMG='assets/img/objects/avatar-deryugin.png';        // плейсхолдер для аватаров без своего фото
@@ -5762,17 +6297,21 @@ const heroOutline=document.getElementById('heroOutline');
    side 'r' — справа от эллипса, якорь по ЛЕВОМУ краю (CSS left:edge%) к правой дуге, выключка влево, СТИЛЬ 2 (неон).
    edge = x дуги эллипса на середине блока (в % ширины стейджа); y = top блока (%). */
 const HERO_QUESTIONS=[
-  // 8 мыслей: 4 слева + 4 справа. edge — x дуги эллипса (cx1048 cy362 rx327.5 ry353) на СЕРЕДИНЕ блока
+  // 8 мыслей: 4 слева + 4 справа. edge — x дуги эллипса на СЕРЕДИНЕ блока (в % ширины стейджа).
+  // ЭЛЛИПС ЦЕНТРИРОВАН ПО ГЕРОЮ: центр героя ≈47.35% (hero-outline left 41.85% + полуширина 5.5%).
+  //   левые:  edge = 100 − 47.35 + d = 52.65 + d   (right:edge% → правый край касается ЛЕВОЙ дуги)
+  //   правые: edge = 47.35 + d                      (left:edge%  → левый край касается ПРАВОЙ дуги)
+  //   d — полуширина эллипса на этом ряду (макс. в середине). Ряды слева и справа выровнены по высоте (одинаковый y).
   // ЛЕВЫЕ (сверху вниз) — правый край касается левой дуги эллипса
-  {t:'Как найти идею для\nоткрытия бизнеса?',    side:'l', edge:60.6, y:7},
-  {t:'Как зарегистрировать\nбизнес?',            side:'l', edge:65.7, y:28},
-  {t:'Как подобрать локацию?',                   side:'l', edge:66.8, y:51},
-  {t:'Где взять деньги?',                        side:'l', edge:65.1, y:71},
-  // ПРАВЫЕ (сверху вниз) — левый край касается правой дуги эллипса
-  {t:'Как повысить\nэффективность бизнеса?',     side:'r', edge:59.0, y:10},
-  {t:'Как защитить свой\nбизнес?',               side:'r', edge:62.6, y:31},
-  {t:'Как оценить пользу\nмоего бизнеса?',       side:'r', edge:63.2, y:52},
-  {t:'Как сделать бизнес\nболее технологичным?', side:'r', edge:61.2, y:72}
+  {t:'Как найти идею?',                          side:'l', edge:62.5, y:7},
+  {t:'Как зарегистрировать\nбизнес?',            side:'l', edge:66.8, y:28},
+  {t:'Как подобрать локацию?',                   side:'l', edge:67.7, y:51},
+  {t:'Где взять деньги?',                        side:'l', edge:65.8, y:71},
+  // ПРАВЫЕ (сверху вниз) — левый край касается правой дуги эллипса; y совпадает с левыми (выровнены по высоте)
+  {t:'Как повысить эффективность?',              side:'r', edge:57.2, y:7},
+  {t:'Как защитить свой\nбизнес?',               side:'r', edge:61.5, y:28},
+  {t:'Как продвигать бизнес?',                   side:'r', edge:62.4, y:51},
+  {t:'Как приносить больше пользы?',             side:'r', edge:60.5, y:71}
 ];
 /* мысли героя: hero — рукопись (.hthink, печать), hero2 — комикс-облака (.hcloud, остаются).
    Строим под сцену; heroQEls обновляется. */
@@ -5906,6 +6445,7 @@ function splashLeave(){
   // Оставляем только idle-мерцание — титул живёт, пока летит через вуаль, и растворяется на слайде 3.
   // замораживаем и слова/лого (у них свои поочерёдные neonOn) — иначе перенос узла перезапустил бы сборку титула на лету
   questTitle.querySelectorAll('.qt-line, .qt-w, .qt-logo-box').forEach(l=>{ l.style.animation='neonIdle 3.6s ease-in-out infinite'; l.style.opacity='1'; });
+  const qStamp=document.getElementById('qtQuest'); if(qStamp) qStamp.style.animation='none';   // печать НЕ мерцает неоном — держим статичную грунж-фактуру (opacity:1 уже проставлен выше)
   questCarry.appendChild(questTitle);                                      // тот же элемент → в оверлей над сценами
   questCarry.classList.remove('fade'); questCarry.classList.add('show');
   splashVeil.style.setProperty('--fx','50%'); splashVeil.style.setProperty('--fy','50%');
@@ -5935,12 +6475,49 @@ function mapCollapseGo(){
     if(cur<SCENES.length-1){ cur++; applyScene(); }                          // разведка на карте → «Миссия 1», разведка сл.10 → ФСК (у обоих своя вуаль/титул)
   }, veilMs('fast')+AFTER_VEIL));   // ждём закрытие binoc-вуали + бит
 }
+/* ═══ ИМИТАЦИЯ КУРСОРА-МЫШИ (слайды 1/5): пиксельная перчатка «Марио» вылетает снизу-справа,
+      подъезжает к кнопке «Начать»/«Начать бизнес», «нажимает» → кнопка засвечивается (n-boot) → переход.
+      Триггер — «вперёд» с клавиатуры / пустой клик. Прямой клик мышью по кнопке — сразу, без курсора. ═══ */
+const SIM_SRC='assets/img/objects/mario-cursor.png';  // перчатка «Марио» (custom-cursor.com, Super_Mario_Hand_Cursor), 32×32 → апскейл
+const SIM_SIZE=72;                                    // размер курсора, px (крупный, заметный)
+const SIM_HOTX=SIM_SIZE*0.16, SIM_HOTY=SIM_SIZE*0.02;  // «горячая точка» = кончик пальца перчатки (ложится на кнопку)
+let _simEl=null, _simActive=false, _simAnim=null, _simBtn=null;
+function ensureSimCursor(){
+  if(_simEl) return _simEl;
+  const el=document.createElement('div'); el.id='simCursor'; el.setAttribute('aria-hidden','true');
+  el.innerHTML='<img src="'+SIM_SRC+'" width="'+SIM_SIZE+'" height="'+SIM_SIZE+'" alt="">';
+  document.body.appendChild(el); _simEl=el; return el;
+}
+function simHide(){ if(_simEl) _simEl.style.opacity='0'; _simActive=false; if(_simAnim){ try{_simAnim.cancel();}catch(e){} _simAnim=null; }
+  if(_simBtn){ _simBtn.classList.remove('sim-hover'); _simBtn=null; } }   // снять подсветку кнопки
+/* прилёт курсора к кнопке → «клик» → startFn (засветка+переход). Повторное «вперёд» — мгновенно. */
+function simClick(btnEl, startFn){
+  if(!btnEl){ startFn&&startFn(); return; }
+  if(_simActive){ simHide(); startFn&&startFn(); return; }        // второе «вперёд» — не ждать курсор
+  _simActive=true; _simBtn=btnEl;
+  const cur=ensureSimCursor();
+  const pos=(x,y)=>'translate('+(x-SIM_HOTX)+'px,'+(y-SIM_HOTY)+'px)';
+  const sx=innerWidth+40, sy=innerHeight+40;                      // старт за краем снизу-справа
+  const r=btnEl.getBoundingClientRect(), ex=r.left+r.width*0.5, ey=r.top+r.height*0.5;
+  cur.style.transition='none'; cur.style.transform=pos(sx,sy); cur.style.opacity='1'; void cur.offsetWidth;
+  _simAnim=cur.animate([{transform:pos(sx,sy)},{transform:pos(ex,ey)}],
+    {duration:720, easing:'cubic-bezier(.35,.65,.2,1)', fill:'forwards'});
+  _simAnim.onfinish=()=>{
+    _simAnim=null;
+    btnEl.classList.add('sim-hover');                            // курсор долетел → кнопка загорается (как при наведении мыши)
+    cur.animate([{transform:pos(ex,ey)},{transform:pos(ex,ey)+' scale(.82)'},{transform:pos(ex,ey)+' scale(1)'}],
+      {duration:200, easing:'ease-out', fill:'forwards'});       // «нажатие» — провал+возврат
+    setTimeout(()=>{ startFn&&startFn(); }, 90);                 // засветка кнопки + переход в момент нажатия
+    setTimeout(()=>{ cur.style.transition='opacity .35s ease'; cur.style.opacity='0';
+      btnEl.classList.remove('sim-hover'); _simBtn=null; _simActive=false; }, 300);   // курсор ушёл → снять подсветку
+  };
+}
 /* skip=true (стрелка/пробел) — ПРОПУСТИТЬ активную механику; skip=false (клик мышью) — не прерывать */
 function next(skip){
   if(id()==='title'){                              // титул — шаги по клику/→ (стадия 1 есть только при CFG.music.titleIntro)
     if(ccStage===0 && CFG.music.titleIntro){ ccStage=1; ccMusicOn(); }   // включается музыка титула (клик = жест, автоплей разрешён)
     else if(ccStage<2){ ccStage=2; ccClose(); }   // чёрная вуаль + центр-кнопка «Начать» + смена трека на «Загрузку»
-    else { titleStart(); }                        // (или клик по кнопке) → старт загрузки → заставка
+    else { ccStarting ? titleStart() : simClick(ccBtn, titleStart); }   // курсор-имитация → titleStart (засветка+переход); прямой клик по кнопке — titleStart сразу
     return;
   }
   if(id()==='splash'){
@@ -5964,7 +6541,7 @@ function next(skip){
     if(avShown<avCells.length){ avNext(); return; }        // ещё не все показаны → следующий
     if(avBtnPending){ avBtnAppear(); return; }             // идёт пауза перед кнопкой → клик показывает её сразу
     if(!avCta.classList.contains('show')){ avShowBtn(); return; }  // все показаны → убрать аватаров, большая кнопка «НАЧАТЬ БИЗНЕС»
-    avCtaStart(); return;                                  // кнопка видна → ЭФФЕКТ 1 со звуком → сворачивание вуали → слайд 6
+    if(avCtaStarting) avCtaStart(); else simClick(avCta, avCtaStart); return;   // курсор-имитация → avCtaStart (засветка+переход); прямой клик по кнопке — сразу
   }
   if(id()==='deck' && deckSub<deckImgs.length-1){ deckSub++; showDeck(); return; }
   if(id()==='map'){                            // сцена 3 — внутренние шаги
@@ -5989,9 +6566,9 @@ function next(skip){
     if(!cafe2StoryDone){ skipCafe2Story(); return; }
     cafe2ToNext(); return;                                 // титул показан → сворачивание вуали → следующий слайд
   }
-  if(id()==='fsk'){                                // Миссия ФСК (слайд 11) — FSM по клику: 3 подслайда → уровень → выход
+  if(id()==='fsk'){                                // Миссия ФСК (слайд 11) — FSM по клику: 2 подслайда → уровень → выход
     if(!fskIntroDone){ skipFskIntro(); return; }           // интро (герой+подслайд 1) → доиграть
-    if(fskStep<fskSubs.length-1){ fskAdvanceSub(); return; }// листаем подслайды 1→2→3 (меняется только текст, герой остаётся)
+    if(fskStep<fskSubs.length-1){ fskAdvanceSub(); return; }// листаем подслайды 1→2 (меняется только текст, герой остаётся)
     if(!fskStoryStarted){ fskStory(); return; }            // после текста последнего подслайда → уровень 2★→3★
     if(!fskStoryDone){ skipFskStory(); return; }           // сюжет идёт → доиграть мгновенно
     fskToNext(); return;                                   // → новый слайд «Открытие кафе»
@@ -6040,8 +6617,9 @@ function next(skip){
     if(!quizEndDone){ skipQuizEnding(); return; }          // концовка идёт → доиграть мгновенно
     quizToNext(); return;                                  // «Тем временем…» показан → сворачивание → слайд 10
   }
-  if(id()==='binoc'){                             // слайд 11 — разведка (finale + миссия Купринова), логика как на карте
+  if(id()==='binoc'){                             // слайд 10 — разведка (finale + миссия Купринова), логика как на карте
     if(mapCollapsing) return;                              // идёт сворачивание — игнор
+    if(binocReconPending){ startBinocRecon(); return; }    // карта раскрыта, ждём клик → запустить разведку биноклем
     if(!mapFinaleReady){                                   // раскрытие вуали / разведка ещё идут
       if(skip && cur<SCENES.length-1){ clearTimeout(binocStartT); resetBinoc(); cur++; applyScene(); }  // стрелка — пропустить разведку
       return;                                              // клик — не прерываем
@@ -6373,8 +6951,10 @@ function buildSlice(el){
 function applyStyleV5(){
   if(!CFG.style.v5) return;
   document.body.classList.add('fx-v5');                             // лого слайда 1 светит шире
-  sliceEl(document.getElementById('nlTxt'),  'title');               // слайд 1 — «Команда поддержки и развития…»
-  sliceEl(document.getElementById('qtQuest'),'title');               // слайд 2 — слово «КВЕСТ»
+  sliceEl(document.getElementById('nlTxt'),  'title');               // слайд 1 — весь титул «Команда поддержки и развития предпринимательства» (глитч на всех словах)
+  // qtQuest (var-0) — БЕЗ глитча: это теперь ПЕЧАТЬ-штамп (см. #qtQuest в CSS)
+  sliceEl(document.getElementById('qtQuest1'),'title');              // слайд 2 — вариант 1 (большой КВЕСТ)
+  sliceEl(document.getElementById('qtQuest2'),'title');              // слайд 2 — вариант 2 (дизайн-система)
   sliceEl(ccBtn.querySelector('.cbtn-txt'),  'btn');                 // слайд 1 — кнопка «Начать»
   sliceEl(avCta.querySelector('.cbtn-txt'),  'btn');                 // слайд 5 — кнопка «Начать бизнес»
   // «HARD» (слайд 4) режется не здесь: он пересоздаётся в fillRulesTitle при каждом заполнении титула
@@ -6392,6 +6972,46 @@ function applyStyleDs(){
   document.body.classList.add('ds-neuro');
   if(CFG.style.dsExo) document.body.classList.add('ds-exo');   // 2-й вариант — шрифт токена --n-neuro меняется на Exo 2 (CSS)
   if(CFG.style.dsMix) document.body.classList.add('ds-mix');   // 3-й вариант — смешанный (Exo 2 текст + Neuropol X титулы + LIBRARY КВЕСТ/HARD)
+}
+/* ── ПЕРЕКЛЮЧЕНИЕ ДИЗАЙН-СИСТЕМ по Ctrl+D (циклом) + тост в центре ──
+   Всё оформление — в CSS через body-классы (ds-neuro/ds-exo/ds-mix), поэтому меняем ВЖИВУЮ, без перезагрузки. */
+const DS_MODES=[
+  {key:'off',    cls:[],                    name:'design=off',    desc:'шрифт HAUSS · исходный стиль текста'},
+  {key:'neuro',  cls:['ds-neuro'],          name:'design=neuro',  desc:'шрифт Neuropol X · неон тёплый + синий акцент'},
+  {key:'neuro2', cls:['ds-neuro','ds-exo'], name:'design=neuro2', desc:'шрифт Exo 2 · неон тёплый + синий акцент'},
+  {key:'neuro3', cls:['ds-neuro','ds-mix'], name:'design=neuro3', desc:'осн. текст Exo 2 · заголовки/титулы Neuropol X · неон тёплый + синий акцент'},
+];
+function applyDsMode(i){
+  const m=DS_MODES[i];
+  document.body.classList.remove('ds-neuro','ds-exo','ds-mix');
+  m.cls.forEach(c=>document.body.classList.add(c));
+  CFG.style.ds    = m.key!=='off';                    // синхроним флаги (если их читает что-то ещё)
+  CFG.style.dsExo = m.key==='neuro2';
+  CFG.style.dsMix = m.key==='neuro3';
+}
+// стартовый индекс = что стоит на входе (по умолчанию neuro3)
+let dsModeIdx = !CFG.style.ds ? 0 : CFG.style.dsExo ? 2 : CFG.style.dsMix ? 3 : 1;
+let dsToastEl=null, dsToastT=null;
+function showDsToast(m){
+  if(!dsToastEl){ dsToastEl=document.createElement('div'); dsToastEl.className='ds-toast'; document.body.appendChild(dsToastEl); }
+  dsToastEl.innerHTML='<b>'+m.name+'</b><span>'+m.desc+'</span>';
+  dsToastEl.classList.remove('show'); void dsToastEl.offsetWidth; dsToastEl.classList.add('show');
+  clearTimeout(dsToastT); dsToastT=setTimeout(()=>dsToastEl.classList.remove('show'), 1700);
+}
+function cycleDsMode(){
+  dsModeIdx=(dsModeIdx+1)%DS_MODES.length;
+  applyDsMode(dsModeIdx);
+  showDsToast(DS_MODES[dsModeIdx]);
+}
+/* Alt+M — переключить трек КАРТЫ: обычный bg-map ↔ Mario (London Philharmonic). Если карта сейчас звучит — живой кроссфейд. */
+function toggleMapMusic(){
+  CFG.music.mapAlt=!CFG.music.mapAlt;
+  if(CFG.music.mapAlt){ const a=new Audio(); a.preload='auto'; a.src=BG_MAP_ALT; }   // прогрев кэша, чтобы кроссфейд не заикнулся
+  showDsToast({name:'Музыка карты', desc: CFG.music.mapAlt?'Mario · London Philharmonic':'обычная (bg-map)'});
+  if(bgGroup(bgCur)==='map'){                                                          // трек карты активен → перезапустить с новым файлом (кроссфейд)
+    bgVoices.slice().forEach(v=>{ if(bgGroup(v.name)==='map') bgVoiceStop(v, CFG.music.xfade); });
+    bgVoiceStart('map', CFG.music.xfade);
+  }
 }
 /* пометить элемент под срез и нарезать. kind — набор параметров из CFG.style.slice.
    opt: {color, glowc, corec, core} — переопределение цвета полос / зарева / ядра и радиуса ядра
@@ -6447,6 +7067,15 @@ function ccGo(){ ccStarting=false; clearTimeout(ccCloseT); if(cur<SCENES.length-
 ccBtn.addEventListener('click', e=>{ e.stopPropagation(); titleStart(); });
 
 document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey) && e.code==='KeyD'){ e.preventDefault(); cycleDsMode(); return; }   // Ctrl+D — циклом сменить дизайн-систему (e.code — независимо от раскладки)
+  if((e.ctrlKey||e.metaKey) && e.code==='KeyM'){ e.preventDefault(); toggleVolEdit(); return; } // Ctrl+M — пульт громкости музыки по слайдам
+  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyM'){ e.preventDefault(); toggleMapMusic(); return; } // Alt+M — переключить трек КАРТЫ: обычный ↔ Mario (London Philharmonic)
+  if(volEdit.open){                                                               // режим настройки громкости: ↑/↓ громче/тише текущего слайда (←/→ ниже — листают слайды)
+    if(e.code==='ArrowUp'){   e.preventDefault(); nudgeVol(e.shiftKey?5:1);  return; }
+    if(e.code==='ArrowDown'){ e.preventDefault(); nudgeVol(e.shiftKey?-5:-1); return; }
+    if(e.code==='Escape'){    e.preventDefault(); toggleVolEdit(false);      return; }
+    if(volEdit.mSlider) volEdit.mSlider.blur();                                   // на ←/→ снять фокус с ползунка, чтобы он не менялся стрелками — листаем слайды
+  }
   if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(true); }        // стрелка/пробел — ПРОПУСТИТЬ механику
   else if(e.key==='Enter'){ e.preventDefault(); next(false); }                    // Enter — как клик
   else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
@@ -6849,42 +7478,37 @@ function sirenStop(ms){
     s.oscs.forEach(o=>o.stop(stopAt)); s.lfo.stop(stopAt);
   }catch(e){}
 }
-/* ===== ЗВУК БУЛЬДОЗЕРА (слайд 12): длящийся дизель-движок + стук копания. Заменяет сирену на эскаваторе ===== */
-let _bull=null;
+/* ===== ЗВУК БУЛЬДОЗЕРА «едет» (слайд 12): mp3 cementtruck_reverse, запуск с 3-й секунды (реверс-«пип-пип»).
+   Раньше был WebAudio-синтез дизеля — заменён по просьбе на файл. Стук ковша (digKnock ниже) остался синтезом.
+   Громкость — CFG.bulldozer.vol (пульт Ctrl+M). Элемент создаётся лениво, переиспользуется. ===== */
+let _bull=null;          // <audio> элемент mp3
+let _bullFade=null;      // raf плавного ухода громкости
+function bullEl(){ if(!_bull){ _bull=new Audio('assets/audio/cementtruck_reverse.mp3'); _bull.preload='auto'; } return _bull; }
+const BULL_FROM=7;       // с какой секунды играть
 function bulldozerStart(){
   if(!CFG.bulldozer || !CFG.bulldozer.on) return;
-  const ac=lvlAudio(); if(!ac) return;
   try{
-    if(_bull) bulldozerStop(0);
-    const now=ac.currentTime, vol=CFG.bulldozer.vol;
-    const master=ac.createGain(); master.gain.setValueAtTime(0.0001,now); master.gain.exponentialRampToValueAtTime(vol,now+0.3); master.connect(ac.destination);
-    const trem=ac.createGain(); trem.gain.value=0.7; trem.connect(master);           // «чуг» дизеля — тремоло в серии
-    const lfo=ac.createOscillator(); lfo.type='sawtooth'; lfo.frequency.value=9;      // цилиндры ~9 Гц
-    const lg=ac.createGain(); lg.gain.value=0.32; lfo.connect(lg); lg.connect(trem.gain);
-    const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=380; lp.connect(trem);   // муфлированный тяжёлый движок
-    const oscs=[];
-    [[55,'sawtooth',0.6],[41,'sawtooth',0.5],[110,'square',0.16]].forEach(a=>{
-      const o=ac.createOscillator(); o.type=a[1]; o.frequency.value=a[0];
-      const og=ac.createGain(); og.gain.value=a[2]; o.connect(og); og.connect(lp); oscs.push(o);
-    });
-    const buf=ac.createBuffer(1, Math.ceil(ac.sampleRate*2), ac.sampleRate); const d=buf.getChannelData(0);
-    let last=0; for(let i=0;i<d.length;i++){ last=(last+(Math.random()*2-1)*0.5)*0.96; d[i]=last; }   // низкий рокот (тело большой машины)
-    const n=ac.createBufferSource(); n.buffer=buf; n.loop=true;
-    const nlp=ac.createBiquadFilter(); nlp.type='lowpass'; nlp.frequency.value=200;
-    const ng=ac.createGain(); ng.gain.value=0.5; n.connect(nlp); nlp.connect(ng); ng.connect(trem);
-    oscs.forEach(o=>o.start(now)); lfo.start(now); n.start(now);
-    _bull={ac, master, oscs, lfo, n};
+    const el=bullEl();
+    if(_bullFade){ cancelAnimationFrame(_bullFade); _bullFade=null; }
+    el.loop=true;                                                    // «едет» весь период проезда
+    el.volume=Math.max(0, Math.min(1, CFG.bulldozer.vol));
+    const go=()=>{ try{ el.currentTime=BULL_FROM; }catch(e){}        // старт с 3-й секунды
+      const p=el.play(); if(p&&p.catch) p.catch(()=>{}); };
+    if(el.readyState>=1) go(); else el.addEventListener('loadedmetadata', go, {once:true});   // ждём метаданные (иначе currentTime бросит)
   }catch(e){}
 }
 function bulldozerStop(ms){
   if(!_bull) return;
-  const s=_bull; _bull=null;
-  try{
-    const now=s.ac.currentTime, dur=Math.max((ms||0)/1000,0.02);
-    s.master.gain.cancelScheduledValues(now); s.master.gain.setValueAtTime(Math.max(s.master.gain.value,0.0001),now); s.master.gain.exponentialRampToValueAtTime(0.0001,now+dur);
-    const stopAt=now+dur+0.03;
-    s.oscs.forEach(o=>o.stop(stopAt)); s.lfo.stop(stopAt); try{ s.n.stop(stopAt); }catch(e){}
-  }catch(e){}
+  const el=_bull, v0=el.volume, dur=Math.max(ms||0,0);
+  if(_bullFade){ cancelAnimationFrame(_bullFade); _bullFade=null; }
+  if(dur<=0){ try{ el.pause(); el.volume=v0; }catch(e){} return; }
+  const t0=performance.now();
+  const step=t=>{ const x=Math.min(1,(t-t0)/dur);
+    try{ el.volume=Math.max(0, v0*(1-x)); }catch(e){}
+    if(x<1){ _bullFade=requestAnimationFrame(step); }
+    else { _bullFade=null; try{ el.pause(); el.volume=v0; }catch(e){} }   // доехал → пауза, громкость вернуть для след. запуска
+  };
+  _bullFade=requestAnimationFrame(step);
 }
 /* стук копания: низкий «тумп» грунта + металлический звон ковша + шум-удар */
 function digKnock(){
@@ -7037,6 +7661,46 @@ function revealSound(sparkSec){
     revPlayPhoto(ac, t+sp, CFG.appear.snd.photo);
   }catch(e){}
 }
+/* ═══ ЗВУК ПЕЧАТИ (штамп «КВЕСТ», заставка сл.2): «тумк» = глухой удар (низкий тон, быстрый спад)
+   + щелчок контакта (короткий ВЧ-шум) + лёгкий средний призвук. Синтез, без файла. ═══ */
+let _stampMaster=null;
+function playStamp(){
+  if(!CFG.stamp || !CFG.stamp.snd || !CFG.stamp.snd.on) return;
+  const ac=lvlAudio(); if(!ac) return;
+  try{
+    if(!_stampMaster || _stampMaster.context!==ac){ _stampMaster=ac.createGain(); _stampMaster.connect(ac.destination); }
+    _stampMaster.gain.value=CFG.stamp.snd.vol;
+    const t=ac.currentTime;
+    // 1) глухой удар — тело «бум»: низкий синус со свипом вниз, быстрый спад
+    const o=ac.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(190,t); o.frequency.exponentialRampToValueAtTime(52,t+0.09);
+    const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(1,t+0.006); g.gain.exponentialRampToValueAtTime(0.0001,t+0.17);
+    o.connect(g); g.connect(_stampMaster); o.start(t); o.stop(t+0.19);
+    // 2) щелчок контакта — короткий отфильтрованный шум (резинка о бумагу)
+    const dur=0.045, buf=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);
+    const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const n=ac.createBufferSource(); n.buffer=buf;
+    const hp=ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1700;
+    const ng=ac.createGain(); ng.gain.setValueAtTime(0.7,t); ng.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    n.connect(hp); hp.connect(ng); ng.connect(_stampMaster); n.start(t); n.stop(t+dur);
+    // 3) средний призвук — короткий «тук» (тело печати), тише
+    const o2=ac.createOscillator(); o2.type='triangle';
+    o2.frequency.setValueAtTime(300,t); o2.frequency.exponentialRampToValueAtTime(130,t+0.1);
+    const g2=ac.createGain(); g2.gain.setValueAtTime(0.0001,t);
+    g2.gain.linearRampToValueAtTime(0.4,t+0.008); g2.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+    o2.connect(g2); g2.connect(_stampMaster); o2.start(t); o2.stop(t+0.14);
+  }catch(e){}
+}
+/* триггер: старт CSS-анимации stampDown → ждём до «удара» (70% × 900мс) → тумк.
+   Если заставка ушла (splashLeave выставил animation:none) — не играем «опоздавший» звук. */
+(function(){
+  const qs=document.getElementById('qtQuest');
+  if(qs) qs.addEventListener('animationstart', e=>{
+    if(e.animationName!=='stampDown') return;
+    setTimeout(()=>{ if(qs.style.animation!=='none') playStamp(); }, 630);
+  });
+})();
 /* ── ПРОБНИК: Alt+1…Alt+6 переключают звук ПРОЯВЛЕНИЯ и сразу проигрывают. Alt+0 — вкл/выкл. ── */
 function revToast(msg){
   let el=document.getElementById('revToast');
@@ -7350,6 +8014,47 @@ function stopAlarm(){
   sirenStop(0);
 }
 applyStyleV5();          // альтернативный стиль (CFG.style.v5 / ?style=v5) — до первой отрисовки сцены
+/* ── ВАРИАНТЫ ТИТУЛА слайда 2: Ctrl+L листает 0→1→2. Только на заставке (id==='splash'). ── */
+const QT_VAR_LABELS=['0 · Лого + титул','1 · Лого + КВЕСТ','2 · Дизайн-система (МПК + КВЕСТ)'];
+let titleVar=CFG.style.titleVar||0;
+let tv2Logo=CFG.style.tv2Logo!==false;            // вариант 2: показывать лого-водяной знак? (Ctrl+K на var-2)
+function applyTitleVar(){
+  questTitle.classList.remove('tv-0','tv-1','tv-2'); questTitle.classList.add('tv-'+titleVar);
+  questTitle.classList.toggle('tv2-nologo', !tv2Logo);   // убрать лого у вар.2
+}
+applyTitleVar();
+/* var-0 подрежим КВЕСТ: false = ПЕЧАТЬ (штамп, по умолч.), true = ГЛИТЧ (срез, Neuropol X). Ctrl+K на var-0. */
+let q0Glitch=!!CFG.style.q0Glitch;
+function applyQ0(){
+  const q=document.getElementById('qtQuest'); if(!q) return;
+  questTitle.classList.toggle('q0-glitch', q0Glitch);
+  if(q0Glitch){
+    if(!q.classList.contains('slice-glitch')) sliceEl(q,'title');   // построить полосы среза (если ещё нет)
+  }else{
+    q.classList.remove('slice-glitch','ready');                     // вернуть печать: снять срез
+    q.querySelectorAll('.sg-strip').forEach(s=>s.remove());
+    ['--sg-color','--sg-glow','--sg-glowc','--sg-core','--sg-corec'].forEach(v=>q.style.removeProperty(v));
+  }
+}
+applyQ0();
+addEventListener('keydown', e=>{
+  if(id()!=='splash' || !e.ctrlKey) return;         // варианты — только на заставке
+  if(e.key==='l' || e.key==='L' || e.code==='KeyL'){          // Ctrl+L — листать варианты
+    e.preventDefault();
+    titleVar=(titleVar+1)%3; applyTitleVar();
+    if(typeof revToast==='function') revToast('Титул: '+QT_VAR_LABELS[titleVar]);
+  } else if(e.key==='k' || e.key==='K' || e.code==='KeyK'){    // Ctrl+K — контекстно
+    e.preventDefault();
+    if(titleVar===0){                                          // var-0: КВЕСТ печать ↔ глитч (Neuropol X)
+      q0Glitch=!q0Glitch; applyQ0();
+      if(typeof revToast==='function') revToast('КВЕСТ: '+(q0Glitch?'глитч (Neuropol X)':'печать'));
+    } else {                                                   // var-2: лого-водяной знак вкл/выкл (как было)
+      tv2Logo=!tv2Logo; applyTitleVar();
+      if(typeof revToast==='function') revToast('Вариант 2 — лого: '+(tv2Logo?'ВКЛ':'ВЫКЛ'));
+    }
+  }
+});
+
 applyStyleLogos();       // лого подразделений вместо текстовых титулов (CFG.style.logos / ?logos=on)
 applyStyleDs();          // новая дизайн-система: весь текст Neuropol X + гамма ДС (CFG.style.ds / ?design=neuro)
 applyScene();
