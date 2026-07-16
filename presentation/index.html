@@ -217,26 +217,66 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   9%{opacity:1;transform:translate(-50%,0) scale(1)}
   100%{opacity:0;transform:translate(-50%,-13cqh) scale(1)}}
 @keyframes bgSpin{to{transform:rotateY(360deg)}}   /* вращение звезды вокруг своей (вертикальной) оси */
-/* КИНОЛЕНТА: горизонтальная плёнка, ПОРТРЕТНЫЕ кадры, едет справа→налево ПО ЛЁГКОЙ ВОЛНЕ (offset-path, синусоида малой амплитуды).
-   offset-rotate:auto → кадр чуть наклоняется по касательной на гребнях (НЕ переворачивается), перфорация идёт по волне. Гребни пологие → без разрывов. */
-.bg-ribbon{position:absolute;inset:0;z-index:1;perspective:var(--rib-persp,1700px);perspective-origin:50% 46%;
-  opacity:0;transition:opacity .9s ease;pointer-events:none}
-.bg-ribbon.show{opacity:1}
-/* плоскость волны на всю область + лёгкий наклон для объёма */
-.bg-ribwrap{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(var(--rib-rx,10deg))}
-/* кадр едет по синус-пути; offset-rotate:auto — держит касательную (наклон вместе с волной) */
-.bg-frame{position:absolute;left:0;top:0;offset-rotate:auto 180deg;offset-anchor:50% 50%;overflow:hidden;
-  background:linear-gradient(160deg,#22262e,#0d1016);
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.7),inset 0 0 22px rgba(0,0,0,.5);
-  animation:bgFlow var(--fdur,40s) linear infinite;animation-delay:var(--fdly,0s)}
-@keyframes bgFlow{from{offset-distance:0%}to{offset-distance:100%}}   /* путь нарисован справа→влево → кадры едут СПРАВА→НАЛЕВО */
-.bg-frame>span{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;
-  font-family:var(--font-title);font-weight:400;font-size:var(--fnum,20px);letter-spacing:.05em;color:rgba(234,255,255,.4)}
-/* перфорация вдоль длинных кромок кадра (верх/низ = края ленты) → сплошная по волне */
-.bg-frame::before,.bg-frame::after{content:"";position:absolute;left:0;right:0;height:var(--perf,10px);z-index:3;background:#050506;
-  background-image:repeating-linear-gradient(to right,transparent 0 var(--pf1,6px),#3a3a40 var(--pf1,6px) var(--pf2,12px),transparent var(--pf2,12px) var(--pf3,18px))}
-.bg-frame::before{top:0}
-.bg-frame::after{bottom:0}
+/* КИНОЛЕНТА-КАРТИНКА (SVG «Финальный слайд лента»): фото кладутся ПЕРСПЕКТИВНО в размеченные кадры (matrix3d-гомография),
+   лента-картинка сверху (окна кадров прозрачны). Движение = фото шагает в соседний левый кадр. Плюс мерцание/зерно «просмотра плёнки». */
+.bg-film{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .9s ease;pointer-events:none}
+.bg-film.show{opacity:1}
+/* сцена = ОКНО-КРОП области плёнки (без кассеты); размер задаётся в JS, масштаб --fk; мерцание яркости (проектор) */
+.bg-filmstage{position:absolute;left:50%;top:50%;overflow:hidden;transform-origin:50% 50%;
+  transform:translate(-50%,-50%) scale(var(--fk,.5));animation:filmFlick 3.3s steps(1,end) infinite}
+.bg-filmcrop{position:absolute;width:2172px;height:724px}   /* содержимое в координатах viewBox, сдвинуто на -CROP */
+@keyframes filmFlick{0%,100%{filter:brightness(1)}12%{filter:brightness(1.05)}24%{filter:brightness(.965)}
+  38%{filter:brightness(1.02)}54%{filter:brightness(.985)}72%{filter:brightness(1.045)}88%{filter:brightness(.97)}}
+.bg-filmphotos{position:absolute;left:0;top:0;width:2172px;height:724px;z-index:3}   /* фото ПОВЕРХ ленты (заполняют только окна кадров) */
+/* один кадр-слот: перспективно искажён под свой четырёхугольник; два слоя pl для кроссфейда шага */
+.bg-photo{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;backface-visibility:hidden}
+.bg-photo .pl{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity .5s ease}
+/* тёплый оттенок + виньетка «плёнки» поверх фото (чтобы вписалось в сепию ленты) */
+.bg-photo::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(135deg,rgba(120,80,20,.16),rgba(60,30,0,.10));box-shadow:inset 0 0 30px rgba(20,10,0,.4)}
+.bg-photo-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;font-family:var(--font-title);
+  font-weight:700;font-size:48px;color:rgba(255,255,255,.9);text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.bg-filmimg{position:absolute;left:0;top:0;width:2172px;height:724px;z-index:2}   /* лента ПОД фото — даёт рамки/перфорацию вокруг окон */
+/* зерно «плёнки» ВНУТРИ кадра (обрезано clip-path кадра → не выходит за ленту), дрожит */
+.bg-photo-grain{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:overlay;opacity:.32;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;animation:grainShift .45s steps(2,end) infinite}
+@keyframes grainShift{0%{transform:translate(0,0)}50%{transform:translate(-6%,4%)}100%{transform:translate(4%,-5%)}}
+
+/* ── ФИНАЛ, ВАРИАНТ 2 (Alt+F): БИЛБОРДЫ (LED-щиты с фото предпринимателей) на карте ── */
+.bg-boards{position:absolute;inset:0;z-index:1;pointer-events:none}
+.bb{position:absolute;transform:translate(-50%,-100%);opacity:0;transition:opacity .5s ease}   /* якорь = НИЗ-центр (основание опоры стоит в точке BB_POS) */
+.bb.show{opacity:1}
+.bb-inner{position:relative;animation:bbFloat 6s ease-in-out infinite}   /* лёгкое «парение», рассинхрон через delay */
+@keyframes bbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.4%)}}
+.bb-frame{position:relative;z-index:2;display:block;width:100%;height:auto;   /* рамка ПОВЕРХ фото (окно экрана прозрачно) */
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.55)) drop-shadow(0 0 9px rgba(30,144,255,.30))}
+.bb.show .bb-frame{animation:bbGlow 2.6s ease-in-out infinite}   /* экран «дышит» синим — включённый LED */
+@keyframes bbGlow{
+  0%,100%{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55)) drop-shadow(0 0 8px rgba(30,144,255,.28))}
+  50%{filter:drop-shadow(0 8px 16px rgba(0,0,0,.55)) drop-shadow(0 0 18px rgba(30,144,255,.6)) drop-shadow(0 0 34px rgba(30,144,255,.32))}}
+.bb-screen{position:absolute;z-index:1;display:flex;gap:1.4%;overflow:hidden;background:#0a1622}   /* тёмная «подложка экрана» → зазор = разделитель 2 фото */
+.bb-cell{position:relative;flex:1 1 50%;overflow:hidden}
+.bb-layer{position:absolute;inset:0;background-position:center;background-size:cover;opacity:0;transition:opacity .6s ease}
+.bb-layer.reveal{animation:roofFace var(--rv-photo) ease var(--rv-spark) both}   /* первое фото — из размытия (как герой) */
+.bb-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;pointer-events:none;   /* номер фото (как в варианте 1) */
+  font-family:var(--font-title);font-weight:700;font-size:2.6cqh;color:rgba(255,255,255,.92);
+  text-shadow:0 2px 8px rgba(0,0,0,.85),0 0 10px rgba(46,168,255,.6)}
+.bb-sparks{position:absolute;left:50%;top:32%;width:1px;height:1px;z-index:3;pointer-events:none}
+.bb-sparks.play .roofspark{animation:roofSpark var(--rv-spark) ease-out forwards}
+.bb-outline{position:absolute;left:0;top:0;width:100%;height:auto;z-index:3;pointer-events:none;   /* неон-контур по ВНЕШНЕМУ силуэту билборда (цвет = var(--neon), как контур героя/объектов карты) */
+  filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 3px var(--neon))}
+.bb.show .bb-outline{animation:bbOutDraw 1.4s ease both, bbOutGlow 1.9s ease-in-out 1.4s infinite}   /* прорисовка сверху→вниз (скан, как у героя), затем пульс */
+@keyframes bbOutDraw{0%{opacity:1;clip-path:inset(0 0 100% 0)}100%{opacity:1;clip-path:inset(0 0 0 0)}}
+@keyframes bbOutGlow{
+  0%,100%{filter:drop-shadow(0 0 .6px var(--neon)) drop-shadow(0 0 2px var(--neon))}
+  50%{filter:drop-shadow(0 0 1.4px var(--neon)) drop-shadow(0 0 6px rgba(var(--neon-rgb),.9))}}
+/* ЗАРЕВО экрана — как свечение лого на титуле (цвет n-blue: --neon #27e3ff → #0bb6e6), направлено ВНИЗ (экран льёт свет на город) */
+.bb-bloom{position:absolute;z-index:0;left:-18%;top:1%;width:136%;height:96%;pointer-events:none;
+  background:radial-gradient(ellipse 62% 46% at 50% 32%, rgba(var(--neon-rgb),.6), rgba(11,182,230,.24) 48%, transparent 74%);
+  filter:blur(18px);mix-blend-mode:screen;opacity:0}
+.bb.show .bb-bloom{animation:bbBloom 3.6s ease-in-out infinite}   /* пульс как neonIdle лого */
+@keyframes bbBloom{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.78;transform:scale(1.05)}}
 
 /* маршруты: прозрачность задаём ГРУППЕ, иначе общие участки горят ярче */
 .route{fill:none;stroke:var(--neon);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
@@ -993,7 +1033,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #morebiz #mbBrand{z-index:9}                       /* титул — НАД затемнением .mb-dark (z7) */
 /* ── СЛАЙД 15: БАЗА = СТАНДАРТНАЯ вёрстка (для ?design=off и ?design=neuro2/Exo 2 — шрифты ПЛОТНЕЕ, влезает без сжатия).
    Кегль текста/иконок/отступы — как на др. слайдах этого типа (.ch-title базовые 1.6cqw, иконка 2.2cqw). Позиция/ширина — общие для всех режимов. ── */
-.mb-text{position:absolute;right:3%;top:calc(27% - 7.5cqw);width:53%;z-index:9;pointer-events:none;   /* поднят на 2.5cqw (было -5cqw): 6-й блок «…наклейки» упирался в низ/чёрную рамку. Левый край ~44% — сдвинут левее к центру; не наезжает на награду (правый край 42.3%) */
+.mb-text{position:absolute;right:3%;top:calc(27% - 5cqw);width:53%;z-index:9;pointer-events:none;   /* стандартный уровень заголовка (как .fsk-slides, слайды 13/14). Раньше был -7.5cqw под 6 блоков; теперь блоков 3 — вернул на -5cqw */
   display:flex;flex-direction:column;justify-content:flex-start;gap:.9cqw;
   color:#fff;font-family:var(--font-text);text-align:left}
 .mb-text .ch-list{gap:.7cqw}
@@ -1001,12 +1041,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
    text-indent НАСЛЕДУЕТСЯ, а .gw-ico — inline-block: без сброса отступ применился бы второй раз внутри иконки. */
 .mb-text .ch-title{padding-left:2.8cqw;text-indent:-2.8cqw}
 .mb-text .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw;text-indent:0}
+.mb-text .ch-desc{margin-left:2.8cqw}   /* описание — под текстом заголовка (не под иконкой) */
 /* ── СЛАЙД 15 при ?design=neuro (Neuropol X — ШИРЕ, больше переносов): СЖАТАЯ вёрстка — мельче кегль/иконка, плотнее
    отступы, верх выше, чтобы все 6 блоков влезли. НЕ для Exo (:not(.ds-exo)) и не для off. ── */
 body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text{top:calc(21% - 5cqw);gap:.8cqw}
 body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-list{gap:.8cqw}
 body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-title{font-size:1.4cqw;line-height:1.12;padding-left:2.4cqw;text-indent:-2.4cqw}
 body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-title .gw-ico{width:1.85cqw;height:1.85cqw;margin-right:.55cqw;vertical-align:-.3cqw}
+body.ds-neuro:not(.ds-exo):not(.ds-mix) .mb-text .ch-desc{margin-left:2.4cqw}
 .mission3{position:absolute;inset:0;z-index:16;background:var(--bg);display:none}
 .mission3.show{display:block}
 .m3-stage{position:absolute;inset:0;margin:auto;overflow:hidden;z-index:1;
@@ -2447,22 +2489,16 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
         <div class="fsk-h rin">Единый бренд<br>«Больше чем бизнес»</div>
         <div class="ch-list">
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 12 C56 12 60 17 60 23 V43 C60 49 56 54 50 54 C44 54 40 49 40 43 V23 C40 17 44 12 50 12 Z"/><path class="ic-warm" d="M30 41 C30 57 39 66 50 66 C61 66 70 57 70 41"/><path class="ic-warm" d="M50 66 V84 M34 84 H66"/></svg></span>Форум <span class="fsk-ac">«Больше чем бизнес»</span> и партнёрские мероприятия с позиционированием знака БЧБ</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span>Популяризация явления социального предпринимательства</span>
+            <span class="rin ch-desc">Отраслевые форумы, ролики «И важно» на федеральных ТВ-каналах, партнёрские мероприятия</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M32 14 H68 V36 C68 48 60 57 50 57 C40 57 32 48 32 36 Z"/><path d="M32 20 H20 V29 C20 37 25 42 32 42"/><path d="M68 20 H80 V29 C80 37 75 42 68 42"/><path class="ic-warm" d="M50 57 V70 M38 86 L42 70 H58 L62 86 Z"/></svg></span>Специальные номинации в рамках конкурса <span class="fsk-ac">«Мой добрый бизнес»</span> и других</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H82 V62 L62 82 H18 Z"/><path d="M82 62 H62 V82"/><path class="ic-warm" d="M34 42 L45 53 L66 32"/></svg></span>Единый бренд СП «Больше чем бизнес»</span>
+            <span class="rin ch-desc">Товарный знак на выставках-ярмарках, маркетплейсах, классифайдах, в номинациях отраслевых конкурсов</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 24 H86 V70 H14 Z"/><path class="ic-warm" d="M42 38 L62 47 L42 56 Z"/><path class="ic-warm" d="M50 70 V82 M34 82 H66"/></svg></span>Популяризационные ролики <span class="fsk-ac">«И важно!»</span> на федеральных ТВ-каналах</span>
-          </div>
-          <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 40 L28 16 H72 L86 40 Z"/><path d="M18 40 V84 H82 V40"/><path d="M14 40 H86"/><path class="ic-warm" d="M38 84 V58 H62 V84"/></svg></span>Специализированные <span class="fsk-ac">выставки-ярмарки</span></span>
-          </div>
-          <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M52 10 H86 V44 L44 86 L10 52 Z"/><circle class="ic-warm" cx="70" cy="26" r="7"/><path class="ic-warm" d="M32 52 L44 64"/></svg></span>Маркировка товаров и услуг СП на <span class="fsk-ac">маркетплейсах и классифайдах</span></span>
-          </div>
-          <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H82 V62 L62 82 H18 Z"/><path d="M82 62 H62 V82"/><path class="ic-warm" d="M34 42 L45 53 L66 32"/></svg></span>Предоставление <span class="fsk-ac">Знака</span> на материальных носителях (наклейки)</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 16 V84 H88"/><path class="ic-warm" d="M28 68 L44 50 L58 60 L82 30"/><path class="ic-warm" d="M68 30 H82 V44"/><circle cx="44" cy="50" r="4"/><circle cx="58" cy="60" r="4"/></svg></span>Измерение социального эффекта</span>
+            <span class="rin ch-desc">Сервис самодиагностики «Пользамер»</span>
           </div>
         </div>
       </div>
@@ -2616,16 +2652,16 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
         <div class="fsk-h rin">Институт развития социального предпринимательства</div>
         <div class="ch-list">
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 18 L88 34 L50 50 L12 34 Z"/><path d="M28 42 V64 C28 64 37 72 50 72 C63 72 72 64 72 64 V42"/><path class="ic-warm" d="M84 36 V60 M84 60 L80 70 H88 Z"/></svg></span><span class="fsk-ac">Обучающие программы</span> для развития социального бизнеса</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M26 14 H54 L70 30 V70 H26 Z"/><path d="M54 14 V30 H70"/><path d="M34 40 H52 M34 50 H48"/><circle class="ic-warm" cx="61" cy="71" r="9"/><path class="ic-warm" d="M61 58 V64 M61 78 V84 M48 71 H54 M68 71 H74 M52 62 L56 66 M66 76 L70 80 M70 62 L66 66 M56 76 L52 80"/></svg></span>Системные инструменты развития СП</span>
+            <span class="rin ch-desc">Совершенствование законодательства, исследовательская деятельность</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 16 V84 H88"/><path class="ic-warm" d="M28 68 L44 50 L58 60 L82 30"/><path class="ic-warm" d="M68 30 H82 V44"/><circle cx="44" cy="50" r="4"/><circle cx="58" cy="60" r="4"/></svg></span>Измерение <span class="fsk-ac">социального эффекта</span></span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 18 L88 34 L50 50 L12 34 Z"/><path d="M28 42 V64 C28 64 37 72 50 72 C63 72 72 64 72 64 V42"/><path class="ic-warm" d="M84 36 V60 M84 60 L80 70 H88 Z"/></svg></span>Обучающие программы для развития социального бизнеса</span>
+            <span class="rin ch-desc">Курс «Мой первый социальный проект», Университет социального предпринимателя, Школа краудфандинга, «Акселератор 4.0», вебинары</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 42 C50 42 46 30 37 30 C29 30 24 37 24 45 C24 58 50 74 50 74 C50 74 76 58 76 45 C76 37 71 30 63 30 C54 30 50 42 50 42 Z"/><path class="ic-warm" d="M16 86 C28 74 72 74 84 86"/></svg></span>Меры <span class="fsk-ac">негосударственной поддержки</span></span>
-          </div>
-          <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span><span class="fsk-ac">Популяризация</span> явления социального предпринимательства</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H44 V44 H18 Z"/><path d="M56 18 H82 V44 H56 Z"/><path d="M18 56 H44 V82 H18 Z"/><path class="ic-warm" d="M56 56 H82 V82 H56 Z"/></svg></span>Сервисы для предпринимателей</span>
+            <span class="rin ch-desc">Карта мер негосударственной поддержки и Пульт социального предпринимателя</span>
           </div>
         </div>
       </div>
@@ -5837,13 +5873,17 @@ function skipBinoc2(){
 
 /* ═══════════════ СЛАЙД 16 (ФИНАЛ): «РАЗВИТИЕ ПРЕДПРИНИМАТЕЛЬСТВА» ═══════════════
    Часть 1 (сразу при открытии карты): большой счётчик «937 000» (стиль баннера «УРОВЕНЬ ПОВЫШЕН»);
-     каждую секунду в 1..8 случайных точках карты вспыхивает звезда с «+N» — вращается вокруг оси,
+     каждую секунду в 1..3 случайных точках карты вспыхивает звезда с «+N» (не более 10 на экране разом) — вращается вокруг оси,
      связка (+N ★) уезжает вверх и тает; счётчик += N за каждую звезду.
    Часть 2 (через 5с, поверх): 3 вертикальные киноленты по центру — фото едут снизу вверх (пока заглушки, 50 фото на 3 ленты).
    Всё крутится бесконечно до клика (слайд последний). Полная очистка — bizGrowthStop(). */
-const BIZ={ base:937000, perSecMin:1, perSecMax:8, stepMin:1, stepMax:5, stripsAt:5000, photos:50, strips:3,
-  yMin:10, yMax:46 };   // зона появления звёзд по вертикали (% высоты): ВЫШЕ середины — там основной город (низ не заходит за 50%)
+const BIZ={ base:937000, perSecMin:1, perSecMax:3, stepMin:1, stepMax:5, stripsAt:5000, photos:50, strips:3,
+  maxLive:10, yMin:5, yMax:90 };   // maxLive — макс. звёзд на экране РАЗОМ; yMin/yMax — раскидано по ВСЕЙ высоте, уклон ВВЕРХ (min(rand,rand))
 let bizRunning=false, bizCount=0, bizSpawnT=null, bizStripsT=null, bizTimers=[], bizWrap=null, bizNumEl=null;
+let bizStars=0;   // сколько звёзд сейчас живо на экране (лимит BIZ.maxLive)
+let bizFilmT=null, bizSlots=null, bizOffset=0;   // лента-картинка: таймер шага, слоты кадров, текущий сдвиг
+let bizV2Ints=[], bizV2Timers=[], bizBoards=null;   // вариант 2 (билборды): интервалы кроссфейда, таймеры появления, щиты
+let bizPhotoMode=2;   // механика показа фото ПО УМОЛЧАНИЮ: 2 = билборды (1 = киноплёнка); переключение Alt+F
 function bizFmt(n){ return n.toLocaleString('ru-RU'); }              // 937000 → «937 000»
 function bizGrowthStart(){
   if(bizRunning) return;                                            // уже идёт — не дублируем (onOpen + skip)
@@ -5855,7 +5895,7 @@ function bizGrowthStart(){
   cnt.appendChild(bizNumEl); cnt.appendChild(cap); bizWrap.appendChild(cnt);
   const starLayer=document.createElement('div'); starLayer.className='bg-stars'; bizWrap.appendChild(starLayer);
   stage.appendChild(bizWrap);
-  // цикл: раз в секунду — 1..8 звёзд, разбросаны по времени внутри секунды
+  // цикл: раз в секунду — 1..3 звезды, разбросаны по времени внутри секунды (жёсткий лимит ≤10 живых в bizSpawnStar)
   const tick=()=>{
     if(!bizRunning) return;
     bizTimers.forEach(clearTimeout); bizTimers=[];                  // прошлые (за <1с) уже сработали — держим массив коротким
@@ -5867,6 +5907,8 @@ function bizGrowthStart(){
   bizStripsT=setTimeout(()=>{ if(bizRunning) bizBuildStrips(bizWrap); }, BIZ.stripsAt);   // ленты — через 5с
 }
 function bizSpawnStar(layer){
+  if(bizStars>=BIZ.maxLive) return;                                // не больше BIZ.maxLive звёзд одновременно
+  bizStars++;
   const n=BIZ.stepMin+Math.floor(Math.random()*(BIZ.stepMax-BIZ.stepMin+1));
   bizCount+=n;                                                      // счётчик += N
   if(bizNumEl){ bizNumEl.textContent=bizFmt(bizCount); bizNumEl.classList.remove('bump'); void bizNumEl.offsetWidth; bizNumEl.classList.add('bump'); }
@@ -5876,57 +5918,200 @@ function bizSpawnStar(layer){
   pop.style.left=x+'%'; pop.style.top=y+'%';
   pop.innerHTML='<span class="bg-plus">+'+n+'</span><span class="bg-star">★</span>';
   layer.appendChild(pop); void pop.offsetWidth; pop.classList.add('rise');
-  pop.addEventListener('animationend', e=>{ if(e.animationName==='bgRise') pop.remove(); });   // убрать после подъёма (spin — бесконечный, его игнорим)
+  pop.addEventListener('animationend', e=>{ if(e.animationName==='bgRise'){ pop.remove(); bizStars=Math.max(0,bizStars-1); } });   // убрать после подъёма (−1 к живым); spin бесконечный — игнорим
 }
 /* Лента: ПОРТРЕТНЫЕ кадры текут по синус-пути (offset-path) справа→налево. Бесшовно: N кадров тайлят путь, у конца → в начало. */
-function bizBuildStrips(wrap){
-  const W=wrap.clientWidth||1600, H=wrap.clientHeight||600;
-  const fh=Math.round(H*0.42);                 // высота кадра (с кромками)
-  const perf=Math.round(fh*0.11);              // высота перфор-кромки
-  const photoH=fh-2*perf;                       // высота фото-области
-  const fw=Math.round(photoH*0.75);            // ширина кадра — портрет ≈ 3:4
-  // ── синус-путь СПРАВА→ВЛЕВО (малая амплитуда, пологие гребни → без разрывов) ──
-  const m=fw*1.4, xR=W+m, xL=-m, yc=Math.round(H*0.5), A=Math.round(H*0.09), steps=60, lam=(xR-xL)/1.7;
-  let pts=[];
-  for(let s=0;s<=steps;s++){ const x=xR+(xL-xR)*s/steps; const y=yc+A*Math.sin((xR-x)/lam*2*Math.PI); pts.push((s?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)); }
-  const d=pts.join(' ');
-  // длина пути (для тайлинга кадров без щелей)
+/* ЛЕНТА-КАРТИНКА: SVG «Финальный слайд лента» (2172×724), 8 размеченных кадров-окон.
+   FILM_ZONE_D — контуры кадров в координатах viewBox, В ПОРЯДКЕ ПЛЁНКИ (слева→направо; прямая лента — 9 ровных кадров). */
+const FILM_SRC='assets/img/objects/'+encodeURIComponent('Финальный слайд лента.svg');
+const FILM_W=2172, FILM_H=724;
+const FILM_ZONE_D=["M456.5 396V288.5H559.5V396H456.5Z","M593 396.5V289H696V396.5H593Z","M735 396.5V289H838V396.5H735Z","M874 396.5V289H977V396.5H874Z","M1015 396.5V289H1118V396.5H1015Z","M1155 396.5V289H1258V396.5H1155Z","M1295 395.5V288H1398V395.5H1295Z","M1436 395.5V288H1539V395.5H1436Z","M1576 396.5V289H1679V396.5H1576Z"];
+/* ── гомография (перспектива кадра) + обратное отображение (для clip-path по контуру) ── */
+function _adj(m){return [m[4]*m[8]-m[5]*m[7],m[2]*m[7]-m[1]*m[8],m[1]*m[5]-m[2]*m[4],m[5]*m[6]-m[3]*m[8],m[0]*m[8]-m[2]*m[6],m[2]*m[3]-m[0]*m[5],m[3]*m[7]-m[4]*m[6],m[1]*m[6]-m[0]*m[7],m[0]*m[4]-m[1]*m[3]];}
+function _mm(a,b){var c=[];for(var i=0;i<3;i++)for(var j=0;j<3;j++){var s=0;for(var k=0;k<3;k++)s+=a[3*i+k]*b[3*k+j];c[3*i+j]=s;}return c;}
+function _mv(m,v){return [m[0]*v[0]+m[1]*v[1]+m[2]*v[2],m[3]*v[0]+m[4]*v[1]+m[5]*v[2],m[6]*v[0]+m[7]*v[1]+m[8]*v[2]];}
+function _basis(x1,y1,x2,y2,x3,y3,x4,y4){var m=[x1,x2,x3,y1,y2,y3,1,1,1];var v=_mv(_adj(m),[x4,y4,1]);return _mm(m,[v[0],0,0,0,v[1],0,0,0,v[2]]);}
+function _homog(w,h,c){                            // c — 8 чисел (углы TL,TR,BR,BL); t: локальные px → viewBox
+  var S=_basis(0,0,w,0,w,h,0,h), D=_basis(c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7]);
+  var t=_mm(D,_adj(S)); for(var i=0;i<9;i++) t[i]=t[i]/t[8]; return t;
+}
+function _m3d(t){ return 'matrix3d('+[t[0],t[3],0,t[6],t[1],t[4],0,t[7],0,0,1,0,t[2],t[5],0,t[8]].join(',')+')'; }
+function _inv(t,X,Y){ var a=_adj(t), d=a[6]*X+a[7]*Y+a[8]; return [(a[0]*X+a[1]*Y+a[2])/d,(a[3]*X+a[4]*Y+a[5])/d]; } // viewBox → локальные px
+/* пройти контур кадра точками (кривые тоже) через временный SVG */
+function _sampleZone(dStr,n){
   const NS='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(NS,'svg'), pth=document.createElementNS(NS,'path');
-  pth.setAttribute('d',d); svg.appendChild(pth);
+  const svg=document.createElementNS(NS,'svg'), p=document.createElementNS(NS,'path');
+  p.setAttribute('d', /Z\s*$/.test(dStr)?dStr:dStr+'Z'); svg.appendChild(p);
   svg.setAttribute('style','position:absolute;width:0;height:0;opacity:0;pointer-events:none');
   document.body.appendChild(svg);
-  const L=pth.getTotalLength()||W; svg.remove();
-  const gap=Math.max(2,Math.round(fw*0.04));   // чёрный зазор между кадрами
-  const step=fw+gap;                            // шаг кадра вдоль ленты
-  const N=Math.max(8,Math.round(L/step));       // столько кадров тайлят путь
-  const fwUse=Math.round(fw);                   // ширина кадра (зазор — за счёт шага, кадр без нахлёста)
-  const holes=Math.max(1,Math.round(fwUse/(perf*2)));   // целое число дырок на кадр → перфорация стыкуется между кадрами
-  const p=fwUse/holes;
-  const dur=Math.round(N*0.8);                  // темп ~0.8с/кадр
-  const fnum=Math.round(photoH*0.15)+'px';
-  const wrapEl=document.createElement('div'); wrapEl.className='bg-ribwrap';
-  for(let i=0;i<N;i++){
-    const f=document.createElement('div'); f.className='bg-frame';
-    f.style.width=fwUse+'px'; f.style.height=fh+'px';
-    f.style.offsetPath='path("'+d+'")';
-    f.style.setProperty('--fdur',dur+'s');
-    f.style.setProperty('--fdly',(-dur*i/N).toFixed(2)+'s');   // равномерная фаза → кадры текут сплошным потоком
-    f.style.setProperty('--perf',perf+'px');
-    f.style.setProperty('--pf1',(p*0.28).toFixed(2)+'px');
-    f.style.setProperty('--pf2',(p*0.72).toFixed(2)+'px');
-    f.style.setProperty('--pf3',p.toFixed(2)+'px');
-    f.style.setProperty('--fnum',fnum);
-    f.innerHTML='<span>ФОТО '+((i%BIZ.photos)+1)+'</span>';    // заглушка (позже — <img object-fit:cover>)
-    wrapEl.appendChild(f);
+  const L=p.getTotalLength()||1, pts=[];
+  for(let i=0;i<n;i++){ const q=p.getPointAtLength(L*i/n); pts.push([q.x,q.y]); }
+  svg.remove(); return pts;
+}
+function _corners(pts){                            // 4 угла = экстремумы x±y
+  let tl=pts[0],br=pts[0],tr=pts[0],bl=pts[0];
+  for(const p of pts){ if(p[0]+p[1]<tl[0]+tl[1])tl=p; if(p[0]+p[1]>br[0]+br[1])br=p; if(p[0]-p[1]>tr[0]-tr[1])tr=p; if(p[0]-p[1]<bl[0]-bl[1])bl=p; }
+  return [tl[0],tl[1],tr[0],tr[1],br[0],br[1],bl[0],bl[1]];
+}
+function _quadSize(c){                             // базовый размер кадра ≈ средние стороны
+  var wt=Math.hypot(c[2]-c[0],c[3]-c[1]), wb=Math.hypot(c[4]-c[6],c[5]-c[7]);
+  var hl=Math.hypot(c[6]-c[0],c[7]-c[1]), hr=Math.hypot(c[4]-c[2],c[5]-c[3]);
+  return [Math.max(20,(wt+wb)/2), Math.max(20,(hl+hr)/2)];
+}
+/* фото предпринимателей: пока пусто → цветные заглушки; заполнить url'ами — заработает и в ленте, и в билбордах */
+const BIZ_PHOTOS=[];
+function bizPhotoBg(i){
+  if(BIZ_PHOTOS.length){ return 'center/cover url("'+BIZ_PHOTOS[i%BIZ_PHOTOS.length]+'")'; }
+  var hue=(i*47)%360; return 'linear-gradient(135deg,hsl('+hue+',58%,46%),hsl('+((hue+45)%360)+',52%,28%))';
+}
+/* ДИСПЕТЧЕР показа фото: Alt+F переключает bizPhotoMode (1 киноплёнка / 2 второй вариант) */
+function bizBuildStrips(wrap){ if(bizPhotoMode===2) bizBuildVariant2(wrap); else bizBuildFilm(wrap); }
+/* ── 2-Й ВАРИАНТ: БИЛБОРДЫ на карте — LED-щиты (billboard.png), на каждом 2 фото, кросс-фейд по кругу.
+   Появляются по очереди (искры → фото из размытия); периоды фейдов разведены → карта «мерцает экранами». */
+const BB_SRC='assets/img/objects/'+encodeURIComponent('billboard.png');
+const BB_WIN={l:4.0, t:3.8, w:92.6, h:58.1};    // окно экрана в % PNG (хромакей низкого щита: l4.7 t4.5 r96.0 b61.3; лёгкий заход под рамку)
+const BB_OUTLINE='assets/img/objects/'+encodeURIComponent('billboard-outline.png');   // неон-контур по ВНЕШНЕМУ силуэту (как контур героя)
+const BB_POS=[                                   // основание опоры в координатах карты 2172×724 (точки из «Финальный слайд билборды.svg»)
+  {mx:435,  my:494},
+  {mx:913,  my:218},
+  {mx:1327, my:353},
+  {mx:750,  my:652},
+  {mx:1609, my:584},
+  {mx:315,  my:266},
+];
+const BB_W=11;                                   // ширина щита, % ширины сцены
+function bizBuildVariant2(wrap){
+  const box=document.createElement('div'); box.className='bg-boards';
+  wrap.appendChild(box);
+  const NP=BIZ_PHOTOS.length||BIZ.photos;        // сколько фото в пуле
+  const NC=BB_POS.length*2;                     // всего ячеек (2 на щит) — для равномерного разброса и уникальности
+  bizBoards=[]; const cells=[];
+  BB_POS.forEach((p,bi)=>{
+    const bb=document.createElement('div'); bb.className='bb';
+    bb.style.left=(p.mx/FILM_W*100)+'%'; bb.style.top=(p.my/FILM_H*100)+'%'; bb.style.width=BB_W+'%';
+    const inner=document.createElement('div'); inner.className='bb-inner'; inner.style.animationDelay=(-bi*0.7)+'s';
+    const scr=document.createElement('div'); scr.className='bb-screen';
+    scr.style.left=BB_WIN.l+'%'; scr.style.top=BB_WIN.t+'%'; scr.style.width=BB_WIN.w+'%'; scr.style.height=BB_WIN.h+'%';
+    const bcells=[];
+    for(let ci=0;ci<2;ci++){
+      const cell=document.createElement('div'); cell.className='bb-cell';
+      const a=document.createElement('div'); a.className='bb-layer';
+      const b=document.createElement('div'); b.className='bb-layer';
+      const num=document.createElement('div'); num.className='bb-num';   // номер текущего фото (как в варианте 1)
+      cell.appendChild(a); cell.appendChild(b); cell.appendChild(num); scr.appendChild(cell);
+      const obj={front:a,back:b,num:num,idx:Math.round(cells.length*NP/NC)%NP}; cells.push(obj); bcells.push(obj);   // старт разбросан по всему пулу
+    }
+    const sparks=document.createElement('div'); sparks.className='bb-sparks';
+    const img=document.createElement('img'); img.className='bb-frame'; img.src=BB_SRC; img.alt=''; img.style.animationDelay=(-bi*0.55)+'s';
+    const neon=document.createElement('img'); neon.className='bb-outline'; neon.src=BB_OUTLINE; neon.alt=''; neon.style.animationDelay=(-bi*0.55)+'s';
+    const bloom=document.createElement('div'); bloom.className='bb-bloom'; bloom.style.animationDelay=(-bi*0.6)+'s';   // зарево от экрана
+    inner.appendChild(bloom); inner.appendChild(scr); inner.appendChild(sparks); inner.appendChild(img); inner.appendChild(neon);
+    bb.appendChild(inner); box.appendChild(bb);
+    bizBoards.push({bb:bb, sparks:sparks, cells:bcells});
+  });
+  // появление щитов по очереди: искры + первое фото из размытия
+  bizBoards.forEach((brd,bi)=>{
+    bizV2Timers.push(setTimeout(()=>{
+      if(!bizRunning) return;
+      brd.bb.classList.add('show');
+      buildSparks(brd.sparks,14); void brd.sparks.offsetWidth; brd.sparks.classList.add('play');
+      revealSound();
+      brd.cells.forEach(c=>{ c.front.style.background=bizPhotoBg(c.idx); c.front.style.opacity='1'; c.num.textContent=c.idx+1;
+        c.front.classList.remove('reveal'); void c.front.offsetWidth; c.front.classList.add('reveal'); });
+    }, bi*520));
+  });
+  // кросс-фейд: у каждой ячейки свой период (рассинхрон), старт — после появления её щита
+  cells.forEach((c,k)=>{
+    const bi=Math.floor(k/2), period=2600+((k*430)%1900);
+    bizV2Timers.push(setTimeout(()=>{
+      if(!bizRunning) return;
+      const iv=setInterval(()=>{
+        if(!bizRunning) return;
+        const used=new Set(); cells.forEach(x=>{ if(x!==c) used.add(x.idx); });   // индексы, занятые сейчас на ДРУГИХ экранах
+        let ni=(c.idx+1)%NP, guard=0; while(used.has(ni) && guard++<NP) ni=(ni+1)%NP;   // берём следующий СВОБОДНЫЙ → нет двух одинаковых разом
+        c.idx=ni;
+        c.back.style.background=bizPhotoBg(c.idx); c.num.textContent=c.idx+1;
+        c.back.style.opacity='1'; c.front.style.opacity='0';
+        const t=c.front; c.front=c.back; c.back=t;
+      }, period);
+      bizV2Ints.push(iv);
+    }, bi*520 + 1600 + (k%2)*700));
+  });
+}
+/* очистка варианта 2 (билборды): интервалы кроссфейда + таймеры появления */
+function bizClearVariant2(){
+  bizV2Ints.forEach(clearInterval); bizV2Ints=[];
+  bizV2Timers.forEach(clearTimeout); bizV2Timers=[];
+  bizBoards=null;
+}
+function bizBuildFilm(wrap){
+  const W=wrap.clientWidth||1600, H=wrap.clientHeight||600;
+  const film=document.createElement('div'); film.className='bg-film';
+  const st=document.createElement('div'); st.className='bg-filmstage';
+  const CROP={x:360,y:256,w:1428,h:176};                 // область ТОЛЬКО с плёнкой (без кассеты) — замерено по картинке
+  st.style.width=CROP.w+'px'; st.style.height=CROP.h+'px';
+  const k=Math.min((W*0.96)/CROP.w,(H*0.9)/CROP.h);      // вписать КРОП по ширине → лента крупная (≈×2 к прежнему)
+  st.style.setProperty('--fk',k.toFixed(4));
+  const crop=document.createElement('div'); crop.className='bg-filmcrop';
+  crop.style.left=(-CROP.x)+'px'; crop.style.top=(-CROP.y)+'px';   // сдвиг содержимого: КРОП ложится в окно сцены
+  const photos=document.createElement('div'); photos.className='bg-filmphotos';
+  bizSlots=[];
+  FILM_ZONE_D.forEach((zd,idx)=>{
+    const pts=_sampleZone(zd,54);                       // контур кадра точками (по кривой автора)
+    const c=_corners(pts);                              // 4 угла → перспектива
+    const sz=_quadSize(c);
+    const t=_homog(sz[0],sz[1],c);
+    const cell=document.createElement('div'); cell.className='bg-photo';
+    cell.style.width=sz[0]+'px'; cell.style.height=sz[1]+'px';
+    cell.style.transform=_m3d(t);
+    // clip: весь контур кадра → в локальные px (обратная гомография) → фото обрезано ТОЧНО по изгибам
+    const poly=pts.map(p=>{ const l=_inv(t,p[0],p[1]); return l[0].toFixed(1)+'px '+l[1].toFixed(1)+'px'; }).join(',');
+    cell.style.clipPath='polygon('+poly+')'; cell.style.webkitClipPath='polygon('+poly+')';
+    const a=document.createElement('div'); a.className='pl';
+    const b=document.createElement('div'); b.className='pl'; b.style.opacity='0';
+    const grn=document.createElement('div'); grn.className='bg-photo-grain';   // зерно ВНУТРИ кадра (обрезано clip)
+    const num=document.createElement('div'); num.className='bg-photo-num';
+    cell.appendChild(a); cell.appendChild(b); cell.appendChild(grn); cell.appendChild(num);
+    photos.appendChild(cell);
+    bizSlots.push({front:a,back:b,num:num,order:idx});
+  });
+  const img=document.createElement('img'); img.className='bg-filmimg'; img.src=FILM_SRC; img.alt='';
+  crop.appendChild(photos); crop.appendChild(img); st.appendChild(crop);
+  film.appendChild(st);
+  wrap.appendChild(film); void film.offsetWidth; film.classList.add('show');
+  bizOffset=0; bizFilmStep(true);                        // первичное заполнение
+  bizFilmT=setInterval(()=>bizFilmStep(false), 1600);    // ШАГ плёнки: фото → в соседний левый кадр
+}
+/* шаг плёнки: каждый слот показывает следующий кадр (эффект «плёнка едет»); кроссфейд двух слоёв */
+function bizFilmStep(first){
+  if(!bizSlots) return;
+  if(!first) bizOffset++;
+  bizSlots.forEach(s=>{
+    const idx=((bizOffset+s.order)%BIZ.photos+BIZ.photos)%BIZ.photos;
+    const bg=bizPhotoBg(idx);
+    if(first){ s.front.style.background=bg; s.front.style.opacity='1'; s.back.style.opacity='0'; s.num.textContent=idx+1; }
+    else{
+      s.back.style.background=bg; s.num.textContent=idx+1;
+      s.back.style.opacity='1'; s.front.style.opacity='0';
+      const t=s.front; s.front=s.back; s.back=t;          // поменять слои местами
+    }
+  });
+}
+/* Alt+F: сменить механику показа фото; если финал уже идёт — пересобрать показ на месте */
+function bizSetPhotoMode(m){
+  bizPhotoMode=m;
+  if(bizRunning && bizWrap){
+    const old=bizWrap.querySelector('.bg-film, .bg-boards, .bg-variant2');
+    if(old){ old.remove(); if(bizFilmT){ clearInterval(bizFilmT); bizFilmT=null; } bizSlots=null; bizClearVariant2(); bizBuildStrips(bizWrap); }
   }
-  const ribbon=document.createElement('div'); ribbon.className='bg-ribbon'; ribbon.appendChild(wrapEl);
-  wrap.appendChild(ribbon); void ribbon.offsetWidth; ribbon.classList.add('show');
 }
 function bizGrowthStop(){
   bizRunning=false;
   if(bizSpawnT){ clearInterval(bizSpawnT); bizSpawnT=null; }
   if(bizStripsT){ clearTimeout(bizStripsT); bizStripsT=null; }
+  if(bizFilmT){ clearInterval(bizFilmT); bizFilmT=null; }
+  bizClearVariant2();
+  bizSlots=null; bizOffset=0; bizStars=0;
   bizTimers.forEach(clearTimeout); bizTimers=[];
   if(bizWrap){ bizWrap.remove(); bizWrap=null; }
   bizNumEl=null;
@@ -7185,6 +7370,10 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey) && e.code==='KeyD'){ e.preventDefault(); cycleDsMode(); return; }   // Ctrl+D — циклом сменить дизайн-систему (e.code — независимо от раскладки)
   if((e.ctrlKey||e.metaKey) && e.code==='KeyM'){ e.preventDefault(); toggleVolEdit(); return; } // Ctrl+M — пульт громкости музыки по слайдам
   if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyM'){ e.preventDefault(); toggleMapMusic(); return; } // Alt+M — переключить трек КАРТЫ: обычный ↔ Mario (London Philharmonic)
+  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyF'){ e.preventDefault();            // Alt+F — механика показа фото (слайд 16): 1 киноплёнка ↔ 2 второй вариант
+    bizSetPhotoMode(bizPhotoMode===1?2:1);
+    if(typeof showDsToast==='function') showDsToast({name:'Показ фото', desc:'Вариант '+bizPhotoMode+(bizPhotoMode===1?' · киноплёнка':' · второй')});
+    return; }
   if(volEdit.open){                                                               // режим настройки громкости: ↑/↓ громче/тише текущего слайда (←/→ ниже — листают слайды)
     if(e.code==='ArrowUp'){   e.preventDefault(); nudgeVol(e.shiftKey?5:1);  return; }
     if(e.code==='ArrowDown'){ e.preventDefault(); nudgeVol(e.shiftKey?-5:-1); return; }
