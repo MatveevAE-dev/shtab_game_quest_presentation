@@ -199,12 +199,29 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* большой счётчик — по центру сверху, стиль как баннер «УРОВЕНЬ ПОВЫШЕН» */
 .bg-counter{position:absolute;right:3%;bottom:5%;z-index:4;text-align:right;white-space:nowrap;animation:bgCntIn .6s ease both}
 @keyframes bgCntIn{0%{opacity:0;transform:translateY(2cqh) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
-.bg-num{font-family:var(--font-title);font-weight:700;font-size:12cqh;line-height:1;letter-spacing:.03em;color:#fff;display:inline-block;
-  text-shadow:0 0 12px rgba(255,255,255,.7),0 0 26px rgba(var(--neon-rgb),.85),0 0 54px rgba(var(--neon-rgb),.5),0 2px 10px rgba(0,0,0,.9)}
+/* цифра = АКЦЕНТ как «937» на слайде 4 (класс .rnum на внутреннем span даёт то же свечение); .bg-num — только размер/кегль + «bump» */
+.bg-num{font-family:var(--font-title);font-weight:800;font-size:16.5cqh;line-height:1;letter-spacing:.03em;display:inline-block}
 .bg-num.bump{animation:bgBump .4s ease}
 @keyframes bgBump{0%{transform:scale(1)}30%{transform:scale(1.07)}100%{transform:scale(1)}}
-.bg-cap{margin-top:.15em;font-family:var(--font-title);font-weight:400;font-size:2.8cqh;letter-spacing:.16em;text-transform:uppercase;
-  color:#eaffff;text-shadow:0 0 8px rgba(var(--neon-rgb),.7),0 2px 6px rgba(0,0,0,.8)}
+/* подпись «БИЗНЕСОВ В МОСКВЕ» — стиль текста слайда 4 (белый + тёмная база) */
+.bg-cap{margin-top:.15em;font-family:var(--font-title);font-weight:700;font-size:3.9cqh;letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;text-shadow:var(--sh-base)}
+/* режим «без показа» (Alt+F=0): счётчик ПО ЦЕНТРУ экрана */
+.bg-counter.center{right:auto;bottom:auto;left:50%;top:50%;text-align:center;animation:bgCntInC .6s ease both}
+@keyframes bgCntInC{0%{opacity:0;transform:translate(-50%,-50%) translateY(2cqh) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+/* ── ФИНАЛ (режим 0, по клику): закрытие вуали в центр → тёплый титул по очереди ── */
+.bizfinale{position:absolute;inset:0;z-index:20;pointer-events:none}
+.bizfinale-veil{position:absolute;inset:0;z-index:1;background:#0a0806;--r:175%;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at 50% 50%, transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r var(--veil-fast) cubic-bezier(.4,.1,.2,1)}
+.bizfinale-title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:92%;
+  display:flex;flex-direction:column;align-items:center;gap:.55em;text-align:center}
+.bff-line{font-family:'Neuropol X',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;
+  font-size:min(3.64vw,70px);line-height:1.12;color:#fff5e6;opacity:0;transform:translateY(1.6cqh);   /* размер как титул слайда 2 */
+  transition:opacity .7s ease,transform .7s ease;
+  text-shadow:0 0 10px rgba(255,224,160,.85),0 0 28px rgba(255,186,96,.6),0 0 56px rgba(255,150,60,.4),0 2px 8px rgba(0,0,0,.7)}   /* тёплый неон */
+.bff-line.show{opacity:1;transform:translateY(0)}
 /* слой летящих звёзд (+N ★) */
 .bg-stars{position:absolute;inset:0}
 .bg-pop{position:absolute;transform:translate(-50%,0);display:flex;align-items:center;gap:.35em;white-space:nowrap;
@@ -502,8 +519,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .qt-art .qt-logo-box, .qt-txt .qt-w{opacity:0}          /* до своей очереди скрыты */
 .qt-txt .qt-w{display:inline-block}                     /* чтобы filter/opacity корректно ложились на слово */
 .qt-line.on .qt-logo-box{animation:neonOn .9s ease-out both}                       /* лого — с первым словом */
-.qt-line.on .qt-w:nth-of-type(1){animation:neonOn .9s ease-out both}               /* МОСКОВСКИЙ — сразу */
-.qt-line.on .qt-w:nth-of-type(2){animation:neonOn .9s ease-out var(--qt-step) both}          /* ПРЕДПРИНИМАТЕЛЬСКИЙ — +step */
+.qt-line.on .qt-w:nth-of-type(1){animation:qwRise .7s cubic-bezier(.2,.7,.2,1) both}               /* МОСКОВСКИЙ — как финальный титул: всплыв+проявление */
+.qt-line.on .qt-w:nth-of-type(2){animation:qwRise .7s cubic-bezier(.2,.7,.2,1) var(--qt-step) both}  /* ПРЕДПРИНИМАТЕЛЬСКИЙ — +step (по очереди) */
+@keyframes qwRise{from{opacity:0;transform:translateY(.5em)}to{opacity:1;transform:translateY(0)}}   /* всплывание слов как у финального титула (.bff-line) */
 .qt-line.on .qt-w:nth-of-type(3){animation:neonOn .9s ease-out calc(var(--qt-step)*3) both}  /* КВЕСТ — +3×step (пауза перед ним ×2) */
 @keyframes titlePop{
   0%{opacity:0;transform:scale(.18)}
@@ -516,47 +534,74 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
    иначе оно стёрло бы drop-shadow лого. */
 .qt-line.qt-art{display:flex;align-items:center;gap:.64em;font-size:min(3.64vw,70px);line-height:1}
 /* лого ВРАЩАЕТСЯ (как на слайде 1): perspective на боксе → nlSpin на обёртке → svg внутри */
-.qt-art .qt-logo-box{flex:none;height:3.14em;aspect-ratio:156/194;perspective:700px}
+.qt-art .qt-logo-box{flex:none;height:2.2em;aspect-ratio:156/194;perspective:700px;transform:translateY(-.11em)}   /* высота = ВИДИМЫЕ 2 строки: line-gap 1.233 + cap Neuropol X 0.967; сдвиг вверх .11em → центр лого = центр букв (было 2.466em по line-box — великовато) */
 .quest-title .qt-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
 .quest-title .qt-logo{width:100%;height:100%;overflow:visible;shape-rendering:geometricPrecision}
 .quest-title .qt-logo path{fill:none;stroke:#dffaff;stroke-width:6;stroke-linejoin:round;stroke-linecap:round;   /* ядро под толщину ядра текста заставки — было 5, при бо́льшем боксе (viewBox 194, ×1.13) линия смотрелась тоньше лого слайда 1 */
   filter:drop-shadow(0 0 1.4px var(--n-blue-2)) drop-shadow(0 0 5.6px var(--n-blue-2)) drop-shadow(0 0 17px var(--n-blue-3))}
 .qt-art .qt-txt{font-family:var(--n-lib);font-weight:400;text-transform:uppercase;text-align:left;
-  line-height:1.233;letter-spacing:0;color:#fff;position:relative;   /* position:relative — якорь для печати #qtQuest */
+  line-height:1.233;letter-spacing:0;color:#fff;   /* штамп центрируется по #questTitle (экрану) — анкор .qt-txt не нужен */
   text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--n-blue-2),0 0 5px var(--n-blue-2),0 0 14px var(--n-blue-2)}
 /* ═══ КВЕСТ = ПЕЧАТЬ (штамп) на заставке сл.2 ═══
    #qtQuest — absolute поверх 2 строк, тёмно-синие чернила, грунж-фактура (filter #stampGrunge),
    двойная скруглённая рамка, наклон как на референсе. ID-селектор бьёт флаг-правила .qt-quest → вид
    одинаков при любом ?design. Позицию/размер/угол крути переменными --qs-ink/--qs-rot и right/bottom/font-size. */
 #qtQuest{
-  --qs-ink:#33a6ff;                                          /* ярко-голубые чернила — насыщенный азур, читается на тёмном фото (не белый, не тёмный) */
-  --qs-rot:-13deg;                                           /* угол печати (как референс) */
-  position:absolute; right:.35em; bottom:.55em;              /* ложится по диагонали на «…предпринимательский», задевая МОСКОВСКИЙ */
+  --qs-ink:var(--n-blue-2);                                  /* бирюзово-неоновый цвет — как лого (#27e3ff) */
+  --qs-rot:-13deg;                                           /* угол печати (как референс, НЕ трогаем) */
+  --qs-size:7.5vw;                                           /* размер печати ≈ пол-экрана (крути тут) */
+  --qs-dy:3.5vw;                                             /* сдвиг вниз к ЦЕНТРУ ЭКРАНА (лого сидит выше центра); крути это число, если штамп не по центру по вертикали */
+  position:absolute; left:50%; top:calc(50% + var(--qs-dy)); z-index:6;   /* по ЦЕНТРУ ЭКРАНА, поверх слов */
   font-family:'Neuropol X',sans-serif; font-weight:400; letter-spacing:.08em;
   color:var(--qs-ink); text-shadow:none;
-  font-size:1.4em; line-height:1; padding:.14em .3em; white-space:nowrap;
-  border:.1em solid var(--qs-ink); border-radius:.2em;
-  box-shadow:0 0 0 .045em var(--qs-ink);                     /* внешняя тонкая рамка = двойной кант */
-  transform:rotate(var(--qs-rot)); transform-origin:center;
-  /* грунж + ТЁМНАЯ микро-тень (отделяет светлые чернила на светлых участках фото) + мягкий голубой ореол */
-  filter:url(#stampGrunge) drop-shadow(0 1px 1px rgba(0,18,45,.6)) drop-shadow(0 0 7px rgba(90,180,255,.4));
+  font-size:var(--qs-size); line-height:1; padding:.14em .3em; white-space:nowrap;
+  border:.08em solid var(--qs-ink); border-radius:.16em;
+  box-shadow:0 0 0 .03em var(--qs-ink), 0 0 .18em rgba(39,227,255,.28);   /* двойной кант + лёгкое бирюзовое зарево рамки (ослаблено) */
+  transform:translate(-50%,-50%) rotate(var(--qs-rot)); transform-origin:center;
+  /* грунж-фактура + тёмная микро-тень (читаемость на фото) + слабое бирюзовое неон-свечение */
+  filter:url(#stampGrunge) drop-shadow(0 .012em .012em rgba(0,18,45,.5)) drop-shadow(0 0 .05em var(--n-blue-2)) drop-shadow(0 0 .14em rgba(39,227,255,.5));
 }
 #qtQuest::before{content:"";position:absolute;inset:.1em;border:.05em solid var(--qs-ink);border-radius:.14em;pointer-events:none}   /* внутренняя рамка */
 /* печать «ставится»: летит сверху крупной и полупрозрачной → удар (сжатие) → лёгкий overshoot → покой */
-@keyframes stampDown{
+@keyframes stampDown{   /* ПЛОСКИЙ (для печати HARD в потоке; без translate) */
   0%  {opacity:0; transform:rotate(var(--qs-rot)) scale(2.6)}
   55% {opacity:.4;transform:rotate(var(--qs-rot)) scale(2.6)}
   70% {opacity:1; transform:rotate(var(--qs-rot)) scale(.9)}
   82% {          transform:rotate(var(--qs-rot)) scale(1.05)}
   100%{opacity:1; transform:rotate(var(--qs-rot)) scale(1)}}
-.qt-line.on #qtQuest{animation:stampDown .9s cubic-bezier(.2,.8,.2,1) calc(var(--qt-step)*3) both}   /* ставится третьим, после 2 слов (пауза ×2) */
+@keyframes stampDownC{   /* ЦЕНТРИРОВАННЫЙ (печать КВЕСТ на заставке): та же анимация + сохранение translate(-50%,-50%) */
+  0%  {opacity:0; transform:translate(-50%,-50%) rotate(var(--qs-rot)) scale(2.6)}
+  55% {opacity:.4;transform:translate(-50%,-50%) rotate(var(--qs-rot)) scale(2.6)}
+  70% {opacity:1; transform:translate(-50%,-50%) rotate(var(--qs-rot)) scale(.9)}
+  82% {          transform:translate(-50%,-50%) rotate(var(--qs-rot)) scale(1.05)}
+  100%{opacity:1; transform:translate(-50%,-50%) rotate(var(--qs-rot)) scale(1)}}
+.qt-line.on #qtQuest{animation:stampDownC .9s cubic-bezier(.2,.8,.2,1) calc(var(--qt-step)*3) both}   /* ставится третьим, после 2 слов (пауза ×2); stampDownC = центрированный вариант */
+/* ═══ РАЗБИТИЕ ЭКРАНА (трещины стекла) — после удара печати «КВЕСТ» ═══ */
+.screen-crack{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0}   /* ПОД текстом/печатью (intro-inner z1), НАД фоном (intro-bg z0, DOM-порядок) · откат: z-index:30 = поверх титула */
+.screen-crack.on{opacity:1}
+.screen-crack .ck-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible}
+.screen-crack .ck{fill:none;stroke:#eaffff;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 1.5px rgba(39,227,255,.95)) drop-shadow(0 0 4px rgba(39,227,255,.5));
+  stroke-dasharray:var(--len,2000);stroke-dashoffset:var(--len,2000)}
+.screen-crack.on .ck{animation:ckDraw .28s cubic-bezier(.2,.7,.2,1) forwards}   /* трещины «прорастают» из точки удара */
+.screen-crack.on .ck.b{animation-delay:.09s}                                    /* ветки/кольца — чуть позже */
+@keyframes ckDraw{to{stroke-dashoffset:0}}
+.screen-crack .ck-flash{position:absolute;inset:0;opacity:0;
+  background:radial-gradient(circle at var(--ix,50%) var(--iy,50%), rgba(255,255,255,.9), rgba(39,227,255,.3) 15%, transparent 42%)}
+.screen-crack.on .ck-flash{animation:ckFlash .5s ease-out forwards}             /* вспышка удара из точки печати */
+@keyframes ckFlash{0%{opacity:0}9%{opacity:1}100%{opacity:0}}
+.scr-shake{animation:scrShake .5s cubic-bezier(.36,.07,.19,.97) both}           /* тряска всего экрана на удар */
+@keyframes scrShake{0%,100%{transform:translate(0,0)}
+  10%{transform:translate(-4px,2px)}20%{transform:translate(5px,-3px)}30%{transform:translate(-6px,2px)}
+  40%{transform:translate(5px,-2px)}50%{transform:translate(-4px,2px)}60%{transform:translate(3px,-1px)}
+  70%{transform:translate(-2px,1px)}80%{transform:translate(2px,-1px)}90%{transform:translate(-1px,0)}}
 /* ── ПОДРЕЖИМ var-0 «ГЛИТЧ» (Ctrl+K, класс .q0-glitch на #questTitle): КВЕСТ не печать, а срез-глитч
    на Neuropol X, увеличенный, 3-й строкой (как было). Перебивает штамп по специфичности (класс + id). ── */
 .qtq-br{display:none}                                         /* 3-я строка — только в глитч-режиме */
 .quest-title.q0-glitch .qtq-br{display:inline}
 .quest-title.q0-glitch #qtQuest{
   position:relative; display:inline-block;                    /* назад в поток 3-й строкой + якорь для полос среза */
-  inset:auto; margin-top:.14em;                               /* СБРОС смещений печати (right/bottom) — иначе при relative КВЕСТ наезжал вверх-влево; + зазор от строки выше */
+  inset:auto; margin-top:.14em; font-size:1.4em;              /* СБРОС смещений печати + вернуть мелкий кегль (база теперь пол-экрана) */
   border:none; box-shadow:none; border-radius:0; padding:0;
   transform:none; filter:none;                                /* убрать рамку/наклон/грунж печати */
   color:transparent;                                          /* база прозрачна — светят полосы среза (шрифт/размер Neuropol X 1.4em наследуются от #qtQuest) */
@@ -576,7 +621,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   filter:drop-shadow(0 0 8px rgba(255,140,40,.5))}                /* тёплый акцент-контраст к синему титулу */
 .quest-title.q0-gold #qtQuest::before{border-color:rgba(255,207,138,.8);box-shadow:0 0 7px #ff8a1f}
 /* НЕОН-варианты (C/D): печать ПОДНЯТА выше — не наезжает на «ПРЕДПРИНИМАТЕЛЬСКИЙ» (лежит над верхней строкой). Грунж-печать (0) — на месте. */
-.quest-title.q0-neon #qtQuest, .quest-title.q0-gold #qtQuest{bottom:1.8em}
+.quest-title.q0-neon #qtQuest, .quest-title.q0-gold #qtQuest{bottom:auto}   /* центрируются как база (top:50%) */
 /* ═══ ВАРИАНТЫ ТИТУЛА слайда 2 (класс tv-0/1/2 на #questTitle, листает Ctrl+L) ═══
    var-0 = текущий (.qt-line.qt-art) — не трогаем. var-1/var-2 — соседние блоки, показываем по классу.
    КВЕСТ в каждом — живой span (#qtQuest / #qtQuest1 / #qtQuest2), глитч вешает applyStyleV5 через sliceEl. */
@@ -1169,6 +1214,9 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .fsk-slides .gw-label{white-space:nowrap}                      /* иконка + метка в одну строку (подслайд 3 — цифры) */
 .fsk-slides .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw}   /* иконка напротив основного текста (как «Вызовы» слайда 4) */
 .fsk-slides .ch-desc{margin-left:2.8cqw}                       /* описание ПОД основным текстом, выключка под текст (не под иконку) */
+/* строка «Совет предпринимателей» — иконка была базового 3cqw (крупнее буллитов) и текст без висячего отступа → выравниваем под буллиты */
+.m3-council .gw-label{padding-left:2.8cqw;text-indent:-2.8cqw}
+.m3-council .gw-label .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw;text-indent:0}
 .fsk-hi{font-size:var(--sz-body);font-weight:700;color:#fff;line-height:1.25;text-shadow:var(--sh-read)}   /* хайлайт подслайда 3 — строки друг под другом */
 /* шаблонная вуаль раскрытия (как .hveil/.rules-veil): чёрное → раскрытие из фокуса верх-лево */
 .mission1-veil{position:absolute;inset:0;z-index:5;background:var(--bg);pointer-events:none;
@@ -2335,16 +2383,16 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
           <div class="fsk-h rin">Содействие кредитованию малого и среднего бизнеса Москвы</div>
           <div class="ch-list">
             <div class="ch-item">
-              <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse cx="36" cy="70" rx="24" ry="8"/><path d="M12 70 V56 C12 51 60 51 60 56 V70"/><path class="ic-warm" d="M78 66 V30 M64 44 L78 28 L92 44"/></svg></span>Получение финансирования</span>
-              <span class="rin ch-desc">сопровождаем предпринимателя на каждом этапе</span>
+              <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse cx="36" cy="70" rx="24" ry="8"/><path d="M12 70 V56 C12 51 60 51 60 56 V70"/><path class="ic-warm" d="M78 66 V30 M64 44 L78 28 L92 44"/></svg></span>Подбор финансирования</span>
+              <span class="rin ch-desc">помогаем выбрать подходящий финансовый инструмент для бизнеса</span>
             </div>
             <div class="ch-item">
               <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M26 14 H60 L78 32 V88 H26 Z"/><path d="M60 14 V32 H78"/><path class="ic-warm" d="M36 48 H68 M36 60 H68 M36 72 H56"/></svg></span>Подготовка документов</span>
-              <span class="rin ch-desc">помогаем собрать пакет для банка</span>
+              <span class="rin ch-desc">помогаем собрать пакет документов</span>
             </div>
             <div class="ch-item">
-              <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 10 L84 24 V52 C84 74 50 90 50 90 C50 90 16 74 16 52 V24 Z"/><path class="ic-warm" d="M36 50 L47 61 L66 38"/></svg></span>Поддержка бизнеса</span>
-              <span class="rin ch-desc">работаем, даже когда самому получить финансирование сложно</span>
+              <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 10 L84 24 V52 C84 74 50 90 50 90 C50 90 16 74 16 52 V24 Z"/><path class="ic-warm" d="M36 50 L47 61 L66 38"/></svg></span>Взаимодействие с Банками</span>
+              <span class="rin ch-desc">сопровождение на каждом этапе</span>
             </div>
           </div>
         </div>
@@ -2560,16 +2608,14 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
         <div class="fsk-h rin">Коммуникация бизнеса и власти</div>
         <div class="ch-list">
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span>Информирование предпринимателей</span>
-            <span class="rin ch-desc">о нововведениях в законодательстве и его правоприменении</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span>Скорая правовая помощь</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 24 H60 V50 H34 L22 62 V50 H14 Z"/><path class="ic-warm" d="M46 42 H86 V70 H70 L60 80 V70 H46 Z"/></svg></span>Сбор обратной связи</span>
-            <span class="rin ch-desc">о ситуации в бизнесе и системных предпринимательских инициатив</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 24 H60 V50 H34 L22 62 V50 H14 Z"/><path class="ic-warm" d="M46 42 H86 V70 H70 L60 80 V70 H46 Z"/></svg></span>Работа с общественными организациями и деловыми объединениями</span>
           </div>
         </div>
         <div class="gw-list m3-council" style="margin-top:.7cqw">
-          <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="28" cy="36" r="9"/><circle cx="72" cy="36" r="9"/><path d="M12 72 V64 A16 16 0 0 1 44 64 V72"/><path d="M56 72 V64 A16 16 0 0 1 88 64 V72"/><circle class="ic-warm" cx="50" cy="30" r="11"/><path class="ic-warm" d="M30 78 V66 A20 20 0 0 1 70 66 V78"/></svg></span>Совет Предпринимателей Москвы:</span>
+          <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="28" cy="36" r="9"/><circle cx="72" cy="36" r="9"/><path d="M12 72 V64 A16 16 0 0 1 44 64 V72"/><path d="M56 72 V64 A16 16 0 0 1 88 64 V72"/><circle class="ic-warm" cx="50" cy="30" r="11"/><path class="ic-warm" d="M30 78 V66 A20 20 0 0 1 70 66 V78"/></svg></span>Совет предпринимателей Москвы:</span>
           <div class="gw-right">
             <span class="rin gw-val"><span class="rnum">122</span> участника</span>
           </div>
@@ -2786,6 +2832,7 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
     <div class="intro-pct" id="loadPct">0%</div>
     <div class="intro-load"><span id="loadCap">Гружу</span><span class="load-dots" id="loadDots">…</span></div>
   </div>
+  <div class="screen-crack" id="screenCrack" aria-hidden="true"><i class="ck-flash"></i><svg class="ck-svg" id="ckSvg" preserveAspectRatio="none"></svg></div>
   <div class="splash-veil" id="splashVeil"></div>   <!-- сворачивание с фокусом в центр (переход к «Знакомству») -->
 </div>
 
@@ -2832,12 +2879,12 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
       <div class="gw-list">
         <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M22 84 V44 H48 V84 M56 84 V28 H80 V84"/><path class="ic-warm" d="M30 56 H40 M30 68 H40 M64 42 H72 M64 56 H72 M64 68 H72"/></svg></span>Игроки:</span>
         <div class="gw-right">
-          <span class="rin gw-val"><span class="rnum">937</span> тыс. субъектов МСП</span>
+          <span class="rin gw-val"><span class="rnum">861</span> тыс. субъектов МСП</span>
           <span class="rin gw-cap">84% всех предприятий города</span>
         </div>
         <span class="rin gw-label gw-2line"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="38" cy="38" r="11"/><path d="M20 82 C20 62 56 62 56 82"/><circle class="ic-warm" cx="66" cy="44" r="9"/><path class="ic-warm" d="M52 84 C52 68 82 68 82 84"/></svg></span>NPC:<br><span class="gw-sub">(занятые)</span></span>
         <div class="gw-right">
-          <span class="rin gw-val"><span class="rnum">3,5</span> млн человек</span>
+          <span class="rin gw-val"><span class="rnum">3,4</span> млн человек</span>
           <span class="rin gw-cap">каждый третий работает в МСП</span>
         </div>
         <span class="rin gw-label gw-2line"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse class="ic-warm" cx="50" cy="38" rx="26" ry="9"/><path d="M24 38 V52 C24 57 76 57 76 52 V38"/><path d="M24 52 V66 C24 71 76 71 76 66 V52"/></svg></span>Ресурсы:<br><span class="gw-sub">(налоги)</span></span>
@@ -2956,6 +3003,9 @@ const VEIL_CENTER={fx:'50%',fy:'50%'};                            // дефол�
 /* фазы механики появления «искра→фото» из пульта (--rv-spark/--rv-photo), мс */
 const rvMs = n => { const d={spark:0.7,photo:2.2}; const v=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rv-'+n)); return (isNaN(v)?d[n]:v)*1000; };
 const AFTER_VEIL = 100;   // «бит» чёрного после закрытия вуали перед сменой слайда, мс
+/* «назад по клику»: флаги объявлены РАНО (до lvlAudio/звуков) — движок ниже (goFwd/goBack/rebuildPos) */
+let replaying=false;      // идёт мгновенный реплей «назад» — глушим звук/анимации
+let sceneStep=0;          // сколько forward-кликов сделано в текущей сцене (для per-click undo)
 const CFG = {
   type: { name:32, say:32, erase:26, hand:55 },   // скорость печати, мс/символ (имя/реплика/стирание/рукопись). name=say=32 (как аватары)
   veil: { get toBlack(){ return veilMs('fast')+AFTER_VEIL; } },   // чёрное перед сменой слайда (×4 *ToNext) = скорость вуали + бит, считается от --veil-fast сам
@@ -2978,6 +3028,7 @@ const CFG = {
   bulldozer:{ on:true, vol:0.4, digVol:0.5 },   // бульдозер сл.12: движок (едет) · digVol — стук при копании
   route:{ snd:{ on:true, vol:0.4, maxPulses:5, arriveVol:0.6 } },   // импульсы по маршрутам (слайд 6): вкл/выкл · громкость · макс. зап-импульсов веера · arriveVol — «дзинь» прибытия на финиш. Вжух ТЯНЕТСЯ до финиша последней кометы
   fight:{ on:true, vol:0.5, from:5, dur:4.5, fade:900 },   // драка сл.13 (скорая решает вопрос — шутливо): тема Mortal Kombat, фрагмент с from сек · длина dur сек (в такт облаку: пыль гаснет на M3_DUST_OUT=4800мс) · fade — плавный уход в конце, мс
+  mission3:{ v2:true },   // СЛАЙД 13 вариант: v2 (ПО УМОЛЧАНИЮ) — БЕЗ скорой/драки; reveal (герой+эскаватор) → клик: текст1 → текст2 → level-up 3★→4★ → эскаватор УЕЗЖАЕТ вправо к Москва-Сити (реверс проезда слайда 12). v2:false — старый (скорая правовой помощи + драка Mortal Kombat). Переключить: ?m3=old (обратно ?m3=v2)
   newcafe:{ walk:2250, hold:450 },   // слайд 14: длительность ВСЕЙ прогулки женщины — от старта до входа, непрерывно (пара к --nc-walk) · hold — пауза после появления, перед стартом ходьбы
   baby:{ on:true, vol:0.45 },       // короткий плач ребёнка сл.14 (у входа без пандуса): вкл/выкл · громкость
   morebiz:{ textHold:1600, dimGap:600, outGap:450 },   // слайд 15: пауза после прорисовки контуров (зритель разглядывает кадр) · dimGap — от гашения контура героя до затемнения · outGap — пауза между обводкой соседних контуров (протез→меню→награда)
@@ -2986,6 +3037,7 @@ const CFG = {
           titleIntro:true },   // ОТДЕЛЬНЫЙ 1-й клик на титуле, который включает пиксельную мелодию. false — как было: 1-й клик сразу даёт вуаль + кнопку «Начать» + трек «Загрузка», титульной мелодии нет вовсе
   lamp:{ on:true, vol:0.6, from:12.0, to:13.6 },   // «неоновая лампа» (эффект 1 на кнопке «Начать»): вкл/выкл · громкость · окно щелчка+миганий в mp3 (синхронно с neonBoot)
   stamp:{ snd:{ on:true, vol:0.5 } },   // ЗВУК ПЕЧАТИ «КВЕСТ» (заставка сл.2): синтез-«тумк» (глухой удар + щелчок контакта) в момент удара штампа. Громкость 0..1
+  titleWord:{ snd:{ on:true, vol:0.4 } },   // ЗВУК ПОЯВЛЕНИЯ слов титула (МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ): мягкий неон-«свелл», по очереди восходящий (синтез, без файла)
   /* ↑ WebAudio-синтез, без файла. Играет по animationstart анимации stampDown + задержка до «удара» (70% × 900мс) */
   /* ═══ ФЛАГ АЛЬТЕРНАТИВНОГО СТИЛЯ «V5 · СРЕЗ-СМЕЩЕНИЕ» (из design-system.html) ═══
      v5:true (ВКЛЮЧЕН) → на body класс .fx-v5:
@@ -3024,6 +3076,8 @@ const CFG = {
   if(s==='v5') CFG.style.v5=true; else if(s==='off') CFG.style.v5=false;
   const g=q.get('logos');
   if(g==='on') CFG.style.logos=true; else if(g==='off') CFG.style.logos=false;
+  const m3=q.get('m3');
+  if(m3==='v2') CFG.mission3.v2=true; else if(m3==='old') CFG.mission3.v2=false;   // слайд 13: новый (эскаватор уезжает) / старый (скорая+драка)
   const d=q.get('design');
   if(d==='neuro'){ CFG.style.ds=true; CFG.style.dsMix=false; }                   // чистый Neuropol X (dsMix дефолтно вкл — гасим)
   else if(d==='neuro2'||d==='exo'){ CFG.style.ds=true; CFG.style.dsExo=true; CFG.style.dsMix=false; }   // весь текст Exo 2
@@ -3067,6 +3121,7 @@ function bgGroup(n){ return BG_GROUP[n]||n||null; }
    Не в BG_SRC (иначе тянулся бы в прогрев ~10 МБ всегда) — резолвер bgSrcFor подставляет его на лету. */
 const BG_MAP_ALT='assets/audio/bg-map-mario.mp3';
 if(CFG.music.mapAlt===undefined) CFG.music.mapAlt=false;
+if(CFG.music.splash===undefined) CFG.music.splash=false;   // заставка (слайд 2) по умолчанию БЕЗ фоновой музыки (Alt+B включает; маппинг BG_SCENE.splash='load' остаётся)
 function bgSrcFor(name){ return (name==='map' && CFG.music.mapAlt) ? BG_MAP_ALT : BG_SRC[name]; }
 /* сцена → трек. Нет в списке → тишина (плавная). */
 const BG_SCENE={
@@ -3731,7 +3786,7 @@ const CAFE2_HERO_NAME=LEVEL_NAMES[1];    // старт слайда 10 = 1★ «
 const CAFE2_HERO_NAME2=LEVEL_NAMES[2];   // (не используется — на слайде 10 без апгрейда)
 const CAFE2_SAY1='А где же наш герой деньги-то возьмёт для развития?';   // единственная реплика
 let cafe2DrawTimer=null, cafe2NameTimers=[], cafe2LevelDone=false, cafe2IntroDone=false;
-let cafe2StoryStarted=false, cafe2StoryDone=false, story2T=[], m1bTimers=[];
+let cafe2StoryStarted=false, cafe2StoryDone=false, cafe2QuizReady=false, story2T=[], m1bTimers=[];   // cafe2QuizReady — уровень готов, ЖДЁМ КЛИК для титула КВИЗ
 function runCafe2LevelUp(){
   if(cafe2LevelDone) return; cafe2LevelDone=true;
   runLevelUp(
@@ -3753,9 +3808,8 @@ function cafe2Story(){
   // Клик → пауза 1с (текст успевает уйти) → повышение уровня героя 1★→2★. Аватар Купринова убран.
   story2T.push(setTimeout(()=>{ if(!guard())return;
     runCafe2LevelUp();
-    story2T.push(setTimeout(()=>{ if(!guard())return;                    // level-up → титул КВИЗ (pop) → АВТО-переход на квиз (без клика)
-      cafeQuizTitle2.classList.add('pop'); cafe2StoryDone=true;
-      story2T.push(setTimeout(()=>{ if(guard()) cafe2ToNext(); }, 1600));
+    story2T.push(setTimeout(()=>{ if(!guard())return;                    // уровень готов → ЖДЁМ КЛИК для титула «ВНИМАНИЕ, КВИЗ!» (титул НЕ авто)
+      cafe2QuizReady=true;
     }, levelHold(CAFE2_HERO_NAME2)));                                    // ждём завершения механики уровня (пульт CFG.level)
   }, CFG.reveal.textOut));
 }
@@ -3764,8 +3818,13 @@ function skipCafe2Story(){
   story2T.splice(0).forEach(clearTimeout); cafe2NameTimers.forEach(clearTimeout); cafe2NameTimers=[];
   podRinHide(m1bText); m1bBrand.classList.remove('show'); m1bDark.classList.remove('show');
   cafe2LevelFinal();          // мгновенно: 2★ + имя «Действующий предприниматель»
-  cafeQuizTitle2.classList.add('pop'); cafe2StoryDone=true;
-  story2T.push(setTimeout(()=>{ if(id()==='mission1b') cafe2ToNext(); }, 1600));   // АВТО-переход без клика
+  cafe2QuizReady=true;        // уровень готов → ЖДЁМ КЛИК для титула «ВНИМАНИЕ, КВИЗ!» (титул НЕ показываем автоматически)
+}
+/* НОВЫЙ ШАГ (по клику после уровня): показать титул «ВНИМАНИЕ, КВИЗ!» → авто-переход на квиз */
+function cafe2QuizTitle(){
+  if(cafe2StoryDone) return; cafe2StoryDone=true;
+  cafeQuizTitle2.classList.add('pop');
+  story2T.push(setTimeout(()=>{ if(id()==='mission1b') cafe2ToNext(); }, 1600));   // после титула — авто-переход на квиз
 }
 /* mission1b → quiz (слайд 9): титул КВИЗ (z9) остаётся → вуаль кафе в чёрное → квиз раскрывается своей вуалью (runQuiz) */
 let cafe2NextGo=false;
@@ -3828,7 +3887,7 @@ function resetCafe2Hero(){
   [...cafeName2.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<1); s.classList.toggle('off',i>=1); });
   podRinHide(m1bText); m1bBrand.classList.remove('show'); m1bDark.classList.remove('show');
   story2T.splice(0).forEach(clearTimeout);
-  cafe2StoryStarted=false; cafe2StoryDone=false;
+  cafe2StoryStarted=false; cafe2StoryDone=false; cafe2QuizReady=false;
   cafeAva2.classList.remove('show'); cafeAvatar2.classList.remove('play','live');
   cafeAvatar2.querySelectorAll('.ava-spark').forEach(s=>s.remove());
   cafeSay2.classList.remove('show'); cafeSay2.innerHTML='';
@@ -4876,6 +4935,7 @@ const m3Shtab2=document.getElementById('m3Shtab2');   // подслайд 2 те
 const m3Brand=document.getElementById('m3Brand');   // лого ШТАБ слева (только при CFG.style.logos)
 let m3Timers=[], mission3FromLanding=false, m3DustBuilt=false;
 let m3F1Started=false, m3Frame1Done=false, m3SppStarted=false, m3SppDone=false, m3ShtabShown=false, m3Shtab2Shown=false, m3LevelDone=false;
+let m3ExcAnim=null, m3ExcLeftStarted=false, m3ExcLeftDone=false;   // v2: отъезд эскаватора к Москва-Сити
 /* искры, сходящиеся к центру (переиспользуемая, как buildRoofSparks) */
 function buildSparks(el,n){
   el.innerHTML='';
@@ -4937,6 +4997,7 @@ const M3_EXC_PARK =1800;   // эскаватор → поз.1 (под плотн
 const M3_DUST_OUT =4800;   // пыль растворяется
 const M3_SHTAB_AT =5100;   // → затемнение + текст Штаба
 const M3_SPP_AT   =300;    // пауза от готового кадра (все на месте) до выезда скорой — почти сразу едет (было 1200)
+const M3_V2_TEXT_AT=1800;  // v2: пауза reveal (герой+эскаватор+вывеска) → затемнение + текст 1 (успеть разглядеть сцену)
 /* облако «драки» над зоной эскаватор(48–69%)+скорая(78–95%) — параметры как облако ремонта сл.12 (buildDust) */
 function buildM3Dust(){
   if(m3DustBuilt) return; m3DustBuilt=true;
@@ -4959,9 +5020,10 @@ function resetMission3(){
   sirenStop(0);                                                             // стоп сирены скорой при сбросе/уходе
   fightStop();                                                              // оборвать тему драки
   m3F1Started=false; m3Frame1Done=false; m3SppStarted=false; m3SppDone=false; m3ShtabShown=false; m3Shtab2Shown=false; m3LevelDone=false;
+  stopM3ExcAnim(); m3ExcLeftStarted=false; m3ExcLeftDone=false; bulldozerStop(0);   // v2: сброс отъезда эскаватора
   m3Coffee.classList.remove('show','lit','danger');                          // вывеска потушена
   m3Exc.classList.remove('reveal','glow'); m3Exc.style.opacity='0';          // эскаватор скрыт
-  m3Exc.style.transition='none'; setM3ExcFrame(0); void m3Exc.offsetWidth; m3Exc.style.transition='';   // поз.1 (ковш опущен)
+  m3Exc.style.transition='none'; setM3ExcFrame(0); void m3Exc.offsetWidth; m3Exc.style.transition='';   // поз.0 (стрела поднята)
   m3ExcSparks.classList.remove('play'); m3ExcSparks.innerHTML='';
   // облако драки + затемнение + текст Штаба + уровень героя — сброс
   m3Dust.classList.remove('play'); m3Dust.style.opacity='0';
@@ -4987,7 +5049,7 @@ function m3PlaceAll(){
   m3NamePanel.classList.add('show');                                                // панель имени — сразу, без печати
   m3Htext.textContent=LEVEL_NAMES[3]; m3Htext.classList.add('typed');               // 3★ «Продвинутый предприниматель»
   setM3ExcFrame(0); m3Exc.style.opacity='1'; m3Exc.classList.add('glow');           // эскаватор — поз.0, оранжевый неон
-  m3Spp.style.opacity='1'; m3Spp.classList.add('glow');                             // скорая — синий контур (мигалки/сирена при выезде)
+  if(!CFG.mission3.v2){ m3Spp.style.opacity='1'; m3Spp.classList.add('glow'); }     // скорая — синий контур (мигалки/сирена при выезде). В v2 скорой нет
 }
 function runMission3(){
   resetMission3();
@@ -5002,13 +5064,15 @@ function m3Frame1(){
   if(m3F1Started) return; m3F1Started=true;
   m3Coffee.classList.add('show','lit');                                      // вывеска зажигается (циан glow)
   m3Frame1Done=true;
-  m3Timers.push(setTimeout(()=>{ if(id()==='mission3') m3PlaySpp(); }, M3_SPP_AT));   // АВТО: скорая выезжает
+  if(CFG.mission3.v2) m3Timers.push(setTimeout(()=>{ if(id()==='mission3' && !m3ShtabShown) m3ShowShtab(); }, M3_V2_TEXT_AT));   // v2 АВТО: затемнение + текст 1 (без клика)
+  else m3Timers.push(setTimeout(()=>{ if(id()==='mission3') m3PlaySpp(); }, M3_SPP_AT));                                          // старый АВТО: скорая выезжает
 }
 function skipM3Frame1(){
   m3Timers.splice(0).forEach(clearTimeout);
   m3F1Started=true; m3Frame1Done=true;
   m3Coffee.classList.add('show','lit');
-  m3PlaySpp();                                                               // скип — скорая выезжает сразу
+  if(CFG.mission3.v2) m3ShowShtab();                                         // v2 скип reveal → сразу затемнение + текст 1
+  else m3PlaySpp();                                                          // старый скип — скорая выезжает сразу
 }
 /* КАДР 2: скорая уже стоит у Москва-сити с контуром — включаем мигалки, сирену и подъезд */
 function m3PlaySpp(){
@@ -5072,6 +5136,7 @@ function m3DoLevelUp(){
   m3LevelDone=true;
   m3Timers.push(setTimeout(()=>{ if(id()!=='mission3')return;   // единый пульт CFG.reveal.textOut — пауза после ухода текста перед level-up
     runLevelUp(m3HeroLU, { name:LEVEL_NAMES[4], banner:'УРОВЕНЬ ПОВЫШЕН', container:m3Stage, timers:m3Timers });
+    if(CFG.mission3.v2) m3Timers.push(setTimeout(()=>{ if(id()==='mission3') m3ExcLeave(); }, levelHold(LEVEL_NAMES[4])));   // v2: СРАЗУ за level-up (без клика) — эскаватор уезжает
   }, CFG.reveal.textOut));
 }
 function skipM3Spp(){
@@ -5081,6 +5146,68 @@ function skipM3Spp(){
   m3Spp.style.transition='none'; setSppPos(SPP_PARK); void m3Spp.offsetWidth; m3Spp.style.transition='';
   m3Spp.style.opacity='1'; m3Spp.classList.remove('reveal'); m3Spp.classList.add('glow','live');
   m3SppDone=true;
+}
+/* ═══ v2 (ДЕФОЛТ): ОТЪЕЗД ЭСКАВАТОРА к Москва-Сити — «те же шаги слайда 12, но в обратную сторону» ═══
+   ДОРОГА = РОВНО реверс CO_EXC_ANCHORS слайда 12 (та же система координат, origin center — БЕЗ matrix поз.1:
+   её угловая matrix уводила эскаватор С ДОРОГИ и «вылетала» из угла). Старт = поз.0 (где эскаватор стоит на reveal =
+   паркинг у кафе = конец дороги сл.12), БЕЗ переезда. Кадр «едет» = M3_EXC_FRAMES[0] (=excavator-arm-up сл.12).
+   scaleX(-1) — РАЗВОРОТ лицом ВПРАВО, по ходу движения (не «спиной»): на сл.12 tf:none = лицом ВЛЕВО (ехал влево),
+   значит вправо = зеркало. Знак scaleX и координаты — ПОДСТРОИТЬ, если смотрит/едет не туда. */
+const M3_LEAVE_ANCHORS=[
+  {left:39.73, top:19.20, w:25.60},   // старт = поз.0 = паркинг у кафе (CO_EXC_ANCHORS[3])
+  {left:67.05, top:40.75, w:20.47},   // CO_EXC_ANCHORS[2]
+  {left:80.11, top:40.75, w:13.58},   // CO_EXC_ANCHORS[1]
+  {left:89.55, top:52.49, w:5.34 },   // CO_EXC_ANCHORS[0] — даль справа → Москва-Сити
+];
+const M3_LEAVE_DRIVE =2250;   // мс на весь отъезд (= CO_EXC_DRIVE слайда 12)
+const M3_LEAVE_PARKMS=500;    // пауза перед разворотом (стоит на месте reveal)
+const M3_LEAVE_TURNMS=500;    // разворот к выезду (флип scaleX)
+function stopM3ExcAnim(){ if(m3ExcAnim){ m3ExcAnim.cancel(); m3ExcAnim=null; } }
+/* offset кейфрейма = доля пройденной ДЛИНЫ пути (как у проездов сл.12); transform:scaleX(-1) — лицом вправо весь проезд */
+function m3LeaveKeyframes(){
+  const A=M3_LEAVE_ANCHORS, len=[];
+  for(let i=0;i<A.length-1;i++) len.push(Math.hypot(A[i+1].left-A[i].left, A[i+1].top-A[i].top));
+  const total=len.reduce((a,b)=>a+b,0); let acc=0;
+  return A.map((f,i)=>{ if(i) acc+=len[i-1];
+    return {left:f.left+'%', top:f.top+'%', width:f.w+'%', transform:'scaleX(-1)', offset:+(acc/total).toFixed(4)}; });
+}
+function m3ExcLeave(){
+  if(m3ExcLeftStarted||m3ExcLeftDone) return; m3ExcLeftStarted=true;
+  const guard=()=>id()==='mission3';
+  stopM3ExcAnim();
+  const p0=M3_LEAVE_ANCHORS[0];
+  // старт = поз.0 (стоит на reveal = дорога сл.12). arm-up кадр («едет»), origin center, лицом влево (как приехал)
+  m3Exc.style.transition='none';
+  m3Exc.style.transformOrigin='center';
+  m3Exc.setAttribute('src', M3_EXC_FRAMES[0].src);
+  m3Exc.style.left=p0.left+'%'; m3Exc.style.top=p0.top+'%'; m3Exc.style.width=p0.w+'%';
+  m3Exc.style.transform='scaleX(1)';
+  void m3Exc.offsetWidth;
+  // 1) РАЗВОРОТ к выезду — плавный флип лицом ВПРАВО (по ходу, не спиной)
+  m3Timers.push(setTimeout(()=>{ if(!guard())return;
+    m3Exc.style.transition='transform '+M3_LEAVE_TURNMS+'ms ease';
+    m3Exc.style.transform='scaleX(-1)';                         // ПОДСТРОИТЬ: если едет спиной — поменять на scaleX(1)
+  }, M3_LEAVE_PARKMS));
+  // 2) проезд ВПРАВО по ДОРОГЕ (реверс CO_EXC_ANCHORS сл.12) → уменьшается → растворяется у Москва-Сити
+  m3Timers.push(setTimeout(()=>{ if(!guard())return;
+    m3Exc.style.transition='none'; void m3Exc.offsetWidth;
+    bulldozerStart();                                           // звук движка (отъезд)
+    stopM3ExcAnim();
+    m3ExcAnim=m3Exc.animate(m3LeaveKeyframes(), {duration:M3_LEAVE_DRIVE, easing:'ease-in-out', fill:'forwards'});
+    m3ExcAnim.onfinish=()=>{ if(!guard())return;
+      const e=M3_LEAVE_ANCHORS[M3_LEAVE_ANCHORS.length-1];      // ЗАФИКСИРОВАТЬ финал инлайном ДО cancel (иначе прыжок к старту — баг «кадром назад»)
+      m3Exc.style.left=e.left+'%'; m3Exc.style.top=e.top+'%'; m3Exc.style.width=e.w+'%'; m3Exc.style.transform='scaleX(-1)';
+      stopM3ExcAnim();
+      m3Exc.style.transition='opacity .5s ease'; m3Exc.style.opacity='0';   // уехал — растворился у Москва-Сити
+      bulldozerStop(500);
+      m3ExcLeftDone=true;
+    };
+  }, M3_LEAVE_PARKMS+M3_LEAVE_TURNMS));
+}
+function skipM3ExcLeave(){                                       // мгновенно: эскаватор уехал (скрыт). НЕ трогаем m3Timers (идёт level-up)
+  stopM3ExcAnim(); bulldozerStop(0);
+  m3Exc.style.transition='none'; m3Exc.style.opacity='0';
+  m3ExcLeftStarted=true; m3ExcLeftDone=true;                     // авто-вызов m3ExcLeave после этого выйдет по guard
 }
 /* переход danger → mission3: титул «МИССИЯ 3 / ЗАЩИТА БИЗНЕСА» на чёрном (landing) → раскрытие вуали, титул гаснет */
 function dangerToNext(){
@@ -5419,7 +5546,7 @@ const RULES_GOV ={fx:(1583/2172*100).toFixed(1)+'%', fy:(236/724*100).toFixed(1)
 const RULES_TITLES=['Игровой<br>мир','Уровень сложности','Подсказки'];   // «Игровой мир» — в 2 строки (перенос <br>, рендерится в .rt-main через innerHTML)
 let rulesTitleShown='';
 const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после последнего блока добавляется красное «HARD»
-let hardStamp=false;       // 2-й вариант HARD: false = текст (срез/неон), true = ПЕЧАТЬ (красный штамп). Переключение Ctrl+L на слайде 4
+let hardStamp=true;        // 2-й вариант HARD: false = текст (срез/неон), true = ПЕЧАТЬ (красный штамп) — ПО УМОЛЧАНИЮ. Переключение Ctrl+L на слайде 4
 /* заполнить левый титул: обёртка .rt-main несёт неон; на «Уровне сложности» — скрытый .rt-hard «HARD» (проявится позже) */
 function fillRulesTitle(step){
   const txt=RULES_TITLES[step]||'';
@@ -5877,22 +6004,28 @@ function skipBinoc2(){
      связка (+N ★) уезжает вверх и тает; счётчик += N за каждую звезду.
    Часть 2 (через 5с, поверх): 3 вертикальные киноленты по центру — фото едут снизу вверх (пока заглушки, 50 фото на 3 ленты).
    Всё крутится бесконечно до клика (слайд последний). Полная очистка — bizGrowthStop(). */
-const BIZ={ base:937000, perSecMin:1, perSecMax:3, stepMin:1, stepMax:5, stripsAt:5000, photos:50, strips:3,
+const BIZ={ base:861809, perSecMin:1, perSecMax:3, stepMin:1, stepMax:5, stripsAt:5000, photos:50, strips:3,
   maxLive:10, yMin:5, yMax:90 };   // maxLive — макс. звёзд на экране РАЗОМ; yMin/yMax — раскидано по ВСЕЙ высоте, уклон ВВЕРХ (min(rand,rand))
-let bizRunning=false, bizCount=0, bizSpawnT=null, bizStripsT=null, bizTimers=[], bizWrap=null, bizNumEl=null;
+let bizRunning=false, bizCount=0, bizSpawnT=null, bizStripsT=null, bizTimers=[], bizWrap=null, bizNumEl=null, bizNumBox=null;
 let bizStars=0;   // сколько звёзд сейчас живо на экране (лимит BIZ.maxLive)
 let bizFilmT=null, bizSlots=null, bizOffset=0;   // лента-картинка: таймер шага, слоты кадров, текущий сдвиг
 let bizV2Ints=[], bizV2Timers=[], bizBoards=null;   // вариант 2 (билборды): интервалы кроссфейда, таймеры появления, щиты
-let bizPhotoMode=2;   // механика показа фото ПО УМОЛЧАНИЮ: 2 = билборды (1 = киноплёнка); переключение Alt+F
+let bizPhotoMode=0;   // механика показа фото ПО УМОЛЧАНИЮ: 0 = БЕЗ показа (счётчик по центру, клик→финал); 1 = киноплёнка; 2 = билборды. Alt+F листает 0→1→2
+let bizFinaleStarted=false, bizFinaleEl=null;   // финал режима 0: закрытие вуали + тёплый титул
+const BIZ_FINALE_LINES=['ВСЁ ТОЛЬКО НАЧИНАЕТСЯ','НА ОДНОЙ ВОЛНЕ','НОВЫЙ ИМПУЛЬС'];
 function bizFmt(n){ return n.toLocaleString('ru-RU'); }              // 937000 → «937 000»
 function bizGrowthStart(){
   if(bizRunning) return;                                            // уже идёт — не дублируем (onOpen + skip)
   bizRunning=true; bizCount=BIZ.base;
   bizWrap=document.createElement('div'); bizWrap.className='bizgrowth on';
   const cnt=document.createElement('div'); cnt.className='bg-counter';
-  bizNumEl=document.createElement('div'); bizNumEl.className='bg-num'; bizNumEl.textContent=bizFmt(bizCount);
-  const cap=document.createElement('div'); cap.className='bg-cap'; cap.textContent='новых бизнесов в Москве';
-  cnt.appendChild(bizNumEl); cnt.appendChild(cap); bizWrap.appendChild(cnt);
+  bizNumBox=document.createElement('div'); bizNumBox.className='bg-num';   // контейнер: размер + «bump»
+  bizNumEl=document.createElement('span'); bizNumEl.className='rnum'; bizNumEl.textContent=bizFmt(bizCount);   // .rnum = акцент как «937» (сл.4)
+  bizNumBox.appendChild(bizNumEl);
+  const cap=document.createElement('div'); cap.className='bg-cap rnum'; cap.textContent='бизнесов в Москве';   // .rnum — тот же акцент, что у цифры
+  cnt.appendChild(bizNumBox); cnt.appendChild(cap);
+  if(bizPhotoMode===0) cnt.classList.add('center');   // режим «без показа» → счётчик по центру экрана
+  bizWrap.appendChild(cnt);
   const starLayer=document.createElement('div'); starLayer.className='bg-stars'; bizWrap.appendChild(starLayer);
   stage.appendChild(bizWrap);
   // цикл: раз в секунду — 1..3 звезды, разбросаны по времени внутри секунды (жёсткий лимит ≤10 живых в bizSpawnStar)
@@ -5911,7 +6044,7 @@ function bizSpawnStar(layer){
   bizStars++;
   const n=BIZ.stepMin+Math.floor(Math.random()*(BIZ.stepMax-BIZ.stepMin+1));
   bizCount+=n;                                                      // счётчик += N
-  if(bizNumEl){ bizNumEl.textContent=bizFmt(bizCount); bizNumEl.classList.remove('bump'); void bizNumEl.offsetWidth; bizNumEl.classList.add('bump'); }
+  if(bizNumEl){ bizNumEl.textContent=bizFmt(bizCount); if(bizNumBox){ bizNumBox.classList.remove('bump'); void bizNumBox.offsetWidth; bizNumBox.classList.add('bump'); } }
   const x=6+Math.random()*88;                                       // по всей ширине
   const y=BIZ.yMin+Math.min(Math.random(),Math.random())*(BIZ.yMax-BIZ.yMin);   // смещение ВВЕРХ: гуще у верха полосы (основной город), реже к середине
   const pop=document.createElement('div'); pop.className='bg-pop';
@@ -5964,8 +6097,8 @@ function bizPhotoBg(i){
   if(BIZ_PHOTOS.length){ return 'center/cover url("'+BIZ_PHOTOS[i%BIZ_PHOTOS.length]+'")'; }
   var hue=(i*47)%360; return 'linear-gradient(135deg,hsl('+hue+',58%,46%),hsl('+((hue+45)%360)+',52%,28%))';
 }
-/* ДИСПЕТЧЕР показа фото: Alt+F переключает bizPhotoMode (1 киноплёнка / 2 второй вариант) */
-function bizBuildStrips(wrap){ if(bizPhotoMode===2) bizBuildVariant2(wrap); else bizBuildFilm(wrap); }
+/* ДИСПЕТЧЕР показа фото: 0 = БЕЗ показа (ничего не строим), 1 = киноплёнка, 2 = билборды */
+function bizBuildStrips(wrap){ if(bizPhotoMode===1) bizBuildFilm(wrap); else if(bizPhotoMode===2) bizBuildVariant2(wrap); }
 /* ── 2-Й ВАРИАНТ: БИЛБОРДЫ на карте — LED-щиты (billboard.png), на каждом 2 фото, кросс-фейд по кругу.
    Появляются по очереди (искры → фото из размытия); периоды фейдов разведены → карта «мерцает экранами». */
 const BB_SRC='assets/img/objects/'+encodeURIComponent('billboard.png');
@@ -6101,8 +6234,11 @@ function bizFilmStep(first){
 function bizSetPhotoMode(m){
   bizPhotoMode=m;
   if(bizRunning && bizWrap){
+    const cnt=bizWrap.querySelector('.bg-counter'); if(cnt) cnt.classList.toggle('center', m===0);   // 0 → счётчик по центру
     const old=bizWrap.querySelector('.bg-film, .bg-boards, .bg-variant2');
-    if(old){ old.remove(); if(bizFilmT){ clearInterval(bizFilmT); bizFilmT=null; } bizSlots=null; bizClearVariant2(); bizBuildStrips(bizWrap); }
+    if(old) old.remove();
+    if(bizFilmT){ clearInterval(bizFilmT); bizFilmT=null; } bizSlots=null; bizClearVariant2();
+    bizBuildStrips(bizWrap);   // m=0 → ничего не строит
   }
 }
 function bizGrowthStop(){
@@ -6114,7 +6250,24 @@ function bizGrowthStop(){
   bizSlots=null; bizOffset=0; bizStars=0;
   bizTimers.forEach(clearTimeout); bizTimers=[];
   if(bizWrap){ bizWrap.remove(); bizWrap=null; }
-  bizNumEl=null;
+  if(bizFinaleEl){ bizFinaleEl.remove(); bizFinaleEl=null; } bizFinaleStarted=false;   // сброс финала
+  bizNumEl=null; bizNumBox=null;
+}
+/* ФИНАЛ (режим 0, по клику): закрытие вуали с фокусом в центре → тёплый титул по очереди */
+function bizFinale(){
+  if(bizFinaleStarted || !bizRunning) return; bizFinaleStarted=true;
+  bizRunning=false;                                                 // стоп новым звёздам
+  if(bizSpawnT){ clearInterval(bizSpawnT); bizSpawnT=null; }
+  bizTimers.forEach(clearTimeout); bizTimers=[];
+  const fin=document.createElement('div'); fin.className='bizfinale'; bizFinaleEl=fin;
+  const veil=document.createElement('div'); veil.className='bizfinale-veil';
+  const tit=document.createElement('div'); tit.className='bizfinale-title';
+  BIZ_FINALE_LINES.forEach(t=>{ const l=document.createElement('div'); l.className='bff-line'; l.textContent=t; tit.appendChild(l); });
+  fin.appendChild(veil); fin.appendChild(tit); stage.appendChild(fin);
+  veil.style.setProperty('--r','175%');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>veil.style.setProperty('--r','0%')));   // вуаль закрывается в центр
+  const base=(typeof veilMs==='function'?veilMs('fast'):1000);
+  [...tit.children].forEach((l,i)=> setTimeout(()=>l.classList.add('show'), base+300 + i*1100));   // строки по очереди
 }
 /* КОНФИГИ РАЗВЕДКИ (шаблонная механика бинокля): маршрут поиска (stops) + крючок героя.
    panel:true — на объекте печатается панель параметров (сейчас только у кафе). */
@@ -6263,9 +6416,12 @@ function startMapRecon(){
 
 function id(){return SCENES[cur].id;}
 
+/* трек сцены с учётом тумблеров: заставка по умолчанию без музыки (Alt+B) */
+function sceneTrack(sid){ if(sid==='splash' && !CFG.music.splash) return null; return BG_SCENE[sid]||null; }
 function applyScene(){
   const sid=id();
-  bgPlay(BG_SCENE[sid]||null);            // фоновая музыка: тот же трек — не трогаем, другой — кроссфейд
+  sceneStep=0;                            // вошли в сцену — счётчик кликов сброшен (для «назад по клику»)
+  bgPlay(sceneTrack(sid));                // фоновая музыка (splash по умолчанию тихо): тот же трек — не трогаем, другой — кроссфейд
   applyMusicVol(CFG.music.xfade);         // подвести громкость к уровню этого слайда (тот же трек через неск. слайдов — плавно перетекает)
   refreshVolPanel();                      // если открыт пульт Ctrl+M — показать значение нового слайда
   if(sid!=='map') clearMapTimer();        // ушли с Карты — гасим авто-проигрыш
@@ -6347,6 +6503,7 @@ function applyScene(){
     splash.classList.remove('loaded');
     questTitle.classList.remove('show');
     questTitle.querySelectorAll('.qt-line').forEach(l=>l.classList.remove('on'));
+    resetScreenCrack();                                           // сброс трещин экрана — при каждом входе на заставку
     splashStarted=true; runLoading();
   }
   // знакомство с героем (hero и его копия hero2 — одна механика)
@@ -6750,8 +6907,14 @@ function splashLeave(){
   splashVeil.classList.add('on'); void splashVeil.offsetWidth; splashVeil.style.transition='';
   requestAnimationFrame(()=>requestAnimationFrame(()=>splashVeil.style.setProperty('--r','0%')));   // → чёрный, фокус центр
   setTimeout(()=>{
-    splashLeaving=false;
-    if(cur<SCENES.length-1){ cur++; applyScene(); }                        // → hero (heroReveal + растворение questCarry)
+    // экран уже ЧЁРНЫЙ (вуаль закрыта) → растворяем лого+титул НА ЧЁРНОМ, ДО появления картинки след. слайда
+    questCarry.style.transition='opacity .6s ease'; void questCarry.offsetWidth;
+    questCarry.classList.add('fade');
+    setTimeout(()=>{
+      questCarry.classList.remove('show','fade'); questCarry.style.transition='';   // титул убран из оверлея (уже прозрачный) → 6431-6433 не сработает
+      splashLeaving=false;
+      if(cur<SCENES.length-1){ cur++; applyScene(); }                      // → hero: картинка проступает уже БЕЗ титула
+    }, 600);   // ждём растворение титула на чёрном
   }, veilMs('fast')+AFTER_VEIL);   // ждём закрытие вуали + бит
 }
 /* прервать разведку/сворачивание на карте (для пропуска механики стрелкой) */
@@ -6859,9 +7022,10 @@ function next(skip){
   }
   if(id()==='mission1b'){                          // ДУБЛЬ кафе — та же FSM по клику
     if(!cafe2IntroDone){ skipCafe2Intro(); return; }
-    if(!cafe2StoryStarted){ cafe2Story(); return; }
-    if(!cafe2StoryDone){ skipCafe2Story(); return; }
-    cafe2ToNext(); return;                                 // титул показан → сворачивание вуали → следующий слайд
+    if(!cafe2StoryStarted){ cafe2Story(); return; }        // клик → текст уходит + уровень героя (титул КВИЗ НЕ показываем)
+    if(!cafe2QuizReady){ skipCafe2Story(); return; }       // клик во время текста/уровня → доиграть уровень мгновенно
+    if(!cafe2StoryDone){ cafe2QuizTitle(); return; }       // ← НОВЫЙ КЛИК: показать титул «ВНИМАНИЕ, КВИЗ!» → авто-переход
+    cafe2ToNext(); return;                                 // клик после титула → сразу на квиз
   }
   if(id()==='fsk'){                                // Миссия ФСК (слайд 11) — FSM по клику: 2 подслайда → уровень → выход
     if(!fskIntroDone){ skipFskIntro(); return; }           // интро (герой+подслайд 1) → доиграть
@@ -6903,6 +7067,14 @@ function next(skip){
     ncToSub2(); return;                              // титул показан → сворачивание/раскрытие → подслайд 2
   }
   if(id()==='mission3'){                          // защита бизнеса — FSM по клику
+    if(CFG.mission3.v2){                                   // v2 (ДЕФОЛТ): без скорой/драки; в конце эскаватор уезжает к Москва-Сити
+      if(!m3Frame1Done){ skipM3Frame1(); return; }          // reveal идёт → доиграть (затемнение+текст 1)
+      if(!m3ShtabShown){ m3ShowShtab(); return; }           // текст 1 ещё не показан (клик раньше авто) → показать
+      if(!m3Shtab2Shown){ m3ShowShtab2(); return; }         // клик → текст 2 «Коммуникация бизнеса и власти»
+      if(!m3LevelDone){ m3DoLevelUp(); return; }            // клик → текст убрать → уровень героя (3★→4★) → АВТО отъезд эскаватора (без клика)
+      if(!m3ExcLeftDone){ skipM3ExcLeave(); return; }        // level-up/отъезд идёт → клик доигрывает мгновенно (эскаватор скрыт)
+      if(cur<SCENES.length-1){ cur++; applyScene(); } return;   // дальше → «Больше чем бизнес» (самораскрытие)
+    }
     if(!m3Frame1Done){ skipM3Frame1(); return; }          // кадр 1 (герой+эскаватор+вывеска) идёт → доиграть
     if(!m3SppStarted){ m3PlaySpp(); return; }             // скорая стартует АВТО после кадра 1; клик — ускорить (кадр 2 + драка → парковка → текст Штаба)
     if(!m3ShtabShown){ skipM3ToShtab(); return; }         // скорая/драка идёт → доиграть мгновенно до текста Штаба (подслайд 1)
@@ -6928,6 +7100,7 @@ function next(skip){
   }
   if(id()==='binoc2'){                            // дубль слайда 10 — только герой на крыше + карта
     if(!binoc2Open){ skipBinoc2(); return; }               // интро идёт → мгновенно к раскрытой карте
+    if(bizPhotoMode===0 && bizRunning){ bizFinale(); return; }   // режим «без показа» → клик запускает финал (вуаль + тёплый титул)
     if(cur<SCENES.length-1){ cur++; applyScene(); } return;
   }
   if(cur<SCENES.length-1){ cur++;
@@ -6948,6 +7121,15 @@ function prev(){
   }
   if(id()==='deck' && deckSub>0){ deckSub--; showDeck(); return; }
   if(id()==='rules' && rulesStep>0){ if(rulesAnim) return; rulesStep--; showRules(); return; }   // правила — назад: обычная смена
+  if(id()==='quiz' && quizPanelShown && quizStep>0 && !quizEndStarted){ quizStep--; showQuizItem(); return; }   // квиз (слайд 9): назад по вопросам (клик = вопрос)
+  if(id()==='mission3' && m3Shtab2Shown && !m3LevelDone){       // Штаб (слайд 13): назад с подслайда 2 → подслайд 1 (а не на предыдущий слайд)
+    m3Timers.splice(0).forEach(clearTimeout);
+    m3Shtab2Shown=false;
+    podRinHide(m3Shtab2); m3Shtab2.style.display='none';        // подслайд 2 убрать
+    m3Shtab.style.display=''; podRinAll(m3Shtab);               // подслайд 1 сразу целиком (финальное состояние)
+    m3Dark.classList.add('show'); m3Brand.classList.add('show');// затемнение + лого ШТАБ остаются
+    return;
+  }
   if(cur>0){ cur--;
     if(id()==='deck'){ deckSub=deckImgs.length-1; applyScene(); showDeck(); }
     else if(id()==='rules'){ rulesStep=rSlides.length-1; applyScene(); rulesReveal(RULES_GOV); rulesIntro(); }   // возврат на правила — последний слайд, разворачивание из «Правительства»
@@ -7209,6 +7391,7 @@ let ccStage=0, ccCloseT=null;
    cb вызывается в МОМЕНТ фактического старта звука — визуал (neonBoot) совпадает со щелчком */
 let _lamp=null;
 function playLamp(cb){
+  if(replaying){ cb&&cb(); return; }   // реплей «назад» — без звука лампы (визуал доигрывать не нужно)
   if(!CFG.lamp.on){ cb&&cb(); return; }
   try{
     if(!_lamp){ _lamp=new Audio('assets/audio/неоновая лампа.mp3'); _lamp.preload='auto'; _lamp.loop=false; }
@@ -7338,7 +7521,7 @@ function ccMusicOn(){
 /* 2-й клик на титуле: вуаль закрытия → чёрное → большая центр-кнопка «Начать» (ЭФФЕКТ 2, без звука) */
 function ccClose(){
   clearTimeout(ccCloseT);
-  bgPlay('load');                                                // смена трека: титульная мелодия → «Загрузка» (кроссфейд); на splash тот же трек — no-op
+  bgPlay('load');                                                // затемнение + кнопка «Начать»: Mario-интро играет ВСЕГДА; на самой заставке (слайд 2) его гасит sceneTrack, если музыка заставки выкл (Alt+B)
   ccVeil.style.setProperty('--r','0%');                          // радиальное сворачивание в центр → чёрное (шаблон вуали)
   ccBtn.classList.add('cc-big');                                 // кнопка — большая, по центру (размер титула)
   ccCloseT=setTimeout(()=>{ if(id()!=='title')return;
@@ -7370,9 +7553,20 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey) && e.code==='KeyD'){ e.preventDefault(); cycleDsMode(); return; }   // Ctrl+D — циклом сменить дизайн-систему (e.code — независимо от раскладки)
   if((e.ctrlKey||e.metaKey) && e.code==='KeyM'){ e.preventDefault(); toggleVolEdit(); return; } // Ctrl+M — пульт громкости музыки по слайдам
   if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyM'){ e.preventDefault(); toggleMapMusic(); return; } // Alt+M — переключить трек КАРТЫ: обычный ↔ Mario (London Philharmonic)
-  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyF'){ e.preventDefault();            // Alt+F — механика показа фото (слайд 16): 1 киноплёнка ↔ 2 второй вариант
-    bizSetPhotoMode(bizPhotoMode===1?2:1);
-    if(typeof showDsToast==='function') showDsToast({name:'Показ фото', desc:'Вариант '+bizPhotoMode+(bizPhotoMode===1?' · киноплёнка':' · второй')});
+  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyF'){ e.preventDefault();            // Alt+F — механика показа фото (слайд 16): 0 без показа → 1 киноплёнка → 2 билборды
+    bizSetPhotoMode((bizPhotoMode+1)%3);
+    const _bn=['без показа','киноплёнка','билборды'];
+    if(typeof showDsToast==='function') showDsToast({name:'Показ фото', desc:'Режим '+bizPhotoMode+' · '+_bn[bizPhotoMode]});
+    return; }
+  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyB'){ e.preventDefault();            // Alt+B — фоновая музыка на ЗАСТАВКЕ (слайд 2): вкл/выкл (по умолчанию выкл)
+    CFG.music.splash=!CFG.music.splash;
+    if(id()==='splash') bgPlay(CFG.music.splash ? BG_SCENE.splash : null);                    // на самой заставке — применить сразу (кроссфейд)
+    if(typeof showDsToast==='function') showDsToast({name:'Музыка заставки', desc: CFG.music.splash?'вкл ('+BG_SCENE.splash+')':'выкл'});
+    return; }
+  if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyC'){ e.preventDefault();            // Alt+C — слой трещин стекла: ПОД текстом/печатью ↔ ПОВЕРХ
+    crackOver=!crackOver;
+    if(screenCrack) screenCrack.style.zIndex = crackOver ? '30' : '0';
+    if(typeof showDsToast==='function') showDsToast({name:'Трещины стекла', desc: crackOver?'поверх текста':'под текстом'});
     return; }
   if(volEdit.open){                                                               // режим настройки громкости: ↑/↓ громче/тише текущего слайда (←/→ ниже — листают слайды)
     if(e.code==='ArrowUp'){   e.preventDefault(); nudgeVol(e.shiftKey?5:1);  return; }
@@ -7380,11 +7574,88 @@ document.addEventListener('keydown',e=>{
     if(e.code==='Escape'){    e.preventDefault(); toggleVolEdit(false);      return; }
     if(volEdit.mSlider) volEdit.mSlider.blur();                                   // на ←/→ снять фокус с ползунка, чтобы он не менялся стрелками — листаем слайды
   }
-  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(true); }        // стрелка/пробел — ПРОПУСТИТЬ механику
-  else if(e.key==='Enter'){ e.preventDefault(); next(false); }                    // Enter — как клик
-  else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); goFwd(true); }        // стрелка/пробел — ПРОПУСТИТЬ механику
+  else if(e.key==='Enter'){ e.preventDefault(); goFwd(false); }                    // Enter — как клик
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); goBack(); }                    // ← — назад ПО КЛИКУ (движок реплея)
 });
-document.addEventListener('click',()=> next(false));   // клик/тап — далее
+document.addEventListener('click',()=> goFwd(false));   // клик/тап — далее
+
+/* ═══════════ «НАЗАД ПО КЛИКУ» ═══════════
+   ← = родной шаг назад ВНУТРИ сцены (nativeStepBack: титул/правила/квиз/дек — проверено),
+   иначе старый prev() (переход на предыдущую сцену — безопасно, без потери контента).
+   Реплей-движок с заглушкой таймеров ОТКЛЮЧЁН: он терял отложенный контент (кнопки/тексты
+   идут через setTimeout) и ломал повторный запуск механик. BACK_STEP=false — совсем старое «назад». */
+let BACK_STEP=true;              // false = вернуть прежнее поведение «назад»
+const posHist=[];                // стек позиций {cur, step} — куда возвращаться
+function goFwd(skip){
+  if(replaying){ next(skip); return; }
+  const from={cur, step:sceneStep};
+  next(skip);
+  if(cur===from.cur) sceneStep=from.step+1;   // остались в сцене → это был клик-шаг
+  // (ушли из сцены → applyScene уже обнулил sceneStep)
+  posHist.push(from);                          // точка возврата = состояние ДО клика
+}
+function goBack(){
+  if(!BACK_STEP){ prev(); return; }
+  try{
+    if(nativeStepBack()) return;   // родной шаг назад внутри сцены (титул/правила/квиз/дек)
+    prev();                        // иначе — на предыдущую сцену (безопасно, без потери контента)
+  }catch(err){ console.warn('back сбой → prev()', err); try{ prev(); }catch(_){} }
+}
+/* нативный шаг назад ВНУТРИ сцены со счётчиком подслайдов (анимация reveal играет нормально, БЕЗ реплея/стаба таймеров).
+   return true = обработано (в т.ч. игнор во время анимации); false = пусть решает реплей/prev. */
+function nativeStepBack(){
+  const consume=()=>{ if(posHist.length) posHist.pop(); if(sceneStep>0) sceneStep--; };
+  if(id()==='title'){                          // титул: назад по стадиям (ccStage 2→1→0) родным prev — текст/волны сохраняются
+    if(ccStage>0){ prev(); consume(); }        // ccStage0 — назад некуда (игнор)
+    return true;
+  }
+  if(id()==='rules'){
+    if(rulesAnim) return true;                 // идёт разворачивание/сворачивание — игнор (как прежний prev)
+    if(rulesStep>0){ rulesStep--; showRules(); consume(); return true; }
+    return false;                              // 1-й подслайд → уходим на предыдущую сцену (ниже)
+  }
+  if(id()==='quiz' && quizPanelShown && !quizEndStarted && quizStep>0){ quizStep--; showQuizItem(); consume(); return true; }
+  if(id()==='fsk' && !fskStoryStarted && fskStep>0){   // ФСК (сл.11): назад по подслайдам (меняется текст, герой остаётся)
+    fskT.splice(0).forEach(clearTimeout);              // погасить отложенный переход подслайда
+    fskShowSub(fskStep-1, true);                        // предыдущий подслайд сразу целиком
+    consume(); return true;
+  }
+  if(id()==='mission3'){                                // Штаб (сл.13, v2): назад по текст-подслайдам
+    if(m3Shtab2Shown && !m3LevelDone){                  // подслайд 2 «Коммуникация» → подслайд 1
+      m3Timers.splice(0).forEach(clearTimeout);
+      m3Shtab2Shown=false;
+      podRinHide(m3Shtab2); m3Shtab2.style.display='none';
+      m3Shtab.style.display=''; podRinAll(m3Shtab);
+      m3Dark.classList.add('show'); m3Brand.classList.add('show');
+      consume(); return true;
+    }
+    if(m3ShtabShown && !m3LevelDone){                    // подслайд 1 → кадр (снять затемнение+текст; герой/эскаватор/вывеска под низом остаются)
+      m3Timers.splice(0).forEach(clearTimeout);
+      m3ShtabShown=false;
+      podRinHide(m3Shtab); m3Dark.classList.remove('show'); m3Brand.classList.remove('show');
+      consume(); return true;
+    }
+    return false;                                       // level-up (звёзды) / отъезд эскаватора и раньше → на предыдущую сцену
+  }
+  if(id()==='avatars'){                                 // Проводники (сл.5): назад с «кнопки Начать бизнес» → к аватарам
+    if(avCollapsing) return true;                       // идёт уход — игнор
+    if(avBtnPending || avCta.classList.contains('show')){
+      clearTimeout(avBtnT); avBtnPending=false;
+      avCta.classList.remove('show','n-on','n-boot');   // кнопку убрать
+      avRow.style.transition='opacity .4s ease'; avRow.style.opacity='1';   // аватары вернуть
+      helpersCarry.classList.remove('fade');            // титул «Проводники» вернуть
+      consume(); return true;
+    }
+    return false;                                       // аватары показаны, кнопки нет → на предыдущую сцену
+  }
+  if(id()==='map'){                                     // Карта (сл.6): назад с разведки биноклем → к раскрытой карте (разведка перезапускаема)
+    if(mapCollapsing) return true;                      // идёт сворачивание — игнор
+    if(reconStarted){ abortRecon(); consume(); return true; }
+    return false;                                       // карта раскрыта (до разведки) / авто-сборка → на предыдущую сцену
+  }
+  return false;
+}
 
 /* ============ КОМЕТЫ ПО МАРШРУТАМ (все одновременно) ============ */
 const NS='http://www.w3.org/2000/svg';
@@ -7641,6 +7912,7 @@ function levelSalute(cont, leftCss, topCss, timers){
    «дзинь»-искра на заливке слота → мягкий шиммер-хвост под смену имени. */
 let _actx=null, _lvlMaster=null;
 function lvlAudio(){
+  if(replaying) return null;   // мгновенный реплей «назад» — весь WebAudio-синтез молчит
   if(!_actx){ try{ _actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ _actx=null; } }
   if(_actx && _actx.state==='suspended') _actx.resume();   // разблокировать после жеста (клик «далее»)
   return _actx;
@@ -7996,13 +8268,90 @@ function playStamp(){
     o2.connect(g2); g2.connect(_stampMaster); o2.start(t); o2.stop(t+0.14);
   }catch(e){}
 }
-/* триггер: старт CSS-анимации stampDown → ждём до «удара» (70% × 900мс) → тумк.
-   Если заставка ушла (splashLeave выставил animation:none) — не играем «опоздавший» звук. */
+/* ── РАЗБИТИЕ ЭКРАНА: строим трещины стекла из точки удара печати и запускаем draw + тряску ── */
+const screenCrack=document.getElementById('screenCrack');
+const ckSvg=document.getElementById('ckSvg');
+function buildCracks(ox,oy,W,H){
+  const NS='http://www.w3.org/2000/svg';
+  ckSvg.setAttribute('viewBox','0 0 '+W+' '+H); ckSvg.innerHTML='';
+  const R=Math.hypot(W,H);                                        // диагональ — заведомо за край
+  const rnd=(a,b)=>a+(b-a)*Math.random();
+  const mk=(d,cls,w)=>{ const p=document.createElementNS(NS,'path'); p.setAttribute('d',d); p.setAttribute('class',cls); p.style.strokeWidth=w+'px'; ckSvg.appendChild(p); return p; };
+  const Nr=14;                                                    // магистральные лучи
+  for(let i=0;i<Nr;i++){
+    const ang=(i/Nr)*Math.PI*2 + rnd(-.12,.12);
+    let a=ang, x=ox, y=oy, d='M'+x.toFixed(1)+' '+y.toFixed(1);
+    for(let sgm=1;sgm<=3;sgm++){ a+=rnd(-.16,.16); const rad=R*(sgm/3)*rnd(.9,1.12); x=ox+Math.cos(a)*rad; y=oy+Math.sin(a)*rad; d+=' L'+x.toFixed(1)+' '+y.toFixed(1); }
+    mk(d,'ck', (i%2?1.5:2.1));
+    if(Math.random()>.4){                                         // ветка от середины луча
+      const bt=rnd(.35,.7), bx=ox+Math.cos(ang)*R*bt, by=oy+Math.sin(ang)*R*bt;
+      const ba=ang+(Math.random()>.5?1:-1)*rnd(.3,.8), bl=R*rnd(.10,.24);
+      mk('M'+bx.toFixed(1)+' '+by.toFixed(1)+' L'+(bx+Math.cos(ba)*bl).toFixed(1)+' '+(by+Math.sin(ba)*bl).toFixed(1),'ck b',1.1);
+    }
+  }
+  for(const rr of [R*0.09, R*0.20]){                              // 2 неровных кольца вокруг удара
+    let d='';
+    for(let i=0;i<=Nr;i++){ const ang=(i/Nr)*Math.PI*2; const rad=rr*rnd(.82,1.16); const x=ox+Math.cos(ang)*rad, y=oy+Math.sin(ang)*rad; d+=(i?' L':'M')+x.toFixed(1)+' '+y.toFixed(1); }
+    mk(d,'ck b',1.0);
+  }
+  ckSvg.querySelectorAll('.ck').forEach(p=>{ try{ p.style.setProperty('--len', Math.ceil(p.getTotalLength())); }catch(e){} });
+}
+let _crackDone=false;
+let crackOver=false;   // слой трещин: false = ПОД текстом/печатью (z0), true = ПОВЕРХ (z30). Тумблер Alt+C
+function triggerScreenCrack(){
+  if(_crackDone || !screenCrack) return; _crackDone=true;
+  const sr=screenCrack.getBoundingClientRect();
+  const qEl=document.getElementById('qtQuest'); const st=qEl?qEl.getBoundingClientRect():null;
+  const ox=st?((st.left+st.width/2)-sr.left):sr.width/2;          // точка удара = центр печати
+  const oy=st?((st.top+st.height/2)-sr.top):sr.height/2;
+  screenCrack.style.setProperty('--ix',(ox/sr.width*100).toFixed(1)+'%');
+  screenCrack.style.setProperty('--iy',(oy/sr.height*100).toFixed(1)+'%');
+  buildCracks(ox,oy,Math.round(sr.width),Math.round(sr.height));
+  void screenCrack.offsetWidth; screenCrack.classList.add('on');
+  splash.classList.add('scr-shake'); setTimeout(()=>splash.classList.remove('scr-shake'),520);
+}
+function resetScreenCrack(){ _crackDone=false; if(screenCrack){ screenCrack.classList.remove('on'); if(ckSvg) ckSvg.innerHTML=''; } if(splash) splash.classList.remove('scr-shake'); }
+/* триггер: старт CSS-анимации stampDown → ждём до «удара» (70% × 900мс) → тумк + разбитие экрана.
+   Если заставка ушла (splashLeave выставил animation:none) — не играем «опоздавший» звук/эффект. */
 (function(){
   const qs=document.getElementById('qtQuest');
   if(qs) qs.addEventListener('animationstart', e=>{
-    if(e.animationName!=='stampDown') return;
-    setTimeout(()=>{ if(qs.style.animation!=='none') playStamp(); }, 630);
+    if(e.animationName!=='stampDownC') return;
+    setTimeout(()=>{ if(qs.style.animation!=='none'){ playStamp(); triggerScreenCrack(); } }, 630);
+  });
+})();
+/* ═══ ЗВУК ПОЯВЛЕНИЯ СЛОВА ТИТУЛА (заставка): мягкий неон-«свелл» — 2 синуса (октава) через lowpass
+   с быстрым входом и плавным спадом + тихий ВЧ-шиммер. По очереди восходящий (i = индекс слова). ═══ */
+let _twMaster=null;
+function playTitleAppear(i){
+  if(!CFG.titleWord || !CFG.titleWord.snd || !CFG.titleWord.snd.on) return;
+  const ac=lvlAudio(); if(!ac) return;
+  try{
+    if(!_twMaster || _twMaster.context!==ac){ _twMaster=ac.createGain(); _twMaster.connect(ac.destination); }
+    _twMaster.gain.value=CFG.titleWord.snd.vol;
+    const t=ac.currentTime, base=300 + i*80;                 // восходящие ноты по очереди
+    const lp=ac.createBiquadFilter(); lp.type='lowpass';
+    lp.frequency.setValueAtTime(1100,t); lp.frequency.linearRampToValueAtTime(2600,t+0.12);
+    const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(1,t+0.03); g.gain.exponentialRampToValueAtTime(0.0001,t+0.55);
+    lp.connect(g); g.connect(_twMaster);
+    [base, base*2].forEach((f,k)=>{ const o=ac.createOscillator(); o.type=k?'sine':'triangle'; o.frequency.setValueAtTime(f,t);
+      const og=ac.createGain(); og.gain.value=k?0.35:0.8; o.connect(og); og.connect(lp); o.start(t); o.stop(t+0.6); });
+    const dur=0.25, buf=ac.createBuffer(1,Math.ceil(ac.sampleRate*dur),ac.sampleRate);
+    const d=buf.getChannelData(0); for(let j=0;j<d.length;j++) d[j]=Math.random()*2-1;   // ВЧ-шиммер
+    const n=ac.createBufferSource(); n.buffer=buf;
+    const hp=ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=3500;
+    const ng=ac.createGain(); ng.gain.setValueAtTime(0.12,t); ng.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    n.connect(hp); hp.connect(ng); ng.connect(_twMaster); n.start(t); n.stop(t+dur);
+  }catch(e){}
+}
+/* триггер: каждое слово начинает всплывать (qwRise) → свой звук (по очереди) */
+(function(){
+  const txt=document.querySelector('.qt-art .qt-txt');
+  if(!txt) return;
+  txt.addEventListener('animationstart', e=>{
+    if(e.animationName!=='qwRise') return;
+    playStamp();   // звук появления слова = «тумк» печати (playTitleAppear — синт-свелл — оставлен как альтернатива)
   });
 })();
 /* ── ПРОБНИК: Alt+1…Alt+6 переключают звук ПРОЯВЛЕНИЯ и сразу проигрывают. Alt+0 — вкл/выкл. ── */
@@ -8112,6 +8461,7 @@ function fightStop(){
   try{ fightEl.pause(); fightEl.currentTime=CFG.fight.from; }catch(e){}
 }
 function fightSound(){
+  if(replaying) return;   // реплей «назад» — без mp3-темы драки
   if(!CFG.fight || !CFG.fight.on || !fightEl) return;
   const F=CFG.fight;
   fightStop();
@@ -8141,6 +8491,7 @@ function fightSound(){
 /* ── ПЛАЧ РЕБЁНКА сл.14: аудиофайл baby-cry.mp3 (0–7с исходника, плавное затухание вшито) ── */
 const babyCryEl=document.getElementById('babyCryAudio');
 function babyCry(){
+  if(replaying) return;   // реплей «назад» — без mp3-плача
   if(!CFG.baby || !CFG.baby.on || !babyCryEl) return;
   try{
     babyCryEl.pause(); babyCryEl.currentTime=0;
