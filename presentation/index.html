@@ -46,7 +46,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   /* ═══ ТЕНИ/СВЕЧЕНИЕ — повторяющиеся рецепты (цвет свечений уже управляется --neon-rgb/--cyan-rgb/--gold). ═══ */
   --sh-read:0 .2vw 1vw rgba(0,0,0,.55);        /* читаемость текста на фото (×8) */
   --sh-base:0 2px 8px rgba(0,0,0,.95);         /* тёмная база под неон-текст (×6) */
-  --glow-cyan:0 0 16px rgba(var(--cyan-rgb),.4);   /* небольшой циан-glow (×3) */
+  --glow-cyan:0 0 8px rgba(var(--cyan-rgb),.4);   /* небольшой циан-glow (×3); радиус вдвое меньше прежнего (было 16px) */
   /* ═══ ПАЛИТРА ДИЗАЙН-СИСТЕМЫ (флаг CFG.style.ds / .ds-neuro): тёплый неон = база текста, синий = акцент ═══ */
   --ds-warm-core:#fff4e2; --ds-warm-1:#ffd9a0; --ds-warm-2:#ffb765; --ds-warm-3:#ff9a3d;
   --ds-blue-core:#e6fbff; --ds-blue-1:#8fe9ff; --ds-blue-2:#27e3ff; --ds-blue-3:#0bb6e6;
@@ -123,7 +123,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .mapname.boxed{font-family:var(--font-name);font-size:1.46cqh;font-weight:700;color:#fff;
   text-transform:uppercase;letter-spacing:1px;
   background:rgba(8,16,30,.95);border:1px solid var(--cyan-soft);border-radius:4px;
-  padding:.5em .85em;text-shadow:none;box-shadow:0 0 24px rgba(var(--cyan-rgb),.25)}
+  padding:.5em .85em;text-shadow:none;box-shadow:0 0 6px rgba(var(--cyan-rgb),.25)}   /* зарево короба: узкое, только подсветка кромки (было 24px) */
 .mapname.boxed::after{color:var(--cyan)}
 /* название СПРАВА от октаэдра (для объектов у верхнего края — сверху не влезает) */
 .mapoct.labelright .mapname{bottom:auto;left:100%;top:50%;transform:translateY(-50%);margin:0 0 0 .5vw}
@@ -137,7 +137,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* звёзды (стиль .tip .star из main): on — золото со свечением, off — тусклая */
 .herobox .hstars{display:flex;gap:2px;line-height:1}
 .herobox .hstars .star{font-size:1.5cqh;line-height:1}          /* звёзды под размер текста имени */
-.herobox .hstars .star.on{color:var(--gold);text-shadow:0 0 6px rgba(255,210,74,.6)}
+.herobox .hstars .star.on{color:var(--gold);text-shadow:0 0 3px rgba(255,210,74,.6)}   /* зарево звезды: радиус вдвое меньше (было 6px) */
 .herobox .hstars .star.off{color:rgba(255,255,255,.22)}
 /* имя героя ВСЕГДА в 2 строки (все ранги двухсловные: «Новый игрок», «Начинающий предприниматель» …).
    width:min-content = короб ровно по САМОМУ ДЛИННОМУ слову В ТЕКУЩЕМ шрифте → каждое слово на своей строке,
@@ -146,12 +146,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .herobox .htext::after{content:"▌";color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
 .herobox .htext.typed::after{content:""}
 /* контур короба имени героя — чёткая циан-рамка + свечение (читается и на светлом фоне) */
-.mapname.boxed.herobox{border:2px solid var(--cyan);box-shadow:0 0 10px rgba(var(--cyan-rgb),.55),0 0 26px rgba(var(--cyan-rgb),.30)}
+.mapname.boxed.herobox{border:2px solid var(--cyan);box-shadow:0 0 4px rgba(var(--cyan-rgb),.55),0 0 8px rgba(var(--cyan-rgb),.30)}   /* зарево: узкое, у самой рамки (было 10/26px) */
 
 /* ── МЕХАНИКА «УРОВЕНЬ ПОВЫШЕН» (переиспользуемая): баннер вверх → звезда летит в панель → смена имени ── */
 .levelup-banner{position:absolute;z-index:9;transform:translate(-50%,-50%);
   font-family:var(--font-title);font-weight:700;font-size:8cqh;letter-spacing:.06em;   /* размер титула (как кнопка «Начать» 8cqh) */
-  color:#fff;text-shadow:0 0 10px rgba(255,255,255,.6),0 2px 8px rgba(0,0,0,.9);
+  color:#fff;text-shadow:0 0 5px rgba(255,255,255,.6),0 2px 8px rgba(0,0,0,.9);   /* зарево баннера: вдвое меньше (было 10px) */
   white-space:nowrap;pointer-events:none;opacity:0}
 /* белый текст (читается на светлой карте) + пульсирующее неон-циан свечение; в ЦЕНТРЕ экрана: pop → держится → растворяется (без подъёма) */
 .levelup-banner.play{animation:lvlBanner 2.86s ease forwards, lvlPulse .7s ease-in-out infinite}   /* дольше ×1.3 */
@@ -162,8 +162,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   60%{opacity:1;transform:translate(-50%,-50%) translateY(-7cqh) scale(1)}
   100%{opacity:0;transform:translate(-50%,-50%) translateY(-16cqh) scale(1)}}   /* из центра вверх */
 @keyframes lvlPulse{
-  0%,100%{text-shadow:0 0 8px rgba(255,255,255,.5),0 0 14px rgba(var(--neon-rgb),.5),0 2px 8px rgba(0,0,0,.9)}
-  50%{text-shadow:0 0 14px rgba(255,255,255,.95),0 0 26px rgba(var(--neon-rgb),.95),0 0 42px rgba(var(--neon-rgb),.6),0 2px 8px rgba(0,0,0,.9)}}
+  0%,100%{text-shadow:0 0 4px rgba(255,255,255,.5),0 0 7px rgba(var(--neon-rgb),.5),0 2px 8px rgba(0,0,0,.9)}
+  50%{text-shadow:0 0 7px rgba(255,255,255,.95),0 0 13px rgba(var(--neon-rgb),.95),0 0 21px rgba(var(--neon-rgb),.6),0 2px 8px rgba(0,0,0,.9)}}   /* зарево пульса: радиусы вдвое меньше (было 8/14 и 14/26/42) */
 /* САЛЮТ в зоне баннера «Уровень повышен» — залпы искр разлетаются и гаснут */
 .levelup-fw{position:absolute;z-index:8;width:0;height:0;pointer-events:none;transform:translate(-50%,-50%)}
 .levelup-fw i{position:absolute;left:0;top:0;line-height:1;
@@ -220,7 +220,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .bff-line{font-family:'Neuropol X',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;
   font-size:min(3.64vw,70px);line-height:1.12;color:#fff5e6;opacity:0;transform:translateY(1.6cqh);   /* размер как титул слайда 2 */
   transition:opacity .7s ease,transform .7s ease;
-  text-shadow:0 0 10px rgba(255,224,160,.85),0 0 28px rgba(255,186,96,.6),0 0 56px rgba(255,150,60,.4),0 2px 8px rgba(0,0,0,.7)}   /* тёплый неон */
+  text-shadow:0 0 5px rgba(255,224,160,.85),0 0 14px rgba(255,186,96,.6),0 0 28px rgba(255,150,60,.4),0 2px 8px rgba(0,0,0,.7)}   /* тёплый неон; зарево вдвое меньше (было 10/28/56) */
 .bff-line.show{opacity:1;transform:translateY(0)}
 /* слой летящих звёзд (+N ★) */
 .bg-stars{position:absolute;inset:0}
@@ -379,7 +379,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s linear .5s}
 .alarm.on{visibility:visible;animation:alarmpulse 1s ease-in-out infinite}
 @keyframes alarmpulse{0%,100%{opacity:.35}50%{opacity:1}}
-.star{fill:#fff3b0;filter:drop-shadow(0 0 5px var(--gold))}
+/* ТОЛЬКО SVG-звёзды (у ковша). Селектор обязан быть `svg .star`: голый `.star` цеплял
+   и <span class="star"> в панели героя — тем звёздам прилетал лишний drop-shadow поверх text-shadow. */
+svg .star{fill:#fff3b0;filter:drop-shadow(0 0 5px var(--gold))}
 .burst{fill:#ffffff;filter:drop-shadow(0 0 6px #ffe08a)}
 
 /* ── РАДИАЛЬНОЕ ПРОЯВЛЕНИЕ (тьма с дыркой над предпринимателем) ──
@@ -538,10 +540,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .quest-title .qt-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
 .quest-title .qt-logo{width:100%;height:100%;overflow:visible;shape-rendering:geometricPrecision}
 .quest-title .qt-logo path{fill:none;stroke:#dffaff;stroke-width:6;stroke-linejoin:round;stroke-linecap:round;   /* ядро под толщину ядра текста заставки — было 5, при бо́льшем боксе (viewBox 194, ×1.13) линия смотрелась тоньше лого слайда 1 */
-  filter:drop-shadow(0 0 1.4px var(--n-blue-2)) drop-shadow(0 0 5.6px var(--n-blue-2)) drop-shadow(0 0 17px var(--n-blue-3))}
+  filter:drop-shadow(0 0 .7px var(--n-blue-2)) drop-shadow(0 0 2.8px var(--n-blue-2)) drop-shadow(0 0 8.5px var(--n-blue-3))}   /* зарево вдвое меньше (было 1.4/5.6/17) */
 .qt-art .qt-txt{font-family:var(--n-lib);font-weight:400;text-transform:uppercase;text-align:left;
   line-height:1.233;letter-spacing:0;color:#fff;   /* штамп центрируется по #questTitle (экрану) — анкор .qt-txt не нужен */
-  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--n-blue-2),0 0 5px var(--n-blue-2),0 0 14px var(--n-blue-2)}
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--n-blue-2),0 0 2.5px var(--n-blue-2),0 0 7px var(--n-blue-2)}   /* зарево вдвое меньше (было 5/14) */
 /* ═══ КВЕСТ = ПЕЧАТЬ (штамп) на заставке сл.2 ═══
    #qtQuest — absolute поверх 2 строк, тёмно-синие чернила, грунж-фактура (filter #stampGrunge),
    двойная скруглённая рамка, наклон как на референсе. ID-селектор бьёт флаг-правила .qt-quest → вид
@@ -611,13 +613,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 /* ── ПОДРЕЖИМЫ КВЕСТ C/D (Ctrl+K листает): та же форма-печать (рамка+наклон+stampDown), но НЕОН-ТРУБКА вместо матовых грунж-чернил.
    C = циан (.q0-neon, в цвет титула), D = золото (.q0-gold, тёплый акцент). Класс+id перебивают базовый #qtQuest. ── */
 .quest-title.q0-neon #qtQuest{color:#fff;border-color:#7bf0ff;
-  text-shadow:0 0 2px #fff,0 0 9px var(--n-blue-2),0 0 22px var(--n-blue-2),0 0 40px var(--n-blue-3);
-  box-shadow:0 0 5px var(--n-blue-2),0 0 16px var(--n-blue-3),inset 0 0 12px rgba(39,227,255,.4);
-  filter:drop-shadow(0 0 8px rgba(39,227,255,.5))}                /* грунж → неон-свечение */
-.quest-title.q0-neon #qtQuest::before{border-color:rgba(140,245,255,.75);box-shadow:0 0 7px var(--n-blue-2),inset 0 0 6px rgba(39,227,255,.3)}
+  text-shadow:0 0 1px #fff,0 0 4.5px var(--n-blue-2),0 0 11px var(--n-blue-2),0 0 20px var(--n-blue-3);
+  box-shadow:0 0 2.5px var(--n-blue-2),0 0 8px var(--n-blue-3),inset 0 0 6px rgba(39,227,255,.4);
+  filter:drop-shadow(0 0 4px rgba(39,227,255,.5))}                /* грунж → неон-свечение; все радиусы вдвое меньше прежних */
+.quest-title.q0-neon #qtQuest::before{border-color:rgba(140,245,255,.75);box-shadow:0 0 3.5px var(--n-blue-2),inset 0 0 3px rgba(39,227,255,.3)}   /* зарево вдвое меньше (было 7/6) */
 .quest-title.q0-gold #qtQuest{color:#fff6e8;border-color:#ffcf8a;
-  text-shadow:0 0 2px #fff,0 0 9px #ffb765,0 0 20px #ff8a1f,0 0 38px #e56a00;
-  box-shadow:0 0 5px #ffb765,0 0 16px #ff8a1f,inset 0 0 12px rgba(255,150,60,.4);
+  text-shadow:0 0 1px #fff,0 0 4.5px #ffb765,0 0 10px #ff8a1f,0 0 19px #e56a00;
+  box-shadow:0 0 2.5px #ffb765,0 0 8px #ff8a1f,inset 0 0 6px rgba(255,150,60,.4);   /* зарево вдвое меньше прежнего */
   filter:drop-shadow(0 0 8px rgba(255,140,40,.5))}                /* тёплый акцент-контраст к синему титулу */
 .quest-title.q0-gold #qtQuest::before{border-color:rgba(255,207,138,.8);box-shadow:0 0 7px #ff8a1f}
 /* НЕОН-варианты (C/D): печать ПОДНЯТА выше — не наезжает на «ПРЕДПРИНИМАТЕЛЬСКИЙ» (лежит над верхней строкой). Грунж-печать (0) — на месте. */
@@ -632,8 +634,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .quest-title.tv-2 .qt-var-2{display:flex}
 /* неон-линии (общие для вариантов) */
 .qt-bar{height:3px;border-radius:3px;flex:none}
-.qt-bar.blue{background:#d9fbff;box-shadow:0 0 4px #eaffff,0 0 12px var(--n-blue-2),0 0 26px var(--n-blue-3)}
-.qt-bar.warm{background:#ffeccf;box-shadow:0 0 4px #ffe3ba,0 0 12px rgba(255,201,140,.75),0 0 24px rgba(255,176,105,.5)}
+.qt-bar.blue{background:#d9fbff;box-shadow:0 0 2px #eaffff,0 0 6px var(--n-blue-2),0 0 13px var(--n-blue-3)}
+.qt-bar.warm{background:#ffeccf;box-shadow:0 0 2px #ffe3ba,0 0 6px rgba(255,201,140,.75),0 0 12px rgba(255,176,105,.5)}   /* зарево полос титула вдвое меньше прежнего */
 /* ── вариант 1: лого + большое КВЕСТ, линии сверху/снизу по всей ширине (циан, как tv2) ── */
 .qt-var-1{flex-direction:column;align-items:stretch;gap:.32em;width:fit-content;max-width:96vw;
   font-size:min(8vw,120px);line-height:1;animation:neonBoot 1.6s ease-out both, neonIdle 3.6s ease-in-out 1.6s infinite}
@@ -641,7 +643,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .qt-var-1 .qt-bar{width:100%}
 .qt-var-1 .qt-logo-box{flex:none;height:1.05em;aspect-ratio:156/194;perspective:700px}
 .qt-var-1 .qt-quest{font-family:var(--n-lib);font-weight:400;text-transform:uppercase;letter-spacing:.03em;
-  color:#d9fbff;text-shadow:0 0 3px #eaffff,0 0 10px var(--n-blue-2),0 0 24px var(--n-blue-2),0 0 46px var(--n-blue-3)}
+  color:#d9fbff;text-shadow:0 0 1.5px #eaffff,0 0 5px var(--n-blue-2),0 0 12px var(--n-blue-2),0 0 23px var(--n-blue-3)}   /* зарево вдвое меньше (было 3/10/24/46) */
 /* ── вариант 2: дизайн-система. КВЕСТ — отдельный слой (absolute) поверх, справа НАД ПРЕДПРИНИМАТЕЛЬСКИЙ.
       Ширина блока = по ПРЕДПРИНИМАТЕЛЬСКИЙ (fit-content) → правый край КВЕСТ (right:0) = конец ПРЕДПРИНИМАТЕЛЬСКИЙ.
       --qt2-split — точка стыка линий (≈ левый край КВЕСТ): низ (тёплая) 0→split, верх (синяя) split→100%.
@@ -650,14 +652,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   padding:.5em 0;--qt2-split:56%;--qt2-kvfs:min(8.5vw,112px);--qt2-kvnudge:calc(.17*var(--qt2-kvfs));--qt2-kv-delay:.8s}
 .qt2-m, .qt2-p{font-family:'Neuropol X',sans-serif;font-weight:400;text-transform:uppercase;white-space:nowrap;
   font-size:min(3.4vw,44px);line-height:1.06;letter-spacing:.03em;color:#fff4e6;
-  text-shadow:0 0 2px #fff,0 0 8px #ffe6c2,0 0 20px rgba(255,201,140,.7),0 0 40px rgba(255,176,105,.5)}
+  text-shadow:0 0 1px #fff,0 0 4px #ffe6c2,0 0 10px rgba(255,201,140,.7),0 0 20px rgba(255,176,105,.5)}   /* зарево вдвое меньше (было 2/8/20/40) */
 .qt2-p{margin-top:.14em}
 /* КВЕСТ — отдельный слой поверх; правый край совпадает с концом ПРЕДПРИНИМАТЕЛЬСКИЙ */
 .qt2-r1{display:flex;align-items:flex-end;width:100%}
 .qt-var-2 .qt2-quest{margin-left:auto;white-space:nowrap;transform:translateY(calc(-1*var(--qt2-kvnudge)));
   font-family:var(--n-lib);font-weight:400;text-transform:uppercase;letter-spacing:.03em;
   font-size:var(--qt2-kvfs);line-height:.82;color:#d9fbff;
-  text-shadow:0 0 3px #eaffff,0 0 10px var(--n-blue-2),0 0 24px var(--n-blue-2),0 0 46px var(--n-blue-3)}
+  text-shadow:0 0 1.5px #eaffff,0 0 5px var(--n-blue-2),0 0 12px var(--n-blue-2),0 0 23px var(--n-blue-3)}   /* зарево вдвое меньше (было 3/10/24/46) */
 /* верхняя линия — СИНЯЯ: от точки стыка до правого края (над КВЕСТ) */
 .qt2-top{position:absolute;top:0;left:var(--qt2-split);right:0;transform:translateY(calc(-1*var(--qt2-kvnudge)))}
 /* нижняя линия — ТЁПЛАЯ: от левого края до точки стыка (под ПРЕДПРИНИМАТЕЛЬСКИЙ) */
@@ -709,7 +711,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   transition:opacity .45s ease,max-height .45s ease,margin .45s ease,padding .45s ease}
 .splash .intro-title{font-family:var(--font-title);font-weight:700;color:var(--text);
   letter-spacing:.14em;font-size:clamp(28px,3.6vw,58px);line-height:1;
-  text-shadow:0 0 18px rgba(var(--cyan-rgb),.35);opacity:0;animation:fadeUp .9s .6s forwards}
+  text-shadow:0 0 9px rgba(var(--cyan-rgb),.35);opacity:0;animation:fadeUp .9s .6s forwards}   /* зарево: вдвое меньше (было 18px) */
 .splash .intro-title span{display:block;font-size:.46em;letter-spacing:.2em;color:var(--cyan);
   margin-top:.6vw;font-weight:700}
 /* прогресс загрузки */
@@ -810,7 +812,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   display:flex;flex-direction:column;align-items:center;gap:.55em;line-height:1.0;
   font-family:var(--font-title);font-weight:700;color:#fff;font-size:2.5vw;
   letter-spacing:.14em;text-transform:uppercase;
-  text-shadow:0 2px 20px rgba(0,0,0,.55),0 0 34px rgba(var(--cyan-rgb),.35)}
+  text-shadow:0 1px 10px rgba(0,0,0,.55),0 0 17px rgba(var(--cyan-rgb),.35)}   /* зарево титула миссии: вдвое меньше (было 20/34px) */
 /* титул миссии = 2 блока (шаблон обложки/заставки): кикер «МИССИЯ N» (циан, мельче) + название (крупное белое) */
 .mission-title .mt-kicker{font-size:1.35vw;font-weight:700;letter-spacing:.28em;color:var(--cyan);
   text-shadow:var(--glow-cyan)}
@@ -1196,8 +1198,8 @@ body.fx-logos .dept-logo{display:block;height:var(--lg-h,8cqw);width:auto;overfl
      --lg-sw задан в единицах viewBox, поэтому у каждого лого свой (inline style): при разном масштабе
      одно и то же число дало бы разную толщину линии на экране. Цель — ~0.13cqw у всех четырёх. */
   --lg-c:#dffaff; --lg-sw:1.2;
-  /* зарево 1-в-1 как у лого «Б» на титуле (.nl-logo-svg path) */
-  filter:drop-shadow(0 0 1px var(--n-blue-2)) drop-shadow(0 0 4px var(--n-blue-2)) drop-shadow(0 0 12px var(--n-blue-3))}
+  /* зарево 1-в-1 как у лого «Б» на титуле (.nl-logo-svg path) — вдвое меньше прежнего (было 1/4/12) */
+  filter:drop-shadow(0 0 1px var(--n-blue-2)) drop-shadow(0 0 2px var(--n-blue-2)) drop-shadow(0 0 6px var(--n-blue-3))}
 /* Титул-контейнер превращается в угловой якорь лого:
    — гасим текстовое свечение и пульс (светит сам лого, иначе ореол вокруг пустого бокса);
    — уводим в ЛЕВЫЙ ВЕРХНИЙ угол. Отступ 3cqw по ОБЕИМ осям: в % поля вышли бы разными
@@ -1215,6 +1217,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .fsk-slides .ch-title .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw}   /* иконка напротив основного текста (как «Вызовы» слайда 4) */
 .fsk-slides .ch-desc{margin-left:2.8cqw}                       /* описание ПОД основным текстом, выключка под текст (не под иконку) */
 /* строка «Совет предпринимателей» — иконка была базового 3cqw (крупнее буллитов) и текст без висячего отступа → выравниваем под буллиты */
+.m3-council{grid-template-columns:1fr}   /* строка без значения справа — одна колонка на всю ширину (иначе max-content не даёт тексту переноситься) */
 .m3-council .gw-label{padding-left:2.8cqw;text-indent:-2.8cqw}
 .m3-council .gw-label .gw-ico{width:2.2cqw;height:2.2cqw;margin-right:.6cqw;vertical-align:-.35cqw;text-indent:0}
 .fsk-hi{font-size:var(--sz-body);font-weight:700;color:#fff;line-height:1.25;text-shadow:var(--sh-read)}   /* хайлайт подслайда 3 — строки друг под другом */
@@ -1240,7 +1243,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   font-family:var(--font-text);font-weight:700;color:#fff;font-size:2.3cqh;   /* ФИО аватара-миссии (сл.6/10/12/14) — крупнее */
   text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
   padding:.35em .8em;border:1px solid var(--cyan-soft);border-radius:.3em;
-  background:rgba(8,16,30,.95);box-shadow:0 0 18px rgba(var(--cyan-rgb),.25)}
+  background:rgba(8,16,30,.95);box-shadow:0 0 9px rgba(var(--cyan-rgb),.25)}   /* зарево: радиус вдвое меньше (было 18px) */
 .mission-name.show{opacity:1}
 .mission-name .say-caret{color:var(--cyan);margin-left:1px;animation:qcaret .7s step-end infinite}
 /* линзы бинокля — без ободков и без виньетки (равномерная заливка, зона пересечения не выделяется) */
@@ -1250,7 +1253,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   font-family:var(--font-text);font-weight:700;color:#fff;white-space:nowrap;line-height:1;
   text-transform:uppercase;letter-spacing:.4px;font-size:1.46cqh;
   background:rgba(8,16,30,.92);border:1px solid var(--cyan-soft);border-radius:5px;
-  padding:.4em .7em;box-shadow:0 0 14px rgba(var(--cyan-rgb),.22);pointer-events:none}
+  padding:.4em .7em;box-shadow:0 0 7px rgba(var(--cyan-rgb),.22);pointer-events:none}   /* зарево: радиус вдвое меньше (было 14px) */
 /* кафе: тот же короб-название + раскрывающиеся параметры */
 .bmark-name.cafe{padding:.6em .9em}
 .bmark-name .bn-title{font-family:var(--font-text);font-weight:700;text-transform:uppercase;
@@ -1271,7 +1274,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .hero-say{position:absolute;z-index:16;max-width:34%;
   background:rgba(8,16,30,.94);border:1px solid var(--cyan-soft);border-radius:12px;
   padding:14px 18px;color:#fff;font-family:var(--font-text);font-weight:600;font-size:1.9cqh;line-height:1.3;
-  box-shadow:0 0 26px rgba(var(--cyan-rgb),.3);
+  box-shadow:0 0 13px rgba(var(--cyan-rgb),.3);   /* зарево: радиус вдвое меньше (было 26px) */
   opacity:0;transform:translateY(10px) scale(.96);transform-origin:left bottom;visibility:hidden;
   transition:opacity .5s ease,transform .5s ease,visibility 0s linear .5s}
 .hero-say.show{opacity:1;transform:none;visibility:visible;transition:opacity .5s ease,transform .5s ease}
@@ -1367,8 +1370,8 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .hthink.show{opacity:1;transform:none;text-shadow:var(--sh-base);animation:thinkGlow 1.6s ease-in-out infinite}
 .hthink.aright{text-align:right}   /* мысли слева от героя — выключка ВПРАВО (правый край к эллипсу) */
 @keyframes thinkGlow{   /* = thinkGlowNeon, но цвет ЗОЛОТОЙ (var(--gold)): резкое ядро всегда + пульс широкого зарева */
-  0%,100%{filter:drop-shadow(0 0 1px var(--gold)) drop-shadow(0 0 3px var(--gold)) drop-shadow(0 0 9px var(--gold))}
-  50%{filter:drop-shadow(0 0 1px var(--gold)) drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 16px var(--gold)) brightness(1.25)}}
+  0%,100%{filter:drop-shadow(0 0 1px var(--gold)) drop-shadow(0 0 1.5px var(--gold)) drop-shadow(0 0 4.5px var(--gold))}
+  50%{filter:drop-shadow(0 0 1px var(--gold)) drop-shadow(0 0 2.5px var(--gold)) drop-shadow(0 0 8px var(--gold)) brightness(1.25)}}   /* зарево вдвое меньше (было 3/9 и 5/16) */
 /* СТИЛЬ-2 мыслей (флаг THOUGHT_STYLE=2): циан-неон как подсветка КОНТУРА ГЕРОЯ (heroGlow) — filter drop-shadow + пульс яркости */
 .hthink.tstyle-neon{color:#fff}
 .hthink.tstyle-neon.show{text-shadow:var(--sh-base);animation:thinkGlowNeon 1.6s ease-in-out infinite}
@@ -1380,8 +1383,8 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   50%{filter:drop-shadow(0 0 1px var(--neon)) drop-shadow(0 0 5px var(--neon)) drop-shadow(0 0 16px var(--neon)) brightness(1.25)}}
 /* красный аналог thinkGlowNeon — для «HARD» (danger-акцент «тяжело») */
 @keyframes hardGlow{
-  0%,100%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 4px #ff2020) drop-shadow(0 0 10px #ff2020)}
-  50%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 7px #ff2020) drop-shadow(0 0 18px #ff2020) brightness(1.3)}}
+  0%,100%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 2px #ff2020) drop-shadow(0 0 5px #ff2020)}
+  50%{filter:drop-shadow(0 0 1px #ff3030) drop-shadow(0 0 3.5px #ff2020) drop-shadow(0 0 9px #ff2020) brightness(1.3)}}   /* зарево вдвое меньше (было 4/10 и 7/18) */
 /* СТИЛЬ «мысли героя — комикс-облако» (hero2): БЕЛОЕ облако, тёмный рукописный текст, хвост-пузырьки */
 .hcloud{position:absolute;z-index:16;max-width:30%;text-align:center;
   background:#fff;color:#0b1730;
@@ -1460,9 +1463,9 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 /* заголовок мероприятия */
 .ctitle{position:absolute;left:4.5%;bottom:12%;z-index:3;color:#fff;pointer-events:none}
 .ct-kicker{font-family:var(--font-text);font-weight:700;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--cyan);font-size:2.2cqh;margin-bottom:1.4cqh;text-shadow:0 0 14px rgba(var(--cyan-rgb),.5)}
+  color:var(--cyan);font-size:2.2cqh;margin-bottom:1.4cqh;text-shadow:0 0 7px rgba(var(--cyan-rgb),.5)}   /* зарево кикера: вдвое меньше (было 14px) */
 .ct-name{font-family:var(--font-title);font-weight:700;line-height:1.05;font-size:6.4cqh;letter-spacing:.02em;
-  text-shadow:0 2px 20px rgba(0,0,0,.6),0 0 26px rgba(var(--cyan-rgb),.25)}
+  text-shadow:0 1px 10px rgba(0,0,0,.6),0 0 13px rgba(var(--cyan-rgb),.25)}   /* зарево титула: вдвое меньше (было 20/26px) */
 /* кнопки «Начать» (титул) и «Начать бизнес» (проводники) — единый неон-стиль: Neuropol X, синий неон, без блика и пульса рамки */
 /* у Neuropol X один вес (400) — 700 дал бы синтетический жир */
 .cbtn{position:absolute;left:50%;bottom:9%;transform:translateX(-50%) translateY(14px);z-index:4;
@@ -1514,7 +1517,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
   font-family:var(--n-lib);font-weight:400;text-transform:uppercase;text-align:left;
   font-size:8.3cqh;line-height:1.23;letter-spacing:.01em;max-width:72%;
   color:var(--n-blue-core);
-  text-shadow:0 0 2px #fff,0 0 8px var(--n-blue-1),0 0 22px var(--n-blue-2),0 0 44px var(--n-blue-3),0 0 80px rgba(39,227,255,.5);
+  text-shadow:0 0 1px #fff,0 0 4px var(--n-blue-1),0 0 11px var(--n-blue-2),0 0 22px var(--n-blue-3),0 0 40px rgba(39,227,255,.5);   /* зарево титула: радиусы вдвое меньше (было 2/8/22/44/80) */
   opacity:0;                                            /* скрыт до своей очереди */
   animation:neonIdle 3.6s ease-in-out infinite}
 .nl-title.on{animation:neonOn .9s ease-out both, neonIdle 3.6s ease-in-out .9s infinite}   /* ЭФФЕКТ 2 */
@@ -1524,7 +1527,7 @@ body.fx-logos .fsk-ttl.dept-bl{top:auto;bottom:3cqw}
 .nl-logo-spin{width:100%;height:100%;transform-style:preserve-3d;animation:nlSpin 7s linear infinite}
 .nl-logo-svg{width:100%;height:100%;overflow:visible;opacity:0;shape-rendering:geometricPrecision}   /* скрыт до включения */
 .nl-logo-svg path{fill:none;stroke:#dffaff;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;   /* яркое ядро выровнено по толщине ядра текста титула (Neuropol X, вес 600) — было 3.4, линия смотрелась тоньше */
-  filter:drop-shadow(0 0 1px var(--n-blue-2)) drop-shadow(0 0 4px var(--n-blue-2)) drop-shadow(0 0 12px var(--n-blue-3))}   /* узкое зарево */
+  filter:drop-shadow(0 0 1px var(--n-blue-2)) drop-shadow(0 0 2px var(--n-blue-2)) drop-shadow(0 0 6px var(--n-blue-3))}   /* узкое зарево; вдвое меньше прежнего (было 1/4/12) */
 .nl-logo-svg.boot{animation:neonBoot 1.6s ease-out both, neonIdle 3.6s ease-in-out 1.6s infinite}   /* ЭФФЕКТ 1 */
 /* ЭФФЕКТ 1 — розжиг неон-лампы (тайминги 1-в-1 из design-system.html; провалы совпадают с тишиной в звуке лампы) */
 @keyframes neonBoot{
@@ -1577,11 +1580,11 @@ body.ds-neuro .fsk-h{animation-duration:4.4s}
 /* ── ТИТУЛ: тёплый неон, ядро #fff, зарево 2/8/22/44/80px (glow-title n-warm) ── */
 body.ds-neuro .mt-name, body.ds-neuro .ct-name, body.ds-neuro .rtitle{
   color:var(--ds-warm-core);font-weight:400;
-  text-shadow:var(--sh-base),0 0 2px #fff,0 0 8px var(--ds-warm-1),0 0 22px var(--ds-warm-2),0 0 44px var(--ds-warm-3),0 0 80px rgba(255,138,31,.5)}
+  text-shadow:var(--sh-base),0 0 1px #fff,0 0 4px var(--ds-warm-1),0 0 11px var(--ds-warm-2),0 0 22px var(--ds-warm-3),0 0 40px rgba(255,138,31,.5)}   /* зарево вдвое меньше (было 2/8/22/44/80) */
 /* ── ЗАГОЛОВОК: тёплый, ядро #fff, 1/6/16/30px (glow-head n-warm) ── */
 body.ds-neuro .fsk-h, body.ds-neuro .podbig .ptitle, body.ds-neuro .podtext .h{
   color:var(--ds-warm-core);
-  text-shadow:var(--sh-base),0 0 1px #fff,0 0 6px var(--ds-warm-1),0 0 16px var(--ds-warm-2),0 0 30px rgba(255,154,61,.55)}
+  text-shadow:var(--sh-base),0 0 1px #fff,0 0 3px var(--ds-warm-1),0 0 8px var(--ds-warm-2),0 0 15px rgba(255,154,61,.55)}   /* зарево вдвое меньше (было 6/16/30) */
 /* ── ОСН. ТЕКСТ: тёплый core, тонкий (300), 1/4/9px (glow-text n-warm). Метки сл.4-1 чуть плотнее (600) ── */
 body.ds-neuro .ch-title, body.ds-neuro .podbig .psub, body.ds-neuro .podtext .s, body.ds-neuro .fsk-hi,
 body.ds-neuro .gw-label, body.ds-neuro .gw-val, body.ds-neuro .quiz-ans-txt, body.ds-neuro .ava-name{   /* +ФИО аватара сл.5 */
@@ -1605,7 +1608,7 @@ body.ds-neuro .ch-desc, body.ds-neuro .gw-cap, body.ds-neuro .ava-desc{color:var
 /* ── КИКЕР: синий узкий ── */
 body.ds-neuro .mt-kicker, body.ds-neuro .ct-kicker{
   color:var(--ds-blue-1);font-weight:600;
-  text-shadow:var(--sh-base),0 0 4px var(--ds-blue-2),0 0 10px var(--ds-blue-3)}
+  text-shadow:var(--sh-base),0 0 2px var(--ds-blue-2),0 0 5px var(--ds-blue-3)}   /* зарево кикера вдвое меньше (было 4/10) */
 /* ── АКЦЕНТ (числа + счётчик «1/5») + МЫСЛИ героя: синий n-blue — белая заливка + тёмная база + узкий циан ── */
 body.ds-neuro .rnum, body.ds-neuro .accent-num, body.ds-neuro .quiz-count, body.ds-neuro .hthink,
 body.ds-neuro .ava-org{                                   /* +название подразделения аватара сл.5 */
@@ -1653,7 +1656,7 @@ body.ds-neuro .rules-title .rt-main,
 body.ds-neuro .rules-carry .rules-carry-title,
 body.ds-neuro .levelup-banner{
   font-family:var(--n-neuro);color:#fff;
-  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 5px var(--ds-blue-2),0 0 14px var(--ds-blue-2)}
+  text-shadow:0 2px 8px rgba(0,0,0,.95),0 0 1px var(--ds-blue-2),0 0 2.5px var(--ds-blue-2),0 0 7px var(--ds-blue-2)}   /* зарево вдвое меньше (было 5/14) */
 /* мерцание неоновой лампы (как остальной neuro) — ТОЛЬКО там, где нет собственной entrance-анимации.
    Слайд-4 carry «ПРАВИЛА ИГРЫ» держит titlePop (появление) — его animation НЕ трогаем (свечение синее статикой);
    слайд-5 avttl «ПРОВОДНИКИ» без pop — там глушим циан thinkGlowNeon мерцанием neonIdle. */
@@ -1675,7 +1678,7 @@ body.ds-neuro .nl-title{font-size:7cqh}
 /* синий акцент полос: титул сл.1, кнопки, слово КВЕСТ. HARD НЕ включён — его полосы остаются красными (sliceEl hard) */
 body.ds-neuro .nl-title .sg-strip, body.ds-neuro .cbtn .sg-strip, body.ds-neuro .qt-quest .sg-strip{
   color:var(--ds-blue-core);
-  text-shadow:0 0 1px #fff,0 0 6px var(--ds-blue-2),0 0 16px var(--ds-blue-3)}
+  text-shadow:0 0 1px #fff,0 0 3px var(--ds-blue-2),0 0 8px var(--ds-blue-3)}   /* зарево полос вдвое меньше (было 6/16) */
 /* кнопки БЕЗ среза (флаг v5 выключен) — тоже Neuropol X + акцент-синий текст/рамка */
 body.ds-neuro .cbtn{color:var(--ds-blue-core);border-color:var(--ds-blue-2)}
 
@@ -1696,7 +1699,7 @@ body.ds-neuro .rules-title .rt-main,
 body.ds-neuro #rulesCarry .rules-carry-title,
 body.ds-neuro #helpersCarry .rules-carry-title{                                     /* «ПРОВОДНИКИ» (сл.5) — тёплый цвет как титулы сл.4 */
   color:var(--ds-warm-core);
-  text-shadow:var(--sh-base),0 0 2px #fff,0 0 8px var(--ds-warm-1),0 0 22px var(--ds-warm-2),0 0 44px var(--ds-warm-3),0 0 80px rgba(255,138,31,.5)}
+  text-shadow:var(--sh-base),0 0 1px #fff,0 0 4px var(--ds-warm-1),0 0 11px var(--ds-warm-2),0 0 22px var(--ds-warm-3),0 0 40px rgba(255,138,31,.5)}   /* зарево вдвое меньше (было 2/8/22/44/80) */
 
 /* ── ЭКРАН ЗАГРУЗКИ (сл.2): шрифт Neuropol X всем. Логи + процент — синий АКЦЕНТ, «Гружу…» — тёплый ОСН.ТЕКСТ ── */
 body.ds-neuro .load-log .ll, body.ds-neuro .intro-pct, body.ds-neuro .intro-load{font-family:var(--n-neuro)}
@@ -1768,11 +1771,11 @@ body.ds-mix .rules-title .rt-hard, body.ds-exo .rules-title .rt-hard{font-size:1
   90%{transform:translateX(0)}}
 /* ЛОГО слайда 1 при v5 — свечение шире, «свет от лого» (было узкое зарево 1/4/12px) */
 body.fx-v5 .nl-logo-svg path{
-  filter:drop-shadow(0 0 2px #fff)
-    drop-shadow(0 0 10px var(--n-blue-2))
-    drop-shadow(0 0 26px var(--n-blue-2))
-    drop-shadow(0 0 54px var(--n-blue-3))
-    drop-shadow(0 0 90px rgba(39,227,255,.45))}
+  filter:drop-shadow(0 0 1px #fff)
+    drop-shadow(0 0 5px var(--n-blue-2))
+    drop-shadow(0 0 13px var(--n-blue-2))
+    drop-shadow(0 0 27px var(--n-blue-3))
+    drop-shadow(0 0 45px rgba(39,227,255,.45))}   /* зарево вдвое меньше (было 2/10/26/54/90) — в пару к ужатому титулу */
 /* КНОПКИ при v5 — шрифт срез-демо: LIBRARY 3 AM (вместо Neuropol X). Обе кнопки: «Начать» и «Начать бизнес».
    :not(.ds-neuro) — при новой дизайн-системе шрифт задаёт ds (Neuropol X), это правило не мешает. */
 body.fx-v5:not(.ds-neuro) .cbtn{font-family:var(--n-lib)}
@@ -2083,7 +2086,7 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 .ava-name{font-family:var(--font-text);font-weight:700;color:#fff;font-size:var(--sz-ava);
   text-transform:uppercase;letter-spacing:.04em;
   padding:.35cqw .8cqw;border:1px solid var(--cyan-soft);border-radius:.3cqw;
-  background:rgba(8,16,30,.95);box-shadow:0 0 18px rgba(var(--cyan-rgb),.25)}
+  background:rgba(8,16,30,.95);box-shadow:0 0 9px rgba(var(--cyan-rgb),.25)}   /* зарево: радиус вдвое меньше (было 18px) */
 .ava-desc{font-family:var(--font-text);font-weight:600;color:#fff;font-size:var(--sz-ava);line-height:1.35;max-width:100%}
 .av-caret{color:var(--cyan);margin-left:1px;animation:avBlink .7s step-end infinite}
 @keyframes avBlink{50%{opacity:0}}
@@ -2534,19 +2537,19 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
       <h2 class="fsk-ttl" id="mbBrand"><span class="ttl-txt">Фонд поддержки<br>социальных<br>проектов</span><svg class="dept-logo" style="--lg-h:6.02cqw;--lg-sw:1.01" viewBox="0 0 58.2 46.8" role="img" aria-label="Фонд поддержки социальных проектов"><use href="#lg-fpsp"/></svg></h2>
       <!-- текст: единый бренд БЧБ — заголовок + блоки с иконками (построчное появление через revealPod) -->
       <div class="mb-text" id="pod-morebiz">
-        <div class="fsk-h rin">Единый бренд<br>«Больше чем бизнес»</div>
+        <div class="fsk-h rin">Поддержка социального предпринимательства</div>
         <div class="ch-list">
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span>Популяризация явления социального предпринимательства</span>
-            <span class="rin ch-desc">Отраслевые форумы, ролики «И важно» на федеральных ТВ-каналах, партнёрские мероприятия</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 18 L88 34 L50 50 L12 34 Z"/><path d="M28 42 V64 C28 64 37 72 50 72 C63 72 72 64 72 64 V42"/><path class="ic-warm" d="M84 36 V60 M84 60 L80 70 H88 Z"/></svg></span>Обучающие программы для развития социального бизнеса</span>
+            <span class="rin ch-desc">Курс «Мой первый социальный проект», Университет социального предпринимателя, Школа краудфандинга, «Акселератор 4.0», вебинары</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H82 V62 L62 82 H18 Z"/><path d="M82 62 H62 V82"/><path class="ic-warm" d="M34 42 L45 53 L66 32"/></svg></span>Единый бренд СП «Больше чем бизнес»</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H44 V44 H18 Z"/><path d="M56 18 H82 V44 H56 Z"/><path d="M18 56 H44 V82 H18 Z"/><path class="ic-warm" d="M56 56 H82 V82 H56 Z"/></svg></span>Сервисы для предпринимателей</span>
+            <span class="rin ch-desc">Карта мер негосударственной поддержки, Пульт социального предпринимателя</span>
+          </div>
+          <div class="ch-item">
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H82 V62 L62 82 H18 Z"/><path d="M82 62 H62 V82"/><path class="ic-warm" d="M34 42 L45 53 L66 32"/></svg></span>Единый бренд социального предпринимательства «Больше чем бизнес»</span>
             <span class="rin ch-desc">Товарный знак на выставках-ярмарках, маркетплейсах, классифайдах, в номинациях отраслевых конкурсов</span>
-          </div>
-          <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M16 16 V84 H88"/><path class="ic-warm" d="M28 68 L44 50 L58 60 L82 30"/><path class="ic-warm" d="M68 30 H82 V44"/><circle cx="44" cy="50" r="4"/><circle cx="58" cy="60" r="4"/></svg></span>Измерение социального эффекта</span>
-            <span class="rin ch-desc">Сервис самодиагностики «Пользамер»</span>
           </div>
         </div>
       </div>
@@ -2613,11 +2616,9 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
           <div class="ch-item">
             <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 24 H60 V50 H34 L22 62 V50 H14 Z"/><path class="ic-warm" d="M46 42 H86 V70 H70 L60 80 V70 H46 Z"/></svg></span>Работа с общественными организациями и деловыми объединениями</span>
           </div>
-        </div>
-        <div class="gw-list m3-council" style="margin-top:.7cqw">
-          <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="28" cy="36" r="9"/><circle cx="72" cy="36" r="9"/><path d="M12 72 V64 A16 16 0 0 1 44 64 V72"/><path d="M56 72 V64 A16 16 0 0 1 88 64 V72"/><circle class="ic-warm" cx="50" cy="30" r="11"/><path class="ic-warm" d="M30 78 V66 A20 20 0 0 1 70 66 V78"/></svg></span>Совет предпринимателей Москвы:</span>
-          <div class="gw-right">
-            <span class="rin gw-val"><span class="rnum">122</span> участника</span>
+          <!-- строка Совета — ВНУТРИ .ch-list, иначе шаг до неё складывался из gap .fsk-slides + свой margin-top (было в 1.7 раза больше, чем между буллитами) -->
+          <div class="gw-list m3-council">
+            <span class="rin gw-label"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="28" cy="36" r="9"/><circle cx="72" cy="36" r="9"/><path d="M12 72 V64 A16 16 0 0 1 44 64 V72"/><path d="M56 72 V64 A16 16 0 0 1 88 64 V72"/><circle class="ic-warm" cx="50" cy="30" r="11"/><path class="ic-warm" d="M30 78 V66 A20 20 0 0 1 70 66 V78"/></svg></span>Совет предпринимателей Москвы</span>
           </div>
         </div>
       </div>
@@ -2695,19 +2696,19 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
       <div class="m1-dark m3-dark" id="nc2Dark"></div>
       <h2 class="fsk-ttl dept-bl" id="nc2Brand"><span class="ttl-txt">Фонд поддержки<br>социальных<br>проектов</span><svg class="dept-logo" style="--lg-h:6.02cqw;--lg-sw:1.01" viewBox="0 0 58.2 46.8" role="img" aria-label="Фонд поддержки социальных проектов"><use href="#lg-fpsp"/></svg></h2>
       <div class="fsk-slides m1-text" id="nc2Text">
-        <div class="fsk-h rin">Институт развития социального предпринимательства</div>
+        <div class="fsk-h rin">Федеральный институт развития социального предпринимательства</div>
         <div class="ch-list">
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M26 14 H54 L70 30 V70 H26 Z"/><path d="M54 14 V30 H70"/><path d="M34 40 H52 M34 50 H48"/><circle class="ic-warm" cx="61" cy="71" r="9"/><path class="ic-warm" d="M61 58 V64 M61 78 V84 M48 71 H54 M68 71 H74 M52 62 L56 66 M66 76 L70 80 M70 62 L66 66 M56 76 L52 80"/></svg></span>Системные инструменты развития СП</span>
-            <span class="rin ch-desc">Совершенствование законодательства, исследовательская деятельность</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 16 C34 16 24 27 24 42 C24 53 32 59 36 68 H64 C68 59 76 53 76 42 C76 27 66 16 50 16 Z"/><path class="ic-warm" d="M38 76 H62 M42 84 H58"/></svg></span>Разработка и апробация пилотных решений в Москве</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 18 L88 34 L50 50 L12 34 Z"/><path d="M28 42 V64 C28 64 37 72 50 72 C63 72 72 64 72 64 V42"/><path class="ic-warm" d="M84 36 V60 M84 60 L80 70 H88 Z"/></svg></span>Обучающие программы для развития социального бизнеса</span>
-            <span class="rin ch-desc">Курс «Мой первый социальный проект», Университет социального предпринимателя, Школа краудфандинга, «Акселератор 4.0», вебинары</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M24 20 H60 V56 H24 Z"/><path class="ic-warm" d="M40 36 H76 V72 H40 Z"/></svg></span>Тиражирование успешных практик в регионы</span>
           </div>
           <div class="ch-item">
-            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 18 H44 V44 H18 Z"/><path d="M56 18 H82 V44 H56 Z"/><path d="M18 56 H44 V82 H18 Z"/><path class="ic-warm" d="M56 56 H82 V82 H56 Z"/></svg></span>Сервисы для предпринимателей</span>
-            <span class="rin ch-desc">Карта мер негосударственной поддержки и Пульт социального предпринимателя</span>
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M50 16 V84 M30 84 H70"/><path d="M22 34 H78"/><path class="ic-warm" d="M22 34 L12 56 H32 Z M78 34 L68 56 H88 Z"/></svg></span>Совершенствование законодательства в сфере социального предпринимательства</span>
+          </div>
+          <div class="ch-item">
+            <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M18 40 H34 L66 22 V78 L34 60 H18 Z"/><path class="ic-warm" d="M30 60 L34 84 H46 L42 60"/><path class="ic-warm" d="M78 34 C86 42 86 58 78 66"/></svg></span>Популяризация социального предпринимательства</span>
           </div>
         </div>
       </div>
@@ -3099,7 +3100,7 @@ const CFG = {
 const BG_SRC={
   load:'assets/audio/bg-mario-intro.mp3',   // «Загрузка»: интро Super Mario (играет первые ~10с, дальше цепочка → loadloop)
   loadloop:'assets/audio/bg-mario-trap.mp3',// продолжение «Загрузки»: Trap-ремикс Super Mario, ЭТОТ трек и зацикливается
-  city:'assets/audio/bg-city.mp3',
+  // city:'assets/audio/bg-city.mp3',   // город больше не используется — весь фон на 'map' (файл оставлен в assets)
   map :'assets/audio/bg-map.mp3',
   cafe:'assets/audio/bg-cafe.m4a',   // разговоры в кафе (AAC в контейнере MP4 — браузер играет так же, как mp3)
   title:'assets/audio/bg-title.mp3', // пиксельная ностальгия (титул)
@@ -3126,11 +3127,11 @@ function bgSrcFor(name){ return (name==='map' && CFG.music.mapAlt) ? BG_MAP_ALT 
 /* сцена → трек. Нет в списке → тишина (плавная). */
 const BG_SCENE={
   splash:'load',                                                   // 2
-  hero:'city', rules:'city',                                       // 3, 4
+  hero:'map', rules:'map',                                         // 3, 4
   avatars:'map', map:'map',                                        // 5, 6
-  mission1:'city', mission1b:'city',                               // 7, 8
+  mission1:'map', mission1b:'map',                                 // 7, 8
   quiz:'map', binoc:'map',                                         // 9, 10
-  fsk:'city', cafeopen:'city', mission3:'city', newcafe:'city',    // 11-14
+  fsk:'map', cafeopen:'map', mission3:'map', newcafe:'map',        // 11-14
   morebiz:'cafe',                                                  // 15
   binoc2:'map',                                                    // 16
   // title (1) — НЕ здесь: на волнах тишина, трек 'load' заводит ccClose() по 1-му клику (кнопка «Начать»).
@@ -6415,6 +6416,16 @@ function startMapRecon(){
 }
 
 function id(){return SCENES[cur].id;}
+let splashInstant=false;   // возврат с hero (←): заставку показать сразу загруженной, без реигры загрузки
+let avatarsInstant=false;   // возврат с map (←): аватары показать сразу на кнопке «НАЧАТЬ БИЗНЕС», без реигры показа
+let mission1Final=false;   // возврат со слайда 8 (←): слайд 7 сразу в КОНЦЕ (после level-up), ждём клик выхода
+let mission1bFinal=false;  // возврат со слайда 9 (←): слайд 8 сразу в КОНЦЕ (титул «ВНИМАНИЕ, КВИЗ!»), ждём клик выхода
+let quizFinal=false;       // возврат со слайда 10 (←): квиз сразу на ПОСЛЕДНЕМ вопросе (концовка — не остановка, она авто-уходит)
+let fskFinal=false;        // возврат со слайда 12 (←): слайд 11 сразу в КОНЦЕ (после level-up 2★→3★), ждём клик выхода
+let cafeopenFinal=false;   // возврат со слайда 13 (←): слайд 12 сразу в КОНЦЕ (Головина доиграна + титул «МИССИЯ 3»), ждём клик выхода
+let mission3Final=false;   // возврат со слайда 14 (←): слайд 13 сразу в КОНЦЕ (level-up 4★ + эскаватор уехал), ждём клик выхода
+let newcafeFinal=false;    // возврат со слайда 15 (←): слайд 14 сразу в КОНЦЕ (подслайд 2, текст показан), ждём клик выхода
+let morebizFinal=false;    // возврат со слайда 16 (←): слайд 15 сразу в КОНЦЕ (level-up 4★→5★), ждём клик выхода
 
 /* трек сцены с учётом тумблеров: заставка по умолчанию без музыки (Alt+B) */
 function sceneTrack(sid){ if(sid==='splash' && !CFG.music.splash) return null; return BG_SCENE[sid]||null; }
@@ -6453,19 +6464,97 @@ function applyScene(){
 
   // миссия 1 — кафе-сцена: титул на чёрном → вуаль раскрывает кафе → цепочка героя
   mission1.classList.toggle('show', sid==='mission1');
-  if(sid==='mission1') runMission1(); else resetMission1();
+  if(sid==='mission1'){
+    if(mission1Final){                                   // возврат со слайда 8 (←): сразу КОНЕЦ слайда 7 — после level-up, на клике выхода
+      resetMission1(); skipCafeIntro();                  // вуаль раскрыта, герой+контур+вывеска+имя (0★), текст показан
+      storyT.splice(0).forEach(clearTimeout); cafeNameTimers.forEach(clearTimeout); cafeNameTimers=[];
+      podRinHide(m1Text); m1Brand.classList.remove('show'); m1Dark.classList.remove('show');   // текст+лого+затемнение убраны (как после cafeStory)
+      cafeLevelFinal();                                  // 1★ + имя «Начинающий предприниматель»
+      document.querySelectorAll('.say-caret').forEach(c=>c.remove());
+      cafeStoryStarted=true; cafeStoryDone=true; cafeQuizGo=false;   // БЕЗ авто-перехода: ждём клик выхода
+    } else runMission1();
+  } else resetMission1();
   mission1b.classList.toggle('show', sid==='mission1b');
-  if(sid==='mission1b') runMission1b(); else resetMission1b();
+  if(sid==='mission1b'){
+    if(mission1bFinal){                                  // возврат со слайда 9 (←): сразу КОНЕЦ слайда 8 — титул «ВНИМАНИЕ, КВИЗ!», на клике выхода
+      resetMission1b(); skipCafe2Intro();                // раскрытие + герой + текст (интро-финал)
+      story2T.splice(0).forEach(clearTimeout); cafe2NameTimers.forEach(clearTimeout); cafe2NameTimers=[];
+      podRinHide(m1bText); m1bBrand.classList.remove('show'); m1bDark.classList.remove('show');   // текст+лого+затемнение убраны (как после cafe2Story)
+      cafe2LevelFinal();                                 // 2★ + имя «Действующий предприниматель»
+      document.querySelectorAll('.say-caret').forEach(c=>c.remove());
+      cafeQuizTitle2.classList.add('pop');               // титул «ВНИМАНИЕ, КВИЗ!» показан
+      cafe2StoryStarted=true; cafe2QuizReady=true; cafe2StoryDone=true; cafe2NextGo=false;   // БЕЗ авто-перехода: ждём клик выхода
+    } else runMission1b();
+  } else resetMission1b();
   fskScene.classList.toggle('show', sid==='fsk');
-  if(sid==='fsk') runFsk(); else resetFsk();
+  if(sid==='fsk'){
+    if(fskFinal){                                        // возврат со слайда 12 (←): сразу КОНЕЦ слайда 11 — после level-up, на клике выхода
+      runFsk(); skipFskIntro();                          // раскрытие + герой + вывеска + имя (2★) + подслайд 1
+      fskT.splice(0).forEach(clearTimeout); fskNameTimers.forEach(clearTimeout); fskNameTimers=[];
+      fskStep=fskSubs.length-1;                          // считаем, что подслайды долистаны
+      fskHideSubs();                                     // текст + лого ФСК + затемнение убраны (как после fskStory)
+      fskLevelFinal();                                   // 3★ + имя «Продвинутый предприниматель»
+      document.querySelectorAll('.say-caret').forEach(c=>c.remove());
+      fskStoryStarted=true; fskStoryDone=true;           // БЕЗ авто-перехода: ждём клик выхода
+    } else runFsk();
+  } else resetFsk();
   cafeopen.classList.toggle('show', sid==='cafeopen');
-  if(sid==='cafeopen') runCafeOpen(); else resetCafeOpen();
+  if(sid==='cafeopen'){
+    if(cafeopenFinal){                                   // возврат со слайда 13 (←): сразу КОНЕЦ слайда 12 — Головина доиграна, титул «МИССИЯ 3», клик выхода
+      runCafeOpen();
+      skipCoIntro(); skipCoHero();                       // кафе + герой мгновенно
+      skipCoStory();                                     // Байков: ФИО + реплика мгновенно
+      skipCoGolovina();                                  // Головина: ФИО + реплика + расфокус + титул «МИССИЯ 3» (instant)
+      coGo=false;                                        // сворачивание не начато — ждём клик выхода
+    } else runCafeOpen();
+  } else resetCafeOpen();
   morebiz.classList.toggle('show', sid==='morebiz');
-  if(sid==='morebiz') runMoreBiz(); else resetMoreBiz();
+  if(sid==='morebiz'){
+    if(morebizFinal){                                    // возврат со слайда 16 (←): сразу КОНЕЦ слайда 15 — level-up 4★→5★, клик выхода
+      runMoreBiz();
+      mbTimers.splice(0).forEach(clearTimeout);          // погасить авто-цепочку входа (её таймеры перебили бы финал)
+      // вуаль раскрываем СИНХРОННО: runMoreBiz делает это таймером, а скипы чистят mbTimers → иначе оставался ЧЁРНЫЙ экран
+      morebizVeil.style.transition='none'; morebizVeil.style.setProperty('--r','175%'); void morebizVeil.offsetWidth; morebizVeil.style.transition='';
+      skipMbHero();                                      // герой + награда + панель (4★) + подсветка (mbStep=1)
+      skipMbText();                                      // текст показан целиком
+      // синхронный аналог mbReward() (он асинхронный: level-up через таймеры, которые тут же гасятся)
+      mbStep=2;
+      podRinHide(mbPod); mbBrand.classList.remove('show'); mbDark.classList.remove('show');   // текст + титул + затемнение убраны
+      mbAward.classList.remove('lit'); mbOuts.forEach(o=>o.classList.remove('show','draw','glow'));   // подсветки сняты
+      skipMbLevel();                                     // level-up доигран: 5★ + имя «Московский предприниматель»
+    } else runMoreBiz();
+  } else resetMoreBiz();
   newcafe.classList.toggle('show', sid==='newcafe');
-  if(sid==='newcafe') runNewCafe(); else resetNewCafe();
+  if(sid==='newcafe'){
+    if(newcafeFinal){                                    // возврат со слайда 15 (←): сразу КОНЕЦ слайда 14 — подслайд 2 с текстом, клик выхода
+      runNewCafe();
+      skipNcWalk(); skipNcStory();                       // подслайд 1 доигран (проход + Кремнева + титул)
+      // ncToSub2() НЕ зовём — он асинхронный (меняет подслайд в setTimeout), а skipNc2 гасит его таймеры → оставался подслайд 1.
+      ncTimers.splice(0).forEach(clearTimeout);
+      ncSub=1; ncSubGo=false;
+      ncStage.classList.add('gone'); nc2Stage.classList.add('show');   // переключить на подслайд 2 синхронно
+      bgPlay('cafe');                                                  // музыка части 2 («мы внутри»)
+      ncVeil.style.transition='none'; ncVeil.style.setProperty('--r','175%'); void ncVeil.offsetWidth; ncVeil.style.transition='';   // вуаль раскрыта
+      ncTitle.classList.add('faded');                                  // титул «МИССИЯ 4» погашен (как после перехода)
+      skipNc2();                                         // подслайд 2 доигран: меню выделено + затемнение + текст
+    } else runNewCafe();
+  } else resetNewCafe();
   mission3El.classList.toggle('show', sid==='mission3');
-  if(sid==='mission3') runMission3(); else resetMission3();
+  if(sid==='mission3'){
+    if(mission3Final){                                   // возврат со слайда 14 (←): сразу КОНЕЦ слайда 13 — уровень 4★, эскаватор уехал, клик выхода
+      runMission3(); skipM3Frame1();                     // кадр (герой + вывеска + эскаватор) мгновенно
+      m3Timers.splice(0).forEach(clearTimeout);
+      podRinHide(m3Shtab); podRinHide(m3Shtab2);         // тексты Штаба убраны (как после m3DoLevelUp)
+      m3Brand.classList.remove('show'); m3Dark.classList.remove('show');
+      m3Stage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());
+      [...m3NamePanel.querySelectorAll('.hstars .star')].forEach((st,i)=>{ st.classList.remove('justfill'); st.classList.toggle('on',i<4); st.classList.toggle('off',i>=4); });   // 4★
+      m3NamePanel.classList.add('show'); m3Htext.textContent=LEVEL_NAMES[4];
+      m3Htext.classList.remove('name-in','name-out'); m3Htext.classList.add('typed');
+      m3HeroLU.stars.filled=4; m3HeroLU.name=LEVEL_NAMES[4];   // реестр уровня — на 4★ (иначе повторный level-up собьётся)
+      skipM3ExcLeave();                                  // эскаватор уехал (скрыт)
+      m3ShtabShown=true; m3Shtab2Shown=true; m3LevelDone=true;   // все шаги пройдены — ждём клик выхода
+    } else runMission3();
+  } else resetMission3();
 
   // титул (SCENES[0]) и КВИЗ (слайд 9) используют одну canvas-анимацию волн (#ccanvas)
   const onTitle=(sid==='title'), ccScene=(sid==='title'||sid==='quiz');
@@ -6488,7 +6577,15 @@ function applyScene(){
   if(onTitle){ ccStage=0; ccHint.style.display=''; ccHint.textContent=CC_HINT_0; splashStarted=false; loadDone=false; }   // вернулись на титул — снова волны молча, подсказка исходная
   else { ccHint.style.display='none'; }                            // квиз и остальные — без кнопки «Начать» и подсказки
   quiz.classList.toggle('show', sid==='quiz');
-  if(sid==='quiz') runQuiz(); else resetQuiz();
+  if(sid==='quiz'){
+    if(quizFinal){                                       // возврат со слайда 10 (←): сразу ПОСЛЕДНИЙ вопрос (последнее «стоячее» состояние слайда 9)
+      qTimers.splice(0).forEach(clearTimeout);
+      resetQuizContent();
+      quizTitle.classList.add('faded');                  // титул «ВНИМАНИЕ, КВИЗ!» уже погашен
+      quizVeil.style.transition='none'; quizVeil.style.setProperty('--r','175%'); void quizVeil.offsetWidth; quizVeil.style.transition='';   // вуаль раскрыта
+      quizStep=QUIZ_ITEMS.length-1; showQuizItem();      // 5-й вопрос
+    } else runQuiz();
+  } else resetQuiz();
 
   // сплеш
   splash.classList.toggle('hidden', sid!=='splash');
@@ -6504,7 +6601,14 @@ function applyScene(){
     questTitle.classList.remove('show');
     questTitle.querySelectorAll('.qt-line').forEach(l=>l.classList.remove('on'));
     resetScreenCrack();                                           // сброс трещин экрана — при каждом входе на заставку
-    splashStarted=true; runLoading();
+    if(splashInstant){                                            // возврат с hero (←): заставка сразу загружена, без реигры загрузки
+      loadDone=true; splashStarted=true; splash.classList.add('loaded');
+      questTitle.classList.add('show');
+      questTitle.querySelectorAll('.qt-line').forEach(l=>l.classList.add('on'));
+      // заморозить титул в финальном виде (без реигры neonOn/печати/трещин) — как splashLeave; инлайн-стили снимет 6500 при обычном входе
+      questTitle.querySelectorAll('.qt-line, .qt-w, .qt-logo-box').forEach(l=>{ l.style.animation='neonIdle 3.6s ease-in-out infinite'; l.style.opacity='1'; });
+      const qStamp=document.getElementById('qtQuest'); if(qStamp){ qStamp.style.animation='none'; qStamp.style.opacity='1'; }
+    } else { splashStarted=true; runLoading(); }
   }
   // знакомство с героем (hero и его копия hero2 — одна механика)
   heroIntro.classList.toggle('show', sid==='hero'||sid==='hero2');
@@ -6523,7 +6627,16 @@ function applyScene(){
   if(sid==='deck'){ showDeck(); }
   // помощники / аватары
   avatars.classList.toggle('show', sid==='avatars');
-  if(sid==='avatars'){ avEnter(); } else { avReset(); carryHide(helpersCarry, helpersCarryT); }
+  if(sid==='avatars'){
+    if(avatarsInstant){                                      // возврат с map (←): аватары сразу на кнопке «НАЧАТЬ БИЗНЕС» (предыдущий клик), без реигры показа
+      avReset(); avReserveHeights();
+      avShown=avCells.length;                                // все «показаны» (скрыты под кнопкой)
+      avCells.forEach(cell=>{ const av=cell.querySelector('.avatar'); av.classList.add('play','live'); cell.__els.forEach(el=>el.classList.add('show')); });   // 4 аватара в финальном виде (скрыты под кнопкой; станут видны при ← на сетку)
+      avRow.style.transition='none'; avRow.style.opacity='0';
+      helpersCarry.classList.add('avttl','fade'); helpersCarry.classList.remove('tcenter','show');   // титул «Проводники» в углу, погашен
+      avCta.classList.remove('n-boot','n-on'); avCta.classList.add('show');   // большая кнопка «НАЧАТЬ БИЗНЕС»
+    } else avEnter();
+  } else { avReset(); carryHide(helpersCarry, helpersCarryT); }
 
   // узлы-финиши, кометы, объекты
   if(sid==='map' && mapStep===2){ startRoutes(); }   // шаг 2 — кометы пробегают 1 раз
@@ -7130,6 +7243,59 @@ function prev(){
     m3Dark.classList.add('show'); m3Brand.classList.add('show');// затемнение + лого ШТАБ остаются
     return;
   }
+  if(id()==='binoc2' && cur>0){                                  // Слайд 16 → назад в КОНЕЦ слайда 15: level-up 4★→5★, клик выхода
+    cur--; morebizFinal=true; applyScene(); morebizFinal=false;
+    return;
+  }
+  if(id()==='morebiz' && cur>0){                                 // Слайд 15 (герой/текст; уровень уже откатил nativeStepBack) → назад в КОНЕЦ слайда 14: подслайд 2 с текстом
+    cur--; newcafeFinal=true; applyScene(); newcafeFinal=false;
+    return;
+  }
+  if(id()==='newcafe' && cur>0 && ncSub===0){                    // Слайд 14 (подслайд 1) → назад в КОНЕЦ слайда 13: уровень 4★, эскаватор уехал
+    cur--; mission3Final=true; applyScene(); mission3Final=false;
+    return;
+  }
+  if(id()==='mission3' && cur>0 && !m3ShtabShown && !m3LevelDone){   // Слайд 13 (кадр, до текста Штаба) → назад в КОНЕЦ слайда 12: Головина + титул «МИССИЯ 3»
+    cur--; cafeopenFinal=true; applyScene(); cafeopenFinal=false;
+    return;
+  }
+  if(id()==='cafeopen' && cur>0){                                // Слайд 12 → назад в КОНЕЦ слайда 11: после level-up 2★→3★, на клике выхода
+    cur--; fskFinal=true; applyScene(); fskFinal=false;
+    return;
+  }
+  if(id()==='binoc' && cur>0){                                   // Слайд 10 → назад на ПОСЛЕДНИЙ (5-й) вопрос слайда 9
+    cur--; quizFinal=true; applyScene(); quizFinal=false;
+    return;
+  }
+  if(id()==='quiz' && cur>0 && !(quizPanelShown && quizStep>0 && !quizEndStarted)){   // Слайд 9 → назад в КОНЕЦ слайда 8 (титул «ВНИМАНИЕ, КВИЗ!»), если не листаем вопросы
+    cur--; mission1bFinal=true; applyScene(); mission1bFinal=false;
+    return;
+  }
+  if(id()==='mission1b' && cur>0){                               // Слайд 8 (текст) → назад в КОНЕЦ слайда 7: после level-up, на клике выхода
+    cur--; mission1Final=true; applyScene(); mission1Final=false;
+    return;
+  }
+  if(id()==='mission1' && cur>0){                                // Слайд 7 → назад: реанимация ФИНАЛА РАЗВЕДКИ на карте (аватар Путилина + титул «МИССИЯ 1»)
+    cur--; mapStep=MAP_STEPS-1; applyScene();                     // → карта в раскрытом виде (объекты/маршруты)
+    startMapRecon();                                             // заново проиграть разведку → бинокль → Путилин + титул (runMission)
+    return;
+  }
+  if(id()==='map' && cur>0){                                     // Карта → назад к предыдущему клику = кнопка «НАЧАТЬ БИЗНЕС» на avatars (слайд 5)
+    cur--; avatarsInstant=true; applyScene(); avatarsInstant=false;
+    return;
+  }
+  if((id()==='hero'||id()==='hero2') && cur>0){                  // Знакомство → назад к предыдущему клику = загруженная заставка (готова к уходу), без реигры загрузки
+    splashInstant=true; cur--; applyScene(); splashInstant=false;
+    return;
+  }
+  if(id()==='splash' && cur>0){                                  // Заставка → назад к предыдущему клику = кнопка «Начать» на титуле (ccStage 2)
+    cur--; applyScene();                                          // → титул (applyScene ставит волны/ccStage 0)
+    ccStage=2; ccStarting=false; clearTimeout(ccCloseT);          // восстановить конец ccClose: чёрная вуаль + большая кнопка «Начать»
+    bgPlay('load');                                               // трек кнопки (Mario-интро), как на ccStage 2
+    ccVeil.style.transition='none'; ccVeil.style.setProperty('--r','0%'); void ccVeil.offsetWidth; ccVeil.style.transition='';
+    ccBtn.classList.remove('n-boot','n-on'); ccBtn.classList.add('cc-big','show'); ccHint.style.display='none';
+    return;
+  }
   if(cur>0){ cur--;
     if(id()==='deck'){ deckSub=deckImgs.length-1; applyScene(); showDeck(); }
     else if(id()==='rules'){ rulesStep=rSlides.length-1; applyScene(); rulesReveal(RULES_GOV); rulesIntro(); }   // возврат на правила — последний слайд, разворачивание из «Правительства»
@@ -7616,12 +7782,39 @@ function nativeStepBack(){
     return false;                              // 1-й подслайд → уходим на предыдущую сцену (ниже)
   }
   if(id()==='quiz' && quizPanelShown && !quizEndStarted && quizStep>0){ quizStep--; showQuizItem(); consume(); return true; }
-  if(id()==='fsk' && !fskStoryStarted && fskStep>0){   // ФСК (сл.11): назад по подслайдам (меняется текст, герой остаётся)
-    fskT.splice(0).forEach(clearTimeout);              // погасить отложенный переход подслайда
-    fskShowSub(fskStep-1, true);                        // предыдущий подслайд сразу целиком
-    consume(); return true;
+  if(id()==='fsk'){                                     // ФСК (сл.11): назад — уровень → текст → подслайды
+    if(fskStoryStarted){                                // после level-up 2★→3★ → назад к ТЕКСТУ последнего подслайда
+      fskT.splice(0).forEach(clearTimeout); fskNameTimers.forEach(clearTimeout); fskNameTimers=[];
+      fskStage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());   // убрать артефакты level-up
+      [...fskName.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<2); s.classList.toggle('off',i>=2); });   // назад к 2★
+      fskName.classList.add('show'); fskHtext.textContent=FSK_HERO_NAME;                                // имя «Действующий предприниматель»
+      fskHtext.classList.remove('name-in','name-out'); fskHtext.classList.add('typed');
+      fskShowSub(fskSubs.length-1, true);                // текст ПОСЛЕДНЕГО подслайда сразу целиком (+ лого ФСК и затемнение)
+      fskStoryStarted=false; fskStoryDone=false; fskLevelDone=false;
+      consume(); return true;
+    }
+    if(fskStep>0){                                      // назад по подслайдам (меняется текст, герой остаётся)
+      fskT.splice(0).forEach(clearTimeout);             // погасить отложенный переход подслайда
+      fskShowSub(fskStep-1, true);                       // предыдущий подслайд сразу целиком
+      consume(); return true;
+    }
+    return false;                                       // 1-й подслайд → на предыдущую сцену
   }
-  if(id()==='mission3'){                                // Штаб (сл.13, v2): назад по текст-подслайдам
+  if(id()==='mission3'){                                // Штаб (сл.13, v2): назад по клик-шагам — уровень → текст 2 → текст 1 → кадр
+    if(m3LevelDone){                                    // после level-up 3★→4★ (и отъезда эскаватора) → назад к ТЕКСТУ 2 «Коммуникация»
+      m3Timers.splice(0).forEach(clearTimeout);
+      stopM3ExcAnim(); bulldozerStop(0);                // снять анимацию отъезда + звук двигателя
+      m3Exc.style.transition='none'; m3Exc.style.transform='scaleX(1)';   // развернуть обратно (отъезд ставил scaleX(-1))
+      m3Stage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());   // убрать артефакты level-up
+      m3PlaceAll();                                     // герой + панель + ЭСКАВАТОР обратно на парковку (поз.0, видим)
+      [...m3NamePanel.querySelectorAll('.hstars .star')].forEach((st,i)=>{ st.classList.remove('justfill'); st.classList.toggle('on',i<3); st.classList.toggle('off',i>=3); });   // назад к 3★
+      m3HeroLU.stars.filled=3; m3HeroLU.name=LEVEL_NAMES[3];   // реестр уровня — обратно на 3★ (иначе повторный level-up собьётся)
+      m3Shtab.style.display='none'; m3Shtab2.style.display=''; podRinAll(m3Shtab2);   // текст 2 целиком
+      m3Dark.classList.add('show'); m3Brand.classList.add('show');
+      m3LevelDone=false; m3ExcLeftDone=false; m3ExcLeftStarted=false;
+      m3ShtabShown=true; m3Shtab2Shown=true;
+      consume(); return true;
+    }
     if(m3Shtab2Shown && !m3LevelDone){                  // подслайд 2 «Коммуникация» → подслайд 1
       m3Timers.splice(0).forEach(clearTimeout);
       m3Shtab2Shown=false;
@@ -7653,6 +7846,73 @@ function nativeStepBack(){
     if(mapCollapsing) return true;                      // идёт сворачивание — игнор
     if(reconStarted){ abortRecon(); consume(); return true; }
     return false;                                       // карта раскрыта (до разведки) / авто-сборка → на предыдущую сцену
+  }
+  if(id()==='mission1b'){                               // ЕКЦ (сл.8): назад по клик-шагам — титул КВИЗ → уровень → текст
+    if(cafe2StoryDone){                                 // 1) титул «ВНИМАНИЕ, КВИЗ!» показан → убрать, вернуться к состоянию «уровень сделан»
+      story2T.splice(0).forEach(clearTimeout);          // погасить авто-переход на квиз
+      cafeQuizTitle2.classList.remove('pop');
+      cafe2StoryDone=false; cafe2NextGo=false;          // снова ждём клик для титула
+      consume(); return true;
+    }
+    if(cafe2QuizReady){                                 // 2) уровень сделан → назад к ТЕКСТУ: откат уровня 2★→1★ + вернуть лого/затемнение/текст
+      story2T.splice(0).forEach(clearTimeout);
+      cafe2NameTimers.forEach(clearTimeout); cafe2NameTimers=[];
+      m1bStage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());   // убрать артефакты level-up
+      [...cafeName2.querySelectorAll('.hstars .star')].forEach((s,i)=>{ s.classList.remove('justfill'); s.classList.toggle('on',i<1); s.classList.toggle('off',i>=1); });   // назад к 1★
+      cafeName2.classList.add('show'); cafeHtext2.textContent=CAFE2_HERO_NAME;                         // имя «Начинающий предприниматель»
+      cafeHtext2.classList.remove('name-in','name-out'); cafeHtext2.classList.add('typed');
+      m1bDark.classList.add('show'); m1bBrand.classList.add('show'); podRinAll(m1bText);               // затемнение + лого МБМ + текст целиком
+      cafe2StoryStarted=false; cafe2QuizReady=false; cafe2LevelDone=false;
+      consume(); return true;
+    }
+    return false;                                       // текст (интро) → на предыдущую сцену (слайд 7)
+  }
+  if(id()==='binoc2'){                                  // Финал (сл.16): назад с титула «НА ОДНОЙ ВОЛНЕ / НОВЫЙ ИМПУЛЬС» → НАЧАЛО слайда
+    if(bizFinaleStarted){
+      bizGrowthStop();                                  // убрать вуаль финала + титул (и старый счётчик/ленты/билборды)
+      bizGrowthStart();                                 // заново: счётчик «937 000» + звёзды (карта уже раскрыта)
+      consume(); return true;
+    }
+    return false;                                       // карта/счётчик → на предыдущую сцену (конец слайда 15)
+  }
+  if(id()==='morebiz'){                                 // Больше чем бизнес (сл.15): назад — уровень → текст
+    if(mbStep===2){                                     // после level-up 4★→5★ → назад к ТЕКСТУ (награда светится, затемнение + текст)
+      mbTimers.splice(0).forEach(clearTimeout); mbNameTimers.splice(0).forEach(clearTimeout);
+      mbStage.querySelectorAll('.levelup-banner,.levelup-star,.levelup-fw').forEach(e=>e.remove());   // убрать артефакты level-up
+      mbHeroLU.stars.filled=4; mbHeroLU.name=MB_HERO_NAME; mbStars(4);        // назад к 4★ (и реестр уровня — иначе повторный level-up собьётся)
+      mbHtext.classList.remove('name-in','name-out'); mbHtext.textContent=MB_HERO_NAME; mbHtext.classList.add('typed');
+      mbLevelDone=false; mbStep=1;
+      skipMbText();                                     // текст целиком + затемнение + титул ФПСП; награда выделена, подсветка героя снята
+      consume(); return true;
+    }
+    return false;                                       // текст/герой → на предыдущую сцену (конец слайда 14)
+  }
+  if(id()==='newcafe'){                                 // Миссия 4 (сл.14): назад — подслайд 2 → конец подслайда 1 → шаги подслайда 1
+    if(ncSubGo) return true;                            // идёт смена подслайда — игнор
+    if(ncSub===1){                                      // ПОДСЛАЙД 2 → КОНЕЦ ПОДСЛАЙДА 1 (Кремнева + титул «МИССИЯ 4»)
+      ncTimers.splice(0).forEach(clearTimeout);
+      resetNc2();                                       // обводки меню/протеза + затемнение + текст части 2 — сброс
+      ncSub=0;
+      nc2Stage.classList.remove('show'); ncStage.classList.remove('gone');   // вернуть сцену подслайда 1
+      bgPlay(BG_SCENE.newcafe);                         // музыка обратно ('map'; часть 2 ставила 'cafe')
+      ncVeil.style.transition='none'; ncVeil.style.setProperty('--r','175%'); void ncVeil.offsetWidth; ncVeil.style.transition='';   // вуаль раскрыта
+      skipNcWalk(); skipNcStory();                      // проход доигран + аватар Кремневой + ФИО/реплика + расфокус + титул
+      ncTitle.classList.remove('faded');                // титул снова виден (переход на часть 2 его гасил)
+      consume(); return true;
+    }
+    if(ncStoryStarted){                                 // Кремнева показана → назад к ПРОХОДУ (без аватара/титула)
+      ncTimers.splice(0).forEach(clearTimeout);
+      ncAva.classList.remove('show'); ncAvatar.classList.remove('play','live');
+      ncAvatar.querySelectorAll('.ava-spark').forEach(sp=>sp.remove());
+      ncFio.classList.remove('show'); ncFio.innerHTML='';
+      ncSay.classList.remove('show'); ncSay.innerHTML='';
+      ncDefocusLayer.classList.remove('on'); ncTitle.classList.remove('pop','faded');
+      ncStoryStarted=false; ncStoryDone=false;
+      skipNcWalk();                                     // проход — в финальном виде (у входа)
+      ncTimers.splice(0).forEach(clearTimeout);          // ВАЖНО: skipNcWalk ПЕРЕЗАВОДИТ авто-таймер Кремневой (4816) — гасим, иначе она вернётся через ~0.5с и «назад» зациклится
+      consume(); return true;
+    }
+    return false;                                       // проход/начало → на предыдущую сцену (конец слайда 13)
   }
   return false;
 }
