@@ -61,7 +61,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   --mission-shift:16%;
   /* ═══ МЕХАНИКА ПОЯВЛЕНИЯ «искра→фото→контур» (все объекты РАЗОМ): длительности фаз ═══ */
   --rv-spark:.7s;   /* искры к центру (= задержка проявления фото) */
-  --rv-photo:2.2s}  /* проявление фото из размытия. Контур включается на (spark+photo) — CFG.hero.contour берёт эту сумму */ /* сдвиг титула миссии в ЦЕНТР БИНОКЛЯ (6/10) и та же позиция на 7/11; 0px = центр экрана */
+  --rv-photo:2.2s;  /* проявление фото из размытия. Контур включается на (spark+photo) — CFG.hero.contour берёт эту сумму */ /* сдвиг титула миссии в ЦЕНТР БИНОКЛЯ (6/10) и та же позиция на 7/11; 0px = центр экрана */
+  /* ═══ КАРТИНКА В ЗАЛЕ (пульт Ctrl+I): подстройка под конкретный экран/проектор ═══
+     1 = как есть. На большом ярком экране картинка кажется слишком контрастной → дефолт смягчён.
+     Реальные значения проставляет applyPic() из CFG.pic при загрузке — тут стартовые. */
+  --pic-contrast:.75;   /* контраст: <1 мягче, >1 жёстче */
+  --pic-bright:1;       /* яркость */
+  --pic-sat:.9;         /* насыщенность цвета */
+  /* ═══ ЗВЁЗДЫ ФИНАЛА (слайд 17): пульт яркости/времени ═══ */
+  --bg-star-rise:4.4s;   /* время подъёма+затухания одной звезды (было 3.2s — стало дольше) */
+  --bg-star-color:var(--gold)}   /* цвет звезды = золото панели героя (--gold #ffd24a) */
+/* КАРТИНКА В ЗАЛЕ: фильтр вешаем на КОРЕНЬ (html) — красит всю презентацию разом.
+   Класс .pic-adj ставится из JS только когда значения отличаются от 1 — пока не трогали,
+   фильтра нет вовсе (никакой лишней нагрузки на отрисовку).
+   Именно html, а не body: фильтр на корне НЕ ломает position:fixed у панелей/тостов. */
+html.pic-adj{filter:contrast(var(--pic-contrast)) brightness(var(--pic-bright)) saturate(var(--pic-sat)) var(--pic-sharpen,)}
 /* ALS Hauss Next — для GitHub Pages положи файлы в presentation/fonts/ (локально берётся из системы) */
 /* все шрифты встроены в fonts/fonts.css (base64) — работает офлайн и по двойному клику (file://) */
 
@@ -217,21 +231,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   transition:--r var(--veil-fast) cubic-bezier(.4,.1,.2,1)}
 .bizfinale-title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:92%;
   display:flex;flex-direction:column;align-items:center;gap:.55em;text-align:center}
+/* финальное закрытие по клику: чёрная вуаль ПОВЕРХ титула (z3), фокус в ЦЕНТРЕ — наплыв снаружи внутрь */
+.bizfinale-close{position:absolute;inset:0;z-index:3;background:var(--bg);--r:175%;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, transparent calc(var(--r) - 2%), #000 var(--r));
+  mask-image:radial-gradient(circle at 50% 50%, transparent calc(var(--r) - 2%), #000 var(--r));
+  transition:--r var(--veil-fast) cubic-bezier(.4,.1,.2,1)}
 .bff-line{font-family:'Neuropol X',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;
   font-size:min(3.64vw,70px);line-height:1.12;color:#fff5e6;opacity:0;transform:translateY(1.6cqh);   /* размер как титул слайда 2 */
   transition:opacity .7s ease,transform .7s ease;
   text-shadow:0 0 5px rgba(255,224,160,.85),0 0 14px rgba(255,186,96,.6),0 0 28px rgba(255,150,60,.4),0 2px 8px rgba(0,0,0,.7)}   /* тёплый неон; зарево вдвое меньше (было 10/28/56) */
 .bff-line.show{opacity:1;transform:translateY(0)}
+/* ударная строка финала («ВСЁ ТОЛЬКО НАЧИНАЕТСЯ!»): крупнее, отступ сверху, зарево ярче */
+/* ударная строка финала («ВСЁ ТОЛЬКО НАЧИНАЕТСЯ!»): стиль как у строк выше, только увеличенный отступ сверху */
+.bff-line.big{margin-top:.6em}
 /* слой летящих звёзд (+N ★) */
 .bg-stars{position:absolute;inset:0}
 .bg-pop{position:absolute;transform:translate(-50%,0);display:flex;align-items:center;gap:.35em;white-space:nowrap;
   font-family:var(--font-title);font-weight:700;opacity:0;perspective:320px}
 .bg-plus{font-size:2.8cqh;color:#fff;text-shadow:0 0 8px rgba(255,255,255,.7),0 0 16px rgba(var(--neon-rgb),.8),0 2px 6px rgba(0,0,0,.9)}
-.bg-star{font-size:3.4cqh;line-height:1;color:var(--gold);display:inline-block;text-shadow:0 0 12px var(--gold),0 0 26px #ff9800}
-.bg-pop.rise{animation:bgRise 3.2s ease-out forwards}
+.bg-star{font-size:3.4cqh;line-height:1;color:var(--bg-star-color);display:inline-block;
+  text-shadow:0 0 6px var(--bg-star-color),0 0 16px var(--bg-star-color),0 0 30px #ff9800}   /* золотое зарево (как панель героя), без белого ядра — не бледнит */
+.bg-pop.rise{animation:bgRise var(--bg-star-rise) linear forwards}   /* linear — равномерный подъём без замедления к концу */
 .bg-pop.rise .bg-star{animation:bgSpin 1s linear infinite}
-@keyframes bgRise{0%{opacity:0;transform:translate(-50%,12px) scale(.55)}
-  9%{opacity:1;transform:translate(-50%,0) scale(1)}
+@keyframes bgRise{0%{opacity:.55;transform:translate(-50%,10px) scale(.7)}   /* стартует уже заметно яркой (было 0) */
+  8%{opacity:1;transform:translate(-50%,0) scale(1)}
+  70%{opacity:1}   /* держим яркость (только opacity; transform НЕ трогаем → позиция едет плавно и НЕПРЕРЫВНО 8→100%) */
   100%{opacity:0;transform:translate(-50%,-13cqh) scale(1)}}
 @keyframes bgSpin{to{transform:rotateY(360deg)}}   /* вращение звезды вокруг своей (вертикальной) оси */
 /* КИНОЛЕНТА-КАРТИНКА (SVG «Финальный слайд лента»): фото кладутся ПЕРСПЕКТИВНО в размеченные кадры (matrix3d-гомография),
@@ -2106,6 +2130,24 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
 </head>
 <body>
 
+<!-- ФИЛЬТРЫ РЕЗКОСТИ (пульт Ctrl+I): unsharp mask = резкое ядро + вычитание размытия.
+     3 уровня силы. Компенсируют «мыло», которое добавляет тракт показа зала (сигнал/LED-стена).
+     Формула feComposite arithmetic: результат = (1+a)·исходник − a·размытие. -->
+<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><defs>
+  <filter id="pic-sharpen-1" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="b"/>
+    <feComposite in="SourceGraphic" in2="b" operator="arithmetic" k1="0" k2="1.6" k3="-0.6" k4="0"/>
+  </filter>
+  <filter id="pic-sharpen-2" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.0" result="b"/>
+    <feComposite in="SourceGraphic" in2="b" operator="arithmetic" k1="0" k2="2.0" k3="-1.0" k4="0"/>
+  </filter>
+  <filter id="pic-sharpen-3" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.3" result="b"/>
+    <feComposite in="SourceGraphic" in2="b" operator="arithmetic" k1="0" k2="2.6" k3="-1.6" k4="0"/>
+  </filter>
+</defs></svg>
+
 <!-- ════════ СЛОЙ КАРТЫ ════════ -->
 <div class="stage scene-splash">
   <svg class="overlay" viewBox="0 0 2172 724" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -2385,6 +2427,10 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
         <div class="fsk-sub" data-i="0">
           <div class="fsk-h rin">Содействие кредитованию малого и среднего бизнеса Москвы</div>
           <div class="ch-list">
+            <div class="ch-item">
+              <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="38" r="24"/><path class="ic-warm" d="M39 39 L47 47 L62 30"/><path d="M40 58 L33 90 L45 81 L50 92 L55 81 L67 90 L60 58"/></svg></span>Поручительство по кредитам</span>
+              <span class="rin ch-desc">помогаем с поручительством по кредитам — до <span class="accent-num">70%</span></span>
+            </div>
             <div class="ch-item">
               <span class="rin ch-title"><span class="gw-ico" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse cx="36" cy="70" rx="24" ry="8"/><path d="M12 70 V56 C12 51 60 51 60 56 V70"/><path class="ic-warm" d="M78 66 V30 M64 44 L78 28 L92 44"/></svg></span>Подбор финансирования</span>
               <span class="rin ch-desc">помогаем выбрать подходящий финансовый инструмент для бизнеса</span>
@@ -2778,6 +2824,18 @@ body.fx-v5 .rules-title .rt-hard.ready{color:transparent}
   <div class="mission-title quiz-outro-title" id="quizOutroTitle"><div class="mt-name">Тем временем…</div></div>
 </div>
 
+<!-- ════════ ИТОГИ КВИЗА (слайд 16, перед финалом): копия 1-го подслайда квиза —
+     тот же фон/вуаль/волны, но БЕЗ QR, вопроса и вариантов ответа.
+     Остаётся титул по центру + лого МБМ в ПРАВОМ ВЕРХНЕМ углу (класс .dept-tr). ════════ -->
+<div class="quiz" id="quizres">
+  <div class="quiz-veil" id="qrsVeil"></div>
+  <div class="quiz-stage">
+    <!-- лого МБМ — 1-в-1 как #quizBrand слайда 9 (левый верхний угол) -->
+    <h2 class="fsk-ttl" id="qrsBrand"><span class="ttl-txt">Малый<br>бизнес<br>Москвы</span><svg class="dept-logo" style="--lg-h:3.51cqw;--lg-sw:1.76" viewBox="0 0 174 47.6" role="img" aria-label="МБМ — Малый бизнес Москвы"><use href="#lg-mbm"/></svg></h2>
+  </div>
+  <div class="mission-title quiz-title" id="qrsTitle"><div class="mt-name">ИТОГИ КВИЗА</div></div>
+</div>
+
 <!-- ════════ LANDING: чёрное+титул поверх новой сцены → раскрытие вуали → титул гаснет (перенос титула между слайдами) ════════ -->
 <div class="landing" id="landing">
   <div class="landing-veil" id="landingVeil"></div>
@@ -3022,6 +3080,7 @@ const CFG = {
           avaRight:'16%', shiftDur:800,                 // ФИНАЛ: позиция аватара справа + скорость сдвига. Сам сдвиг бинокля+титула = CSS-токен --mission-shift (единый с титулами 7/11)
           tourAt:1166, tourStep:2000 },                  // старт тура · шаг между объектами (tourAt = raiseAt+266)
   co:{ snd:{ on:true, vol:0.45, dur:1800 } },   // звук ремонта под пылью (слайд 12): вкл/выкл · громкость · длина ≈ времени тумана (мс)
+  cafeopen:{ golovina:false },   // СЛАЙД 12: аватар Головиной в цепочке. false (ДЕФОЛТ) — Головину ПРОПУСКАЕМ: после реплики Байкова сразу титул «МИССИЯ 3». true — вернуть Головину (искры→фото→ФИО→реплика→титул). Ничего не удалено — только флаг. Переключить: ?golovina=on (обратно ?golovina=off)
   siren:{ on:true, vol:0.5, center:720, sweep:360, rate:0.55 },   // сирена (WebAudio «вой»): громкость · центр.частота Гц · размах Гц · скорость воя Гц
   appear:{ snd:{ on:true, vol:0.4, spark:'spark', photo:'shimmer' } },   // звук появления (герой/эскаватор/скорая): вкл/выкл · громкость ·
         // spark — что звучит в t=0 (искры): 'spark' (как было) | 'soft' | 'chime' | 'rise' | 'none'
@@ -3036,6 +3095,7 @@ const CFG = {
   music:{ on:true, vol:0.3, xfade:1800, loopTail:2500,   // фоновая музыка: вкл/выкл · громкость (общая, по умолчанию) · кроссфейд смены трека (мс) · за сколько до конца заводить петлю (мс)
           volBySlide:{},   // ГРОМКОСТЬ ПО СЛАЙДАМ (пульт Ctrl+M): { sid: 0..1 }. Нет слайда в списке → берётся общая vol. Живёт в localStorage; сюда можно «вшить базово» финальные уровни зала
           titleIntro:true },   // ОТДЕЛЬНЫЙ 1-й клик на титуле, который включает пиксельную мелодию. false — как было: 1-й клик сразу даёт вуаль + кнопку «Начать» + трек «Загрузка», титульной мелодии нет вовсе
+  pic:{ contrast:0.75, bright:1, sat:0.9, sharpen:0 },   // КАРТИНКА В ЗАЛЕ (пульт Ctrl+I): контраст · яркость · насыщенность (1 = как есть) · sharpen — резкость 0..3 (0 выкл; компенсирует «мыло» тракта показа зала). ДЕФОЛТ смягчён под большой экран (контраст 75% · яркость 100% · насыщенность 90%). Пара к CSS-токенам --pic-*. Живёт в localStorage; сюда можно «вшить базово» найденные в зале значения
   lamp:{ on:true, vol:0.6, from:12.0, to:13.6 },   // «неоновая лампа» (эффект 1 на кнопке «Начать»): вкл/выкл · громкость · окно щелчка+миганий в mp3 (синхронно с neonBoot)
   stamp:{ snd:{ on:true, vol:0.5 } },   // ЗВУК ПЕЧАТИ «КВЕСТ» (заставка сл.2): синтез-«тумк» (глухой удар + щелчок контакта) в момент удара штампа. Громкость 0..1
   titleWord:{ snd:{ on:true, vol:0.4 } },   // ЗВУК ПОЯВЛЕНИЯ слов титула (МОСКОВСКИЙ/ПРЕДПРИНИМАТЕЛЬСКИЙ): мягкий неон-«свелл», по очереди восходящий (синтез, без файла)
@@ -3079,6 +3139,8 @@ const CFG = {
   if(g==='on') CFG.style.logos=true; else if(g==='off') CFG.style.logos=false;
   const m3=q.get('m3');
   if(m3==='v2') CFG.mission3.v2=true; else if(m3==='old') CFG.mission3.v2=false;   // слайд 13: новый (эскаватор уезжает) / старый (скорая+драка)
+  const gl=q.get('golovina');
+  if(gl==='on') CFG.cafeopen.golovina=true; else if(gl==='off') CFG.cafeopen.golovina=false;   // слайд 12: аватар Головиной (вкл/пропуск)
   const d=q.get('design');
   if(d==='neuro'){ CFG.style.ds=true; CFG.style.dsMix=false; }                   // чистый Neuropol X (dsMix дефолтно вкл — гасим)
   else if(d==='neuro2'||d==='exo'){ CFG.style.ds=true; CFG.style.dsExo=true; CFG.style.dsMix=false; }   // весь текст Exo 2
@@ -3133,7 +3195,7 @@ const BG_SCENE={
   quiz:'map', binoc:'map',                                         // 9, 10
   fsk:'map', cafeopen:'map', mission3:'map', newcafe:'map',        // 11-14
   morebiz:'cafe',                                                  // 15
-  binoc2:'map',                                                    // 16
+  quizres:'map', binoc2:'map',                                     // 16, 17
   // title (1) — НЕ здесь: на волнах тишина, трек 'load' заводит ccClose() по 1-му клику (кнопка «Начать»).
   //             Дальше applyScene('splash') зовёт bgPlay('load') — тот же трек, значит no-op, музыка не рвётся.
 };
@@ -3383,6 +3445,130 @@ function copyVolLevels(){
   catch(e){ console.log(txt); done('Уровни в консоли (F12)'); }
 }
 
+/* ═══════════ ПУЛЬТ КАРТИНКИ (Ctrl+I): контраст · яркость · насыщенность ═══════════
+   Зачем: на большом экране/проекторе картинка часто выглядит слишком контрастной.
+   Крутим фильтр на КОРНЕ страницы (html.pic-adj) — меняется вся презентация разом, все слайды.
+   Значения живут в CFG.pic, сохраняются в localStorage и переживают перезагрузку. */
+const PIC_KEY='shtab-pic-v2';   // v2 — сменил дефолт (75/100/90); старый ключ v1 игнорируется, у всех подхватится новый дефолт
+const PIC_ROWS=[                                        // строки пульта: ключ · подпись · границы ползунка, %
+  {k:'contrast', label:'◑ Контраст',      min:50, max:150},
+  {k:'bright',   label:'☀ Яркость',       min:50, max:150},
+  {k:'sat',      label:'🎨 Насыщенность', min:0,  max:200}
+];
+const PIC_HALL={contrast:0.88, bright:1.04, sat:0.96};  // пресет «мягче для зала»: контраст вниз, чуть светлее, цвет чуть спокойнее
+/* применить CFG.pic к экрану: значения → CSS-токены; класс вешаем ТОЛЬКО если что-то сдвинуто с 1
+   (не трогали пульт → фильтра нет вовсе, лишней нагрузки на отрисовку тоже) */
+function applyPic(){
+  const r=document.documentElement, p=CFG.pic;
+  r.style.setProperty('--pic-contrast', p.contrast);
+  r.style.setProperty('--pic-bright',   p.bright);
+  r.style.setProperty('--pic-sat',      p.sat);
+  const sh=Math.max(0, Math.min(3, p.sharpen|0));
+  r.style.setProperty('--pic-sharpen', sh ? 'url(#pic-sharpen-'+sh+')' : '');   // резкость: 0 = пусто (фильтра нет)
+  r.classList.toggle('pic-adj', p.contrast!==1 || p.bright!==1 || p.sat!==1 || sh>0);
+}
+function picSave(){ try{ localStorage.setItem(PIC_KEY, JSON.stringify(CFG.pic)); }catch(e){} }
+/* задать уровень резкости 0..3, применить, сохранить, обновить пульт */
+function picSetSharpen(n){
+  CFG.pic.sharpen=Math.max(0, Math.min(3, n|0));
+  applyPic(); picSave(); refreshPicPanel();
+}
+/* задать одно значение (в долях, 1 = как есть) с зажимом в границы ползунка */
+function picSet(k, v){
+  const r=PIC_ROWS.find(x=>x.k===k); if(!r) return;
+  CFG.pic[k]=Math.max(r.min, Math.min(r.max, Math.round(v*100)))/100;
+  applyPic(); picSave(); refreshPicPanel();
+}
+(()=>{ try{ const raw=localStorage.getItem(PIC_KEY); if(!raw) return;   // поднять настройку прошлого показа
+  const o=JSON.parse(raw); if(!o || typeof o!=='object') return;
+  PIC_ROWS.forEach(r=>{ const v=+o[r.k];
+    if(!isNaN(v)) CFG.pic[r.k]=Math.max(r.min, Math.min(r.max, Math.round(v*100)))/100; });
+  if('sharpen' in o){ const s=+o.sharpen; if(!isNaN(s)) CFG.pic.sharpen=Math.max(0, Math.min(3, s|0)); }
+}catch(e){} })();
+applyPic();
+
+/* ── UI пульта картинки (стиль — как у пульта громкости Ctrl+M) ── */
+const picEdit={ open:false, el:null, rows:{} };
+function picRow(r){
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:12px;padding:5px 0';
+  const lab=document.createElement('span'); lab.style.cssText='flex:0 0 40%;font-size:13px;opacity:.92'; lab.textContent=r.label;
+  const sl=document.createElement('input'); sl.type='range'; sl.min=r.min; sl.max=r.max; sl.step=1; sl.tabIndex=-1;
+  sl.style.cssText='flex:1;height:6px;accent-color:#27e3ff;cursor:pointer';
+  const val=document.createElement('span');
+  val.style.cssText='width:3.4em;text-align:right;font:800 20px/1 system-ui;color:#fff;text-shadow:0 0 12px rgba(39,227,255,.65)';
+  sl.addEventListener('input', ()=>{ CFG.pic[r.k]=(+sl.value)/100; val.textContent=sl.value+'%'; applyPic(); picSave(); });
+  sl.addEventListener('pointerup', ()=> sl.blur());        // снять фокус, чтобы ←/→ листали слайды, а не двигали ползунок
+  sl.addEventListener('change',    ()=> sl.blur());
+  row.append(lab, sl, val);
+  picEdit.rows[r.k]={ put:v=>{ sl.value=Math.round(v*100); val.textContent=Math.round(v*100)+'%'; }, sl };
+  return row;
+}
+function buildPicPanel(){
+  const p=document.createElement('div'); p.id='picPanel';
+  p.style.cssText='position:fixed;left:50%;bottom:5%;transform:translateX(-50%);z-index:100000;'+
+    'width:min(88vw,560px);max-height:88vh;overflow:auto;padding:16px 20px 12px;'+
+    'border:1px solid var(--neon,#27e3ff);border-radius:14px;background:rgba(6,16,24,.96);'+
+    'color:#eaf4ff;font:600 14px/1.3 system-ui,sans-serif;letter-spacing:.02em;'+
+    'box-shadow:0 0 26px rgba(39,227,255,.4),0 10px 44px rgba(0,0,0,.6);display:none';
+  p.innerHTML=
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">'+
+      '<span style="font:800 16px/1 system-ui;letter-spacing:.06em;color:#27e3ff">◑ КАРТИНКА НА ЭКРАНЕ</span>'+
+      '<span style="font-size:12px;opacity:.75">подстройка под зал</span></div>'+
+    '<div id="picRows"></div>'+
+    // резкость — компенсация «мыла» тракта показа зала (unsharp). Кнопки: Выкл/1/2/3
+    '<div style="display:flex;align-items:center;gap:12px;padding:7px 0 3px">'+
+      '<span style="flex:0 0 40%;font-size:13px;opacity:.92">✦ Резкость <span style="opacity:.6;font-size:11px">(для стены)</span></span>'+
+      '<div id="picSharpBtns" style="flex:1;display:flex;gap:6px"></div></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;'+
+        'border-top:1px solid rgba(39,227,255,.22);font-size:12px;opacity:.75;gap:8px;flex-wrap:wrap">'+
+      '<span>Ctrl+I / Esc — закрыть · ↑/↓ контраст · ←/→ слайды</span>'+
+      '<span><b id="picHall" style="cursor:pointer;color:#27e3ff">мягче для зала</b> · '+
+        '<b id="picReset" style="cursor:pointer;color:#27e3ff">сброс</b></span>'+
+    '</div>';
+  document.body.appendChild(p);
+  // клики/тапы по пульту НЕ должны листать слайд (глобальный click→next)
+  p.addEventListener('click', e=>e.stopPropagation());
+  p.addEventListener('pointerdown', e=>e.stopPropagation());
+  const rows=p.querySelector('#picRows');
+  PIC_ROWS.forEach(r=> rows.appendChild(picRow(r)));
+  // кнопки резкости
+  const sb=p.querySelector('#picSharpBtns'); picEdit.sharpBtns=[];
+  ['Выкл','1','2','3'].forEach((lbl,i)=>{
+    const b=document.createElement('button'); b.textContent=lbl; b.tabIndex=-1;
+    b.style.cssText='flex:1;height:26px;border:1px solid #27e3ff;border-radius:6px;'+
+      'background:rgba(39,227,255,.10);color:#eaf4ff;cursor:pointer;font:700 12px/1 system-ui';
+    b.addEventListener('click', e=>{ e.stopPropagation(); picSetSharpen(i);
+      if(typeof revToast==='function') revToast('Резкость: '+(i?('уровень '+i):'выкл')); });
+    sb.appendChild(b); picEdit.sharpBtns.push(b);
+  });
+  p.querySelector('#picHall').addEventListener('click', ()=>{
+    Object.assign(CFG.pic, PIC_HALL); applyPic(); picSave(); refreshPicPanel();
+    if(typeof revToast==='function') revToast('Картинка: мягче для зала'); });
+  p.querySelector('#picReset').addEventListener('click', ()=>{
+    CFG.pic.contrast=1; CFG.pic.bright=1; CFG.pic.sat=1; CFG.pic.sharpen=0; applyPic(); picSave(); refreshPicPanel();
+    if(typeof revToast==='function') revToast('Картинка: как есть (100%)'); });
+  picEdit.el=p;
+}
+function refreshPicPanel(){
+  if(!picEdit.open || !picEdit.el) return;
+  PIC_ROWS.forEach(r=>{ const row=picEdit.rows[r.k]; if(row) row.put(CFG.pic[r.k]); });
+  // подсветить активную кнопку резкости
+  if(picEdit.sharpBtns) picEdit.sharpBtns.forEach((b,i)=>{
+    const on=(CFG.pic.sharpen|0)===i;
+    b.style.background=on?'#27e3ff':'rgba(39,227,255,.10)';
+    b.style.color=on?'#04121a':'#eaf4ff';
+  });
+}
+function nudgePic(d){ picSet('contrast', CFG.pic.contrast + d/100); }   // ↑/↓ — контраст шагом d%
+function togglePicEdit(force){
+  if(!picEdit.el) buildPicPanel();
+  picEdit.open = (force===undefined) ? !picEdit.open : !!force;
+  picEdit.el.style.display = picEdit.open ? 'block' : 'none';
+  if(picEdit.open) refreshPicPanel();
+  if(typeof revToast==='function') revToast('Пульт картинки: '+(picEdit.open?'ВКЛ · Ctrl+I закрыть':'ВЫКЛ'));
+}
+
 /* ===================== КОНТРОЛЛЕР СЦЕН ===================== */
 const stage  = document.querySelector('.stage');
 const splash = document.getElementById('splash');
@@ -3502,6 +3688,38 @@ function resetQuiz(){
   quizTitle.classList.remove('faded');
   quizVeil.style.transition='none'; quizVeil.style.setProperty('--r','0%'); void quizVeil.offsetWidth; quizVeil.style.transition='';
   resetQuizContent();
+}
+/* ═══ ИТОГИ КВИЗА (слайд 16) — копия 1-го подслайда квиза без QR/вопроса/вариантов ═══
+   Вход: титул «ИТОГИ КВИЗА» на чёрном → вуаль раскрывается (волны+карта) → лого МБМ справа вверху.
+   Титул НЕ гаснет — он и есть содержимое слайда. Клик → сворачивание вуали → следующий слайд. */
+const quizres=document.getElementById('quizres');
+const qrsVeil =document.getElementById('qrsVeil');
+const qrsBrand=document.getElementById('qrsBrand');
+let qrsTimers=[], qrsNextGo=false;
+function runQuizres(){
+  qrsTimers.splice(0).forEach(clearTimeout);
+  qrsNextGo=false;
+  qrsBrand.classList.remove('show');
+  qrsVeil.style.transition='none'; qrsVeil.style.setProperty('--r','0%');   // вуаль закрыта (чёрное)
+  void qrsVeil.offsetWidth; qrsVeil.style.transition='';
+  qrsTimers.push(setTimeout(()=>{
+    if(id()!=='quizres') return;
+    qrsVeil.style.setProperty('--r','175%');                               // раскрытие (как у квиза)
+    qrsTimers.push(setTimeout(()=>{ if(id()==='quizres') qrsBrand.classList.add('show'); }, veilMs('fast')+AFTER_VEIL));   // лого — после раскрытия
+  }, 900));
+}
+/* выход: свернуть вуаль в чёрное → следующий слайд (он раскроется сам) */
+function quizresToNext(){
+  if(qrsNextGo) return; qrsNextGo=true;
+  qrsTimers.splice(0).forEach(clearTimeout);
+  qrsVeil.style.transition=''; qrsVeil.style.setProperty('--r','0%');
+  qrsTimers.push(setTimeout(()=>{ if(cur<SCENES.length-1){ cur++; applyScene(); } }, veilMs('fast')+AFTER_VEIL));
+}
+function resetQuizres(){
+  qrsTimers.splice(0).forEach(clearTimeout);
+  qrsNextGo=false;
+  qrsBrand.classList.remove('show');
+  qrsVeil.style.transition='none'; qrsVeil.style.setProperty('--r','0%'); void qrsVeil.offsetWidth; qrsVeil.style.transition='';
 }
 /* LANDING: чёрное+титул поверх новой сцены → раскрытие вуали → титул гаснет (перенос между слайдами) */
 let landTimers=[];
@@ -4367,7 +4585,9 @@ function coBaikov(){
     typeSay(coFio, CO_FIO, guard, coTimers);                   // ФИО
     coTimers.push(setTimeout(()=>{ if(!guard())return;
       typeSay(coSay, CO_SAY, guard, coTimers);                 // реплика
-      coTimers.push(setTimeout(()=>{ if(!guard())return; coStoryDone=true; }, sayLen(CO_SAY)*CFG.type.say + 900));   // титул НЕ авто — ждём клик → Головина
+      coTimers.push(setTimeout(()=>{ if(!guard())return; coStoryDone=true;
+        if(!CFG.cafeopen.golovina){ coGolovinaStarted=true; coGolovinaDone=true; coShowDangerTitle(); }   // Головина пропущена → сразу титул «МИССИЯ 3»
+      }, sayLen(CO_SAY)*CFG.type.say + 900));   // Головина вкл: титул НЕ авто — ждём клик → Головина
     }, 1200));
   }, CFG.hero.fio));
 }
@@ -4391,7 +4611,8 @@ function skipCoStory(){
   coFio.classList.add('show'); coFio.innerHTML='<span class="say-txt">'+CO_FIO+'</span>';
   document.querySelectorAll('.say-caret').forEach(c=>c.remove());
   coSay.classList.add('show'); coSay.innerHTML=sayHtml(CO_SAY);
-  coStoryDone=true;   // Байков доигран; титул — ПОСЛЕ Головиной (по клику)
+  coStoryDone=true;   // Байков доигран; при вкл. Головиной титул — ПОСЛЕ неё (по клику)
+  if(!CFG.cafeopen.golovina){ coGolovinaStarted=true; coGolovinaDone=true; coShowDangerTitle(); }   // Головина пропущена → сразу титул «МИССИЯ 3»
 }
 /* аватар Головиной (ШТАБ, СЛЕВА) — по клику ПОСЛЕ Байкова: искры → фото → ФИО → реплика → АВТО титул «МИССИЯ 3» */
 function coGolovina(){
@@ -5546,7 +5767,8 @@ const RULES_GOV ={fx:(1583/2172*100).toFixed(1)+'%', fy:(236/724*100).toFixed(1)
 /* СВОЙ титул у каждого подслайда: 0 «Игровой мир» · 1 «Уровень сложности» · 2 «Подсказки» */
 const RULES_TITLES=['Игровой<br>мир','Уровень сложности','Подсказки'];   // «Игровой мир» — в 2 строки (перенос <br>, рендерится в .rt-main через innerHTML)
 let rulesTitleShown='';
-const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после последнего блока добавляется красное «HARD»
+const RULES_HARD_STEP=1;   // подслайд «Уровень сложности» → после блоков ПО КЛИКУ добавляется красное «HARD»
+let rulesHardShown=false;  // на подслайде «Уровень сложности»: показана ли уже печать HARD (появляется по отдельному клику, не авто)
 let hardStamp=true;        // 2-й вариант HARD: false = текст (срез/неон), true = ПЕЧАТЬ (красный штамп) — ПО УМОЛЧАНИЮ. Переключение Ctrl+L на слайде 4
 /* заполнить левый титул: обёртка .rt-main несёт неон; на «Уровне сложности» — скрытый .rt-hard «HARD» (проявится позже) */
 function fillRulesTitle(step){
@@ -5612,11 +5834,17 @@ function showRules(){
   rSlides.forEach((s,i)=>s.classList.toggle('cur', i===rulesStep));
   if(rules.classList.contains('intro')) return;                 // во время интро контент скрыт — не раскрываем
   setRulesTitle(rulesStep);                                     // свой титул подслайда (проявление при смене; на входе уже стоит — не мигает)
-  const revEnd=revealRin(rSlides[rulesStep]);                   // построчный вылет .rin текущего подслайда; вернёт время конца
-  if(rulesStep===RULES_HARD_STEP){                              // «HARD» — проявляется ПОСЛЕ последнего блока
+  revealRin(rSlides[rulesStep]);                               // построчный вылет .rin текущего подслайда
+  if(rulesStep===RULES_HARD_STEP){                              // «HARD» — НЕ авто: появляется по ОТДЕЛЬНОМУ клику (rulesShowHard)
     const hard=rulesTitle.querySelector('.rt-hard');
-    if(hard) gwTimers.push(setTimeout(()=>hard.classList.add('show'), revEnd));
-  }
+    rulesHardShown=!!(hard && hard.classList.contains('show')); // при возврате (←) титул пересоздан → HARD скрыт → снова по клику
+  } else rulesHardShown=false;
+}
+/* показать печать HARD на подслайде «Уровень сложности» (по клику, после блоков) */
+function rulesShowHard(){
+  const hard=rulesTitle.querySelector('.rt-hard');
+  if(hard) hard.classList.add('show');   // .hard-stamp → удар печатью stampDown (+ звук playStamp через animationstart)
+  rulesHardShown=true;
 }
 /* построчное авто-появление .rin в подслайде (метка/значение/подпись; заголовок+описание), быстро */
 let gwTimers=[];
@@ -5714,6 +5942,7 @@ const SCENES=[
   {id:'mission3', label:'Миссия 3 – защита бизнеса (cafe-3 + вывеска)'},
   {id:'newcafe',  label:'Новый слайд (копия-база кафе-сцены)'},
   {id:'morebiz',  label:'Больше чем бизнес (интерьер кафе)'},
+  {id:'quizres',  label:'Итоги квиза – титул по центру + лого МБМ справа вверху'},
   {id:'binoc2',   label:'Дубль слайда 10 – герой на крыше + раскрытие карты (без разведки)'},
 ];
 /* какому подведу соответствует какая текстовая панель */
@@ -6012,8 +6241,13 @@ let bizStars=0;   // сколько звёзд сейчас живо на экр
 let bizFilmT=null, bizSlots=null, bizOffset=0;   // лента-картинка: таймер шага, слоты кадров, текущий сдвиг
 let bizV2Ints=[], bizV2Timers=[], bizBoards=null;   // вариант 2 (билборды): интервалы кроссфейда, таймеры появления, щиты
 let bizPhotoMode=0;   // механика показа фото ПО УМОЛЧАНИЮ: 0 = БЕЗ показа (счётчик по центру, клик→финал); 1 = киноплёнка; 2 = билборды. Alt+F листает 0→1→2
-let bizFinaleStarted=false, bizFinaleEl=null;   // финал режима 0: закрытие вуали + тёплый титул
-const BIZ_FINALE_LINES=['ВСЁ ТОЛЬКО НАЧИНАЕТСЯ','НА ОДНОЙ ВОЛНЕ','НОВЫЙ ИМПУЛЬС'];
+let bizFinaleStarted=false, bizFinaleEl=null, bizFinaleClosed=false;   // финал режима 0: закрытие вуали + тёплый титул · bizFinaleClosed — сыграно ли финальное закрытие по клику
+/* строки финального титула — в порядке появления. big:true — ударная строка (крупнее, отступ сверху, ярче) */
+const BIZ_FINALE_LINES=[
+  {t:'НА ОДНОЙ ВОЛНЕ'},
+  {t:'НОВЫЙ ИМПУЛЬС'},
+  {t:'ВСЁ ТОЛЬКО НАЧИНАЕТСЯ!', big:true}
+];
 function bizFmt(n){ return n.toLocaleString('ru-RU'); }              // 937000 → «937 000»
 function bizGrowthStart(){
   if(bizRunning) return;                                            // уже идёт — не дублируем (onOpen + skip)
@@ -6251,7 +6485,7 @@ function bizGrowthStop(){
   bizSlots=null; bizOffset=0; bizStars=0;
   bizTimers.forEach(clearTimeout); bizTimers=[];
   if(bizWrap){ bizWrap.remove(); bizWrap=null; }
-  if(bizFinaleEl){ bizFinaleEl.remove(); bizFinaleEl=null; } bizFinaleStarted=false;   // сброс финала
+  if(bizFinaleEl){ bizFinaleEl.remove(); bizFinaleEl=null; } bizFinaleStarted=false; bizFinaleClosed=false;   // сброс финала
   bizNumEl=null; bizNumBox=null;
 }
 /* ФИНАЛ (режим 0, по клику): закрытие вуали с фокусом в центре → тёплый титул по очереди */
@@ -6263,12 +6497,21 @@ function bizFinale(){
   const fin=document.createElement('div'); fin.className='bizfinale'; bizFinaleEl=fin;
   const veil=document.createElement('div'); veil.className='bizfinale-veil';
   const tit=document.createElement('div'); tit.className='bizfinale-title';
-  BIZ_FINALE_LINES.forEach(t=>{ const l=document.createElement('div'); l.className='bff-line'; l.textContent=t; tit.appendChild(l); });
+  BIZ_FINALE_LINES.forEach(o=>{ const l=document.createElement('div');
+    l.className='bff-line'+(o.big?' big':''); l.textContent=o.t; tit.appendChild(l); });
   fin.appendChild(veil); fin.appendChild(tit); stage.appendChild(fin);
   veil.style.setProperty('--r','175%');
   requestAnimationFrame(()=>requestAnimationFrame(()=>veil.style.setProperty('--r','0%')));   // вуаль закрывается в центр
   const base=(typeof veilMs==='function'?veilMs('fast'):1000);
   [...tit.children].forEach((l,i)=> setTimeout(()=>l.classList.add('show'), base+300 + i*1100));   // строки по очереди
+}
+/* по клику после финала: чёрная вуаль ПОВЕРХ титула, закрывается с фокусом в ЦЕНТРЕ (наплыв снаружи внутрь) */
+function bizFinaleClose(){
+  if(bizFinaleClosed || !bizFinaleEl) return; bizFinaleClosed=true;
+  const veil=document.createElement('div'); veil.className='bizfinale-close';
+  bizFinaleEl.appendChild(veil);
+  veil.style.setProperty('--r','175%');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>veil.style.setProperty('--r','0%')));   // закрытие в центр
 }
 /* КОНФИГИ РАЗВЕДКИ (шаблонная механика бинокля): маршрут поиска (stops) + крючок героя.
    panel:true — на объекте печатается панель параметров (сейчас только у кафе). */
@@ -6503,8 +6746,9 @@ function applyScene(){
     if(cafeopenFinal){                                   // возврат со слайда 13 (←): сразу КОНЕЦ слайда 12 — Головина доиграна, титул «МИССИЯ 3», клик выхода
       runCafeOpen();
       skipCoIntro(); skipCoHero();                       // кафе + герой мгновенно
-      skipCoStory();                                     // Байков: ФИО + реплика мгновенно
-      skipCoGolovina();                                  // Головина: ФИО + реплика + расфокус + титул «МИССИЯ 3» (instant)
+      skipCoStory();                                     // Байков: ФИО + реплика мгновенно (при пропуске Головиной сам ставит титул)
+      if(CFG.cafeopen.golovina) skipCoGolovina();        // Головина (если вкл): ФИО + реплика + расфокус + титул «МИССИЯ 3» (instant)
+      else coShowDangerTitle(true);                      // Головина пропущена → расфокус + титул сразу (instant)
       coGo=false;                                        // сворачивание не начато — ждём клик выхода
     } else runCafeOpen();
   } else resetCafeOpen();
@@ -6557,7 +6801,7 @@ function applyScene(){
   } else resetMission3();
 
   // титул (SCENES[0]) и КВИЗ (слайд 9) используют одну canvas-анимацию волн (#ccanvas)
-  const onTitle=(sid==='title'), ccScene=(sid==='title'||sid==='quiz');
+  const onTitle=(sid==='title'), ccScene=(sid==='title'||sid==='quiz'||sid==='quizres');
   if(!ccScene && !ccanvasEl.classList.contains('gone')){
     // уходим со сцены волн → гасим #ccanvas МГНОВЕННО: его сцена (.ccanvas-stage, фон cover.png) лежит на z45,
     // а .quiz/.title (z46) прячутся сразу — при плавном .8с fade из-под них на 0.8с проступал cover.png
@@ -6586,6 +6830,8 @@ function applyScene(){
       quizStep=QUIZ_ITEMS.length-1; showQuizItem();      // 5-й вопрос
     } else runQuiz();
   } else resetQuiz();
+  quizres.classList.toggle('show', sid==='quizres');      // слайд 16 «Итоги квиза» — титул + лого, без вопросов
+  if(sid==='quizres') runQuizres(); else resetQuizres();
 
   // сплеш
   splash.classList.toggle('hidden', sid!=='splash');
@@ -7102,6 +7348,7 @@ function next(skip){
   if(id()==='rules'){                          // правила: разворачивание ТОЛЬКО на входе, сворачивание ТОЛЬКО на выходе
     if(rulesAnim) return;                       // идёт анимация — игнор клика
     if(rulesIntroing){ rulesIntroSkip(); return; }   // идёт интро титула → клик пропускает сразу
+    if(rulesStep===RULES_HARD_STEP && !rulesHardShown){ rulesShowHard(); return; }   // «Уровень сложности»: 1-й клик = печать HARD (потом обычная смена)
     if(rulesStep<rSlides.length-1){ rulesStep++; showRules(); return; }   // между подслайдами — обычная смена
     // последний слайд → убираем весь текст правил → сворачивание → аватары (титул «Проводники» появляется уже на слайде 5, здесь НЕ показываем)
     rulesAnim=true;
@@ -7211,9 +7458,11 @@ function next(skip){
     }
     mapCollapseGo(); return;                               // миссия показана → вуаль закрытия → след. слайд
   }
+  if(id()==='quizres'){ quizresToNext(); return; }   // «Итоги квиза» — один экран, клик = переход дальше
   if(id()==='binoc2'){                            // дубль слайда 10 — только герой на крыше + карта
     if(!binoc2Open){ skipBinoc2(); return; }               // интро идёт → мгновенно к раскрытой карте
     if(bizPhotoMode===0 && bizRunning){ bizFinale(); return; }   // режим «без показа» → клик запускает финал (вуаль + тёплый титул)
+    if(bizPhotoMode===0 && bizFinaleStarted && !bizFinaleClosed){ bizFinaleClose(); return; }   // финал показан → клик закрывает вуалью с фокусом в центре
     if(cur<SCENES.length-1){ cur++; applyScene(); } return;
   }
   if(cur<SCENES.length-1){ cur++;
@@ -7243,10 +7492,11 @@ function prev(){
     m3Dark.classList.add('show'); m3Brand.classList.add('show');// затемнение + лого ШТАБ остаются
     return;
   }
-  if(id()==='binoc2' && cur>0){                                  // Слайд 16 → назад в КОНЕЦ слайда 15: level-up 4★→5★, клик выхода
+  if(id()==='quizres' && cur>0){                                 // Слайд 16 «Итоги квиза» → назад в КОНЕЦ слайда 15: level-up 4★→5★, клик выхода
     cur--; morebizFinal=true; applyScene(); morebizFinal=false;
     return;
   }
+  // Слайд 17 (финал) → назад на «Итоги квиза»: слайд короткий, проигрывается заново (дефолт cur-- внизу)
   if(id()==='morebiz' && cur>0){                                 // Слайд 15 (герой/текст; уровень уже откатил nativeStepBack) → назад в КОНЕЦ слайда 14: подслайд 2 с текстом
     cur--; newcafeFinal=true; applyScene(); newcafeFinal=false;
     return;
@@ -7718,6 +7968,7 @@ ccBtn.addEventListener('click', e=>{ e.stopPropagation(); titleStart(); });
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey) && e.code==='KeyD'){ e.preventDefault(); cycleDsMode(); return; }   // Ctrl+D — циклом сменить дизайн-систему (e.code — независимо от раскладки)
   if((e.ctrlKey||e.metaKey) && e.code==='KeyM'){ e.preventDefault(); toggleVolEdit(); return; } // Ctrl+M — пульт громкости музыки по слайдам
+  if((e.ctrlKey||e.metaKey) && e.code==='KeyI'){ e.preventDefault(); togglePicEdit(); return; } // Ctrl+I — пульт картинки: контраст/яркость/насыщенность под экран зала
   if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyM'){ e.preventDefault(); toggleMapMusic(); return; } // Alt+M — переключить трек КАРТЫ: обычный ↔ Mario (London Philharmonic)
   if(e.altKey && !e.ctrlKey && !e.metaKey && e.code==='KeyF'){ e.preventDefault();            // Alt+F — механика показа фото (слайд 16): 0 без показа → 1 киноплёнка → 2 билборды
     bizSetPhotoMode((bizPhotoMode+1)%3);
@@ -7734,6 +7985,11 @@ document.addEventListener('keydown',e=>{
     if(screenCrack) screenCrack.style.zIndex = crackOver ? '30' : '0';
     if(typeof showDsToast==='function') showDsToast({name:'Трещины стекла', desc: crackOver?'поверх текста':'под текстом'});
     return; }
+  if(picEdit.open){                                                               // пульт картинки открыт: ↑/↓ — контраст (←/→ ниже — листают слайды)
+    if(e.code==='ArrowUp'){   e.preventDefault(); nudgePic(e.shiftKey?5:1);  return; }
+    if(e.code==='ArrowDown'){ e.preventDefault(); nudgePic(e.shiftKey?-5:-1); return; }
+    if(e.code==='Escape'){    e.preventDefault(); togglePicEdit(false);      return; }
+  }
   if(volEdit.open){                                                               // режим настройки громкости: ↑/↓ громче/тише текущего слайда (←/→ ниже — листают слайды)
     if(e.code==='ArrowUp'){   e.preventDefault(); nudgeVol(e.shiftKey?5:1);  return; }
     if(e.code==='ArrowDown'){ e.preventDefault(); nudgeVol(e.shiftKey?-5:-1); return; }
